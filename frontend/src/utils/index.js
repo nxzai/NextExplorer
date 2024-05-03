@@ -1,3 +1,9 @@
+import dayjs from 'dayjs';
+
+function formatDate(unixTimestamp){
+  return dayjs(unixTimestamp).format('YYYY-MM-DD HH:mm:ss');
+}
+
 function formatBytes(bytes, decimals) {
     if(bytes == 0) return '0 Bytes';
     var k = 1024,
@@ -7,6 +13,8 @@ function formatBytes(bytes, decimals) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
  }
 
+
  export {
+    formatDate,
     formatBytes
  }

@@ -1,20 +1,23 @@
 <script setup>
 import FileIcon from '@/icons/FileIcon.vue';
 import { useRouter, useRoute } from 'vue-router';
-import { formatBytes } from '@/utils';
+import { formatBytes, formatDate } from '@/utils';
 import {useNavigation} from '@/composables/navigation';
+
 
 const props = defineProps(['item', 'view'])
 
 const {openItem} = useNavigation()
+
 
 </script>
 
 <template>
 
     <div 
+    :title="props.item.name"
     v-if="props.view==='grid'"
-    @click="openItem(item)"
+    @dblclick="openItem(item)"
     class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700">
         <FileIcon 
         :kind="props.item.kind" 
@@ -24,14 +27,15 @@ const {openItem} = useNavigation()
 
 
     <div 
+    :title="props.item.name"
     v-if="props.view==='tab'"
-    @click="openItem(item)"
-    class="flex gap-2 p-4 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700">
+    @dblclick="openItem(item)"
+    class="flex items-center gap-2 p-4 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700">
         <FileIcon 
         :kind="props.item.kind" 
-        class="h-10 shrink-0"/> 
+        class="h-16 shrink-0"/> 
         <div>
-            <div class="text-sm break-all line-clamp-2">{{ props.item.name }}</div>
+            <div class="break-all line-clamp-2">{{ props.item.name }}</div>
             <p class="text-xs text-stone-500">
                 {{ formatBytes(props.item.size) }}
             </p>  
@@ -41,17 +45,18 @@ const {openItem} = useNavigation()
 
     <div 
     v-if="props.view==='list'"
-    @click="openItem(item)"
-    class="flex items-center gap-2 p-2 px-4 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700">
+    @dblclick="openItem(item)"
+    class="grid items-center grid-cols-[30px_1fr_150px_200px] even:bg-zinc-700 even:bg-opacity-30 p-2 px-4 rounded-md cursor-pointer auto-cols-fr hover:bg-zinc-100 dark:hover:bg-zinc-700">
+        
         <FileIcon 
         :kind="props.item.kind" 
-        class="h-5 shrink-0"/> 
-        <div class="text-sm text-center break-all line-clamp-1">{{ props.item.name }}</div>
-        <div v-if="props.item.kind==='directory'">
-            ---
+        class="h-6 shrink-0"/> 
+        <div :title="props.item.name" class="break-all line-clamp-1">{{ props.item.name }}</div>
+        <div class="text-sm">
+            {{ props.item.kind==="directory"? "---" : formatBytes(props.item.size) }}
         </div>
-        <div v-else>
-            {{ formatBytes(props.item.size) }}
+        <div class="text-sm">
+            {{ formatDate(props.item.dateModified) }}
         </div>
     </div>
 

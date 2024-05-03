@@ -5,6 +5,8 @@ import { useSettingsStore } from '@/stores/settings'
 import FileObject from '@/components/FileObject.vue';
 import { browse } from '@/api';
 
+import TextEditor from '@/components/TextEditor.vue';
+
 const settings = useSettingsStore()
 const route = useRoute()
 const resources = ref(null)
@@ -31,5 +33,7 @@ watch(route, (to, from) => {
         <FileObject v-for="item in resources" :key="item.name" :item="item" :view="settings.view"/>
       
     </div>
+
+    <TextEditor/>
 
 </template>

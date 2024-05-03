@@ -57,6 +57,13 @@ const currentPathName = computed(() => {
           <BreadCrumb/>
           <div class="flex gap-1 ml-auto"> 
 
+            <button 
+            @click="settings.listView"
+            class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600" 
+            :class="{'dark:bg-zinc-700 dark:bg-opacity-70':settings.view=='list'}">
+              <ListBulletIcon class="w-6" />
+            </button>
+
             <button
             @click="settings.tabView"
             class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600" 
@@ -64,13 +71,6 @@ const currentPathName = computed(() => {
               <AlignSpaceAroundVertical20Regular class="w-6"/>
             </button>
 
-
-            <button 
-            @click="settings.listView"
-            class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600" 
-            :class="{'dark:bg-zinc-700 dark:bg-opacity-70':settings.view=='list'}">
-              <ListBulletIcon class="w-6" />
-            </button>
             <button 
             @click="settings.gridView"
             class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600"

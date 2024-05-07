@@ -13,7 +13,7 @@ onMounted(async () => {
 })
 
 const browseVolume = (volumeName) => {
-    router.push({ name: 'browse', params: {path: volumeName} });
+    router.push({ path: `/browse/${volumeName}` } );
 }
 
 </script>

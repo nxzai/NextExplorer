@@ -17,7 +17,7 @@ const dark = ref(
 // const lang = js();
 
 
-</script>
+</script> 
 
 <template>
   <code-mirror

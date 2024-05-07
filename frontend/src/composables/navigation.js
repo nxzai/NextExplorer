@@ -6,24 +6,38 @@ export function useNavigation() {
   const route = useRoute()
 
   const openItem = (item)=>{
-      if(item.kind==='directory'){
-          const new_path = route.params.path ? `${route.params.path}/${item.name}` : item.name;
-          router.push({ name: 'browse', params: {path: new_path} });
-      }
 
-      // if the item.kind is .txt then open a dialog with the content of the file
-      if(item.kind==='file' && item.name.endsWith('.txt')){
-          router.push({ name: 'editor', params: {path: item.path} });
-      }   
+      console.log(item.kind)
+
+      if(item.kind==='directory'){
+          const newPath = route.params.path ? `${route.params.path}/${item.name}` : item.name;
+          router.push({ path: `/browse/${newPath}` });
+      }
+      
+      if(item.kind==='json'){
+        const fileToEdit = `${item.path}/${item.name}`;
+        router.push({ path: `/editor/${fileToEdit}` });
+      }
 
 
   }
 
   const openBreadcrumb = (path)=>{
-    router.push({ name: 'browse', params: {path: path} });
+    router.push({ path: `/browse/${path}` });
   } 
 
-  // const goForward = ()=>{
+  
+
+  return {
+    openItem,
+    openBreadcrumb
+  }
+}
+
+
+
+
+// const goForward = ()=>{
   //   router.go(1);
   // }
 
@@ -45,9 +59,3 @@ export function useNavigation() {
     
 
   // }
-
-  return {
-    openItem,
-    openBreadcrumb
-  }
-}

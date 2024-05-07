@@ -14,6 +14,11 @@ const router = createRouter({
       path: '/browse/:path',
       name: 'browse',
       component: FolderView
+    },
+    {
+      path: '/editor/:path',
+      name: 'editor',
+      component: FolderView
     }
   ]
 })

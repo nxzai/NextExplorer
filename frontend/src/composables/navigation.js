@@ -11,6 +11,11 @@ export function useNavigation() {
           router.push({ name: 'browse', params: {path: new_path} });
       }
 
+      // if the item.kind is .txt then open a dialog with the content of the file
+      if(item.kind==='file' && item.name.endsWith('.txt')){
+          router.push({ name: 'editor', params: {path: item.path} });
+      }   
+
 
   }
 

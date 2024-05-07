@@ -16,7 +16,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
  
-app.get('/volumes', async (req, res) => {
+app.get('/api/volumes', async (req, res) => {
   try {
     const directoryPath = '/mnt/';
     const volumes = await fs.readdir(directoryPath);
@@ -35,7 +35,7 @@ app.get('/volumes', async (req, res) => {
 
 
 // Endpoint to get file information
-app.get('/browse/*', async (req, res) => {
+app.get('/api/browse/*', async (req, res) => {
   const directoryPath = `/mnt/${req.params[0]}`; // Replace with your directory path
 
   try {

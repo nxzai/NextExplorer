@@ -1,11 +1,11 @@
 
 async function browse(path){
-    const response = await fetch(`http://localhost:3000/browse/${path}`);
+    const response = await fetch(`http://localhost:3000/api/browse/${path}`);
     return response.json();
 }
 
 async function getVolumes(){
-    const response = await fetch(`http://localhost:3000/volumes`);
+    const response = await fetch(`http://localhost:3000/api/volumes`);
     return response.json();
 }
 

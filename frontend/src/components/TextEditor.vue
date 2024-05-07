@@ -1,7 +1,5 @@
 <script setup>
 import { ref, defineComponent } from 'vue';
-
-// Load component
 import CodeMirror from 'vue-codemirror6';
 
 // CodeMirror extensions

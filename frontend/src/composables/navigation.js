@@ -14,7 +14,7 @@ export function useNavigation() {
           router.push({ path: `/browse/${newPath}` });
       }
       
-      if(item.kind==='json'){
+      if(item.kind==='json' || item.kind==='txt' || item.kind==='md' ){
         const fileToEdit = `${item.path}/${item.name}`;
         router.push({ path: `/editor/${fileToEdit}` });
       }

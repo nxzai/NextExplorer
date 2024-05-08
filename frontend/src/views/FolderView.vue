@@ -5,7 +5,6 @@ import { useSettingsStore } from '@/stores/settings'
 import FileObject from '@/components/FileObject.vue';
 import { browse } from '@/api';
 
-import TextEditor from '@/components/TextEditor.vue';
 
 const settings = useSettingsStore()
 const route = useRoute()
@@ -34,6 +33,5 @@ watch(route, (to, from) => {
       
     </div>
 
-    <TextEditor/>
 
 </template>

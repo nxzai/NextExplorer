@@ -11,7 +11,7 @@ const settings = useSettingsStore()
 </script>
 
 <template>
-  <div class="flex font-light grow">
+  <div class="relative flex w-full h-full">
 
     <aside class="w-[230px] bg-nextgray-200 dark:bg-nextgray-700 p-6 px-5 shrink-0">
       <HeaderLogo/>
@@ -19,10 +19,9 @@ const settings = useSettingsStore()
       <VolMenu/>
     </aside>
 
-    <main class="flex flex-col content-start h-screen p-6 dark:bg-opacity-95 grow dark:bg-neutral-800">
+    <main class="p-6 overflow-scroll grow dark:bg-opacity-95 dark:bg-neutral-800">
       <router-view></router-view>
     </main>
   </div>
-
 </template>
 

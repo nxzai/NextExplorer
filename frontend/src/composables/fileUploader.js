@@ -1,32 +1,44 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
-
 import Uppy from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
-
+import { useUppyStore } from '@/stores/uppyStore';
 import { useDropZone } from '@vueuse/core'
 
 
 const defaultDialogOptions = {
   multiple: true,
-  accept: '*',
+  accept: '*'
 };
 
 export function useFileUploader({...options}) {
 
+  const uppyStore = useUppyStore();
   const inputRef = ref(null);
   const files = ref([]);
 
+  console.log({
+    getState: uppyStore.getState,
+    setState: uppyStore.setState,
+    subscribe: uppyStore.subscribe,
+  })
 
   const uppy = new Uppy({
     debug: true,
     autoProceed: false,
-  });
+    store: {
+      getState: uppyStore.getState,
+      setState: uppyStore.setState,
+      subscribe: uppyStore.subscribe,
+    }
+  })
+
+  uppyStore.uppy = uppy;
 
   uppy.use(XHRUpload, {
     endpoint: 'http://localhost:3000/api/upload', // your server endpoint
     formData: true,
     fieldName: 'files',
-    bundle: true,
+    bundle: false,
   });
 
   onMounted(() => {

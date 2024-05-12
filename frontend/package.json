@@ -22,6 +22,7 @@
     "codemirror": "^6.0.1",
     "dayjs": "^1.11.11",
     "dropzone": "^6.0.0-beta.2",
+    "nanoid": "^5.0.7",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-codemirror": "^6.1.1",

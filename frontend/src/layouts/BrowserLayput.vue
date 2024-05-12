@@ -9,7 +9,7 @@ import ViewMode from '@/components/ViewMode.vue';
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import NavButtons from '@/components/NavButtons.vue';
 import SearchBar from '@/components/SearchBar.vue';
-
+import UploadProgress from '@/components/UploadProgress.vue';
 
 import { RouterView, useRoute } from 'vue-router'
 import { useTitle } from '@vueuse/core'
@@ -86,14 +86,8 @@ useTitle(currentPathName)
         <router-view></router-view>
       </div>
     </main>
+
+  <UploadProgress/>
   </div>
-
-
-
-
-
-
-
-
 
 </template>

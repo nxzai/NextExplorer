@@ -1,9 +1,10 @@
 const express = require('express');
 const fs = require('fs').promises;
+const fss = require('fs');
 const path = require('path');
 const cors = require('cors'); 
 const bodyParser = require('body-parser');
-
+const multer = require('multer');
 const app = express();
 const port = 3000; // You can choose any port you like
 
@@ -16,6 +17,31 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
  
+
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const directory = `/tmp/${req.query.userId}`
+
+      if (!fss.existsSync(directory)) {
+        fss.mkdirSync(directory, { recursive: true })
+      }
+
+      cb(null, directory)
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`)
+    }
+  })
+})
+
+app.post('/api/upload', upload.fields([{ name: 'files', maxCount: 50 }]), function (req, res) {
+  console.log('Files uploaded:', req.files);
+  res.send('Files uploaded successfully!');
+});
+
+
 app.get('/api/volumes', async (req, res) => {
   try {
     const directoryPath = '/mnt/';
@@ -119,6 +145,13 @@ app.put('/api/editor', (req, res) => {
       res.send('File updated successfully.');
   });
 });
+
+
+
+
+
+
+
 
 
 app.use((req, res, next) => {

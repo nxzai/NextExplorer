@@ -5,7 +5,6 @@ import { useSettingsStore } from '@/stores/settings'
 import FileObject from '@/components/FileObject.vue';
 import { browse } from '@/api';
 
-
 const settings = useSettingsStore()
 const route = useRoute()
 const resources = ref(null)
@@ -20,18 +19,13 @@ onMounted(loadFiles)
 watch(route, (to, from) => {
   loadFiles()
 });
-
-
 </script>
 
 <template>
     
     <div 
     :class="settings.view === 'grid' ? 'grid grid-cols-[repeat(auto-fill,6rem)] gap-2' : settings.view === 'tab'? 'grid grid-cols-[repeat(auto-fill,20rem)] gap-2':'flex flex-col gap-2'">
-      
         <FileObject v-for="item in resources" :key="item.name" :item="item" :view="settings.view"/>
-      
     </div>
-
 
 </template>

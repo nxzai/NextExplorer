@@ -18,7 +18,7 @@ const {openItem} = useNavigation()
     :title="props.item.name"
     v-if="props.view==='grid'"
     @dblclick="openItem(item)"
-    class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700">
+    class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-zinc-700">
         <FileIcon 
         :kind="props.item.kind" 
         class="h-16 shrink-0"/> 
@@ -30,7 +30,7 @@ const {openItem} = useNavigation()
     :title="props.item.name"
     v-if="props.view==='tab'"
     @dblclick="openItem(item)"
-    class="flex items-center gap-2 p-4 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700">
+    class="flex items-center gap-2 p-4 rounded-md cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-zinc-700">
         <FileIcon 
         :kind="props.item.kind" 
         class="h-16 shrink-0"/> 
@@ -46,7 +46,7 @@ const {openItem} = useNavigation()
     <div 
     v-if="props.view==='list'"
     @dblclick="openItem(item)"
-    class="grid items-center grid-cols-[30px_1fr_150px_200px] even:bg-zinc-700 even:bg-opacity-30 p-2 px-4 rounded-md cursor-pointer auto-cols-fr hover:bg-zinc-100 dark:hover:bg-zinc-700">
+    class="grid select-none items-center grid-cols-[30px_1fr_150px_200px] even:bg-zinc-100 dark:even:bg-zinc-700 even:bg-opacity-30 dark:even:bg-opacity-30 p-2 px-4 rounded-md cursor-pointer auto-cols-fr hover:bg-zinc-100 dark:hover:bg-zinc-700">
         
         <FileIcon 
         :kind="props.item.kind" 

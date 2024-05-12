@@ -2,32 +2,44 @@
 
 <template>
   <h1>File Editor</h1>
-  <div class="overflow-scroll h-[300px] w-full">
+  <div class="w-full overflow-scroll">
    
 
-    <code-mirror
-    
+
+    <Codemirror
     v-model="fileContent"
-    basic
-    :extensions=[oneDark]
-    :dark="true"
-    :lang="lang"
-    />
+    placeholder="Code goes here..."
+    :style="{ height: 'calc(100vh - 100px)' }"
+    :autofocus="true"
+    :extensions="extensions"
+    @ready="handleReady"
+    @change="log('change', $event)"
+    @focus="log('focus', $event)"
+    @blur="log('blur', $event)"
+  />
     
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, shallowRef } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-import CodeMirror from 'vue-codemirror6';
-import {oneDark} from '@codemirror/theme-one-dark';
-import { markdown as md } from '@codemirror/lang-markdown';
+import { Codemirror } from 'vue-codemirror'
+import { javascript } from '@codemirror/lang-javascript'
+import { oneDark } from '@codemirror/theme-one-dark'
 
 const route = useRoute();
-const lang = md();
+
 const fileContent = ref('');
+const extensions = [javascript(), oneDark]
+
+// Codemirror EditorView instance ref
+const view = shallowRef()
+const handleReady = (payload) => {
+    view.value = payload.view
+}
+
 
 const fetchFileContent = async () => {
   const { path } = route.params;
@@ -39,6 +51,8 @@ const fetchFileContent = async () => {
     fileContent.value = 'Error loading file content.';
   }
 };
+
+const log = console.log
 
 onMounted(fetchFileContent);
 </script>

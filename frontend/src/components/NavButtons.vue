@@ -14,7 +14,7 @@ const goOneDirUp = () => {
   console.log(segments);
   if (segments.length > 1) {
     segments.pop();
-    router.push({ name: 'browse', params: {path: segments.join('/')} });
+    router.push({ path: `/browse/${segments.join('/')}` });
   }
 }
 

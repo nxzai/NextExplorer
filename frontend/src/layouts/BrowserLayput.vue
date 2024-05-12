@@ -1,22 +1,19 @@
 <script setup>
-
-import { RouterView } from 'vue-router'
-import { 
-  MagnifyingGlassIcon, 
-  Squares2X2Icon,
-  ListBulletIcon,
-  Cog8ToothIcon } from '@heroicons/vue/24/outline'
-
+import { computed } from 'vue';
+// import { useDropZone } from '@vueuse/core'
+import HeaderLogo from '@/components/HeaderLogo.vue';
+import FavMenu from '@/components/FavMenu.vue';
+import VolMenu from '@/components/VolMenu.vue';
+import CreateNew from '@/components/CreateNew.vue';
+import ViewMode from '@/components/ViewMode.vue';
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import NavButtons from '@/components/NavButtons.vue';
+import SearchBar from '@/components/SearchBar.vue';
 
-import { useSettingsStore } from '@/stores/settings'
-import { AlignSpaceAroundVertical20Regular } from '@vicons/fluent';
 
-const settings = useSettingsStore()
+import { RouterView, useRoute } from 'vue-router'
+import { useTitle } from '@vueuse/core'
 
-import { useRoute } from 'vue-router';
-import { computed } from 'vue';
 
 const route = useRoute()
 
@@ -28,52 +25,75 @@ const currentPathName = computed(() => {
   return 'Volumes';
 })
 
+
+
+useTitle(currentPathName)
+
+
+// const dropZoneRef = ref(null)
+
+
+// function onDrop(files) {
+//   console.log('Files dropped:', files)
+// }
+
+// const { isOverDropZone } = useDropZone(dropZoneRef, {
+//   onDrop,
+//   // specify the types of data to be received.
+//   // dataTypes: ['image/jpeg']
+// })
+
+
+// onMounted(() => {
+//   console.log('mounted')
+//   const dropzone = new Dropzone("div.my-dropzone", { url: "/file/post" });
+// })
+
+// import { Dropzone } from "dropzone";
+
+
+
+
+
 </script>
 
 <template>
-  <div>
+
+  <div class="relative flex w-full h-full">
+
+    <aside class="w-[230px] bg-nextgray-200 dark:bg-nextgray-700 p-6 px-5 shrink-0">
+      <HeaderLogo />
+      <CreateNew />
+      <FavMenu />
+      <VolMenu />
+    </aside>
+
+    <main class="flex flex-col p-6 overflow-scroll grow dark:bg-opacity-95 dark:bg-neutral-800">
+      <div>
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-bold ">{{ currentPathName }}</h2>
-          <div class="">
-            <MagnifyingGlassIcon class="absolute h-5 mt-[6px] ml-2"/>
-            <input type="text" placeholder="search" 
-            class="p-2 py-1 pl-10 rounded-md dark:bg-zinc-700"/>
-          </div>
+          <SearchBar/>
         </div>
         <div class="flex items-center my-3 mt-5">
-          <NavButtons/>
-          <BreadCrumb/>
-          <div class="flex gap-1 ml-auto"> 
-
-            <button 
-            @click="settings.listView"
-            class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600" 
-            :class="{'dark:bg-zinc-700 dark:bg-opacity-70':settings.view=='list'}">
-              <ListBulletIcon class="w-6" />
-            </button>
-
-            <button
-            @click="settings.tabView"
-            class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600" 
-            :class="{'dark:bg-zinc-700 dark:bg-opacity-70':settings.view=='tab'}">
-              <AlignSpaceAroundVertical20Regular class="w-6"/>
-            </button>
-
-            <button 
-            @click="settings.gridView"
-            class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
-            :class="{'dark:bg-zinc-700 dark:bg-opacity-70':settings.view=='grid'}">
-              <Squares2X2Icon class="w-6" />
-            </button>
-
-
-            <button class="ml-4"><Cog8ToothIcon class="w-6"/></button>
-          </div>
+          <NavButtons />
+          <BreadCrumb />
+          <ViewMode/>
         </div>
-        <hr class="h-px my-3 border-0 bg-nextgray-400 dark:bg-neutral-700"/>
+        <hr class="h-px my-3 border-0 bg-nextgray-400 dark:bg-neutral-700" />
       </div>
-      
-      <div class="overflow-y-scroll">
+
+      <div class="overflow-y-scroll grow">
         <router-view></router-view>
       </div>
+    </main>
+  </div>
+
+
+
+
+
+
+
+
+
 </template>

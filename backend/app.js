@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const app = express();
 const port = 3000; // You can choose any port you like
+const { promisify } = require('util');
 
 const corsOptions = {
   origin: '*',
@@ -20,57 +21,118 @@ app.use(bodyParser.json());
  
 // const upload = multer({ dest: 'uploads/' })
 
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      const directory = `/uploads/`
-      cb(null, directory)
-    },
-    filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`)
+
+function CustomStorage(opts) {
+  this.getDestination = opts.destination || function (req, file, cb) {
+    cb(null, '/uploads/');
+  };
+}
+
+CustomStorage.prototype._handleFile = function (req, file, cb) {
+  this.getDestination(req, file, async (err, destination) => {
+    if (err) {
+      console.error("Error in getDestination:", err);
+      return cb(err);
     }
-  })
-})
 
+    const relativePath = path.normalize(req.body.relativePath);
+    const uploadTo = path.join("/mnt/", path.normalize(req.body.uploadTo));
+    let destinationPath;
 
+    if (relativePath.includes('/')) {
+      destinationPath = path.join(uploadTo, relativePath);
+    } else {
+      destinationPath = path.join(uploadTo, path.basename(relativePath));
+    }
 
-app.post('/api/upload', upload.fields([{ name: 'filedata', maxCount: 50 }]), async function (req, res) {
+    const destinationDir = path.dirname(destinationPath);
+    const tempPath = destinationPath + '.download';
+
+    try {
+      await fs.mkdir(destinationDir, { recursive: true });
+      const outStream = fss.createWriteStream(tempPath);
+
+      file.stream.pipe(outStream);
+      outStream.on('error', (streamErr) => {
+        console.error("Error during file streaming:", streamErr);
+        cb(streamErr);
+      });
+      outStream.on('finish', async () => {
+        try {
+          await fs.rename(tempPath, destinationPath);
+          cb(null, {
+            path: destinationPath,
+            size: outStream.bytesWritten
+          });
+        } catch (renameErr) {
+          console.error("Error during file renaming:", renameErr);
+          cb(renameErr);
+        }
+      });
+    } catch (err) {
+      console.error("Error during file upload:", err);
+      cb(err);
+    }
+  });
+};
+
+CustomStorage.prototype._removeFile = function (req, file, cb) {
+  fs.unlink(file.path, cb);
+};
+
+const customStorage = (opts) => new CustomStorage(opts);
+
+const upload = multer({ storage: customStorage({}) });
+
+app.post('/api/upload', upload.fields([{ name: 'filedata', maxCount: 50 }]), async (req, res) => {
   try {
     for (const file of req.files.filedata) {
-      const relativePath = req.body.relativePath;
-      const uploadTo = path.join("/mnt/", req.body.uploadTo);
-      let destinationPath;
-
-      if (relativePath.includes('/')) {
-        destinationPath = path.join(uploadTo, relativePath);
-      } else {
-        destinationPath = path.join(uploadTo, path.basename(relativePath));
-      }
-
-      console.log("file: ", file);
-      console.log("destinationPath: ", destinationPath);
-
-      const destinationDir = path.dirname(destinationPath);
-
-      // Ensure the destination directory exists
-      await fs.mkdir(destinationDir, { recursive: true });
-
-      // Move the file to the destination
-      const tmpPath = file.path;
-      console.log(`moving file from ${tmpPath} to ${destinationPath}`);
-
-      await fs.copyFile(tmpPath, destinationPath);
-      await fs.unlink(tmpPath);
-
-      console.log(`File moved to ${destinationPath}`);
+      console.log("File uploaded to:", file.path);
     }
-
     res.send('Files uploaded successfully');
   } catch (err) {
     console.error(`Error: ${err}`);
     res.status(500).send('Server error');
   }
 });
+
+// app.post('/api/upload', upload.fields([{ name: 'filedata', maxCount: 50 }]), async function (req, res) {
+//   try {
+//     for (const file of req.files.filedata) {
+//       const relativePath = req.body.relativePath;
+//       const uploadTo = path.join("/mnt/", req.body.uploadTo);
+//       let destinationPath;
+
+//       if (relativePath.includes('/')) {
+//         destinationPath = path.join(uploadTo, relativePath);
+//       } else {
+//         destinationPath = path.join(uploadTo, path.basename(relativePath));
+//       }
+
+//       console.log("file: ", file);
+//       console.log("destinationPath: ", destinationPath);
+
+//       const destinationDir = path.dirname(destinationPath);
+
+//       // Ensure the destination directory exists
+//       await fs.mkdir(destinationDir, { recursive: true });
+
+//       // Move the file to the destination
+//       const tmpPath = file.path;
+//       console.log(`moving file from ${tmpPath} to ${destinationPath}`);
+
+//       await fs.copyFile(tmpPath, destinationPath);
+//       await fs.unlink(tmpPath);
+
+//       console.log(`File moved to ${destinationPath}`);
+//     }
+
+//     res.send('Files uploaded successfully');
+//   } catch (err) {
+//     console.error(`Error: ${err}`);
+//     res.status(500).send('Server error');
+//   }
+// });
 
 
 

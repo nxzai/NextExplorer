@@ -1,6 +1,9 @@
 # Dockerfile
 FROM node:lts
 
+RUN apt-get update && \
+    apt-get install -y ffmpeg
+    
 WORKDIR /app
 
 COPY package*.json ./

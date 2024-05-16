@@ -16,6 +16,11 @@ const router = createRouter({
       component: BrowserLayput,
       children: [
         {
+          path: "",
+          component: FolderView,
+        },
+
+        {
           path: ":path(.*)",
           component: FolderView,
         },

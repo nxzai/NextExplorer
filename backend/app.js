@@ -5,9 +5,13 @@ const path = require('path');
 const cors = require('cors'); 
 const bodyParser = require('body-parser');
 const multer = require('multer');
-const app = express();
-const port = 3000; // You can choose any port you like
-const { promisify } = require('util');
+const app = express();// You can choose any port you like
+const sharp = require('sharp');
+const ffmpeg = require('fluent-ffmpeg');
+const { PassThrough } = require('stream');
+
+const port = 3000; 
+const cacheDir = '/cache'
 
 const corsOptions = {
   origin: '*',
@@ -204,6 +208,79 @@ app.get('/api/volumes', async (req, res) => {
 });
 
 
+
+// Function to generate image thumbnail
+// async function generateImageThumbnail(filePath, thumbPath) {
+//   await sharp(filePath)
+//     .resize(200) // Resize to 200px width, maintain aspect ratio
+//     .toFile(thumbPath);
+// }
+
+async function generateImageThumbnail(filePath) {
+  const buffer = await sharp(filePath)
+    .resize(200) // Resize to 200px width, maintain aspect ratio
+    .toBuffer(); // Convert the image to a buffer
+
+  const base64Image = buffer.toString('base64'); // Convert the buffer to a base64 string
+  return `data:image/png;base64,${base64Image}` ;
+}
+
+
+// Function to generate video thumbnail
+// async function generateVideoThumbnail(filePath, thumbPath) {
+//   return new Promise((resolve, reject) => {
+//     ffmpeg(filePath)
+//       .screenshots({
+//         timestamps: ['50%'], // Capture thumbnail from the middle of the video
+//         filename: path.basename(thumbPath),
+//         folder: path.dirname(thumbPath),
+//         size: '200x?'
+//       })
+//       .on('end', resolve)
+//       .on('error', reject);
+//   });
+// }
+
+
+const generateVideoThumbnail = (inputVideoPath) => {
+  return new Promise((resolve, reject) => {
+    const passThrough = new PassThrough();
+
+    ffmpeg(inputVideoPath)
+      .on('end', () => {
+        console.log('Thumbnail generated successfully');
+      })
+      .on('error', (err) => {
+        console.error('Error generating thumbnail:', err);
+        reject(err);
+      })
+      .format('image2')
+      .size('320x?')
+      .frames(1)
+      .output(passThrough)
+      .run();
+
+    const chunks = [];
+    passThrough.on('data', (chunk) => {
+      chunks.push(chunk);
+    });
+
+    passThrough.on('end', () => {
+      const buffer = Buffer.concat(chunks);
+      const base64String = `data:image/png;base64,${buffer.toString('base64')}`;
+      resolve(base64String);
+    });
+
+    passThrough.on('error', (err) => {
+      reject(err);
+    });
+  });
+};
+
+
+
+
+
 // Endpoint to get file information
 app.get('/api/browse/*', async (req, res) => {
   const directoryPath = `/mnt/${req.params[0]}`; // Replace with your directory path
@@ -230,7 +307,21 @@ app.get('/api/browse/*', async (req, res) => {
         }
 
         if (stats.isFile()) {
+
           item.kind = extension
+
+          // const thumbPath = path.join('/mnt/', req.params[0], '.thumbs', `${file}.thumb.jpg`);
+
+          if (['jpg', 'jpeg', 'png', 'gif'].includes(extension.toLowerCase())) {
+            // await fs.mkdir(path.join('/mnt/', req.params[0], '.thumbs'), { recursive: true });
+            // await generateImageThumbnail(filePath, thumbPath);
+            item.thumbnail = await generateImageThumbnail(filePath)
+          
+          } else if (['mp4', 'avi', 'mov', 'mkv'].includes(extension.toLowerCase())) {
+            // await fs.mkdir(path.join('/mnt/', req.params[0], '.thumbs'), { recursive: true });
+            // await generateVideoThumbnail(filePath, thumbPath);
+            item.thumbnail = await generateVideoThumbnail(filePath)
+          }
         }
         else if(stats.isDirectory()){
           item.kind = 'directory'

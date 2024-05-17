@@ -5,31 +5,41 @@ import { useSettingsStore } from '@/stores/settings'
 import FileObject from '@/components/FileObject.vue';
 import { useNavStore } from '@/stores/navStore';
 import { browse } from '@/api';
+import LoadingIcon from '@/icons/LoadingIcon.vue';
 
 const settings = useSettingsStore()
 const navStore = useNavStore()
 const route = useRoute()
-const resources = ref(null)
+const loading = ref(true)
+
 
 const loadFiles = async()=>{
   const path = route.params.path || ''
-  navStore.setCurrentPath(path);
-  resources.value = await browse(path);
+  await navStore.fetchPathItems(path)
+  loading.value = false
 }
 
 onMounted(loadFiles)
 
-watch(route, (to, from) => {
-  
-  loadFiles()
-});
+// watch(route, (to, from) => {
+//   loadFiles()
+// });
 </script>
 
 <template>
     
-    <div 
+    <div v-if="!loading"
     :class="settings.view === 'grid' ? 'grid grid-cols-[repeat(auto-fill,6rem)] gap-2' : settings.view === 'tab'? 'grid grid-cols-[repeat(auto-fill,20rem)] gap-2':'flex flex-col gap-2'">
-        <FileObject v-for="item in resources" :key="item.name" :item="item" :view="settings.view"/>
+        <FileObject v-for="item in navStore.currentPathItems" :key="item.name" :item="item" :view="settings.view"/>
+    </div>
+
+    <div v-else class="flex grow items-center h-full justify-center text-sm text-neutral-500 dark:text-neutral-400">
+      
+      <div class="flex  items-center pr-4 bg-neutral-300 dark:bg-black bg-opacity-20 rounded-lg">
+        <LoadingIcon/> Loading
+      </div>
+      
+    
     </div>
 
 </template>

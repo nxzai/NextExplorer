@@ -14,6 +14,7 @@ import UploadProgress from '@/components/UploadProgress.vue';
 import { RouterView, useRoute } from 'vue-router'
 import { useTitle } from '@vueuse/core'
 
+import SortBy from '@/components/SortBy.vue'
 
 const route = useRoute()
 
@@ -72,19 +73,22 @@ useTitle(currentPathName)
       <div>
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-bold ">{{ currentPathName }}</h2>
-          <ViewMode/>
+          <SearchBar/>
         </div>
         <div class="flex items-center my-3 mt-5">
           <NavButtons />
           <BreadCrumb />
           
-          <SearchBar/>
+          <SortBy/>
+          <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+          <ViewMode/>
         </div>
         <hr class="h-px my-3 border-0 bg-nextgray-400 dark:bg-neutral-700" />
       </div>
 
       <div class="overflow-y-scroll grow">
-        <router-view></router-view>
+        <router-view :key="route.fullPath">
+        </router-view>
       </div>
     </main>
     

@@ -14,7 +14,7 @@ const settings = useSettingsStore()
 
 <template>
 
-<div class="flex gap-1 ml-auto">
+<div class="flex gap-1 items-center">
 
 <button @click="settings.listView" class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
   :class="{ 'dark:bg-zinc-700 dark:bg-opacity-70': settings.view == 'list' }">
@@ -31,8 +31,9 @@ const settings = useSettingsStore()
   <Squares2X2Icon class="w-6" />
 </button>
 
+<div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
 
-<button class="ml-4">
+<button>
   <Cog8ToothIcon class="w-6" />
 </button>
 </div>

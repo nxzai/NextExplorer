@@ -1,17 +1,76 @@
-const express = require('express');
-const fs = require('fs').promises;
 const fss = require('fs');
 const path = require('path');
 const cors = require('cors'); 
-const bodyParser = require('body-parser');
-const multer = require('multer');
-const app = express();// You can choose any port you like
 const sharp = require('sharp');
+const crypto = require('crypto');
+const multer = require('multer');
+const fs = require('fs').promises;
+const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
-const { PassThrough } = require('stream');
+const bodyParser = require('body-parser');
+
+
 
 const port = 3000; 
 const cacheDir = '/cache'
+const thumbnailDir = '/cache/thumbnails'
+const imageExtensions = ['jpg', 'jpeg', 'png', 'gif']
+const videoExtensions = ['mp4', 'avi', 'mov', 'mkv']
+
+
+
+
+
+
+async function generateThumbnail(filePath, thumbPath) {
+  const extension = path.extname(filePath).split(".").splice(-1)[0].toLowerCase();
+
+  console.log(extension)
+  if (imageExtensions.includes(extension)) {
+    // Generate image thumbnail
+    await sharp(filePath)
+      .resize(200)
+      .toFile(thumbPath);
+  } else if (videoExtensions.includes(extension)) {
+    // Generate video thumbnail
+    await new Promise((resolve, reject) => {
+      ffmpeg(filePath)
+        .screenshots({
+          timestamps: ['5%'], // Capture thumbnail from the middle of the video
+          filename: path.basename(thumbPath),
+          folder: path.dirname(thumbPath),
+          size: '200x?'
+        })
+        .on('end', resolve)
+        .on('error', reject);
+    });
+  } else {
+    throw new Error('Unsupported file type');
+  }
+}
+
+// const thumbnailQueue = [];
+
+// async function processQueue() {
+//   while (true) {
+//     if (thumbnailQueue.length > 0) {
+//       const { filePath, thumbPath } = thumbnailQueue.shift();
+//       try {
+//         await generateThumbnail(filePath, thumbPath);
+//         console.log(`Thumbnail generated for ${filePath}`);
+//       } catch (err) {
+//         console.error(`Failed to generate thumbnail for ${filePath}:`, err);
+//       }
+//     } else {
+//       await new Promise(resolve => setTimeout(resolve, 1000)); // Sleep for 1 second
+//     }
+//   }
+// }
+
+// processQueue(); 
+
+
+
 
 const corsOptions = {
   origin: '*',
@@ -19,6 +78,7 @@ const corsOptions = {
   methods: ['GET', 'PUT', 'UPDATE', 'DELETE']  
 };
 
+const app = express();
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
@@ -88,17 +148,31 @@ const customStorage = (opts) => new CustomStorage(opts);
 
 const upload = multer({ storage: customStorage({}) });
 
+
 app.post('/api/upload', upload.fields([{ name: 'filedata', maxCount: 50 }]), async (req, res) => {
   try {
+    const fileData = [];
     for (const file of req.files.filedata) {
-      console.log("File uploaded to:", file.path);
+      const filePath = file.path;
+      const stats = await fs.stat(filePath);
+      const extension = path.extname(file.originalname).toLowerCase().replace('.', '');
+      const item = {
+        name: file.originalname,
+        path: req.body.relativePath,
+        dateModified: stats.mtime,
+        size: stats.size,
+        kind: extension
+      };
+      fileData.push(item);
+      console.log("File uploaded to:", filePath);
     }
-    res.send('Files uploaded successfully');
+    res.json(fileData);
   } catch (err) {
     console.error(`Error: ${err}`);
     res.status(500).send('Server error');
   }
 });
+
 
 // app.post('/api/upload', upload.fields([{ name: 'filedata', maxCount: 50 }]), async function (req, res) {
 //   try {
@@ -209,93 +283,31 @@ app.get('/api/volumes', async (req, res) => {
 
 
 
-// Function to generate image thumbnail
-// async function generateImageThumbnail(filePath, thumbPath) {
-//   await sharp(filePath)
-//     .resize(200) // Resize to 200px width, maintain aspect ratio
-//     .toFile(thumbPath);
-// }
 
-async function generateImageThumbnail(filePath) {
-  const buffer = await sharp(filePath)
-    .resize(200) // Resize to 200px width, maintain aspect ratio
-    .toBuffer(); // Convert the image to a buffer
-
-  const base64Image = buffer.toString('base64'); // Convert the buffer to a base64 string
-  return `data:image/png;base64,${base64Image}` ;
-}
+async function getThumbnail(filePath){
+  const thumbFile = crypto.createHash('sha1').update(filePath).digest('hex') + '.png'
+  const thumbPath = path.join(thumbnailDir, thumbFile)
+    
+  if(!fss.existsSync(thumbPath)){
+    await generateThumbnail(filePath, thumbPath)
+  }
+  return "/static/thumbnails/"+thumbFile
+} 
 
 
-// Function to generate video thumbnail
-// async function generateVideoThumbnail(filePath, thumbPath) {
-//   return new Promise((resolve, reject) => {
-//     ffmpeg(filePath)
-//       .screenshots({
-//         timestamps: ['50%'], // Capture thumbnail from the middle of the video
-//         filename: path.basename(thumbPath),
-//         folder: path.dirname(thumbPath),
-//         size: '200x?'
-//       })
-//       .on('end', resolve)
-//       .on('error', reject);
-//   });
-// }
-
-
-const generateVideoThumbnail = (inputVideoPath) => {
-  return new Promise((resolve, reject) => {
-    const passThrough = new PassThrough();
-
-    ffmpeg(inputVideoPath)
-      .on('end', () => {
-        console.log('Thumbnail generated successfully');
-      })
-      .on('error', (err) => {
-        console.error('Error generating thumbnail:', err);
-        reject(err);
-      })
-      .format('image2')
-      .size('320x?')
-      .frames(1)
-      .output(passThrough)
-      .run();
-
-    const chunks = [];
-    passThrough.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-
-    passThrough.on('end', () => {
-      const buffer = Buffer.concat(chunks);
-      const base64String = `data:image/png;base64,${buffer.toString('base64')}`;
-      resolve(base64String);
-    });
-
-    passThrough.on('error', (err) => {
-      reject(err);
-    });
-  });
-};
-
-
-
-
-
-// Endpoint to get file information
 app.get('/api/browse/*', async (req, res) => {
-  const directoryPath = `/mnt/${req.params[0]}`; // Replace with your directory path
+  const directoryPath = `/mnt/${req.params[0]}`; 
 
   try {
     const files = await fs.readdir(directoryPath);
     const fileData = [];
 
-    // Use Promise.all to read file stats asynchronously
     await Promise.all(
       files.map(async (file) => {
         const filePath = path.join(directoryPath, file);
         const stats = await fs.stat(filePath);
 
-        let extension = file.split(".").splice(-1)[0]
+        let extension = stats.isDirectory()? 'directory' : file.split(".").splice(-1)[0]
         if(extension.length > 10) extension='unknown'
 
         let item = {
@@ -306,26 +318,12 @@ app.get('/api/browse/*', async (req, res) => {
           kind: extension
         }
 
-        if (stats.isFile()) {
-
-          item.kind = extension
-
-          // const thumbPath = path.join('/mnt/', req.params[0], '.thumbs', `${file}.thumb.jpg`);
-
-          if (['jpg', 'jpeg', 'png', 'gif'].includes(extension.toLowerCase())) {
-            // await fs.mkdir(path.join('/mnt/', req.params[0], '.thumbs'), { recursive: true });
-            // await generateImageThumbnail(filePath, thumbPath);
-            item.thumbnail = await generateImageThumbnail(filePath)
-          
-          } else if (['mp4', 'avi', 'mov', 'mkv'].includes(extension.toLowerCase())) {
-            // await fs.mkdir(path.join('/mnt/', req.params[0], '.thumbs'), { recursive: true });
-            // await generateVideoThumbnail(filePath, thumbPath);
-            item.thumbnail = await generateVideoThumbnail(filePath)
-          }
+        if (stats.isFile() && 
+        [...imageExtensions, ...videoExtensions].includes(extension.toLowerCase())) {
+          console.log(`getting thumbnail for '${extension}' extention`)
+          item.thumbnail = await getThumbnail(filePath)
         }
-        else if(stats.isDirectory()){
-          item.kind = 'directory'
-        }
+        
         fileData.push(item);
       })
     );
@@ -336,6 +334,8 @@ app.get('/api/browse/*', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while reading the directory.' });
   }
 });
+
+
 
 
 app.get('/api/file/:path', (req, res) => {
@@ -382,6 +382,8 @@ app.put('/api/editor', (req, res) => {
 });
 
 
+app.use('/static/thumbnails', express.static('/cache/thumbnails'));
+
 
 
 app.use((req, res, next) => {
@@ -392,3 +394,6 @@ app.use((req, res, next) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
 });
+
+// Start the queue processor
+

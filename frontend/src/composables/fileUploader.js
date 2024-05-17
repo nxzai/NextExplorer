@@ -34,6 +34,16 @@ export function useFileUploader({...options}) {
     });
   });
 
+  uppy.on('upload-success', (file, response) => {
+    
+    console.log(file, response.data[0]);
+    // const img = new Image();
+    // img.width = 300;
+    // img.alt = file.id;
+    // img.src = response.uploadURL;
+    // document.body.appendChild(img);
+  });
+
 
   function uppyFile(file){
     return {

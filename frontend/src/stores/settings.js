@@ -12,12 +12,20 @@ export const useSettingsStore = defineStore('counter', () => {
   const isDark = useDark({ disableTransition: false });
   const toggleDark = useToggle(isDark);
 
+  const sortBy = ref('name')
+
+  const setSortBy = (value) => {
+    sortBy.value = value
+  }
+
   return { 
     view, 
     gridView, 
     listView,
     tabView,
     isDark,
-    toggleDark
+    toggleDark,
+    sortBy,
+    setSortBy
   }
 })

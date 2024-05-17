@@ -12,7 +12,7 @@ const props = defineProps(['item'])
     <DirectoryIcon v-if="props.item.kind==='directory'"/>
     <CodeIcon v-else-if="['json', 'vue'].includes(props.item.kind)"/>
 
-    <div v-else-if="item.thumbnail" class="flex items-center justify-center"><img :src="item.thumbnail"></img></div>
+    <div v-else-if="item.thumbnail" class="flex items-center justify-center"><img :src="'http://localhost:3000'+item.thumbnail"></img></div>
     
     <TxtIcon v-else/>
     

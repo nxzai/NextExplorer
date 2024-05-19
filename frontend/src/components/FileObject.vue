@@ -1,61 +1,68 @@
 <script setup>
 import FileIcon from '@/icons/FileIcon.vue';
-import { useRouter, useRoute } from 'vue-router';
 import { formatBytes, formatDate } from '@/utils';
 import {useNavigation} from '@/composables/navigation';
+import { useSelection } from '@/composables/itemSelection';
 
+const emit = defineEmits(['click'])
 
 const props = defineProps(['item', 'view'])
 
 const {openItem} = useNavigation()
 
+const {handleSelection, isSelected} = useSelection();
 
 </script>
 
 <template>
 
     <div 
-    :title="props.item.name"
-    v-if="props.view==='grid'"
+    :title="item.name"
+    v-if="view==='grid'"
+    @click="handleSelection(item, $event)"
     @dblclick="openItem(item)"
-    class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-zinc-700">
+    class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-zinc-700"
+    :class="{'bg-zinc-100 dark:bg-zinc-700': isSelected(item) }"    
+    > 
         <FileIcon 
-        :item="props.item" 
+        :item="item" 
         class="h-16 shrink-0"/> 
-        <div class="text-sm text-center break-all line-clamp-2">{{ props.item.name }}</div>
+        <div class="text-sm text-center break-all line-clamp-2 rounded-md px-2 -mx-2"
+        :class="{'bg-blue-500 text-white dark:bg-blue-500': isSelected(item) }" 
+        >{{ item.name }}</div>
     </div>
 
 
     <div 
-    :title="props.item.name"
-    v-if="props.view==='tab'"
+    :title="item.name"
+    v-if="view==='tab'"
     @dblclick="openItem(item)"
     class="flex items-center gap-2 p-4 rounded-md cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-zinc-700">
         <FileIcon 
-        :item="props.item" 
+        :item="item" 
         class="w-16 shrink-0"/> 
         <div class="grow">
-            <div class="break-all line-clamp-2">{{ props.item.name }}</div>
+            <div class="break-all line-clamp-2">{{ item.name }}</div>
             <p class="text-xs text-stone-500">
-                {{ formatBytes(props.item.size) }}
+                {{ formatBytes(item.size) }}
             </p>  
         </div>
     </div>
 
     <div 
-    v-if="props.view==='list'"
+    v-if="view==='list'"
     @dblclick="openItem(item)"
-    class="grid select-none items-center grid-cols-[30px_1fr_150px_200px] even:bg-zinc-100 dark:even:bg-zinc-700 even:bg-opacity-30 dark:even:bg-opacity-20 p-2 px-4 rounded-md cursor-pointer auto-cols-fr hover:bg-zinc-100 dark:hover:bg-zinc-700">
+    class="grid select-none items-center grid-cols-[30px_1fr_150px_200px] even:bg-zinc-100 dark:even:bg-zinc-700 even:bg-opacity-30 dark:even:bg-opacity-20 p-1 px-4 rounded-md cursor-pointer auto-cols-fr hover:bg-zinc-100 dark:hover:bg-zinc-700">
         
         <FileIcon 
-        :item="props.item" 
-        class="h-6 shrink-0"/> 
-        <div :title="props.item.name" class="break-all line-clamp-1">{{ props.item.name }}</div>
+        :item="item" 
+        class="w-6 shrink-0"/> 
+        <div :title="item.name" class="break-all line-clamp-1">{{ item.name }}</div>
         <div class="text-sm">
-            {{ props.item.kind==="directory"? "---" : formatBytes(props.item.size) }}
+            {{ item.kind==="directory"? "&mdash;" : formatBytes(item.size) }}
         </div>
         <div class="text-sm">
-            {{ formatDate(props.item.dateModified) }}
+            {{ formatDate(item.dateModified) }}
         </div>
     </div>
 

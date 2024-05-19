@@ -51,7 +51,7 @@ onClickOutside(menuPopup, () => {
             >
             
             <CheckIcon 
-            class="h-4 w-4  text-white invisible"
+            class="h-4 w-4  dark:text-white invisible"
             :class="{'!visible': settings.sortBy.key === option.key}"  />
             {{ option.name }}
           </button>

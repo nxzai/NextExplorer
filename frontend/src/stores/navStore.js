@@ -7,6 +7,7 @@ export const useNavStore = defineStore('navStore', () => {
   // State
   const currentPath = ref(null);
   const currentPathItems = ref([]);
+  const selectedItems = ref([]);
 
   // Getters
   const getCurrentPath = computed(() => currentPath.value);
@@ -43,6 +44,7 @@ export const useNavStore = defineStore('navStore', () => {
     setCurrentPath,
     currentPathItems,
     getCurrentPathItems,
-    fetchPathItems
+    fetchPathItems,
+    selectedItems
   };
 });

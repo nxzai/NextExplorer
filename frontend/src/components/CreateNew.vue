@@ -45,20 +45,21 @@ const uploadFiles = async ()=>{
       <PlusIcon class="w-6 h-6"/>
       Create New
     </button>
+
     <div 
     ref="popuplRef"
     v-if="menuOpen"
     class="
     absolute top-0
-    dark:bg-zinc-700 rounded-lg shadow-lg">
-      <div class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-zinc-600 border-b border-gray-600 rounded-t-lg"> <CreateNewFolderRound class="w-5 text-yellow-400"/> New Folder</div>
+    bg-white dark:bg-zinc-700 rounded-lg shadow-lg">
+      <div class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600 rounded-t-lg"> <CreateNewFolderRound class="w-5 text-yellow-400"/> New Folder</div>
       <div 
       @click="uploadFiles"
-      class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-zinc-600">
+      class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white">
         <UploadFileRound class="w-5"/>File Upload</div>
       <div 
       @click="uploadFolder"
-      class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-zinc-600 rounded-b-lg">
+      class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white rounded-b-lg">
         <DriveFolderUploadRound class="w-5"/>Folder Upload
       </div>
     </div>

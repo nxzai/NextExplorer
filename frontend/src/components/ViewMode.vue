@@ -8,7 +8,11 @@ import {
   Cog8ToothIcon
 } from '@heroicons/vue/24/outline'
 
+import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
+
 const settings = useSettingsStore()
+
+
 
 </script>
 
@@ -32,6 +36,14 @@ const settings = useSettingsStore()
 </button>
 
 <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+
+<button title="toggle dark mode" @click="settings.toggleDark()" 
+class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600">
+
+  <SunIcon class="w-6" v-if="settings.isDark" />
+  <MoonIcon class="w-6" v-else />
+
+</button>
 
 <button
 class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600">

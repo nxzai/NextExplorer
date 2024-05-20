@@ -19,7 +19,7 @@ onClickOutside(menuPopup, () => {
 
 <template>
 
-  <div class="ml-auto relative">
+  <div class="relative">
     <button @click="menuOpen = !menuOpen" class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
       :class="{ 'dark:bg-zinc-700 dark:bg-opacity-70': menuOpen == true }">
       <SortByAlphaOutlined class="w-6" />

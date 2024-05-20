@@ -10,7 +10,8 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
 import NavButtons from '@/components/NavButtons.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import UploadProgress from '@/components/UploadProgress.vue';
-
+import SettingsBar from '@/components/SettingsBar.vue';
+import MenuItemInfo from '@/components/MenuItemInfo.vue';
 import { RouterView, useRoute } from 'vue-router'
 import { useTitle } from '@vueuse/core'
 
@@ -62,31 +63,36 @@ useTitle(currentPathName)
 
   <div class="relative flex w-full h-full">
 
-    <aside class="w-[230px] bg-nextgray-200 dark:bg-nextgray-700 p-6 px-5 shrink-0 ">
+    <aside class="w-[230px] bg-nextgray-100 dark:bg-zinc-800 dark:bg-opacity-70 p-6 px-5 shrink-0 ">
       <HeaderLogo />
       <CreateNew />
       <FavMenu />
       <VolMenu />
     </aside>
 
-    <main class="flex flex-col p-6 overflow-scroll grow dark:bg-opacity-95 dark:bg-neutral-800 shadow-lg">
-      <div>
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold ">{{ currentPathName }}</h2>
-          <SearchBar/>
-        </div>
-        <div class="flex items-center my-3 mt-5">
-          <NavButtons />
-          <BreadCrumb />
-          
-          <MenuSortBy/>
-          <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
-          <ViewMode/>
-        </div>
-        <hr class=" -ml-6 -mr-6 h-px my-3 border-0 bg-nextgray-400 dark:bg-neutral-700" />
-      </div>
+    <main class="flex flex-col overflow-scroll grow dark:bg-opacity-95 dark:bg-zinc-800 shadow-lg">
+      
 
-      <div class="overflow-y-scroll grow">
+      <div class="flex items-center p-6 py-4 shadow-md mb-4 dark:bg-nextgray-700 dark:bg-opacity-50">
+        <NavButtons />
+        <BreadCrumb class="mr-auto "/>
+        <MenuItemInfo/>
+        <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <MenuSortBy/>
+        <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <ViewMode/>
+        <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <SettingsBar/>
+
+        <div 
+        style="background:url('http://gravatar.com/userimage/106458114/6eb8be0fbf770f939299c3e5f67ff6da.jpeg?size=256'); background-size: contain"
+        class="ml-4 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center font-bold">
+        </div>
+      </div>
+      <!-- <hr class="h-px border-0 bg-nextgray-400 dark:bg-neutral-700 mb-4" /> -->
+
+
+      <div class="p-6 pt-0 overflow-y-scroll grow">
         <router-view :key="route.fullPath">
         </router-view>
       </div>

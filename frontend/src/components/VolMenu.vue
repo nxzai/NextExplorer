@@ -16,7 +16,7 @@ onMounted(async () => {
 
 <template>
     <div class="mt-6">
-        <h4 class="py-[6px] text-sm text-neutral-400 font-medium">Volumes</h4>
+        <h4 class="py-[6px] text-sm text-neutral-400 dark:text-neutral-500 font-medium">Volumes</h4>
         <div 
         v-for="volume in volumes" :key="volume.name"
         @click="openItem(volume)"

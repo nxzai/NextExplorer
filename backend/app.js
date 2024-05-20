@@ -306,34 +306,33 @@ app.get('/api/browse/*', async (req, res) => {
 
   try {
     const files = await fs.readdir(directoryPath);
-    const fileData = [];
+    const filteredFiles = files.filter(file => path.extname(file).toLowerCase() !== '.download');
 
-    await Promise.all(
-      files.map(async (file) => {
-        const filePath = path.join(directoryPath, file);
-        const stats = await fs.stat(filePath);
+    const fileDataPromises =  filteredFiles.map(async (file) => {
+      const filePath = path.join(directoryPath, file);
+      const stats = await fs.stat(filePath);
 
-        let extension = stats.isDirectory()? 'directory' : file.split(".").splice(-1)[0]
-        if(extension.length > 10) extension='unknown'
+      let extension = stats.isDirectory()? 'directory' : path.extname(file).slice(1).toLowerCase();
+      if(extension.length > 10) extension='unknown'
 
-        let item = {
-          name: file,
-          path: req.params[0], 
-          dateModified: stats.mtime,
-          size: stats.size,
-          kind: extension
-        }
+      let item = {
+        name: file,
+        path: req.params[0], 
+        dateModified: stats.mtime,
+        size: stats.size,
+        kind: extension
+      }
 
-        if (stats.isFile() && 
-        [...imageExtensions, ...videoExtensions].includes(extension.toLowerCase())) {
-          item.thumbnail = await getThumbnail(filePath)
-        }
-        
-        fileData.push(item);
-      })
-    );
-
+      if (stats.isFile() && 
+      [...imageExtensions, ...videoExtensions].includes(extension.toLowerCase())) {
+        item.thumbnail = await getThumbnail(filePath)
+      }
+      return item;
+    });
+    
+    const fileData = await Promise.all(fileDataPromises);
     res.json(fileData);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'An error occurred while reading the directory.' });

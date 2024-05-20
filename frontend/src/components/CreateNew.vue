@@ -52,16 +52,16 @@ const uploadFiles = async ()=>{
     class="
     absolute top-0
     bg-white dark:bg-zinc-700 rounded-lg shadow-lg">
-      <div class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600 rounded-t-lg"> <CreateNewFolderRound class="w-5 text-yellow-400"/> New Folder</div>
-      <div 
+      <button class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600 rounded-t-lg"> <CreateNewFolderRound class="w-5 text-yellow-400"/> New Folder</button>
+      <button 
       @click="uploadFiles"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white">
-        <UploadFileRound class="w-5"/>File Upload</div>
-      <div 
+        <UploadFileRound class="w-5"/>File Upload</button>
+      <button 
       @click="uploadFolder"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white rounded-b-lg">
         <DriveFolderUploadRound class="w-5"/>Folder Upload
-      </div>
+      </button>
     </div>
     
   </div>

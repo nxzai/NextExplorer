@@ -26,9 +26,9 @@ const paths = computed(() => {
   <div class="flex items-center gap-3">
     <template v-for="(path, index) in paths" :key="index">
       <div v-if="index > 0">
-        <ChevronRight16Filled class="h-4 text-gray-500" />
+        <ChevronRight16Filled class="h-4 text-gray-500 dark:text-gray-400" />
       </div>
-      <div class="cursor-pointer" @click="openBreadcrumb(path.path)">{{ path.name || 'Volumes' }}</div>
+      <button class="cursor-pointer" @click="openBreadcrumb(path.path)">{{ path.name || 'Volumes' }}</button>
     </template>
   </div>
 </template>

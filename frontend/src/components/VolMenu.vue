@@ -17,11 +17,11 @@ onMounted(async () => {
 <template>
     <div class="mt-6">
         <h4 class="py-[6px] text-sm text-neutral-400 dark:text-neutral-500 font-medium">Volumes</h4>
-        <div 
+        <button 
         v-for="volume in volumes" :key="volume.name"
         @click="openItem(volume)"
-        class=" cursor-pointer flex items-center gap-3 px-3 py-[6px] rounded-lg hover:bg-nextgray-300 dark:hover:bg-zinc-700 dark:active:bg-zinc-600">
+        class="cursor-pointer flex items-center gap-3 px-3 py-[6px] rounded-lg hover:bg-nextgray-300 dark:hover:bg-zinc-700 dark:active:bg-zinc-600">
             <ServerIcon class="h-5"/> {{volume.name}}
-        </div>
+    </button>
     </div>
 </template>

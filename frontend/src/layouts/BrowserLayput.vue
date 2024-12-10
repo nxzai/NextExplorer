@@ -17,7 +17,7 @@ import { RouterView, useRoute } from 'vue-router'
 import { useTitle } from '@vueuse/core'
 
 import MenuSortBy from '@/components/MenuSortBy.vue'
-import TerminalPanel from '@/components/TerminalPanel.vue';
+// import TerminalPanel from '@/components/TerminalPanel.vue';
 
 
 const route = useRoute()
@@ -77,9 +77,9 @@ useTitle(currentPathName)
         </router-view>
       </div>
       <!-- <hr class="h-px border-0 bg-nextgray-400 dark:bg-neutral-700 mb-4" /> -->
-      <div>
+      <!-- <div>
         <TerminalPanel/>
-      </div>
+      </div> -->
     </main>
   <UploadProgress/>
   </div>

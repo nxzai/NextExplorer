@@ -9,7 +9,7 @@ const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
 const bodyParser = require('body-parser');
 const WebSocket = require('ws');
-const pty = require('node-pty');
+// const pty = require('node-pty');
 
 const port = 3000; 
 const volumeDir = '/mnt/';
@@ -412,28 +412,28 @@ const server = app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
 });
 
-const wss = new WebSocket.Server({ server, path: '/terminal' });
+// const wss = new WebSocket.Server({ server, path: '/terminal' });
 
-wss.on('connection', (ws) => {
-  const shell = process.env.SHELL || 'bash';
-  const ptyProcess = pty.spawn(shell, [], {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 30,
-    cwd: process.env.HOME,
-    env: process.env
-  });
+// wss.on('connection', (ws) => {
+//   const shell = process.env.SHELL || 'bash';
+//   const ptyProcess = pty.spawn(shell, [], {
+//     name: 'xterm-color',
+//     cols: 80,
+//     rows: 30,
+//     cwd: process.env.HOME,
+//     env: process.env
+//   });
 
-  ptyProcess.on('data', (data) => {
-    ws.send(data);
-  });
+//   ptyProcess.on('data', (data) => {
+//     ws.send(data);
+//   });
 
-  ws.on('message', (message) => {
-    ptyProcess.write(message);
-  });
+//   ws.on('message', (message) => {
+//     ptyProcess.write(message);
+//   });
 
-  ws.on('close', () => {
-    ptyProcess.kill();
-  });
-});
+//   ws.on('close', () => {
+//     ptyProcess.kill();
+//   });
+// });
 

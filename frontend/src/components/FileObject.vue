@@ -59,7 +59,7 @@ const {handleSelection, isSelected} = useSelection();
     cursor-pointer auto-cols-fr p-1 px-4 rounded-md
     even:bg-zinc-100 dark:even:bg-zinc-900 dark:even:bg-opacity-50
     "
-    :class="{'text-white bg-blue-500 even:bg-blue-500  dark:bg-blue-600 dark:even:bg-blue-600 dark:bg-opacity-80 dark:even:bg-opacity-80': isSelected(item) }" 
+    :class="{'!text-white !bg-blue-500 !even:bg-blue-500 !dark:bg-blue-600 !dark:even:bg-blue-600 dark:bg-opacity-80 dark:even:bg-opacity-80': isSelected(item) }" 
      >
         
         <FileIcon 

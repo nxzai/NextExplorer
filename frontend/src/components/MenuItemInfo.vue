@@ -31,7 +31,9 @@ onMounted(() => {
 
   <div class="flex gap-1 items-center">
     <button id="btn-download"
-    class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600">
+    class="p-[6px] rounded-md 
+    hover:bg-[rgb(239,239,240)] active:bg-zinc-200
+    dark:hover:bg-zinc-700 dark:active:bg-zinc-600">
       <InformationCircleIcon class="w-6" />
     </button>
   </div>

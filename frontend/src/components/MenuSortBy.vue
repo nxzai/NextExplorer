@@ -20,7 +20,10 @@ onClickOutside(menuPopup, () => {
 <template>
 
   <div class="relative">
-    <button @click="menuOpen = !menuOpen" class="p-[6px] rounded-md dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
+    <button @click="menuOpen = !menuOpen" 
+      class="p-[6px] rounded-md 
+      hover:bg-[rgb(239,239,240)] active:bg-zinc-200
+      dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
       :class="{ 'dark:bg-zinc-700 dark:bg-opacity-70': menuOpen == true }">
       <SortByAlphaOutlined class="w-6" />
     </button>

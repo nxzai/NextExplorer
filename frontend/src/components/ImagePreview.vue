@@ -14,18 +14,20 @@
     <transition name="fade">
       <div
         v-if="previewStore.mediaUrl && previewStore.isVideo && previewStore.isOpen"
-        class="fixed inset-0 z-[2000] flex flex-col bg-black/90 p-6 text-white"
+        class="fixed inset-0 z-[2000] flex flex-col bg-black/90  text-white"
         @click.self="handleClose"
       >
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between z-10 pl-6 pr-4 py-1">
           <p class="text-lg font-semibold">{{ previewStore.currentItem?.name }}</p>
-          <button type="button" class="control-btn" @click="handleClose">Close</button>
+          <button type="button" class="text-neutral-400 hover:text-neutral-300 hover:bg-zinc-800/50 p-2 rounded-full" @click="handleClose">
+            <XMarkIcon class="w-7 h-7"/>
+          </button>
         </div>
-        <div class="mt-6 flex grow items-center justify-center">
+        <div class="absolute flex grow h-full w-full items-center justify-center">
           <video
             ref="videoRef"
             :key="previewStore.mediaUrl"
-            class="max-h-[80vh] w-full max-w-5xl rounded-lg bg-black"
+            class=" h-full rounded-lg bg-black"
             controls
             autoplay
             playsinline
@@ -44,6 +46,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import VueEasyLightbox from 'vue-easy-lightbox';
 import { usePreviewStore } from '@/stores/previewStore';
+import { XMarkIcon } from '@heroicons/vue/20/solid';
 
 const previewStore = usePreviewStore();
 
@@ -119,7 +122,4 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 
-.control-btn {
-  @apply rounded-md bg-white/90 px-3 py-1 text-sm font-semibold text-black transition hover:bg-white;
-}
 </style>

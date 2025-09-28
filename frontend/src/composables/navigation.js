@@ -3,16 +3,61 @@ import { withViewTransition } from '@/utils';
 import { isEditableExtension } from '@/config/editor';
 import { isPreviewableImage, isPreviewableVideo } from '@/config/media';
 import { usePreviewStore } from '@/stores/previewStore';
+import { useTabStore } from '@/stores/tabStore';
+import { normalizePath } from '@/api';
 
+const buildPathFromRoute = (route) => {
+  const param = route.params.path;
+  if (Array.isArray(param)) {
+    return param.join('/');
+  }
+  return param || '';
+};
+
+const joinPaths = (base, segment) => {
+  const parts = [];
+  if (base) {
+    parts.push(base);
+  }
+  if (segment) {
+    parts.push(segment);
+  }
+  return normalizePath(parts.join('/'));
+};
+
+const resolveBrowseDestination = (path) => {
+  const normalized = normalizePath(path || '');
+  return normalized ? `/browse/${normalized}` : '/browse/';
+};
 
 export function useNavigation() {
-    
-  const router = useRouter()
-  const route = useRoute()
+  const router = useRouter();
+  const route = useRoute();
   const previewStore = usePreviewStore();
+  const tabStore = useTabStore();
 
+  const currentRoutePath = () => buildPathFromRoute(route);
 
-  const openItem = withViewTransition((item)=>{
+  const getActiveTabId = () => tabStore.activeTabId || tabStore.activeTab?.id || null;
+
+  const pushBrowsePath = (path, options = {}) => {
+    const destination = resolveBrowseDestination(path);
+    const navState = { ...(options.state || {}) };
+    const tabId = options.tabId || getActiveTabId();
+    if (tabId) {
+      navState.tabId = tabId;
+    }
+
+    const payload = { path: destination, state: navState };
+
+    if (options.replace) {
+      router.replace(payload);
+    } else {
+      router.push(payload);
+    }
+  };
+
+  const openItem = withViewTransition((item) => {
     if (!item) return;
 
     const extensionFromKind = typeof item.kind === 'string' ? item.kind.toLowerCase() : '';
@@ -20,16 +65,18 @@ export function useNavigation() {
       ? item.name.split('.').pop().toLowerCase()
       : '';
 
-    if(item.kind==='volume'){
-      router.push({ path: `/browse/${item.name}` });
+    if (item.kind === 'volume') {
+      pushBrowsePath(item.name);
       return;
     }
-    if(item.kind==='directory'){
-        const newPath = route.params.path ? `${route.params.path}/${item.name}` : item.name;
-        router.push({ path: `/browse/${newPath}` });
-        return;
+
+    if (item.kind === 'directory') {
+      const newPath = joinPaths(currentRoutePath(), item.name);
+      pushBrowsePath(newPath);
+      return;
     }
-    if(isEditableExtension(extensionFromKind) || isEditableExtension(extensionFromName)){
+
+    if (isEditableExtension(extensionFromKind) || isEditableExtension(extensionFromName)) {
       const basePath = item.path ? `${item.path}/${item.name}` : item.name;
       const fileToEdit = basePath.replace(/^\/+/, '');
       router.push({ path: `/editor/${fileToEdit}` });
@@ -46,58 +93,53 @@ export function useNavigation() {
       previewStore.open(item);
     }
   });
-  
 
-  const openBreadcrumb = withViewTransition((path)=>{
-    router.push({ path: `/browse/${path}` });
+  const openItemInNewTab = withViewTransition((item) => {
+    if (!item) return;
+
+    if (item.kind !== 'directory' && item.kind !== 'volume') {
+      openItem(item);
+      return;
+    }
+
+    const targetPath = item.kind === 'volume'
+      ? normalizePath(item.name)
+      : joinPaths(currentRoutePath(), item.name);
+
+    const newTab = tabStore.openTab(targetPath, { allowDuplicate: true });
+    pushBrowsePath(targetPath, { tabId: newTab.id });
   });
 
-  const goNext = withViewTransition(()=>router.go(1));
+  const openBreadcrumb = withViewTransition((path) => {
+    pushBrowsePath(path);
+  });
 
-  const goPrev = withViewTransition(()=>router.go(-1));
+  const goNext = withViewTransition(() => router.go(1));
+
+  const goPrev = withViewTransition(() => router.go(-1));
 
   const goUp = withViewTransition(() => {
-    const path = decodeURIComponent(router.currentRoute.value.path);
-    const segments = path.split('/').slice(2);
-    // console.log(segments);
-    if (segments.length > 0) {
-      segments.pop();
-      router.push({ path: `/browse/${segments.join('/')}` });
+    const current = currentRoutePath();
+    if (!current) {
+      return;
     }
-  });
 
+    const segments = current.split('/').filter(Boolean);
+    if (segments.length === 0) {
+      pushBrowsePath('');
+      return;
+    }
+
+    segments.pop();
+    pushBrowsePath(segments.join('/'));
+  });
 
   return {
     openItem,
+    openItemInNewTab,
     openBreadcrumb,
     goNext,
     goPrev,
-    goUp
-  }
+    goUp,
+  };
 }
-
-
-
-
-// const goForward = ()=>{
-  //   router.go(1);
-  // }
-
-  // const goBackward = ()=>{
-  //   router.go(-1);
-  // }
-
-  // const goUpward = ()=>{
-  //   const path = route.params.path.split('/');
-  //   path.pop();
-  //   const new_path = path.join('/');
-  //   router.push({ name: 'browse', params: {path: new_path} });
-  // }
-
-  // const canGoForward = ()=>{
-
-  //   //check in router object if the route can go forward.
-  //   return router.currentRoute.value.meta.canGoForward;
-    
-
-  // }

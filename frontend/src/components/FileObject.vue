@@ -9,7 +9,7 @@ import { useFileStore } from '@/stores/fileStore';
 
 const props = defineProps(['item', 'view'])
 
-const {openItem} = useNavigation()
+const { openItem, openItemInNewTab } = useNavigation()
 const {handleSelection, isSelected} = useSelection();
 const fileStore = useFileStore();
 const { renameState } = storeToRefs(fileStore);
@@ -42,8 +42,12 @@ const handleClick = (event) => {
   handleSelection(props.item, event);
 };
 
-const handleDblClick = () => {
+const handleDblClick = (event) => {
   if (isRenaming.value) return;
+  if (event && (event.metaKey || event.ctrlKey)) {
+    openItemInNewTab(props.item);
+    return;
+  }
   openItem(props.item);
 };
 
@@ -124,7 +128,7 @@ const handleRenameBlur = async () => {
     :title="item.name"
     v-if="view==='grid'"
     @click="handleClick"
-    @dblclick="handleDblClick"
+    @dblclick="handleDblClick($event)"
     class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer select-none"    
     :class="{ 'opacity-60': isCut }"
     > 
@@ -158,7 +162,7 @@ const handleRenameBlur = async () => {
     :title="item.name"
     v-if="view==='tab'"
     @click="handleClick"
-    @dblclick="handleDblClick"
+    @dblclick="handleDblClick($event)"
     
     class="flex items-center gap-2 p-4 rounded-md cursor-pointer select-none"
     :class="{ 'opacity-60': isCut }">
@@ -197,7 +201,7 @@ const handleRenameBlur = async () => {
     <div 
     v-if="view==='list'"
     @click="handleClick"
-    @dblclick="handleDblClick"
+    @dblclick="handleDblClick($event)"
     class="grid select-none items-center grid-cols-[30px_1fr_150px_200px] 
     cursor-pointer auto-cols-fr p-1 px-4 rounded-md
     even:bg-zinc-100 dark:even:bg-zinc-900 dark:even:bg-opacity-50

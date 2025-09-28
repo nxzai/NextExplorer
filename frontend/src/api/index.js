@@ -149,6 +149,31 @@ async function renameItem(path, name, newName) {
   });
 }
 
+async function fetchFavorites() {
+  return requestJson('/api/favorites', { method: 'GET' });
+}
+
+async function addFavorite(path, icon) {
+  const normalizedPath = normalizePath(path || '');
+  return requestJson('/api/favorites', {
+    method: 'POST',
+    body: JSON.stringify({
+      path: normalizedPath,
+      icon,
+    }),
+  });
+}
+
+async function removeFavorite(path) {
+  const normalizedPath = normalizePath(path || '');
+  return requestJson('/api/favorites', {
+    method: 'DELETE',
+    body: JSON.stringify({
+      path: normalizedPath,
+    }),
+  });
+}
+
 async function fetchFileContent(path) {
   return requestJson('/api/editor', {
     method: 'POST',
@@ -242,6 +267,9 @@ export {
   renameItem,
   fetchFileContent,
   saveFileContent,
+  fetchFavorites,
+  addFavorite,
+  removeFavorite,
   downloadItems,
   getPreviewUrl,
   normalizePath,

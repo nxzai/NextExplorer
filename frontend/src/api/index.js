@@ -188,6 +188,8 @@ async function saveFileContent(path, content) {
   });
 }
 
+const getUploadConfig = () => requestJson('/api/uploads/config', { method: 'GET' });
+
 const downloadItems = async (paths, basePath = '') => {
   const normalizedList = (Array.isArray(paths) ? paths : [paths])
     .map((item) => normalizePath(item))
@@ -275,6 +277,7 @@ export {
   normalizePath,
   encodePath,
   appendAuthQuery,
+  getUploadConfig,
   fetchAuthStatus,
   setupPassword,
   login,

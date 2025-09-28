@@ -4,9 +4,37 @@ const fs = require('fs/promises');
 
 const { createUploadMiddleware } = require('../services/uploadService');
 const { normalizeRelativePath } = require('../utils/pathUtils');
-const { directories } = require('../config/index');
+const { directories, uploads } = require('../config/index');
+const { TUS_ENDPOINT_PATH } = require('../services/tusService');
 
 const router = express.Router();
+
+const uploadMethod = uploads.method;
+const uploadMethods = uploads.methods;
+const multerEnabled = uploadMethod === uploadMethods.MULTER;
+
+router.get('/uploads/config', (req, res) => {
+  res.json({
+    method: uploadMethod,
+    endpoints: {
+      tus: TUS_ENDPOINT_PATH,
+      multer: '/api/upload',
+    },
+    enabled: {
+      tus: uploadMethod === uploadMethods.TUS,
+      multer: multerEnabled,
+    },
+  });
+});
+
+if (!multerEnabled) {
+  router.post('/upload', (req, res) => {
+    res.status(405).json({ error: 'Multipart uploads are disabled on this server.' });
+  });
+  module.exports = router;
+  return;
+}
+
 const upload = createUploadMiddleware();
 
 router.post('/upload', upload.fields([{ name: 'filedata', maxCount: 50 }]), async (req, res) => {

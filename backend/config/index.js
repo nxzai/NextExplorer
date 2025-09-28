@@ -8,6 +8,16 @@ const thumbnailDir = path.join(cacheDir, 'thumbnails');
 const tusUploadDir = path.join(cacheDir, 'tus-uploads');
 const passwordConfigFile = path.join(cacheDir, 'app-config.json');
 
+const UPLOAD_METHODS = {
+  TUS: 'tus',
+  MULTER: 'multer',
+};
+
+const uploadMethodEnv = (process.env.UPLOAD_METHOD || UPLOAD_METHODS.TUS).toLowerCase();
+const uploadMethod = Object.values(UPLOAD_METHODS).includes(uploadMethodEnv)
+  ? uploadMethodEnv
+  : UPLOAD_METHODS.TUS;
+
 const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico', 'tif', 'tiff', 'avif', 'heic'];
 const videoExtensions = ['mp4', 'mov', 'mkv', 'webm', 'm4v', 'avi', 'wmv', 'flv', 'mpg', 'mpeg'];
 const documentExtensions = ['pdf'];
@@ -58,6 +68,10 @@ module.exports = {
   },
   files: {
     passwordConfig: passwordConfigFile,
+  },
+  uploads: {
+    method: uploadMethod,
+    methods: UPLOAD_METHODS,
   },
   extensions: {
     images: imageExtensions,

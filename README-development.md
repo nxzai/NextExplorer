@@ -85,3 +85,8 @@ docker buildx build \
 - Regenerate the frontend production build (`npm run build`) and smoke-test locally.
 - Run through critical file operations (upload/move/delete) on a staging instance.
 - Bump Docker tags or package versions as needed and publish release notes.
+
+## Upload Modes
+- The backend exposes two upload pipelines: resumable tus uploads and classic multipart uploads with Multer.
+- Select the backend pipeline by setting `UPLOAD_METHOD=tus` (default) or `UPLOAD_METHOD=multer` before starting the server. When tus is active the legacy `/api/upload` route returns HTTP 405.
+- Clients can inspect the active mode via `GET /api/uploads/config`; the frontend Uppy instance consumes this endpoint and automatically installs the matching Tus or XHR plugin.

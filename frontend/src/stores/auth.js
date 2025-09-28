@@ -24,8 +24,10 @@ const loadStoredToken = () => {
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(loadStoredToken());
   const requiresSetup = ref(false);
-  const isLoading = ref(true);
+  const isLoading = ref(false);
+  const hasStatus = ref(false);
   const lastError = ref(null);
+  let initPromise = null;
 
   if (token.value) {
     setAuthToken(token.value);
@@ -49,23 +51,33 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const initialize = async () => {
-    isLoading.value = true;
-    lastError.value = null;
-
-    try {
-      const status = await fetchAuthStatus();
-      requiresSetup.value = Boolean(status.requiresSetup);
-
-      if (!requiresSetup.value && token.value) {
-        if (!status.authenticated) {
-          persistToken(null);
-        }
-      }
-    } catch (error) {
-      lastError.value = error instanceof Error ? error.message : 'Failed to load authentication status.';
-    } finally {
-      isLoading.value = false;
+    if (initPromise) {
+      return initPromise;
     }
+
+    initPromise = (async () => {
+      isLoading.value = true;
+      lastError.value = null;
+
+      try {
+        const status = await fetchAuthStatus();
+        requiresSetup.value = Boolean(status.requiresSetup);
+
+        if (!requiresSetup.value && token.value) {
+          if (!status.authenticated) {
+            persistToken(null);
+          }
+        }
+      } catch (error) {
+        lastError.value = error instanceof Error ? error.message : 'Failed to load authentication status.';
+      } finally {
+        hasStatus.value = true;
+        isLoading.value = false;
+        initPromise = null;
+      }
+    })();
+
+    return initPromise;
   };
 
   const setupPassword = async (password) => {
@@ -73,12 +85,14 @@ export const useAuthStore = defineStore('auth', () => {
     const response = await setupPasswordApi(password);
     persistToken(response?.token || null);
     requiresSetup.value = false;
+    hasStatus.value = true;
   };
 
   const login = async (password) => {
     lastError.value = null;
     const response = await loginApi(password);
     persistToken(response?.token || null);
+    hasStatus.value = true;
   };
 
   const logout = async () => {
@@ -89,6 +103,7 @@ export const useAuthStore = defineStore('auth', () => {
       // Ignore logout errors so we can still clear the session client-side.
     }
     persistToken(null);
+    hasStatus.value = true;
   };
 
   const clearError = () => {
@@ -99,9 +114,11 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     requiresSetup,
     isLoading,
+    hasStatus,
     isAuthenticated,
     lastError,
     initialize,
+    ensureStatus: initialize,
     setupPassword,
     login,
     logout,

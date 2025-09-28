@@ -1,4 +1,5 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 import { useAuthStore } from '@/stores/auth'
 import {
@@ -10,9 +11,11 @@ import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
 
 const settings = useSettingsStore()
 const auth = useAuthStore()
+const router = useRouter()
 
 const handleLogout = async () => {
   await auth.logout()
+  router.push({ name: 'auth-login' })
 }
 
 

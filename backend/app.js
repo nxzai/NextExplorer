@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 
 const { port, directories, corsOptions } = require('./config/index');
 const { ensureDir } = require('./utils/fsUtils');
@@ -34,6 +36,24 @@ app.use(authMiddleware);
 app.use('/static/thumbnails', express.static(directories.thumbnails));
 
 registerRoutes(app);
+
+const frontendDir = path.resolve(__dirname, 'public');
+const indexFile = path.join(frontendDir, 'index.html');
+
+if (fs.existsSync(frontendDir) && fs.existsSync(indexFile)) {
+  app.use(express.static(frontendDir));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/static/thumbnails')) {
+      return next();
+    }
+
+    if (!['GET', 'HEAD'].includes(req.method)) {
+      return next();
+    }
+
+    res.sendFile(indexFile);
+  });
+}
 
 const server = app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);

@@ -18,3 +18,19 @@ npm-debug.log
 **/tests
 **/*.log
 .env
+
+
+# Ignore development and local environment files
+.git
+.gitignore
+.env
+README.md
+node_modules
+npm-debug.log
+
+# Ignore frontend build artifacts and dependencies
+frontend/node_modules
+frontend/dist
+
+# Ignore backend dependencies
+backend/node_modules

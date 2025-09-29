@@ -4,7 +4,7 @@ import { useDark, useMediaQuery, useStorage, useToggle } from '@vueuse/core';
 
 export const useSettingsStore = defineStore('settings', () => {
   
-  const view = ref('grid')
+  const view = useStorage('settings:view', 'grid')
   const gridView=()=>{view.value = 'grid'}
   const listView=()=>{view.value = 'list'}
   const tabView=()=>{view.value = 'tab'}

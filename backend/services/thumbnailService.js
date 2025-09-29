@@ -16,8 +16,6 @@ const currentConcurrency = sharp.concurrency();
 sharp.concurrency(Math.max(1, Math.min(8, currentConcurrency)));
 sharp.cache({ memory: 256, files: 0 });
 
-const supportsPdfInput = Boolean(sharp.format?.pdf?.input);
-
 const EXECUTABLE_CANDIDATES = {
   ffmpeg: [
     process.env.FFMPEG_PATH,
@@ -72,7 +70,7 @@ configureFfmpegBinaries();
 
 const isImage = (ext) => extensions.images.includes(ext);
 const isVideo = (ext) => extensions.videos.includes(ext);
-const isDocument = (ext) => extensions.documents.includes(ext);
+const isPdf = (ext) => ext === 'pdf';
 
 const inflight = new Map();
 
@@ -105,30 +103,6 @@ const makeImageThumb = async (srcPath, destPath) => {
     .toBuffer();
 
   await atomicWrite(destPath, buffer);
-};
-
-const makePdfThumb = async (srcPath, destPath) => {
-  if (!supportsPdfInput) {
-    console.warn(`Skipping PDF thumbnail (sharp built without PDF support): ${srcPath}`);
-    return;
-  }
-
-  try {
-    const buffer = await sharp(srcPath, { density: 200 })
-      .resize({
-        width: THUMB_SIZE,
-        height: THUMB_SIZE,
-        fit: 'inside',
-        withoutEnlargement: true,
-        fastShrinkOnLoad: true,
-      })
-      .webp({ quality: THUMB_QUALITY, effort: 4 })
-      .toBuffer();
-
-    await atomicWrite(destPath, buffer);
-  } catch (error) {
-    console.warn(`Failed to generate PDF thumbnail for ${srcPath}: ${error.message}`);
-  }
 };
 
 const probeDuration = (filePath) =>
@@ -179,6 +153,10 @@ const makeVideoThumb = async (srcPath, destPath) => {
 const generateThumbnail = async (filePath, thumbPath) => {
   const extension = path.extname(filePath).toLowerCase().slice(1);
 
+  if (isPdf(extension)) {
+    return;
+  }
+
   if (isImage(extension)) {
     await makeImageThumb(filePath, thumbPath);
     return;
@@ -189,12 +167,34 @@ const generateThumbnail = async (filePath, thumbPath) => {
     return;
   }
 
-  if (isDocument(extension)) {
-    await makePdfThumb(filePath, thumbPath);
-    return;
+  throw new Error(`Unsupported file type: .${extension}`);
+};
+
+const buildThumbnailPaths = async (filePath) => {
+  const key = await hashForFile(filePath);
+  const thumbFile = `${key}.webp`;
+  const thumbPath = path.join(directories.thumbnails, thumbFile);
+  return { thumbFile, thumbPath };
+};
+
+const getThumbnailPathIfExists = async (filePath) => {
+  if (filePath.includes(directories.thumbnails)) {
+    return '';
   }
 
-  throw new Error(`Unsupported file type: .${extension}`);
+  const extension = path.extname(filePath).toLowerCase().slice(1);
+  if (isPdf(extension)) {
+    return '';
+  }
+
+  const { thumbFile, thumbPath } = await buildThumbnailPaths(filePath);
+
+  try {
+    await fsPromises.access(thumbPath, fs.constants.F_OK);
+    return `/static/thumbnails/${thumbFile}`;
+  } catch (error) {
+    return '';
+  }
 };
 
 const getThumbnail = async (filePath) => {
@@ -202,9 +202,12 @@ const getThumbnail = async (filePath) => {
     return '';
   }
 
-  const key = await hashForFile(filePath);
-  const thumbFile = `${key}.webp`;
-  const thumbPath = path.join(directories.thumbnails, thumbFile);
+  const extension = path.extname(filePath).toLowerCase().slice(1);
+  if (isPdf(extension)) {
+    return '';
+  }
+
+  const { thumbFile, thumbPath } = await buildThumbnailPaths(filePath);
 
   const createOrReuse = async () => {
     try {
@@ -231,7 +234,24 @@ const getThumbnail = async (filePath) => {
   return pending;
 };
 
+const queueThumbnailGeneration = (filePath) => {
+  if (!filePath || filePath.includes(directories.thumbnails)) {
+    return;
+  }
+
+  const extension = path.extname(filePath).toLowerCase().slice(1);
+  if (isPdf(extension)) {
+    return;
+  }
+
+  getThumbnail(filePath).catch((error) => {
+    console.warn(`Queued thumbnail generation failed for ${filePath}: ${error.message}`);
+  });
+};
+
 module.exports = {
   generateThumbnail,
   getThumbnail,
+  getThumbnailPathIfExists,
+  queueThumbnailGeneration,
 };

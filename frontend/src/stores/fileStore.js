@@ -8,6 +8,7 @@ import {
   normalizePath,
   createFolder as createFolderApi,
   renameItem as renameItemApi,
+  fetchThumbnail as fetchThumbnailApi,
 } from '@/api';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -20,6 +21,7 @@ export const useFileStore = defineStore('fileStore', () => {
 
   const copiedItems = ref([]);
   const cutItems = ref([]);
+  const thumbnailRequests = new Map();
 
   const hasSelection = computed(() => selectedItems.value.length > 0);
   const hasClipboardItems = computed(() => copiedItems.value.length > 0 || cutItems.value.length > 0);
@@ -34,6 +36,16 @@ export const useFileStore = defineStore('fileStore', () => {
   };
 
   const findItemByKey = (key) => currentPathItems.value.find((item) => itemKey(item) === key);
+
+  const resolveItemRelativePath = (item) => {
+    if (!item || !item.name) {
+      return null;
+    }
+
+    const parent = normalizePath(item.path || '');
+    const combined = parent ? `${parent}/${item.name}` : item.name;
+    return normalizePath(combined);
+  };
 
   const serializeItems = (items) => items
     .filter((item) => item && item.name && item.kind !== 'volume')
@@ -174,6 +186,58 @@ export const useFileStore = defineStore('fileStore', () => {
     if (!renameState.value) return false;
     return itemKey(item) === renameState.value.key;
   };
+
+  const ensureItemThumbnail = async (item) => {
+    if (!item || !item.name) {
+      return null;
+    }
+
+    const kind = (item.kind || '').toLowerCase();
+    if (kind === 'directory' || kind === 'pdf') {
+      return null;
+    }
+
+    const key = itemKey(item);
+    if (!key) {
+      return null;
+    }
+
+    const existing = findItemByKey(key);
+    if (existing?.thumbnail) {
+      return existing.thumbnail;
+    }
+
+    let pending = thumbnailRequests.get(key);
+    if (!pending) {
+      const relativePath = resolveItemRelativePath(item);
+      if (!relativePath) {
+        return null;
+      }
+
+      pending = (async () => {
+        try {
+          const response = await fetchThumbnailApi(relativePath);
+          const thumbnail = response?.thumbnail || '';
+          if (thumbnail) {
+            const target = findItemByKey(key);
+            if (target) {
+              target.thumbnail = thumbnail;
+            }
+          }
+          return thumbnail || null;
+        } catch (error) {
+          console.error(`Failed to fetch thumbnail for ${relativePath}`, error);
+          return null;
+        } finally {
+          thumbnailRequests.delete(key);
+        }
+      })();
+
+      thumbnailRequests.set(key, pending);
+    }
+
+    return pending;
+  };
   
   // Getters
   const getCurrentPath = computed(() => currentPath.value);
@@ -230,5 +294,6 @@ export const useFileStore = defineStore('fileStore', () => {
     cancelRename,
     applyRename,
     isItemBeingRenamed,
+    ensureItemThumbnail,
   };
 });

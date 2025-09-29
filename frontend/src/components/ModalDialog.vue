@@ -1,6 +1,7 @@
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
-import { IconX } from '@/components/icons';
+
+import { XMarkIcon } from '@heroicons/vue/20/solid';
 
 const props = defineProps({
   modelValue: Boolean
@@ -22,7 +23,7 @@ function onBackgroundClick() {
 
 </script>
 <template>
-    <Teleport to="#app-container" v-if="popupOpened">
+    <Teleport to="body" v-if="popupOpened">
         <div  @click="onBackgroundClick"
         class="fixed top-0 z-30 flex items-center justify-center w-full h-full bg-opacity-50 max-sm:items-end bg-zinc-700 dark:bg-zinc-500 dark:bg-opacity-50">
             <div @click.stop
@@ -39,7 +40,7 @@ function onBackgroundClick() {
                         Modal
                         </slot>
                     </h2> 
-                    <button @click="popupOpened = false"><IconX class="h-6"/></button>
+                    <button @click="popupOpened = false"><XMarkIcon class="h-6"/></button>
                 </div>
                 <hr class="h-px border-0 bg-zinc-300 dark:bg-zinc-800"/>
 

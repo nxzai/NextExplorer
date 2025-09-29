@@ -5,6 +5,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/vue/24/solid';
 import { useFileStore } from '@/stores/fileStore';
 import { useFavoritesStore } from '@/stores/favorites';
 import { normalizePath, downloadItems } from '@/api';
+import ModalDialog from '@/components/ModalDialog.vue';
 
 const fileStore = useFileStore();
 const favoritesStore = useFavoritesStore();
@@ -19,6 +20,30 @@ const isSingleDirectorySelected = computed(() => isSingleItemSelected.value && s
 const currentPath = computed(() => normalizePath(fileStore.getCurrentPath || ''));
 const isPreparingDownload = ref(false);
 const isMutatingFavorite = ref(false);
+const isDeleteConfirmOpen = ref(false);
+const isDeleting = ref(false);
+
+const deleteDialogTitle = computed(() => {
+  const count = selectedItems.value.length;
+  if (count === 1) {
+    return 'Delete Item';
+  }
+  if (count > 1) {
+    return `Delete ${count} Items`;
+  }
+  return 'Delete Items';
+});
+
+const deleteDialogMessage = computed(() => {
+  const count = selectedItems.value.length;
+  if (count === 1 && selectedItem.value) {
+    return `Are you sure you want to delete "${selectedItem.value.name}"? This action cannot be undone.`;
+  }
+  if (count > 1) {
+    return `Are you sure you want to delete these ${count} items? This action cannot be undone.`;
+  }
+  return 'No items selected.';
+});
 
 onMounted(() => {
   favoritesStore.ensureLoaded();
@@ -90,12 +115,24 @@ const handleDownload = async () => {
   }
 };
 
-const handleDelete = async () => {
+const handleDelete = () => {
   if (!selectedItems.value.length) return;
+  isDeleteConfirmOpen.value = true;
+};
+
+const confirmDelete = async () => {
+  if (!selectedItems.value.length || isDeleting.value) {
+    return;
+  }
+
+  isDeleting.value = true;
   try {
     await fileStore.del();
+    isDeleteConfirmOpen.value = false;
   } catch (error) {
     console.error('Delete operation failed', error);
+  } finally {
+    isDeleting.value = false;
   }
 };
 
@@ -204,4 +241,29 @@ const handleFavoriteAction = async () => {
       <TrashIcon class="w-6" />
     </button>
   </div>
+  <ModalDialog v-model="isDeleteConfirmOpen">
+    <template #title>{{ deleteDialogTitle }}</template>
+    <p class="mb-6 text-base text-zinc-700 dark:text-zinc-200">
+      {{ deleteDialogMessage }}
+    </p>
+    <div class="flex justify-end gap-3">
+      <button
+        type="button"
+        class="px-4 py-2 text-sm font-medium rounded-md border border-zinc-300 text-zinc-700 transition-colors hover:bg-zinc-100 active:bg-zinc-200 disabled:opacity-60 disabled:cursor-not-allowed dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
+        @click="isDeleteConfirmOpen = false"
+        :disabled="isDeleting"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="px-4 py-2 text-sm font-medium text-white rounded-md bg-red-600 transition-colors hover:bg-red-500 active:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed dark:bg-red-500 dark:hover:bg-red-400"
+        @click="confirmDelete"
+        :disabled="isDeleting"
+      >
+        <span v-if="isDeleting">Deleting...</span>
+        <span v-else>Delete</span>
+      </button>
+    </div>
+  </ModalDialog>
 </template>

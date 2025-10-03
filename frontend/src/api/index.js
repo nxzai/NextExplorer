@@ -188,6 +188,16 @@ async function saveFileContent(path, content) {
   });
 }
 
+async function fetchThumbnail(relativePath) {
+  const normalizedPath = normalizePath(relativePath);
+  if (!normalizedPath) {
+    throw new Error('A file path is required to fetch a thumbnail.');
+  }
+
+  const encodedPath = encodePath(normalizedPath);
+  return requestJson(`/api/thumbnails/${encodedPath}`, { method: 'GET' });
+}
+
 const downloadItems = async (paths, basePath = '') => {
   const normalizedList = (Array.isArray(paths) ? paths : [paths])
     .map((item) => normalizePath(item))
@@ -267,6 +277,7 @@ export {
   renameItem,
   fetchFileContent,
   saveFileContent,
+  fetchThumbnail,
   fetchFavorites,
   addFavorite,
   removeFavorite,

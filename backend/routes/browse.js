@@ -5,7 +5,10 @@ const fs = require('fs/promises');
 const { normalizeRelativePath, resolveVolumePath } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
 const { excludedFiles, extensions } = require('../config/index');
-const { getThumbnail } = require('../services/thumbnailService');
+const {
+  getThumbnailPathIfExists,
+  queueThumbnailGeneration,
+} = require('../services/thumbnailService');
 
 const router = express.Router();
 const previewable = new Set([
@@ -45,11 +48,16 @@ router.get('/browse/*', async (req, res) => {
         kind: extension,
       };
 
-      if (stats.isFile() && previewable.has(extension.toLowerCase())) {
+      if (stats.isFile() && previewable.has(extension.toLowerCase()) && extension !== 'pdf') {
         try {
-          item.thumbnail = await getThumbnail(filePath);
+          const existingThumbnail = await getThumbnailPathIfExists(filePath);
+          if (existingThumbnail) {
+            item.thumbnail = existingThumbnail;
+          } else {
+            queueThumbnailGeneration(filePath);
+          }
         } catch (error) {
-          console.log(`Failed to generate thumbnail for ${filePath}: Continuing`, error);
+          console.log(`Failed to schedule thumbnail for ${filePath}: Continuing`, error);
         }
       }
 

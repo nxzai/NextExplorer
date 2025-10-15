@@ -11,7 +11,7 @@ export default defineConfig({
     VueDevTools(),
   ],
   define: {
-    __APP_VERSION__: JSON.stringify(process.env.VITE_APP_VERSION || process.env.npm_package_version || '0.0.0'),
+    __APP_VERSION__: JSON.stringify(process.env.VITE_APP_VERSION || process.env.npm_package_version || '1.0.5'),
   },
   resolve: {
     alias: {

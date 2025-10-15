@@ -10,6 +10,9 @@ export default defineConfig({
     vue(),
     VueDevTools(),
   ],
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.VITE_APP_VERSION || process.env.npm_package_version || '1.0.5'),
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

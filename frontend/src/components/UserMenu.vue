@@ -1,24 +1,21 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSettingsStore } from '@/stores/settings';
 import { useAuthStore } from '@/stores/auth';
 import {
   ArrowRightOnRectangleIcon,
-  ChevronUpDownIcon,
+  ChevronDownIcon,
   Cog8ToothIcon,
   UserCircleIcon,
 } from '@heroicons/vue/24/outline';
-
 import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline';
 
 const settings = useSettingsStore();
 const auth = useAuthStore();
 const router = useRouter();
 
-const isAccountMenuOpen = ref(false);
-const avatarButtonRef = ref(null);
-const menuRef = ref(null);
+const isExpanded = ref(false);
 
 const displayName = computed(() => auth.currentUser?.displayName || auth.currentUser?.username || 'Account');
 const secondaryLabel = computed(() => {
@@ -36,97 +33,59 @@ const avatarLetter = computed(() => {
   return source ? source.trim().charAt(0).toUpperCase() : '';
 });
 
-const closeMenu = () => {
-  isAccountMenuOpen.value = false;
-};
-
-const toggleMenu = () => {
-  isAccountMenuOpen.value = !isAccountMenuOpen.value;
-};
-
-const handleDocumentClick = (event) => {
-  if (!isAccountMenuOpen.value) {
-    return;
-  }
-
-  const path = event.composedPath ? event.composedPath() : event.path || [];
-  if (
-    (avatarButtonRef.value && path.includes(avatarButtonRef.value))
-    || (menuRef.value && path.includes(menuRef.value))
-  ) {
-    return;
-  }
-
-  closeMenu();
-};
-
-onMounted(() => {
-  document.addEventListener('click', handleDocumentClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleDocumentClick);
-});
-
-const handleSettings = () => {
-  closeMenu();
-  router.push({ path: '/settings' });
-};
-
 const themeActionLabel = computed(() => (settings.isDark ? 'Use light theme' : 'Use dark theme'));
 const themeStatusLabel = computed(() => (settings.isDark ? 'Dark theme' : 'Light theme'));
 
+const toggleMenu = () => {
+  isExpanded.value = !isExpanded.value;
+};
+
+const handleSettings = () => {
+  isExpanded.value = false;
+  router.push({ path: '/settings' });
+};
+
+const handleThemeToggle = () => {
+  settings.toggleDark();
+};
+
 const handleLogout = async () => {
   await auth.logout();
-  closeMenu();
+  isExpanded.value = false;
   router.push({ name: 'auth-login' });
 };
 </script>
 
 <template>
-
-  <div class="relative">
-    
-      <button
-        ref="avatarButtonRef"
-        title="Account"
-        class="group w-full flex flex-1 items-center gap-3 rounded-lg px-2 py-1 text-left transition hover:bg-neutral-100 dark:hover:bg-white/10"
-        @click.stop="toggleMenu"
-      >
-        <span
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-base font-semibold uppercase text-accent transition group-hover:bg-accent/25 dark:bg-white/10 dark:text-white dark:group-hover:bg-white/20">
-          <template v-if="avatarLetter">{{ avatarLetter }}</template>
-          <UserCircleIcon v-else class="h-6 w-6" />
-        </span>
-        <div class="flex min-w-0 flex-1 flex-col">
-          <span class="text-sm font-semibold text-neutral-900 dark:text-white">{{ displayName }}</span>
-          <span v-if="secondaryLabel" class="text-xs text-neutral-500 dark:text-white/60 truncate">{{ secondaryLabel }}</span>
-        </div>
-        <ChevronUpDownIcon class="h-5 w-5 text-neutral-400 transition group-hover:text-neutral-700 dark:text-white/40 dark:group-hover:text-white/70" />
-      </button>
-    
-
-    <transition name="fade">
+  <div class="transition rounded-lg px-2 hover:bg-white dark:hover:bg-white/10 ">
+  <div class="flex flex-col gap-3 py-2">
+    <transition
+      enter-active-class="transition duration-200 ease-out"
+      leave-active-class="transition duration-150 ease-in"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
       <div
-        v-if="isAccountMenuOpen"
-        ref="menuRef"
-        class="absolute bottom-full left-0 z-20 mb-3 w-full min-w-[220px] rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-800 shadow-xl shadow-black/10 backdrop-blur dark:border-white/10 dark:bg-nextzinc-900/95 dark:text-white"
+        v-if="isExpanded"
+        class="rounded-xl text-sm text-neutral-800 dark:text-white"
       >
-        <div class="mb-3 text-left px-2">
+        <!-- <div class="mb-3 px-2 text-left">
           <p class="text-base font-semibold text-neutral-900 dark:text-white">{{ displayName }}</p>
           <p v-if="secondaryLabel" class="text-xs text-neutral-500 dark:text-white/60 truncate">{{ secondaryLabel }}</p>
-        </div>
+        </div> -->
 
         <div class="space-y-1">
           <button
             class="flex w-full items-center gap-2 rounded-lg p-2 text-left text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
             type="button"
-            @click="settings.toggleDark()"
+            @click="handleThemeToggle"
           >
             <component :is="settings.isDark ? SunIcon : MoonIcon" class="h-5 w-5" />
             <div class="flex min-w-0 flex-col">
               <span class="text-sm font-semibold">{{ themeActionLabel }}</span>
-              <!-- <span class="text-xs text-neutral-400 dark:text-white/50">{{ themeStatusLabel }}</span> -->
+              <span class="text-xs text-neutral-400 dark:text-white/50">{{ themeStatusLabel }}</span>
             </div>
           </button>
 
@@ -150,25 +109,28 @@ const handleLogout = async () => {
         </div>
       </div>
     </transition>
+
+    <button
+      type="button"
+      class="group flex w-full items-center gap-3  text-left transition"
+      @click="toggleMenu"
+      :aria-expanded="isExpanded"
+    >
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-base font-semibold uppercase text-accent transition group-hover:bg-accent/25 dark:bg-white/10 dark:text-white dark:group-hover:bg-white/20"
+      >
+        <template v-if="avatarLetter">{{ avatarLetter }}</template>
+        <UserCircleIcon v-else class="h-6 w-6" />
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col">
+        <span class="text-sm font-semibold text-neutral-900 dark:text-white">{{ displayName }}</span>
+        <span v-if="secondaryLabel" class="text-xs text-neutral-500 dark:text-white/60 truncate">{{ secondaryLabel }}</span>
+      </div>
+      <ChevronDownIcon
+        class="h-5 w-5 text-neutral-400 transition group-hover:text-neutral-700 dark:text-white/40 dark:group-hover:text-white/70"
+        :class="{ 'rotate-180': isExpanded }"
+      />
+    </button>
   </div>
-
+  </div>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(6px);
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-</style>

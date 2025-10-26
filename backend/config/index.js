@@ -82,7 +82,7 @@ const parseScopes = (raw) => {
   }
 
   return raw
-    .split(',')
+    .split(/[\s,]+/)
     .map((scope) => scope.trim())
     .filter(Boolean);
 };
@@ -101,13 +101,18 @@ const normalizeBoolean = (value) => {
   return null;
 };
 
+const rawEnvScopes = process.env.OIDC_SCOPES || process.env.OIDC_SCOPE || null;
+
 const envOidcConfig = {
   enabled: normalizeBoolean(process.env.OIDC_ENABLED) ?? null,
   issuer: process.env.OIDC_ISSUER || process.env.OIDC_ISSUER_URL || null,
+  authorizationURL: process.env.OIDC_AUTHORIZATION_URL || null,
+  tokenURL: process.env.OIDC_TOKEN_URL || null,
+  userInfoURL: process.env.OIDC_USERINFO_URL || null,
   clientId: process.env.OIDC_CLIENT_ID || null,
   clientSecret: process.env.OIDC_CLIENT_SECRET || null,
   callbackUrl: process.env.OIDC_CALLBACK_URL || process.env.OIDC_REDIRECT_URI || null,
-  scopes: parseScopes(process.env.OIDC_SCOPES) || null,
+  scopes: parseScopes(rawEnvScopes) || null,
 };
 
 const envAuthConfig = {

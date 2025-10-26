@@ -34,6 +34,9 @@ const DEFAULT_CONFIG = {
       oidc: {
         enabled: false,
         issuer: null,
+        authorizationURL: null,
+        tokenURL: null,
+        userInfoURL: null,
         clientId: null,
         clientSecret: null,
         callbackUrl: null,
@@ -245,6 +248,9 @@ const sanitizeConfig = (candidate = {}) => {
         oidc: {
           enabled: typeof s?.oidc?.enabled === 'boolean' ? s.oidc.enabled : false,
           issuer: typeof s?.oidc?.issuer === 'string' ? s.oidc.issuer : null,
+          authorizationURL: typeof s?.oidc?.authorizationURL === 'string' ? s.oidc.authorizationURL : null,
+          tokenURL: typeof s?.oidc?.tokenURL === 'string' ? s.oidc.tokenURL : null,
+          userInfoURL: typeof s?.oidc?.userInfoURL === 'string' ? s.oidc.userInfoURL : null,
           clientId: typeof s?.oidc?.clientId === 'string' ? s.oidc.clientId : null,
           clientSecret: typeof s?.oidc?.clientSecret === 'string' ? s.oidc.clientSecret : null,
           callbackUrl: typeof s?.oidc?.callbackUrl === 'string' ? s.oidc.callbackUrl : null,

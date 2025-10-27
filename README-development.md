@@ -68,6 +68,10 @@ docker compose -f docker-compose.dev.yml up --build
 - Only `http://localhost:3000` is exposed; backend listens on 3001 internally.
 - Update the host volume paths under the `backend` service to match directories you want to expose.
 
+If you run the dev stack behind a local reverse proxy, set `PUBLIC_URL` for the backend to the proxy URL (defaults to `http://localhost:3000` in `docker-compose.dev.yml`). This centralizes:
+- CORS origin (derived from the origin of `PUBLIC_URL` unless `CORS_ORIGINS` is set)
+- OIDC callback URL (defaults to `PUBLIC_URL + /api/auth/oidc/callback` unless `OIDC_CALLBACK_URL` is set)
+
 ## Testing & Quality
 - Frontend unit tests: `cd frontend && npm run test:unit`.
 - Frontend lint: `cd frontend && npm run lint` (expect a few legacy warnings that still need cleanup).

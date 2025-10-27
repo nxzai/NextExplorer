@@ -14,6 +14,8 @@ services:
       # Match these to your host user/group IDs (check with `id -u` / `id -g`)
       - PUID=1000
       - PGID=1000
+      # Centralized public URL (frontend + backend behind proxy)
+      - PUBLIC_URL=http://localhost:3000
       # OIDC configuration (fill with your identity provider details)
       - OIDC_ENABLED=true
       - OIDC_ISSUER=https://auth.vsoni.com/application/o/next/
@@ -22,6 +24,5 @@ services:
       - OIDC_USERINFO_URL=https://auth.vsoni.com/application/o/userinfo/
       - OIDC_CLIENT_ID=6HBh3lMneUwWCAeutdEgwNZ6myXzFc93clojdfmQ
       - OIDC_CLIENT_SECRET=w2ACQfUhhk2vZ14m2GVvYbWqkCQTiXyMsowpLQE2JtiPfaCTrBKhZHwZACgHOCWgSs9zhJW0j8y1TYCrLs0hsMmM0xdIz5tRmce6o4ymVOCQByPRIr9xMxtBt1Spg0I1
-      - OIDC_CALLBACK_URL=http://localhost:3000/api/auth/oidc/callback
       - OIDC_SCOPES=openid profile email
     restart: unless-stopped

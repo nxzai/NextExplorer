@@ -1,5 +1,21 @@
 const path = require('path');
 
+
+const parseScopes = (raw) =>
+  typeof raw === 'string'
+    ? raw.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean)
+    : null;
+
+const normalizeBoolean = (value) => {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().toLowerCase();
+  if (['1', 'true', 'yes', 'on'].includes(normalized)) return true;
+  if (['0', 'false', 'no', 'off'].includes(normalized)) return false;
+  return null;
+};
+
+
+
 const port = Number(process.env.PORT) || 3000;
 const volumeDir = path.resolve(process.env.VOLUME_ROOT || '/mnt');
 const volumeWithSep = volumeDir.endsWith(path.sep) ? volumeDir : `${volumeDir}${path.sep}`;
@@ -40,13 +56,47 @@ const mimeTypes = {
 
 const previewableExtensions = new Set([...imageExtensions, ...videoExtensions, ...documentExtensions]);
 
+// Centralized public URL (for reverse proxy setups / custom domains)
+// Example: PUBLIC_URL=https://files.example.com
+const rawPublicUrl = typeof process.env.PUBLIC_URL === 'string' ? process.env.PUBLIC_URL.trim() : '';
+let publicUrl = null;
+let publicOrigin = null;
+try {
+  if (rawPublicUrl) {
+    const { href, origin } = new URL(rawPublicUrl);
+    publicUrl = href.replace(/\/$/, '');
+    publicOrigin = origin;
+  }
+} catch (err) {
+  console.warn(`Invalid PUBLIC_URL provided: ${rawPublicUrl} (${err.message})`);
+}
+
 const rawAllowedOrigins = process.env.CORS_ORIGIN || process.env.CORS_ORIGINS || process.env.ALLOWED_ORIGINS || '';
-const allowAllOrigins = rawAllowedOrigins.trim() === '' || rawAllowedOrigins.trim() === '*';
-const allowedOriginList = allowAllOrigins
-  ? []
-  : rawAllowedOrigins.split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+const hasExplicitCors = rawAllowedOrigins.trim() !== '';
+
+let allowAllOrigins = false;
+let allowedOriginList = [];
+
+if (hasExplicitCors) {
+  if (rawAllowedOrigins.trim() === '*') {
+    allowAllOrigins = true;
+    allowedOriginList = [];
+  } else {
+    allowAllOrigins = false;
+    allowedOriginList = rawAllowedOrigins
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean);
+  }
+} else if (publicOrigin) {
+  // Default to the PUBLIC_URL origin when CORS origins are not explicitly set
+  allowAllOrigins = false;
+  allowedOriginList = [publicOrigin];
+} else {
+  // Backwards-compatibility: if nothing configured at all, allow all
+  allowAllOrigins = true;
+  allowedOriginList = [];
+}
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -76,30 +126,6 @@ const normalizedAuthMode = (() => {
   return supportedAuthModes.has(candidate) ? candidate : null;
 })();
 
-const parseScopes = (raw) => {
-  if (!raw || typeof raw !== 'string') {
-    return null;
-  }
-
-  return raw
-    .split(/[\s,]+/)
-    .map((scope) => scope.trim())
-    .filter(Boolean);
-};
-
-const normalizeBoolean = (value) => {
-  if (typeof value !== 'string') {
-    return null;
-  }
-  const normalized = value.trim().toLowerCase();
-  if (['1', 'true', 'yes', 'on'].includes(normalized)) {
-    return true;
-  }
-  if (['0', 'false', 'no', 'off'].includes(normalized)) {
-    return false;
-  }
-  return null;
-};
 
 const rawEnvScopes = process.env.OIDC_SCOPES || process.env.OIDC_SCOPE || null;
 
@@ -111,7 +137,10 @@ const envOidcConfig = {
   userInfoURL: process.env.OIDC_USERINFO_URL || null,
   clientId: process.env.OIDC_CLIENT_ID || null,
   clientSecret: process.env.OIDC_CLIENT_SECRET || null,
-  callbackUrl: process.env.OIDC_CALLBACK_URL || process.env.OIDC_REDIRECT_URI || null,
+  // If not explicitly set, derive callback from PUBLIC_URL
+  callbackUrl: process.env.OIDC_CALLBACK_URL
+    || process.env.OIDC_REDIRECT_URI
+    || (publicUrl ? `${publicUrl}/api/auth/oidc/callback` : null),
   scopes: parseScopes(rawEnvScopes) || null,
 };
 
@@ -141,6 +170,10 @@ module.exports = {
   excludedFiles,
   mimeTypes,
   corsOptions,
+  public: {
+    url: publicUrl,
+    origin: publicOrigin,
+  },
   thumbnails: {
     size: 200,
     quality: 70

@@ -25,7 +25,8 @@ const settings = useSettingsStore()
   class="p-[6px] rounded-md 
   hover:bg-[rgb(239,239,240)] active:bg-zinc-200 
   dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
-  :class="{ 'bg-[rgb(239,239,240)] dark:bg-zinc-700 ': settings.view == 'list' }">
+  :class="{ 'bg-[rgb(239,239,240)] dark:bg-zinc-700 ': settings.view == 'list' }"
+  v-tooltip="'List view'">
   <ListBulletIcon class="w-6" />
 </button>
 
@@ -33,7 +34,8 @@ const settings = useSettingsStore()
   class="p-[6px] rounded-md 
   hover:bg-[rgb(239,239,240)] active:bg-zinc-200 
   dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
-  :class="{ 'bg-[rgb(239,239,240)] dark:bg-zinc-700 ': settings.view == 'tab' }">
+  :class="{ 'bg-[rgb(239,239,240)] dark:bg-zinc-700 ': settings.view == 'tab' }"
+  v-tooltip="'Column view'">
   <AlignSpaceAroundVertical20Regular class="w-6" />
 </button>
 
@@ -41,7 +43,8 @@ const settings = useSettingsStore()
   class="p-[6px] rounded-md 
   hover:bg-[rgb(239,239,240)] active:bg-zinc-200
   dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
-  :class="{ 'bg-[rgb(239,239,240)] dark:bg-zinc-700 ': settings.view == 'grid' }">
+  :class="{ 'bg-[rgb(239,239,240)] dark:bg-zinc-700 ': settings.view == 'grid' }"
+  v-tooltip="'Grid view'">
   <Squares2X2Icon class="w-6" />
 </button>
 

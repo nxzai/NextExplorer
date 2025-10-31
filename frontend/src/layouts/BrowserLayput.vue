@@ -74,9 +74,13 @@ useTitle(currentPathName)
 <template>
 
   <div class="relative flex w-full h-full">
+    <!-- Tailwind-only toggle via hidden peer checkbox (must be sibling of sidebar) -->
+    <input id="sidebar-toggle" type="checkbox" class="peer hidden" />
 
     <aside
-      class="flex flex-col bg-nextgray-100 dark:bg-zinc-800 dark:bg-opacity-70 p-4 px-4 shrink-0"
+      class="flex flex-col bg-nextgray-100 dark:bg-zinc-800 lg:dark:bg-opacity-70 p-4 px-4 shrink-0
+      fixed inset-y-0 left-0 -translate-x-full transition-transform duration-200 ease-in-out z-40
+      peer-checked:translate-x-0 lg:static lg:translate-x-0"
       :style="{ width: asideWidth + 'px' }"
     >
       <HeaderLogo />
@@ -88,7 +92,7 @@ useTitle(currentPathName)
 
     <!-- Resizer handle -->
     <div
-      class="relative w-1 cursor-col-resize bg-transparent group select-none"
+      class="relative w-1 cursor-col-resize bg-transparent group select-none hidden lg:block"
       @pointerdown="onPointerDown"
       aria-label="Resize sidebar"
     >
@@ -101,16 +105,22 @@ useTitle(currentPathName)
       
 
        <div class="flex items-center p-6 py-4 shadow-md mb-4 dark:bg-nextgray-700 dark:bg-opacity-50">
+        <!-- Hamburger (small screens) -->
+        <label for="sidebar-toggle" class="lg:hidden -ml-2 mr-3 p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 inline-flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
+            <path fill-rule="evenodd" d="M3.75 5.25a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75zm0 6a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75zm0 6a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+          </svg>
+        </label>
         
         <NavButtons />
         <BreadCrumb class="mr-auto "/>
 
         <MenuItemInfo/>
-        <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <div class="h-8 w-[1px] mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
         <MenuSortBy/>
-        <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <div class="h-8 w-[1px] mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
         <ViewMode/>
-        <div class="h-8 w-[1px] mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <div class="h-8 w-[1px] mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
         <SearchBar/>
 
         <!-- <div 
@@ -130,6 +140,9 @@ useTitle(currentPathName)
         <TerminalPanel/>
       </div> -->
     </main>
+  
+  <!-- Backdrop to close sidebar on small screens -->
+  <label for="sidebar-toggle" class="fixed inset-0 bg-black/20 z-30 hidden lg:hidden peer-checked:block"></label>
   <UploadProgress/>
   <PreviewHost/>
   </div>

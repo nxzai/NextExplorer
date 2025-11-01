@@ -166,6 +166,10 @@ const runCreateFile = async () => {
   await fileStore.createFile();
 };
 
+const runCreateFolder = async () => {
+  await fileStore.createFolder();
+};
+
 const runRename = () => {
   if (!canRename.value || !primaryItem.value) return;
   fileStore.beginRename(primaryItem.value);
@@ -200,6 +204,12 @@ const menuActions = computed(() => {
   const actions = [];
 
   if (contextKind.value === 'background') {
+    actions.push({
+      id: 'new-folder',
+      label: 'New Folder',
+      disabled: false,
+      run: runCreateFolder,
+    });
     actions.push({
       id: 'new-file',
       label: 'New File',

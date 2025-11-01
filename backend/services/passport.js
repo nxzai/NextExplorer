@@ -155,7 +155,8 @@ const discoverOidcEndpoints = async (oidcConfig) => {
   return endpoints;
 };
 
-const DEFAULT_ADMIN_GROUPS = ['next-admin'];
+// Do not assume implicit admin groups; rely solely on configured values
+const DEFAULT_ADMIN_GROUPS = [];
 
 const resolveSecurityConfig = async () => {
   const settings = await getSettings();
@@ -197,6 +198,7 @@ const resolveSecurityConfig = async () => {
     clientSecret: preferEnv(envOidc.clientSecret, configOidc.clientSecret),
     callbackUrl: preferEnv(envOidc.callbackUrl, configOidc.callbackUrl),
     scopes: mergeScopes(envOidc.scopes, configOidc.scopes),
+    // Only use explicitly configured admin groups; no implicit defaults
     adminGroups: mergeArray(envOidc.adminGroups, configOidc.adminGroups, DEFAULT_ADMIN_GROUPS),
   };
 
@@ -300,7 +302,7 @@ const configureOidcStrategy = async () => {
           || username
           || null;
 
-        // Derive roles from IdP claims (groups/roles/entitlements, plus common provider formats)
+        // Collect group-like values from standard claims only (provider-agnostic)
         const collectedGroups = (() => {
           const acc = [];
           const addAll = (arr) => {
@@ -310,40 +312,24 @@ const configureOidcStrategy = async () => {
               });
             }
           };
-          const addFromObject = (obj) => {
-            if (obj && typeof obj === 'object' && Array.isArray(obj.roles)) {
-              obj.roles.forEach((r) => { if (typeof r === 'string' && r.trim()) acc.push(r.trim()); });
+          const addMaybeList = (value) => {
+            if (Array.isArray(value)) return addAll(value);
+            if (typeof value === 'string' && value.trim()) {
+              value.split(/[\s,]+/).forEach((g) => { if (g && g.trim()) acc.push(g.trim()); });
             }
           };
-          // Common claims
-          addAll(claims.groups);
-          addAll(claims.entitlements);
-          addAll(claims.roles);
-          // Keycloak-style
-          addFromObject(claims.realm_access);
-          if (claims.resource_access && typeof claims.resource_access === 'object') {
-            Object.values(claims.resource_access).forEach(addFromObject);
-          }
-          // If groups provided as a space/comma-separated string
-          if (typeof claims.groups === 'string') {
-            claims.groups.split(/[\s,]+/).forEach((g) => { if (g && g.trim()) acc.push(g.trim()); });
-          }
+          addMaybeList(claims.groups);
+          addMaybeList(claims.roles);
+          addMaybeList(claims.entitlements);
           return acc;
         })();
 
         const normalizedSet = new Set(collectedGroups.map((g) => g.toLowerCase()));
         const configuredAdminGroups = Array.isArray(oidc.adminGroups)
           ? oidc.adminGroups.map((g) => (typeof g === 'string' ? g.toLowerCase().trim() : '')).filter(Boolean)
-          : DEFAULT_ADMIN_GROUPS.map((g) => g.toLowerCase());
-        const matchesConfiguredGroup = configuredAdminGroups.some((g) => normalizedSet.has(g));
-        const isSuperUser = claims.is_superuser === true || claims.superuser === true || claims.admin === true;
-        const hasAdminIndicator = isSuperUser
-          || matchesConfiguredGroup
-          || normalizedSet.has('admin')
-          || normalizedSet.has('admins')
-          || normalizedSet.has('administrator')
-          || normalizedSet.has('next-admin'); // project default
-        const derivedRoles = hasAdminIndicator ? ['admin'] : ['user'];
+          : DEFAULT_ADMIN_GROUPS;
+        const isAdmin = configuredAdminGroups.some((g) => normalizedSet.has(g));
+        const derivedRoles = isAdmin ? ['admin'] : ['user'];
 
         const user = await createOidcUser({
           issuer,

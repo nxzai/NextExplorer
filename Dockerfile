@@ -1,19 +1,19 @@
 # Multi-stage image that builds the frontend and serves it through the backend
-FROM public.ecr.aws/docker/library/node:lts-bookworm AS frontend-builder
+FROM public.ecr.aws/docker/library/node:24-bookworm AS frontend-builder
 WORKDIR /frontend
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
 RUN npm run build -- --sourcemap false
 
-FROM public.ecr.aws/docker/library/node:lts-bookworm AS backend-deps
+FROM public.ecr.aws/docker/library/node:24-bookworm AS backend-deps
 WORKDIR /app
 COPY backend/package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY backend/ ./
 RUN npm prune --omit=dev
 
-FROM public.ecr.aws/docker/library/node:20-bookworm-slim AS production
+FROM public.ecr.aws/docker/library/node:24-bookworm-slim AS production
 WORKDIR /app
 ENV NODE_ENV=production
 

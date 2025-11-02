@@ -15,30 +15,15 @@ const { createOrUpdateOidcUser } = require('./services/users');
 const app = express();
 let server = null;
 
-// Trust reverse proxy when a PUBLIC_URL is provided or TRUST_PROXY is explicitly set
-function normalizeEnvVar(value) {
-  if (typeof value !== 'string') return '';
-  return value.trim();
-}
-
+// Trust proxy configuration (validated via Zod)
 try {
-  const trustProxyEnv = normalizeEnvVar(process.env.TRUST_PROXY);
-  if (trustProxyEnv) {
-    // Map common values to proper trust proxy settings
-    const normalized = trustProxyEnv.toLowerCase();
-    if (['1', 'true', 'yes', 'on'].includes(normalized)) {
-      app.set('trust proxy', true);
-    } else if (['0', 'false', 'no', 'off'].includes(normalized)) {
-      app.set('trust proxy', false);
-    } else if (!Number.isNaN(Number(trustProxyEnv))) {
-      app.set('trust proxy', Number(trustProxyEnv));
-    } else {
-      // Accept Express trust proxy presets or CIDR/source strings
-      app.set('trust proxy', trustProxyEnv);
-    }
-  } else if (publicConfig && publicConfig.url) {
-    // If PUBLIC_URL is set, assume we are behind a proxy
-    app.set('trust proxy', true);
+  const { getTrustProxySetting } = require('./config/trustProxy');
+  const tp = getTrustProxySetting();
+  if (tp.set) {
+    app.set('trust proxy', tp.value);
+  }
+  if (tp.message) {
+    console.log(tp.message);
   }
 } catch (e) {
   console.warn('Failed to configure trust proxy:', e?.message || e);

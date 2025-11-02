@@ -29,6 +29,21 @@ npm start
   - `PORT` (default `3000`)
   - `VOLUME_ROOT` (default `/mnt`)
   - `CACHE_DIR` (default `/cache`, thumbnails in `${CACHE_DIR}/thumbnails`)
+  - OIDC (provider-agnostic) via Express OpenID Connect (EOC):
+    - `PUBLIC_URL` – required for correct callback/base URL when using EOC
+    - `OIDC_ENABLED` – `true` to enable OIDC
+    - `OIDC_ISSUER` – provider issuer URL (Keycloak realm URL, Authentik issuer, Authelia issuer)
+    - `OIDC_CLIENT_ID` / `OIDC_CLIENT_SECRET`
+    - `OIDC_SCOPES` – e.g. `openid profile email` (add `groups` if your provider supports it)
+    - `SESSION_SECRET` – secret used for sessions and EOC cookies
+    - Optional overrides: `OIDC_AUTHORIZATION_URL`, `OIDC_TOKEN_URL`, `OIDC_USERINFO_URL`, `OIDC_CALLBACK_URL`
+
+When EOC is enabled, the backend exposes default OIDC routes:
+- `GET /login` – start login
+- `GET /callback` – OIDC callback (configure this in your provider)
+- `GET /logout` – logout (IdP logout enabled)
+
+For backward compatibility with the UI, the wrapper route `GET /api/auth/oidc/login` also triggers EOC login when available.
 - Ensure the process user can read/write the directories pointed to by `VOLUME_ROOT` and `CACHE_DIR`.
 
 ### Frontend SPA
@@ -71,6 +86,8 @@ docker compose -f docker-compose.dev.yml up --build
 If you run the dev stack behind a local reverse proxy, set `PUBLIC_URL` for the backend to the proxy URL (defaults to `http://localhost:3000` in `docker-compose.dev.yml`). This centralizes:
 - CORS origin (derived from the origin of `PUBLIC_URL` unless `CORS_ORIGINS` is set)
 - OIDC callback URL (defaults to `PUBLIC_URL + /api/auth/oidc/callback` unless `OIDC_CALLBACK_URL` is set)
+
+Note: When using EOC, prefer setting your provider redirect URI to `${PUBLIC_URL}/callback` (the EOC default). The legacy Passport OIDC flow still supports `${PUBLIC_URL}/api/auth/oidc/callback`.
 
 ## Testing & Quality
 - Frontend unit tests: `cd frontend && npm run test:unit`.

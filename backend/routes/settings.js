@@ -34,7 +34,8 @@ router.patch('/settings', async (req, res) => {
       const s = payload.security;
       nextPartial.security = {
         ...(s.authEnabled != null ? { authEnabled: Boolean(s.authEnabled) } : {}),
-        ...(typeof s.authMode === 'string' ? { authMode: s.authMode } : {}),
+        // Minimal OIDC mode defaults authMode to 'oidc'
+        authMode: 'oidc',
         ...(typeof s.sessionSecret === 'string' && s.sessionSecret.trim() ? { sessionSecret: s.sessionSecret.trim() } : {}),
       };
 

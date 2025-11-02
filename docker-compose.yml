@@ -16,6 +16,7 @@ services:
       - PGID=1000
       # Centralized public URL (frontend + backend behind proxy)
       - PUBLIC_URL=http://localhost:3000
+      - SESSION_SECRET=dev-change-me
       # OIDC configuration (fill with your identity provider details)
       - OIDC_ENABLED=true
       - OIDC_ISSUER=https://auth.vsoni.com/application/o/next/

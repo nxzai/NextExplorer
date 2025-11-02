@@ -1,12 +1,4 @@
-const {
-  isPasswordSet,
-  isSessionTokenValid,
-  getUserIdForToken,
-  sanitizeUserForClient,
-} = require('../services/authService');
-const { extractToken } = require('../utils/auth');
 const { getSettings } = require('../services/appConfigService');
-const { findById } = require('../services/userStore');
 
 const authMiddleware = async (req, res, next) => {
   const requestPath = req.path || '';
@@ -32,44 +24,19 @@ const authMiddleware = async (req, res, next) => {
     return;
   }
 
-  if (!isPasswordSet()) {
-    if (isAuthRoute) {
-      next();
-      return;
-    }
-
-    res.status(503).json({ error: 'Authentication setup required.' });
-    return;
-  }
-
   if (isAuthRoute) {
     next();
     return;
   }
 
-  if (typeof req.isAuthenticated === 'function' && req.isAuthenticated()) {
+  // EOC-only: require OIDC session
+  const isEocAuthenticated = Boolean(req.oidc && typeof req.oidc.isAuthenticated === 'function' && req.oidc.isAuthenticated());
+  if (isEocAuthenticated) {
     next();
     return;
   }
 
-  const token = extractToken(req);
-
-  if (token && isSessionTokenValid(token)) {
-    const userId = getUserIdForToken(token);
-    if (userId) {
-      const user = await findById(userId);
-      if (user) {
-        req.sessionToken = token;
-        if (!req.user) {
-          req.user = sanitizeUserForClient(user);
-        }
-        next();
-        return;
-      }
-    }
-  }
-
-  res.status(401).json({ error: 'Authentication required' });
+  res.status(401).json({ error: 'Authentication required.' });
 };
 
 module.exports = authMiddleware;

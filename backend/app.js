@@ -2,20 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const crypto = require('crypto');
-const session = require('express-session');
+const { auth: eocAuth } = require('express-openid-connect');
 
-const { port, directories, corsOptions, public: publicConfig } = require('./config/index');
+const { port, directories, corsOptions, public: publicConfig, auth: envAuthConfig } = require('./config/index');
 const { ensureDir } = require('./utils/fsUtils');
 const registerRoutes = require('./routes');
 const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/authMiddleware');
-const { initializeAuth } = require('./services/authService');
-const {
-  passport: passportInstance,
-  initializePassport,
-  resolveSecurityConfig,
-} = require('./services/passport');
 
 const app = express();
 let server = null;
@@ -70,50 +63,56 @@ const bootstrap = async () => {
     console.warn(`Unable to prepare thumbnail directory at ${directories.thumbnails}:`, error.message);
   }
 
+  // Express OpenID Connect (provider-agnostic: Keycloak, Authentik, Authelia)
   try {
-    await initializeAuth();
-  } catch (error) {
-    console.error('Failed to initialize authentication services:', error);
+    const oidc = (envAuthConfig && envAuthConfig.oidc) || {};
+    const scopes = Array.isArray(oidc.scopes) && oidc.scopes.length ? oidc.scopes : ['openid', 'profile', 'email'];
+    const scopeParam = Array.from(new Set(['openid', ...scopes])).join(' ');
+
+    // Determine baseURL from callbackUrl or PUBLIC_URL
+    let baseURL = null;
+    try {
+      if (oidc.callbackUrl && /^https?:\/\//i.test(oidc.callbackUrl)) {
+        const u = new URL(oidc.callbackUrl);
+        baseURL = u.origin;
+      } else if (publicConfig?.url) {
+        const u = new URL(publicConfig.url);
+        baseURL = u.origin;
+      }
+    } catch (_) {
+      baseURL = null;
+    }
+
+    const sessionSecret = (envAuthConfig && envAuthConfig.sessionSecret)
+      || process.env.SESSION_SECRET
+      || null;
+
+    const eocEnabled = Boolean(oidc.enabled && oidc.issuer && oidc.clientId && sessionSecret && baseURL);
+
+    if (eocEnabled) {
+      app.use(eocAuth({
+        authRequired: false,
+        auth0Logout: false,
+        idpLogout: true,
+        issuerBaseURL: oidc.issuer,
+        baseURL,
+        clientID: oidc.clientId,
+        clientSecret: oidc.clientSecret || undefined,
+        secret: sessionSecret,
+        authorizationParams: {
+          response_type: 'code',
+          scope: scopeParam,
+        },
+        // Use defaults for routes; no afterCallback needed for minimal setup
+      }));
+
+      console.log('Express OpenID Connect is configured.');
+    } else {
+      console.log('Express OpenID Connect not configured (missing issuer/client/baseURL/secret or disabled).');
+    }
+  } catch (e) {
+    console.warn('Failed to configure Express OpenID Connect:', e?.message || e);
   }
-
-  try {
-    await initializePassport();
-  } catch (error) {
-    console.error('Failed to configure Passport strategies:', error);
-  }
-
-  let securityConfig = null;
-  try {
-    securityConfig = await resolveSecurityConfig();
-  } catch (error) {
-    console.warn('Unable to resolve security configuration from settings:', error.message);
-  }
-
-  const sessionSecret = (securityConfig && securityConfig.sessionSecret)
-    || process.env.SESSION_SECRET
-    || crypto.randomBytes(32).toString('hex');
-
-  if (!sessionSecret) {
-    console.warn('SESSION_SECRET could not be determined; falling back to an ephemeral secret. Sessions will reset on restart.');
-  } else if (!process.env.SESSION_SECRET && !(securityConfig && securityConfig.sessionSecret)) {
-    console.warn('SESSION_SECRET is not configured; using an ephemeral secret. Sessions will reset on restart.');
-  }
-
-  const cookieOptions = {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-  };
-
-  app.use(session({
-    secret: sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: cookieOptions,
-  }));
-
-  app.use(passportInstance.initialize());
-  app.use(passportInstance.session());
 
   app.use('/api/auth', authRoutes);
   app.use(authMiddleware);

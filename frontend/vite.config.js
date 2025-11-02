@@ -28,6 +28,10 @@ export default defineConfig({
     proxy: {
       '/api': { target: backendOrigin, changeOrigin: true, ws: true, secure: false },
       '/static/thumbnails': { target: backendOrigin, changeOrigin: true, secure: false },
+      // Proxy EOC routes to backend so /login, /callback, /logout work on the public origin
+      '/login': { target: backendOrigin, changeOrigin: true, secure: false },
+      '/callback': { target: backendOrigin, changeOrigin: true, secure: false },
+      '/logout': { target: backendOrigin, changeOrigin: true, secure: false },
     }
   }
  

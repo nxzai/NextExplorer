@@ -24,7 +24,9 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
-RUN npm run build -- --sourcemap false \
+# Build the frontend with the backend's package.json version baked in
+# Vite reads VITE_APP_VERSION in vite.config.js to inject __APP_VERSION__
+RUN VITE_APP_VERSION=$(node -p "require('/app/package.json').version") npm run build -- --sourcemap false \
   && rm -rf node_modules \
   && npm cache clean --force
 

@@ -6,7 +6,6 @@ nav:
   - 'Home': 'index.md'
   - 'Releases': 'releases.md'
   - 'Features': 'features.md'
-  - 'Screenshots': 'screenshots.md'
   - 'Deployment': 'deployment.md'
   - 'Reverse Proxy': 'reverse-proxy.md'
   - 'OIDC': 'oidc.md'

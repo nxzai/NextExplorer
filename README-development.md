@@ -55,6 +55,10 @@ npm run dev
 ```
 
 - Dev server runs on `http://localhost:3000` with hot-module replacement.
+- Build metadata for About page (optional): set these before `npm run build` (or in `.env`) to show git info:
+  - `VITE_GIT_COMMIT` – full SHA (e.g. `$(git rev-parse HEAD)`)
+  - `VITE_GIT_BRANCH` – branch name
+  - `VITE_REPO_URL` – repository URL (e.g. `https://github.com/owner/repo`)
 - Helpful scripts:
   - `npm run build` – production bundle.
   - `npm run preview` – serve the built assets locally.

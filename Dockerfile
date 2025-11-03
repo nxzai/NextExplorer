@@ -11,6 +11,11 @@ RUN apt-get update \
 
 WORKDIR /app
 
+# Build-time git metadata (passed from CI via --build-arg)
+ARG GIT_COMMIT=""
+ARG GIT_BRANCH=""
+ARG REPO_URL=""
+
 # Install backend dependencies first to take advantage of Docker layer caching.
 COPY backend/package*.json ./
 RUN npm ci --omit=dev
@@ -26,7 +31,11 @@ RUN npm ci
 COPY frontend/ ./
 # Build the frontend with the backend's package.json version baked in
 # Vite reads VITE_APP_VERSION in vite.config.js to inject __APP_VERSION__
-RUN VITE_APP_VERSION=$(node -p "require('/app/package.json').version") npm run build -- --sourcemap false \
+RUN VITE_APP_VERSION=$(node -p "require('/app/package.json').version") \
+  VITE_GIT_COMMIT=${GIT_COMMIT} \
+  VITE_GIT_BRANCH=${GIT_BRANCH} \
+  VITE_REPO_URL=${REPO_URL} \
+  npm run build -- --sourcemap false \
   && rm -rf node_modules \
   && npm cache clean --force
 

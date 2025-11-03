@@ -129,6 +129,16 @@ router.post('/logout', (req, res) => {
   if (req.session) {
     try { req.session.destroy(() => {}); } catch (_) { /* ignore */ }
   }
+  // Best-effort: clear EOC app session cookie so subsequent requests
+  // don't appear authenticated without visiting /logout in a top-level nav
+  try {
+    res.clearCookie('appSession', {
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+    });
+  } catch (_) { /* ignore */ }
   res.status(204).end();
 });
 

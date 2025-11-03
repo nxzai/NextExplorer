@@ -21,8 +21,66 @@ Notes:
 - No implicit defaults: There are no built‑in admin group names. If `OIDC_ADMIN_GROUPS` is empty/unset, no OIDC user is auto‑elevated.
 - Safety: If an existing user already has the `admin` role, the app preserves it on subsequent logins to avoid accidental demotion.
 
-Example compose snippet:
+## Provider Examples
 
+### Keycloak
+1.  **Create a new client:**
+    *   In your Keycloak realm, navigate to **Clients** and click **Create**.
+    *   Set **Client ID** to `nextexplorer` (or your preferred name).
+    *   Set **Client Protocol** to `openid-connect`.
+    *   Click **Save**.
+2.  **Configure the client:**
+    *   Set **Access Type** to `confidential`.
+    *   In **Valid Redirect URIs**, add the callback URL for your nextExplorer instance. This is typically your `PUBLIC_URL` plus `/api/auth/oidc/callback`. For example: `https://files.example.com/api/auth/oidc/callback`.
+    *   Click **Save**.
+3.  **Get credentials:**
+    *   Navigate to the **Credentials** tab for your client.
+    *   You will find the **Client Secret** here. Use this value for the `OIDC_CLIENT_SECRET` environment variable. The `OIDC_CLIENT_ID` is the **Client ID** you set in step 1.
+4.  **Configure group claims:**
+    *   To expose user groups in the token, navigate to **Client Scopes** > **-dedicated** scopes for your client.
+    *   Click on **add mapper** and choose **By Configuration**.
+    *   Now choose **Group Membership** mapper.
+    *   Give it a name, and set the **Token Claim Name** to `groups`.
+    *   Ensure **Full group path** is **OFF**.
+    *   Click **Save**.
+
+### Authelia
+1.  **Enable the OIDC provider in `authelia/configuration.yml`:**
+    ```yaml
+    identity_providers:
+      oidc:
+        ## Enable the OIDC provider
+        enable: true
+        ## The issuer URL
+        issuer_private_key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          ...
+          -----END RSA PRIVATE KEY-----
+        clients:
+          - client_id: 'nextexplorer'
+            client_name: 'nextExplorer'
+            client_secret: 'your-client-secret'
+            public: false
+            authorization_policy: 'one_factor'
+            redirect_uris:
+              - 'https://files.example.com/api/auth/oidc/callback'
+            scopes:
+              - 'openid'
+              - 'profile'
+              - 'email'
+              - 'groups'
+            grant_types:
+              - 'authorization_code'
+            response_types:
+              - 'code'
+    ```
+2.  **Configure nextExplorer:**
+    *   Set `OIDC_ISSUER` to your Authelia URL (e.g., `https://auth.example.com`).
+    *   Set `OIDC_CLIENT_ID` to `nextexplorer`.
+    *   Set `OIDC_CLIENT_SECRET` to the `client_secret` you defined in your Authelia configuration.
+    *   Ensure `OIDC_SCOPES` includes `openid profile email groups`.
+
+### Example Docker Compose Snippet
 ```yaml
 services:
   nextexplorer:
@@ -30,17 +88,9 @@ services:
     environment:
       - PUBLIC_URL=https://files.example.com
       - OIDC_ENABLED=true
-      - OIDC_ISSUER=https://auth.example.com/application/o/next/
-      # Optional manual overrides (otherwise discovery is used)
-      # - OIDC_AUTHORIZATION_URL=...
-      # - OIDC_TOKEN_URL=...
-      # - OIDC_USERINFO_URL=...
-      - OIDC_CLIENT_ID=your-client-id
+      - OIDC_ISSUER=https://auth.example.com/application/o/next/ # e.g., your Keycloak or Authelia issuer URL
+      - OIDC_CLIENT_ID=nextexplorer
       - OIDC_CLIENT_SECRET=your-client-secret
       - OIDC_SCOPES=openid profile email groups
       - OIDC_ADMIN_GROUPS=next-admin admins
 ```
-
-Provider tips:
-- Authentik/Keycloak: Usually expose `groups`; include `groups` in scopes.
-- Google: Group claims typically require additional configuration (Cloud Identity / Admin SDK). Without groups, users will be `user` role by default.

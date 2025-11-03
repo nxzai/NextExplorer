@@ -121,24 +121,20 @@ router.post('/password', passwordLimiter, async (req, res, next) => {
 });
 
 router.post('/logout', (req, res) => {
-  // Redirect through EOC logout to clear IdP session
-  if (req.oidc && typeof req.oidc.logout === 'function') {
-    // Use 204 for API clients; UI can hit GET /logout directly if needed
-    try { req.oidc.logout(); } catch (_) { /* ignore */ }
-  }
+  // Clear local app session if present (local auth)
   if (req.session) {
     try { req.session.destroy(() => {}); } catch (_) { /* ignore */ }
   }
-  // Best-effort: clear EOC app session cookie so subsequent requests
-  // don't appear authenticated without visiting /logout in a top-level nav
+  // Clear the EOC appSession cookie (local OIDC session) without redirecting
   try {
     res.clearCookie('appSession', {
       path: '/',
-      sameSite: 'lax',
+      sameSite: 'Lax',
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
     });
   } catch (_) { /* ignore */ }
+  // For IdP/federated logout, the UI navigates to GET /logout separately.
   res.status(204).end();
 });
 
@@ -150,9 +146,9 @@ router.post('/token', (req, res) => res.status(400).json({ error: 'Token minting
 
 router.get('/oidc/login', async (req, res, next) => {
   try {
-    if (req.oidc && typeof req.oidc.login === 'function') {
+    if (res.oidc && typeof res.oidc.login === 'function') {
       const redirect = typeof req.query?.redirect === 'string' ? req.query.redirect : '/';
-      await req.oidc.login({ returnTo: redirect });
+      await res.oidc.login({ returnTo: redirect });
       return;
     }
   } catch (e) {

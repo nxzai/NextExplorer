@@ -163,6 +163,26 @@ const changeLocalPassword = async ({ userId, currentPassword, newPassword }) => 
   return true;
 };
 
+// Map provider claims/groups to an app roles array
+const deriveRolesFromClaims = (claims = {}, adminGroups = []) => {
+  try {
+    const groups = []
+      .concat(Array.isArray(claims.groups) ? claims.groups : [])
+      .concat(Array.isArray(claims.roles) ? claims.roles : [])
+      .concat(Array.isArray(claims.entitlements) ? claims.entitlements : [])
+      .filter((g) => typeof g === 'string' && g.trim())
+      .map((g) => g.trim().toLowerCase());
+
+    const cfgAdmin = Array.isArray(adminGroups)
+      ? adminGroups.map((g) => (typeof g === 'string' ? g.trim().toLowerCase() : '')).filter(Boolean)
+      : [];
+    const isAdmin = cfgAdmin.some((g) => groups.includes(g));
+    return isAdmin ? ['admin'] : ['user'];
+  } catch (_) {
+    return ['user'];
+  }
+};
+
 const createOrUpdateOidcUser = async ({ issuer, sub, username, displayName, email, roles = [] }) => {
   const db = await getDb();
   const existing = db.prepare('SELECT * FROM users WHERE provider = ? AND oidc_issuer = ? AND oidc_sub = ?').get('oidc', issuer, sub);
@@ -207,24 +227,14 @@ const getRequestUser = async (req) => {
       const email = claims.email || null;
       const preferredUsername = claims.preferred_username || claims.username || email || claims.sub;
       const displayName = claims.name || preferredUsername || null;
-      // Derive roles from admin groups
-      const groups = []
-        .concat(Array.isArray(claims.groups) ? claims.groups : [])
-        .concat(Array.isArray(claims.roles) ? claims.roles : [])
-        .concat(Array.isArray(claims.entitlements) ? claims.entitlements : [])
-        .filter((g) => typeof g === 'string' && g.trim())
-        .map((g) => g.trim().toLowerCase());
-      const cfgAdmin = Array.isArray(envAuthConfig?.oidc?.adminGroups)
-        ? envAuthConfig.oidc.adminGroups.map((g) => (typeof g === 'string' ? g.trim().toLowerCase() : '')).filter(Boolean)
-        : [];
-      const isAdmin = cfgAdmin.some((g) => groups.includes(g));
+      const roles = deriveRolesFromClaims(claims, envAuthConfig?.oidc?.adminGroups);
       return {
         id: `oidc:${claims.sub}`,
         provider: 'oidc',
         username: normalizeUsername(preferredUsername),
         displayName,
         email,
-        roles: isAdmin ? ['admin'] : ['user'],
+        roles,
         createdAt: null,
         updatedAt: null,
       };
@@ -263,4 +273,5 @@ module.exports = {
   getRequestUser,
   listUsers,
   updateUserRoles,
+  deriveRolesFromClaims,
 };

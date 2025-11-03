@@ -10,7 +10,7 @@ const { ensureDir } = require('./utils/fsUtils');
 const registerRoutes = require('./routes');
 const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/authMiddleware');
-const { createOrUpdateOidcUser } = require('./services/users');
+const { createOrUpdateOidcUser, deriveRolesFromClaims } = require('./services/users');
 
 const app = express();
 let server = null;
@@ -32,10 +32,8 @@ try {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  console.log(`Incoming request: ${req.method} ${req.url}`);
-  next();
-});
+// Keep request logging minimal; avoid noisy per-request logs in production
+// (If needed, plug a logger like morgan at the app level.)
 
 const bootstrap = async () => {
   try {
@@ -74,10 +72,8 @@ const bootstrap = async () => {
       || process.env.SESSION_SECRET
       || null;
 
-    const eocEnabled = Boolean(oidc.enabled && oidc.issuer && oidc.clientId && sessionSecret && baseURL);
-
-    if (eocEnabled) {
-      // Cookie session for local auth; EOC uses its own cookie as well
+    // Always enable Express session for local auth if a secret is provided
+    if (sessionSecret) {
       app.use(session({
         secret: sessionSecret,
         resave: false,
@@ -88,14 +84,15 @@ const bootstrap = async () => {
           secure: process.env.NODE_ENV === 'production',
         },
       }));
+    }
 
-      const DEBUG_OIDC = String(process.env.DEBUG_OIDC || '').toLowerCase();
-      const debugOidc = DEBUG_OIDC === '1' || DEBUG_OIDC === 'true';
+    const eocEnabled = Boolean(oidc.enabled && oidc.issuer && oidc.clientId && sessionSecret && baseURL);
 
+    if (eocEnabled) {
       app.use(eocAuth({
         authRequired: false,
         auth0Logout: false,
-        idpLogout: true,
+        idpLogout: false,
         issuerBaseURL: oidc.issuer,
         baseURL,
         clientID: oidc.clientId,
@@ -105,52 +102,25 @@ const bootstrap = async () => {
           response_type: 'code',
           scope: scopeParam,
         },
-        // Sync OIDC users into the database on login
+        // Sync OIDC users into the database on login by decoding the ID token claims
         afterCallback: async (req, res, session) => {
           try {
-            // Standard approach: decode session.id_token via jose
-            const { decodeJwt } = await import('jose');
-            const tokenClaims = session?.id_token ? decodeJwt(session.id_token) : (req?.oidc?.idTokenClaims || {});
-            const userClaims = (session && session.user) || {};
-            const sub = tokenClaims.sub || userClaims.sub || null;
-            const tokenIss = tokenClaims.iss || null;
-            if (debugOidc) {
-              console.info('OIDC afterCallback', {
-                envIssuer: oidc.issuer,
-                tokenIssuer: tokenIss,
-                sub,
-                hasIdTokenSession: Boolean(session?.id_token),
-                hasIdTokenReq: Boolean(req?.oidc?.idToken),
-                hasUser: Boolean(session?.user),
-              });
-            }
+            let claims = {};
+            try {
+              const { decodeJwt } = await import('jose');
+              claims = session?.id_token ? decodeJwt(session.id_token) : {};
+            } catch (_) { claims = {}; }
+
+            const sub = claims && claims.sub ? claims.sub : null;
             if (!sub) return session;
-            const email = tokenClaims.email || userClaims.email || null;
-            const preferredUsername = tokenClaims.preferred_username
-              || userClaims.preferred_username
-              || tokenClaims.username
-              || userClaims.username
-              || email
-              || sub;
-            const displayName = tokenClaims.name || userClaims.name || preferredUsername || null;
 
-            // Determine admin role based on configured OIDC admin groups
-            const groups = [].concat(
-              Array.isArray(tokenClaims.groups) ? tokenClaims.groups : [],
-              Array.isArray(tokenClaims.roles) ? tokenClaims.roles : [],
-              Array.isArray(tokenClaims.entitlements) ? tokenClaims.entitlements : [],
-              Array.isArray(userClaims.groups) ? userClaims.groups : [],
-              Array.isArray(userClaims.roles) ? userClaims.roles : [],
-              Array.isArray(userClaims.entitlements) ? userClaims.entitlements : [],
-            ).filter((g) => typeof g === 'string' && g.trim()).map((g) => g.trim().toLowerCase());
-            const cfgAdmin = Array.isArray(envAuthConfig?.oidc?.adminGroups)
-              ? envAuthConfig.oidc.adminGroups.map((g) => (typeof g === 'string' ? g.trim().toLowerCase() : '')).filter(Boolean)
-              : [];
-            const isAdmin = cfgAdmin.some((g) => groups.includes(g));
-            const roles = isAdmin ? ['admin'] : ['user'];
+            const email = claims.email || null;
+            const preferredUsername = claims.preferred_username || claims.username || email || sub;
+            const displayName = claims.name || preferredUsername || null;
+            const roles = deriveRolesFromClaims(claims, envAuthConfig?.oidc?.adminGroups);
 
-            const persistIssuer = tokenIss || oidc.issuer;
-            const created = await createOrUpdateOidcUser({
+            const persistIssuer = oidc.issuer;
+            await createOrUpdateOidcUser({
               issuer: persistIssuer,
               sub,
               username: preferredUsername,
@@ -158,18 +128,19 @@ const bootstrap = async () => {
               email,
               roles,
             });
-            if (debugOidc) {
-              console.info('OIDC user synced', {
-                id: created?.id,
-                username: created?.username,
-                roles: created?.roles,
-                issuer: persistIssuer,
-              });
-            }
           } catch (e) {
             console.warn('afterCallback user sync failed:', e?.message || e);
           }
           return session;
+        },
+        // Align cookie behavior with typical SPA usage
+        session: {
+          rolling: true,
+          cookie: {
+            sameSite: 'Lax',
+            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true,
+          },
         },
       }));
 

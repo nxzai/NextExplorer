@@ -35,7 +35,7 @@ npm start
     - `OIDC_ISSUER` – provider issuer URL (Keycloak realm URL, Authentik issuer, Authelia issuer)
     - `OIDC_CLIENT_ID` / `OIDC_CLIENT_SECRET`
     - `OIDC_SCOPES` – e.g. `openid profile email` (add `groups` if your provider supports it)
-    - `SESSION_SECRET` – secret used for sessions and EOC cookies
+    - `SESSION_SECRET` – optional; if omitted the backend generates a strong secret at startup (used for sessions and EOC cookies)
     - Optional overrides: `OIDC_AUTHORIZATION_URL`, `OIDC_TOKEN_URL`, `OIDC_USERINFO_URL`, `OIDC_CALLBACK_URL`
 
 When EOC is enabled, the backend exposes default OIDC routes:

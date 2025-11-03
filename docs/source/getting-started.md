@@ -20,7 +20,8 @@ services:
     environment:
       - NODE_ENV=production
       - PUBLIC_URL=http://localhost:3000
-      - SESSION_SECRET=please-change-me
+      # Optional: override the auto-generated session secret
+      # - SESSION_SECRET=please-change-me
       # Optional: run as your host UID/GID
       # - PUID=1000
       # - PGID=1000
@@ -57,4 +58,3 @@ docker compose up -d
 ```
 
 The app stores settings and thumbnails under `/cache`. Keep this volume mounted to preserve state across upgrades.
-

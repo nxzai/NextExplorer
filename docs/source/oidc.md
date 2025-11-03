@@ -84,6 +84,6 @@ services:
 Troubleshooting
 
 - invalid redirect_uri – Ensure the redirect URI in your IdP is `${PUBLIC_URL}/callback`
-- “Not authorized” after login – Verify `SESSION_SECRET` is set and stable; check cookies allowed in your proxy
+- “Not authorized” after login – Ensure a stable session secret. The app auto‑generates one at startup; set `SESSION_SECRET` explicitly to keep it stable across restarts or to share the same secret across replicas. Also confirm cookies are allowed through your proxy.
 - No admin privileges – Confirm your IdP sends `groups` (or `roles`/`entitlements`) and that `OIDC_ADMIN_GROUPS` matches
 - Callback mismatch behind proxy – Set `PUBLIC_URL` to your external URL and confirm proxy forwards `X‑Forwarded‑*` headers

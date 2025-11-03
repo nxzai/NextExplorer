@@ -20,7 +20,8 @@ services:
     environment:
       - NODE_ENV=production
       - PUBLIC_URL=http://localhost:3000
-      - SESSION_SECRET=please-change-me
+      # Optional: override the auto-generated session secret
+      # - SESSION_SECRET=please-change-me
       # Optional OIDC (see Authentication)
       # - OIDC_ENABLED=true
       # - OIDC_ISSUER=https://auth.example.com/application/o/next/

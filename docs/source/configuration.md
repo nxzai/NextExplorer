@@ -6,7 +6,7 @@ Core
 
 - `PORT` – API/UI port. Default: `3000`.
 - `PUBLIC_URL` – Fully‑qualified external URL (no trailing slash). Example: `https://files.example.com`. Used to derive cookies, default callback, and CORS.
-- `SESSION_SECRET` – Required to enable sessions (local auth and OIDC). Set to a strong random string.
+- `SESSION_SECRET` – Optional. If omitted, the app generates a strong random secret at startup. Set it explicitly to keep sessions stable across restarts or to share one across replicas.
 
 Filesystem
 
@@ -49,4 +49,3 @@ Frontend (dev only)
 
 - `VITE_BACKEND_ORIGIN` – When running the Vite dev server, proxy API calls to the backend origin (e.g. `http://localhost:3001`).
 - `VITE_API_URL` – Alternate way to point the SPA directly at an API base URL.
-

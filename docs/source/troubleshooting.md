@@ -9,7 +9,7 @@ Authentication
   - Verify `PUBLIC_URL` matches your external URL and the proxy forwards `X‑Forwarded‑Proto`/`Host`
 - Not staying signed in behind proxy
   - Confirm cookies are not stripped; set `TRUST_PROXY` appropriately (see Reverse Proxy)
-  - Set a stable `SESSION_SECRET`
+- Set a stable `SESSION_SECRET` (the app auto‑generates one if omitted; set explicitly to rotate or for multi‑replica)
 - OIDC users not admin
   - Include `groups` in `OIDC_SCOPES` and map groups in your IdP
   - Set `OIDC_ADMIN_GROUPS` to the expected group names (case‑insensitive)
@@ -45,4 +45,3 @@ Upgrades and data
 - Settings/users lost after update
   - Make sure `/cache` is mounted to a persistent host folder
   - Back up `/cache/app-config.json` and the `thumbnails` subfolder as needed
-

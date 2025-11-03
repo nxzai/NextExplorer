@@ -63,7 +63,8 @@ services:
     environment:
       - NODE_ENV=production
       - PUBLIC_URL=http://localhost:3000
-      - SESSION_SECRET=please-change-me
+      # Optional: override the auto-generated session secret
+      # - SESSION_SECRET=please-change-me
       # Optional: match the container user/group to your host IDs
       # - PUID=1000
       # - PGID=1000
@@ -174,7 +175,7 @@ nextExplorer supports OIDC providers such as Keycloak, Authentik, Authelia, Goog
 - `OIDC_CALLBACK_URL` (optional): Callback URL. If not set, derived from `PUBLIC_URL` as `${PUBLIC_URL}/callback`.
 - `OIDC_SCOPES` (optional): Space/comma separated scopes. Default: `openid profile email`. Add `groups` if your provider exposes it.
 - `OIDC_ADMIN_GROUPS` (recommended): Space/comma separated group names that should map to the app’s `admin` role, e.g. `next-admin admins`.
-- `SESSION_SECRET` (required when OIDC or local sessions are used): strong random string enabling secure sessions.
+- `SESSION_SECRET` (optional): If not provided, the app generates a strong random secret at startup. Set this explicitly to keep sessions stable across restarts or to share the same secret across multiple replicas.
 
 Notes:
 - Discovery: If `OIDC_AUTHORIZATION_URL`/`OIDC_TOKEN_URL`/`OIDC_USERINFO_URL` are not supplied, the app fetches them from `OIDC_ISSUER/.well-known/openid-configuration`.
@@ -200,7 +201,8 @@ services:
     image: nxzai/explorer:latest
     environment:
       - PUBLIC_URL=https://files.example.com
-      - SESSION_SECRET=please-change-me
+      # Optional: override the auto-generated session secret
+      # - SESSION_SECRET=please-change-me
       - OIDC_ENABLED=true
       - OIDC_ISSUER=https://auth.example.com/application/o/next/
       # Optional manual overrides (otherwise discovery is used)
@@ -219,7 +221,7 @@ Provider tips:
 
 ## Configuration (Quick Reference)
 - `PUBLIC_URL`: external site URL; derives CORS and default OIDC callback.
-- `SESSION_SECRET`: required for sessions (local auth and OIDC).
+- `SESSION_SECRET`: optional (auto-generated at startup if omitted; set to keep stable across restarts or standardize across replicas).
 - `VOLUME_ROOT`: root for mounted content inside container (default `/mnt`).
 - `CACHE_DIR`: settings and thumbnails (default `/cache`).
 - `TRUST_PROXY`: `false`, a hop count, or list like `loopback,uniquelocal` (defaults safely when `PUBLIC_URL` is set).

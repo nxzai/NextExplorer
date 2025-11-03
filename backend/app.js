@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const { auth: eocAuth } = require('express-openid-connect');
 const session = require('express-session');
 
@@ -70,21 +71,19 @@ const bootstrap = async () => {
 
     const sessionSecret = (envAuthConfig && envAuthConfig.sessionSecret)
       || process.env.SESSION_SECRET
-      || null;
+      || crypto.randomBytes(32).toString('hex');
 
     // Always enable Express session for local auth if a secret is provided
-    if (sessionSecret) {
-      app.use(session({
-        secret: sessionSecret,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          httpOnly: true,
-          sameSite: 'lax',
-          secure: process.env.NODE_ENV === 'production',
-        },
-      }));
-    }
+    app.use(session({
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    }));
 
     const eocEnabled = Boolean(oidc.enabled && oidc.issuer && oidc.clientId && sessionSecret && baseURL);
 

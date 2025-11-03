@@ -6,7 +6,7 @@ When placing nextExplorer behind a reverse proxy and a custom domain, set a sing
 
 What it controls:
 - CORS allowed origin defaults to the origin of `PUBLIC_URL` unless you explicitly set `CORS_ORIGINS`.
-- OIDC callback URL defaults to `PUBLIC_URL + /api/auth/oidc/callback` unless you explicitly set `OIDC_CALLBACK_URL`.
+- OIDC callback URL defaults to `PUBLIC_URL + /callback` unless you explicitly set `OIDC_CALLBACK_URL`.
 - Express configures a safe `trust proxy` default when `PUBLIC_URL` is provided (can be overridden with `TRUST_PROXY`).
 
 Compose example:

@@ -101,6 +101,15 @@ const bootstrap = async () => {
       || process.env.SESSION_SECRET
       || crypto.randomBytes(32).toString('hex');
 
+    // Make cookies secure only if the site is served over HTTPS
+    let cookieSecure = false;
+    try {
+      const urlForSecurity = baseURL || (publicConfig && publicConfig.url) || '';
+      if (urlForSecurity) {
+        cookieSecure = new URL(urlForSecurity).protocol === 'https:';
+      }
+    } catch (_) { cookieSecure = false; }
+
     // Always enable Express session for local auth if a secret is provided
     // Use "auto" so cookies are Secure only when connection is HTTPS.
     app.use(session({

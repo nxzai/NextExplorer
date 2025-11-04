@@ -2,6 +2,8 @@ const path = require('path');
 const logger = require('../utils/logger');
 const { normalizeBoolean } = require('../utils/env');
 const loggingConfig = require('./logging');
+const crypto = require('crypto');
+
 
 const parseScopes = (raw) =>
   typeof raw === 'string'
@@ -140,7 +142,7 @@ const envOidcConfig = {
 };
 
 const envAuthConfig = {
-  sessionSecret: process.env.SESSION_SECRET || process.env.AUTH_SESSION_SECRET || null,
+  sessionSecret: process.env.SESSION_SECRET || process.env.AUTH_SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
   authMode: normalizedAuthMode,
   oidc: envOidcConfig,
 };

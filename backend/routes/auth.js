@@ -1,5 +1,5 @@
 const express = require('express');
-const { auth: envAuthConfig } = require('../config/index');
+const { auth: envAuthConfig, public: publicConfig } = require('../config/index');
 const {
   countLocalUsers,
   createLocal,

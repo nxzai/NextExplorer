@@ -20,6 +20,7 @@ const registerRoutes = require('./routes');
 const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/authMiddleware');
 const { createOrUpdateOidcUser, deriveRolesFromClaims } = require('./services/users');
+const { fetchUserInfoClaims } = require('./services/oidcService');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -151,14 +152,32 @@ const bootstrap = async () => {
           response_type: 'code',
           scope: scopeParam,
         },
-        // Sync OIDC users into the database on login by decoding the ID token claims
+        // Sync OIDC users into the database on login using the UserInfo endpoint
         afterCallback: async (req, res, session) => {
           try {
+            const persistIssuer = oidc.issuer;
+            const accessToken = session?.access_token;
+
             let claims = {};
-            try {
-              const { decodeJwt } = await import('jose');
-              claims = session?.id_token ? decodeJwt(session.id_token) : {};
-            } catch (_) { claims = {}; }
+
+            if (req?.oidc?.fetchUserInfo && accessToken) {
+              try {
+                claims = await req.oidc.fetchUserInfo();
+              } catch (error) {
+                logger.warn({ err: error }, 'express-openid-connect failed to fetch userinfo');
+              }
+            }
+
+            if ((!claims || !claims.sub) && accessToken && persistIssuer) {
+              claims = (await fetchUserInfoClaims({ issuer: persistIssuer, accessToken })) || claims;
+            }
+
+            if ((!claims || !claims.sub) && session?.id_token_claims) {
+              // As a final fallback, inspect cached claims provided by express-openid-connect
+              claims = session.id_token_claims;
+            } else if ((!claims || !claims.sub) && session?.claims) {
+              claims = session.claims;
+            }
 
             const sub = claims && claims.sub ? claims.sub : null;
             if (!sub) return session;
@@ -168,7 +187,6 @@ const bootstrap = async () => {
             const displayName = claims.name || preferredUsername || null;
             const roles = deriveRolesFromClaims(claims, envAuthConfig?.oidc?.adminGroups);
 
-            const persistIssuer = oidc.issuer;
             await createOrUpdateOidcUser({
               issuer: persistIssuer,
               sub,

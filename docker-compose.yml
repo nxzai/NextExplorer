@@ -11,6 +11,7 @@ services:
       - /Users/vikram/Downloads/cache:/cache
     environment:
       - LOG_LEVEL=debug
+      - DEBUG=openid-client*
       # Uncomment to enable verbose diagnostics
       # - LOG_LEVEL=debug
       # Match these to your host user/group IDs (check with `id -u` / `id -g`)

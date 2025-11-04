@@ -76,20 +76,37 @@ const discoverOpenIdConfiguration = async ({ issuer, forceRefresh = false, timeo
   return configuration;
 };
 
-const fetchUserInfoClaims = async ({ issuer, accessToken, timeoutMs = 5000 } = {}) => {
-  logger.debug({ issuer, timeoutMs }, 'Starting userinfo claims fetch');
+const fetchUserInfoClaims = async ({ issuer, accessToken, userInfoURL = null, timeoutMs = 5000 } = {}) => {
+  logger.debug({ issuer, timeoutMs, hasOverride: Boolean(userInfoURL) }, 'Starting userinfo claims fetch');
   
   if (!issuer || !accessToken) {
     logger.debug({ issuer: !!issuer, hasToken: !!accessToken }, 'Missing required parameters for userinfo fetch');
     return null;
   }
 
-  const configuration = await discoverOpenIdConfiguration({ issuer, timeoutMs });
-  logger.debug({ issuer, configuration }, 'Received OIDC configuration');
-  
-  const endpoint = configuration && configuration.userinfo_endpoint ? configuration.userinfo_endpoint : null;
+  // Prefer explicit override when provided and valid
+  let endpoint = null;
+  if (userInfoURL) {
+    try {
+      const u = new URL(userInfoURL);
+      if (u.protocol === 'http:' || u.protocol === 'https:') {
+        endpoint = u.href;
+        logger.debug({ endpoint }, 'Using overridden OIDC userinfo URL');
+      }
+    } catch (e) {
+      logger.warn({ err: e, userInfoURL }, 'Invalid OIDC userinfo override URL provided');
+    }
+  }
+
+  // Fall back to discovery when no valid override was provided
   if (!endpoint) {
-    logger.warn({ issuer }, 'OIDC discovery document is missing userinfo_endpoint');
+    const configuration = await discoverOpenIdConfiguration({ issuer, timeoutMs });
+    logger.debug({ issuer, hasConfiguration: Boolean(configuration) }, 'Received OIDC configuration');
+    endpoint = configuration && configuration.userinfo_endpoint ? configuration.userinfo_endpoint : null;
+  }
+
+  if (!endpoint) {
+    logger.warn({ issuer }, 'No userinfo endpoint available (override or discovery)');
     return null;
   }
   

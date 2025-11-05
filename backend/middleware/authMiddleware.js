@@ -25,6 +25,14 @@ const authMiddleware = async (req, res, next) => {
     return;
   }
 
+  // Allow ONLYOFFICE server callbacks and file fetches (token-guarded in route)
+  const isOnlyofficeGuest = requestPath.startsWith('/api/onlyoffice/file')
+    || requestPath.startsWith('/api/onlyoffice/callback');
+  if (isOnlyofficeGuest) {
+    next();
+    return;
+  }
+
   if (isAuthRoute) {
     next();
     return;

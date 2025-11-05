@@ -154,6 +154,9 @@ const bootstrap = async () => {
     logger.debug({ eocCookieSecure }, 'OIDC session cookie security');
 
     if (eocEnabled) {
+      const leanSession = Boolean(oidc.leanSession);
+      logger.debug({ leanSession }, 'OIDC lean session mode');
+
       app.use(eocAuth({
         authRequired: false,
         auth0Logout: false,
@@ -242,9 +245,25 @@ const bootstrap = async () => {
           } catch (e) {
             logger.warn({ err: e }, 'afterCallback user sync failed');
           }
-          logger.debug('afterCallback: complete');
-          return session;
-        },
+            logger.debug('afterCallback: complete');
+
+            // Optionally trim the session to keep cookies small (reduces request header size)
+            if (leanSession) {
+              const minimalUser = {
+                sub: claims?.sub || null,
+                email: claims?.email || null,
+                name: displayName || null,
+                preferred_username: preferredUsername || null,
+                // Provide app roles for UI/authorization without needing large group claims
+                app_roles: Array.isArray(roles) ? roles : [],
+              };
+
+              // Return only the minimal user object; omit tokens and large claim sets
+              return { user: minimalUser };
+            }
+
+            return session;
+          },
         // Align cookie behavior with typical SPA usage
         session: {
           rolling: true,

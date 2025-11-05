@@ -146,6 +146,9 @@ const envOidcConfig = {
   scopes: parseScopes(rawEnvScopes) || null,
   // Admin groups used to elevate user to app 'admin' role
   adminGroups: parseScopes(rawAdminGroups) || null,
+  // When true, trim tokens and large claims from the session cookie to reduce header size
+  // Prefer OIDC_LEAN_SESSION, but support OIDC_TRIM_SESSION for wording familiarity
+  leanSession: normalizeBoolean(process.env.OIDC_LEAN_SESSION) ?? normalizeBoolean(process.env.OIDC_TRIM_SESSION) ?? null,
 };
 
 const envAuthConfig = {

@@ -265,7 +265,10 @@ const getRequestUser = async (req) => {
       const email = claims.email || null;
       const preferredUsername = claims.preferred_username || claims.username || email || claims.sub;
       const displayName = claims.name || preferredUsername || null;
-      const roles = deriveRolesFromClaims(claims, envAuthConfig?.oidc?.adminGroups);
+      // Prefer roles embedded by our lean session to avoid needing large group claims
+      const roles = Array.isArray(claims.app_roles) && claims.app_roles.length
+        ? claims.app_roles
+        : deriveRolesFromClaims(claims, envAuthConfig?.oidc?.adminGroups);
       return {
         id: `oidc:${claims.sub}`,
         provider: 'oidc',

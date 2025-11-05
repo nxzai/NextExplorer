@@ -9,6 +9,7 @@ services:
       # Adjust these host paths to your needs:
       - /Users/vikram/projects:/mnt/Projects
       - /Users/vikram/Downloads:/mnt/Downloads
+      - /Users/vikram/Pictures:/mnt/Pictures
       - /Users/vikram/Downloads/cache:/cache
     # user: "${UID:-1000}:${GID:-1000}"
     environment:
@@ -24,7 +25,6 @@ services:
       - OIDC_CLIENT_SECRET=w2ACQfUhhk2vZ14m2GVvYbWqkCQTiXyMsowpLQE2JtiPfaCTrBKhZHwZACgHOCWgSs9zhJW0j8y1TYCrLs0hsMmM0xdIz5tRmce6o4ymVOCQByPRIr9xMxtBt1Spg0I1
       - OIDC_SCOPES=openid,profile,email,groups
       - OIDC_ADMIN_GROUPS=next-admin,admins
-
       # - OIDC_TOKEN_URL=https://auth.vsoni.com/application/o/token/
       # - OIDC_USERINFO_URL=https://auth.vsoni.com/application/o/userinfo/
       # - OIDC_AUTHORIZATION_URL=https://auth.vsoni.com/application/o/authorize/

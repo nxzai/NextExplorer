@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const { auth: eocAuth } = require('express-openid-connect');
 const session = require('express-session');
 const pinoHttp = require('pino-http');
+const MemoryStore = require('memorystore')(eocAuth)
 
 const {
   port,
@@ -154,8 +155,6 @@ const bootstrap = async () => {
     logger.debug({ eocCookieSecure }, 'OIDC session cookie security');
 
     if (eocEnabled) {
-      const leanSession = Boolean(oidc.leanSession);
-      logger.debug({ leanSession }, 'OIDC lean session mode');
 
       app.use(eocAuth({
         authRequired: false,
@@ -170,6 +169,19 @@ const bootstrap = async () => {
           response_type: 'code',
           scope: scopeParam,
         },
+        // Align cookie behavior with typical SPA usage
+        session: {
+          store: new MemoryStore({
+            checkPeriod: 24 * 60 * 1000,
+          }),
+          rolling: true,
+          cookie: {
+            sameSite: 'Lax',
+            secure: eocCookieSecure,
+            httpOnly: true,
+          },
+        },
+        
         // Sync OIDC users into the database on login using the UserInfo endpoint
         // See auth0/express-openid-connect#197: req.oidc.fetchUserInfo() is not
         // available here because the session is not hydrated yet. 
@@ -246,33 +258,8 @@ const bootstrap = async () => {
             logger.warn({ err: e }, 'afterCallback user sync failed');
           }
             logger.debug('afterCallback: complete');
-
-            // Optionally trim the session to keep cookies small (reduces request header size)
-            if (leanSession) {
-              const minimalUser = {
-                sub: claims?.sub || null,
-                email: claims?.email || null,
-                name: displayName || null,
-                preferred_username: preferredUsername || null,
-                // Provide app roles for UI/authorization without needing large group claims
-                app_roles: Array.isArray(roles) ? roles : [],
-              };
-
-              // Return only the minimal user object; omit tokens and large claim sets
-              return { user: minimalUser };
-            }
-
             return session;
           },
-        // Align cookie behavior with typical SPA usage
-        session: {
-          rolling: true,
-          cookie: {
-            sameSite: 'Lax',
-            secure: eocCookieSecure,
-            httpOnly: true,
-          },
-        },
       }));
 
       logger.info('Express OpenID Connect is configured');

@@ -1,6 +1,7 @@
 import { useMagicKeys, whenever } from '@vueuse/core'
 import { computed } from 'vue'
 import { useFileActions } from '@/composables/fileActions'
+import { useDeleteConfirm } from '@/composables/useDeleteConfirm';
 
 export function useClipboardShortcuts() {
   const actions = useFileActions();
@@ -39,14 +40,12 @@ export function useClipboardShortcuts() {
   });
 
   // Delete / Backspace -> delete selected items (when focus not in editable)
+  const { requestDelete } = useDeleteConfirm();
+
   const deletePressed = computed(() => (keys.delete?.value || keys.backspace?.value));
   whenever(deletePressed, async () => {
     if (shouldIgnore()) return;
-    if (!actions.canDelete.value) return;
-    try {
-      await actions.deleteNow();
-    } catch (err) {
-      console.error('Delete failed', err);
-    }
+    // Open the centralized delete confirmation dialog instead of deleting immediately
+    requestDelete();
   });
 }

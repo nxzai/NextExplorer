@@ -17,6 +17,7 @@ import { usePreviewManager } from '@/plugins/preview/manager';
 import { useInfoPanelStore } from '@/stores/infoPanel';
 import { normalizePath } from '@/api';
 import { modKeyLabel, deleteKeyLabel } from '@/utils/keyboard';
+import { useDeleteConfirm } from '@/composables/useDeleteConfirm';
 import ModalDialog from '@/components/ModalDialog.vue';
 // Icons
 import {
@@ -90,8 +91,12 @@ const deleteDialogMessage = computed(() => {
   return 'No items selected.';
 });
 
-const isDeleteConfirmOpen = ref(false);
-const isDeleting = ref(false);
+const {
+  isDeleteConfirmOpen,
+  isDeleting,
+  requestDelete,
+  confirmDelete,
+} = useDeleteConfirm();
 
 const closeMenu = () => {
   isOpen.value = false;
@@ -173,23 +178,7 @@ const runCreateFolder = async () => {
 
 const runRename = () => actions.runRename();
 
-const requestDelete = () => {
-  if (!hasSelection.value) return;
-  isDeleteConfirmOpen.value = true;
-};
-
-const confirmDelete = async () => {
-  if (!hasSelection.value || isDeleting.value) return;
-  isDeleting.value = true;
-  try {
-    await actions.deleteNow();
-    isDeleteConfirmOpen.value = false;
-  } catch (error) {
-    console.error('Delete operation failed', error);
-  } finally {
-    isDeleting.value = false;
-  }
-};
+// requestDelete and confirmDelete are provided by useDeleteConfirm()
 
 const runGetInfo = () => {
   if (!primaryItem.value) return;

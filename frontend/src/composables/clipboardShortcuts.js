@@ -1,36 +1,52 @@
-import { onKeyStroke } from '@vueuse/core'
+import { useMagicKeys, whenever } from '@vueuse/core'
+import { computed } from 'vue'
 import { useFileActions } from '@/composables/fileActions'
 
 export function useClipboardShortcuts() {
   const actions = useFileActions();
-  const shouldIgnore = (e) => actions.shouldIgnoreHotkeyEvent(e);
+  const keys = useMagicKeys();
 
-  onKeyStroke('x', (e) => {
-    if (shouldIgnore(e)) return;
+  // Small helper: ignore when focus is inside editable elements (inputs, textareas, contenteditable)
+  const shouldIgnore = () => {
+    const active = document.activeElement;
+    return actions.isEditableElement ? actions.isEditableElement(active) : false;
+  }
+
+  const cutPressed = computed(() => (keys['Ctrl+X']?.value || keys['Meta+X']?.value));
+  whenever(cutPressed, () => {
+    if (shouldIgnore()) return;
     if (!actions.canCut.value) return;
-    e.preventDefault();
-    e.stopPropagation();
     actions.runCut();
-  }, { dedupe: true, eventName: 'keydown', target: window });
+  });
 
-  onKeyStroke('c', (e) => {
-    if (shouldIgnore(e)) return;
+  const copyPressed = computed(() => (keys['Ctrl+C']?.value || keys['Meta+C']?.value));
+  whenever(copyPressed, () => {
+    if (shouldIgnore()) return;
     if (!actions.canCopy.value) return;
-    e.preventDefault();
-    e.stopPropagation();
     actions.runCopy();
-  }, { dedupe: true, eventName: 'keydown', target: window });
+  });
 
-  onKeyStroke('v', async (e) => {
-    if (shouldIgnore(e)) return;
+  const pastePressed = computed(() => (keys['Ctrl+V']?.value || keys['Meta+V']?.value));
+  whenever(pastePressed, async () => {
+    if (shouldIgnore()) return;
     if (!actions.canPaste.value) return;
-    e.preventDefault();
-    e.stopPropagation();
     try {
       await actions.runPasteIntoCurrent();
     } catch (err) {
       // Surface errors to console only; UI can handle feedback separately
       console.error('Paste failed', err);
     }
-  }, { dedupe: true, eventName: 'keydown', target: window });
+  });
+
+  // Delete / Backspace -> delete selected items (when focus not in editable)
+  const deletePressed = computed(() => (keys.delete?.value || keys.backspace?.value));
+  whenever(deletePressed, async () => {
+    if (shouldIgnore()) return;
+    if (!actions.canDelete.value) return;
+    try {
+      await actions.deleteNow();
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  });
 }

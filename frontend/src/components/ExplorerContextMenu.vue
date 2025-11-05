@@ -16,7 +16,7 @@ import { useFileActions } from '@/composables/fileActions';
 import { usePreviewManager } from '@/plugins/preview/manager';
 import { useInfoPanelStore } from '@/stores/infoPanel';
 import { normalizePath } from '@/api';
-import { modKeyLabel } from '@/utils/keyboard';
+import { modKeyLabel, deleteKeyLabel } from '@/utils/keyboard';
 import ModalDialog from '@/components/ModalDialog.vue';
 // Icons
 import {
@@ -252,7 +252,7 @@ const menuSections = computed(() => {
   ]);
 
   sections.push([
-    mk('delete', 'Delete', DeleteRound, requestDelete, { disabled: !hasSelection.value, danger: true }),
+  mk('delete', 'Delete', DeleteRound, requestDelete, { disabled: !hasSelection.value, danger: true, shortcut: deleteKeyLabel }),
   ]);
 
   return sections;

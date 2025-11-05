@@ -10,14 +10,6 @@ function isEditableElement(el) {
   return false;
 }
 
-function shouldIgnoreHotkeyEvent(e) {
-  const active = document.activeElement;
-  if (isEditableElement(active)) return true;
-  if (!e) return true;
-  const hasMod = e.ctrlKey || e.metaKey;
-  return !hasMod;
-}
-
 function resolveItemPath(item) {
   if (!item || !item.name) return '';
   const parent = normalizePath(item.path || '');
@@ -78,7 +70,6 @@ export function useFileActions() {
     // helpers
     resolveItemPath,
     isEditableElement,
-    shouldIgnoreHotkeyEvent,
     // actions
     runCut,
     runCopy,

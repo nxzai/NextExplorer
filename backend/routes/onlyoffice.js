@@ -21,10 +21,11 @@ const SUPPORTED_PRESENTATION = new Set(['pptx', 'ppt', 'odp']);
 const toExt = (filename = '') => String(filename).split('.').pop().toLowerCase();
 
 const getDocumentType = (ext) => {
-  if (SUPPORTED_TEXT.has(ext)) return 'text';
-  if (SUPPORTED_SHEET.has(ext)) return 'spreadsheet';
-  if (SUPPORTED_PRESENTATION.has(ext)) return 'presentation';
-  return 'text';
+  // ONLYOFFICE expects: 'word' | 'cell' | 'slide'
+  if (SUPPORTED_TEXT.has(ext)) return 'word';
+  if (SUPPORTED_SHEET.has(ext)) return 'cell';
+  if (SUPPORTED_PRESENTATION.has(ext)) return 'slide';
+  return 'word';
 };
 
 const resolveMime = (ext) => mimeTypes[ext] || 'application/octet-stream';

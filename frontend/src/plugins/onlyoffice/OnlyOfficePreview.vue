@@ -9,7 +9,9 @@
     <DocumentEditor
       v-else
       class="h-full w-full"
+      :key="editorId"
       :id="editorId"
+      :shardkey="false"
       :documentServerUrl="serverUrl"
       :config="config"
     />
@@ -47,6 +49,7 @@ const load = async () => {
     if (!path) throw new Error('Missing file path.');
     const { documentServerUrl, config: cfg } = await fetchOnlyOfficeConfig(path, 'edit');
     serverUrl.value = documentServerUrl;
+    console.log('ONLYOFFICE config:', cfg);
     config.value = cfg;
   } catch (e) {
     error.value = e?.message || 'Failed to initialize ONLYOFFICE.';

@@ -8,6 +8,8 @@ export const onlyofficePreviewPlugin = () => ({
   id: 'onlyoffice-editor',
   label: 'ONLYOFFICE',
   priority: 50,
+  // Render with minimal chrome in the overlay host
+  minimalHeader: true,
   match: (ctx) => {
     const ext = String(ctx.extension || '').toLowerCase();
     return SUPPORTED.has(ext);

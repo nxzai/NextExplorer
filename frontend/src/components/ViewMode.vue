@@ -7,6 +7,7 @@ import { AlignSpaceAroundVertical20Regular } from '@vicons/fluent';
 import {
   Squares2X2Icon,
   ListBulletIcon,
+  PhotoIcon,
 } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, CheckIcon } from '@heroicons/vue/20/solid';
 
@@ -33,6 +34,12 @@ const viewOptions = [
     label: 'Grid view',
     icon: Squares2X2Icon,
     activate: () => settings.gridView()
+  },
+  {
+    key: 'photos',
+    label: 'Photos view',
+    icon: PhotoIcon,
+    activate: () => settings.photosView()
   }
 ]
 

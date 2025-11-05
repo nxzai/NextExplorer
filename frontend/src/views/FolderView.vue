@@ -69,8 +69,10 @@ const handleBackgroundContextMenu = (event) => {
     v-if="!loading"
     class="min-h-full"
     :class="settings.view === 'grid' ? 'grid content-start items-start grid-cols-[repeat(auto-fill,6rem)] gap-2' : 
-    settings.view === 'tab'? 'grid content-start items-start grid-cols-[repeat(auto-fill,20rem)] gap-2':
+    settings.view === 'tab'? 'grid content-start items-start grid-cols-[repeat(auto-fill,20rem)] gap-2' :
+    settings.view === 'photos' ? 'grid content-start items-start gap-1 md:gap-2' :
     'flex flex-col gap-[2px]'"
+    :style="settings.view === 'photos' ? { gridTemplateColumns: `repeat(auto-fill, ${settings.photoSize}px)` } : undefined"
     @click.self="clearSelection()"
     @contextmenu.prevent.self="handleBackgroundContextMenu">
       <!-- Detail view header -->

@@ -8,8 +8,11 @@ import { useNavigation } from '@/composables/navigation';
 import { useSelection } from '@/composables/itemSelection';
 import { useFileStore } from '@/stores/fileStore';
 import { useExplorerContextMenu } from '@/composables/contextMenu';
+import { isPreviewableImage } from '@/config/media';
+import { useSettingsStore } from '@/stores/settings';
 
 const props = defineProps(['item', 'view'])
+const settings = useSettingsStore();
 
 const {openItem} = useNavigation()
 const {handleSelection, isSelected} = useSelection();
@@ -126,9 +129,28 @@ const handleRenameBlur = async () => {
 
 // Kind label logic moved to '@/utils/fileKinds'
 
+// Photos view helpers
+const isPhotoItem = computed(() => {
+  const kind = (props.item?.kind || '').toLowerCase();
+  return isPreviewableImage(kind);
+});
+
 </script>
 
 <template>
+
+    <div
+    v-if="view==='photos' && isPhotoItem"
+    :title="item.name"
+    @click="handleClick"
+    @dblclick="handleDblClick"
+    @contextmenu.prevent="handleContextMenu"
+    class="photo-cell relative rounded-md overflow-hidden cursor-pointer select-none bg-neutral-100 dark:bg-zinc-800/60 hover:brightness-105"
+    :class="{ 'ring-2 ring-blue-500 dark:ring-blue-400': isSelected(item), 'opacity-60': isCut }"
+    :style="{ width: settings.photoSize + 'px', height: settings.photoSize + 'px' }"
+    >
+      <FileIcon :item="item" class="w-full h-full" />
+    </div>
 
     <div 
     :title="item.name"
@@ -254,3 +276,12 @@ const handleRenameBlur = async () => {
     </div>
 
 </template>
+
+<style scoped>
+.photo-cell :deep(img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+</style>

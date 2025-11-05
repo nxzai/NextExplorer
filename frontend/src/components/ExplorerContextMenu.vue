@@ -12,9 +12,11 @@ import { offset, flip, shift, useFloating } from '@floating-ui/vue';
 import { explorerContextMenuSymbol } from '@/composables/contextMenu';
 import { useFileStore } from '@/stores/fileStore';
 import { useSelection } from '@/composables/itemSelection';
+import { useFileActions } from '@/composables/fileActions';
 import { usePreviewManager } from '@/plugins/preview/manager';
 import { useInfoPanelStore } from '@/stores/infoPanel';
 import { normalizePath } from '@/api';
+import { modKeyLabel } from '@/utils/keyboard';
 import ModalDialog from '@/components/ModalDialog.vue';
 // Icons
 import {
@@ -59,16 +61,12 @@ const referenceStyles = computed(() => ({
   top: `${pointer.value.y}px`,
 }));
 
-const selectedItems = computed(() => fileStore.selectedItems);
-const hasSelection = computed(() => selectedItems.value.length > 0);
-const primaryItem = computed(() => selectedItems.value[0] ?? null);
-const isSingleItemSelected = computed(() => selectedItems.value.length === 1);
-const canRename = computed(() => {
-  if (!isSingleItemSelected.value) return false;
-  const item = primaryItem.value;
-  if (!item) return false;
-  return item.kind !== 'volume';
-});
+const actions = useFileActions();
+const selectedItems = actions.selectedItems;
+const hasSelection = actions.hasSelection;
+const primaryItem = actions.primaryItem;
+const isSingleItemSelected = actions.isSingleItemSelected;
+const canRename = actions.canRename;
 
 const deleteDialogTitle = computed(() => {
   const count = selectedItems.value.length;
@@ -149,30 +147,20 @@ const resolveItemPath = (item) => {
   if (!item || !item.name) {
     return normalizePath(fileStore.getCurrentPath || '');
   }
-  const parent = normalizePath(item.path || '');
-  const combined = parent ? `${parent}/${item.name}` : item.name;
-  return normalizePath(combined);
+  return actions.resolveItemPath(item);
 };
 
-const runCut = () => {
-  if (!fileStore.hasSelection) return;
-  fileStore.cut();
-};
-
-const runCopy = () => {
-  if (!fileStore.hasSelection) return;
-  fileStore.copy();
-};
-
+const runCut = () => actions.runCut();
+const runCopy = () => actions.runCopy();
 const runPasteIntoDirectory = async () => {
-  if (!fileStore.hasClipboardItems) return;
+  if (!actions.canPaste.value) return;
   const destination = resolveItemPath(targetItem.value);
-  await fileStore.paste(destination);
+  await actions.runPasteToDestination(destination);
 };
 
 const runPasteIntoCurrent = async () => {
-  if (!fileStore.hasClipboardItems) return;
-  await fileStore.paste();
+  if (!actions.canPaste.value) return;
+  await actions.runPasteIntoCurrent();
 };
 
 const runCreateFile = async () => {
@@ -183,10 +171,7 @@ const runCreateFolder = async () => {
   await fileStore.createFolder();
 };
 
-const runRename = () => {
-  if (!canRename.value || !primaryItem.value) return;
-  fileStore.beginRename(primaryItem.value);
-};
+const runRename = () => actions.runRename();
 
 const requestDelete = () => {
   if (!hasSelection.value) return;
@@ -197,7 +182,7 @@ const confirmDelete = async () => {
   if (!hasSelection.value || isDeleting.value) return;
   isDeleting.value = true;
   try {
-    await fileStore.del();
+    await actions.deleteNow();
     isDeleteConfirmOpen.value = false;
   } catch (error) {
     console.error('Delete operation failed', error);
@@ -234,8 +219,8 @@ const menuSections = computed(() => {
       ],
       [
         mk('paste', 'Paste', ContentPasteRound, runPasteIntoCurrent, {
-          disabled: !fileStore.hasClipboardItems,
-          shortcut: '⌘V',
+          disabled: !actions.canPaste.value,
+          shortcut: `${modKeyLabel}V`,
         }),
       ],
       [
@@ -252,12 +237,12 @@ const menuSections = computed(() => {
   ]);
 
   const clipboardSection = [
-    mk('cut', 'Cut', ContentCutRound, runCut, { disabled: !fileStore.hasSelection, shortcut: '⌘X' }),
-    mk('copy', 'Copy', ContentCopyRound, runCopy, { disabled: !fileStore.hasSelection, shortcut: '⌘C' }),
+    mk('cut', 'Cut', ContentCutRound, runCut, { disabled: !actions.canCut.value, shortcut: `${modKeyLabel}X` }),
+    mk('copy', 'Copy', ContentCopyRound, runCopy, { disabled: !actions.canCopy.value, shortcut: `${modKeyLabel}C` }),
   ];
   if (contextKind.value === 'directory') {
     clipboardSection.push(
-      mk('paste', 'Paste', ContentPasteRound, runPasteIntoDirectory, { disabled: !fileStore.hasClipboardItems, shortcut: '⌘V' }),
+      mk('paste', 'Paste', ContentPasteRound, runPasteIntoDirectory, { disabled: !actions.canPaste.value, shortcut: `${modKeyLabel}V` }),
     );
   }
   sections.push(clipboardSection);

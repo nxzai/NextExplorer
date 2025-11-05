@@ -27,7 +27,8 @@ const handleBackgroundContextMenu = (event) => {
 <template>
     
     <div
-    :class="settings.view === 'grid' ? 'grid grid-cols-[repeat(auto-fill,6rem)] gap-2' : 'flex flex-col gap-2'"
+    :class="settings.view === 'grid' ? 'grid grid-cols-[repeat(auto-fill,6rem)] gap-2' : settings.view === 'photos' ? 'grid gap-1 md:gap-2' : 'flex flex-col gap-2'"
+    :style="settings.view === 'photos' ? { gridTemplateColumns: `repeat(auto-fill, ${settings.photoSize}px)` } : undefined"
     @click.self="clearSelection()"
     @contextmenu.prevent.self="handleBackgroundContextMenu">
       <div v-for="item in resources" :key="item.name">

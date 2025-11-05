@@ -19,9 +19,13 @@ import MenuSortBy from '@/components/MenuSortBy.vue'
 import PreviewHost from '@/plugins/preview/PreviewHost.vue';
 import ExplorerContextMenu from '@/components/ExplorerContextMenu.vue';
 // import TerminalPanel from '@/components/TerminalPanel.vue';
+import { useSettingsStore } from '@/stores/settings';
+import PhotoSizeControl from '@/components/PhotoSizeControl.vue';
+import InfoPanel from '@/components/InfoPanel.vue';
 
 
 const route = useRoute()
+const settings = useSettingsStore()
 
 // Resizable aside state
 const asideWidth = useStorage('browser-aside-width', 230)
@@ -120,6 +124,7 @@ useTitle(currentPathName)
         <MenuSortBy/>
         <div class="h-8 w-[1px] mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
         <ViewMode/>
+        <PhotoSizeControl />
         <div class="h-8 w-[1px] mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
         <SearchBar/>
 
@@ -135,6 +140,8 @@ useTitle(currentPathName)
           </router-view>
         </div>
       </ExplorerContextMenu>
+      
+      
       <!-- <hr class="h-px border-0 bg-nextgray-400 dark:bg-neutral-700 mb-4" /> -->
       <!-- <div>
         <TerminalPanel/>
@@ -145,6 +152,7 @@ useTitle(currentPathName)
   <label for="sidebar-toggle" class="fixed inset-0 bg-black/20 z-30 hidden lg:hidden peer-checked:block"></label>
   <UploadProgress/>
   <PreviewHost/>
+  <InfoPanel/>
   </div>
 
 </template>

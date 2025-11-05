@@ -8,6 +8,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const gridView=()=>{view.value = 'grid'}
   const listView=()=>{view.value = 'list'}
   const tabView=()=>{view.value = 'tab'}
+  const photosView=()=>{view.value = 'photos'}
+
+  // Photos mode item size (in px)
+  const photoSize = useStorage('settings:photos:size', 160)
 
   const terminalHeight = ref(10);
   
@@ -35,6 +39,8 @@ export const useSettingsStore = defineStore('settings', () => {
     gridView, 
     listView,
     tabView,
+    photosView,
+    photoSize,
     isDark,
     toggleDark,
     sortBy,

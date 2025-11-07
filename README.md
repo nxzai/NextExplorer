@@ -3,6 +3,10 @@
 A modern, self-hosted file explorer with secure access control, polished UX, and a Docker-friendly deployment story.
 
 
+## Documentation
+
+https://deepwiki.com/vikramsoni2/nextExplorer
+
 ## Release 
 
 - added OIDC support for multi-user

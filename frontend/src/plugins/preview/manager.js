@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref, shallowRef } from 'vue';
 import { fetchFileContent, getPreviewUrl, normalizePath, downloadItems } from '@/api';
+import { useFileStore } from '@/stores/fileStore';
 import router from '@/router';
 import '@/plugins/preview/types';
 
@@ -55,6 +56,17 @@ export const usePreviewManager = defineStore('preview-manager', () => {
       getPreviewUrl: (targetPath = filePath) => {
         if (!targetPath) return null;
         return getPreviewUrl(normalizePath(targetPath));
+      },
+      getCurrentDirItems: (options = {}) => {
+        const { sorted = true } = options || {};
+        const store = useFileStore();
+        const currentDir = normalizePath(store.getCurrentPath || '');
+        const itemDir = normalizePath(snapshot?.path || '');
+
+        if (currentDir !== itemDir) return [];
+
+        const list = sorted ? (store.getCurrentPathItems || []) : (store.currentPathItems || []);
+        return Array.isArray(list) ? [...list] : [];
       },
       fetchFileContent: (targetPath = filePath) => {
         if (!targetPath) {

@@ -1,7 +1,7 @@
 const DEFAULT_EXTS = [
-  'docx', 'doc', 'odt', 'rtf', 'txt',
+  'docx', 'doc', 'odt', 'rtf',
   'xlsx', 'xls', 'ods', 'csv',
-  'pptx', 'ppt', 'odp',
+  'pptx', 'ppt', 'odp', 'pdf'
 ];
 
 export const onlyofficePreviewPlugin = (extensions) => ({

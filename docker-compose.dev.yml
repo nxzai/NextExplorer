@@ -6,7 +6,6 @@ services:
     volumes:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
-      # Adjust these host paths to your needs:
       - /Users/vikram/projects:/mnt/Projects
       - /Users/vikram/Downloads:/mnt/Downloads
       - /Users/vikram/Pictures:/mnt/Pictures
@@ -28,6 +27,7 @@ services:
 
       - ONLYOFFICE_URL=https://office.vsoni.com
       - ONLYOFFICE_SECRET=ha96M546Hl5oSSvrjvabmXK1D6qlRH15
+      - ONLYOFFICE_LANG=en
       
       # - OIDC_TOKEN_URL=https://auth.vsoni.com/application/o/token/
       # - OIDC_USERINFO_URL=https://auth.vsoni.com/application/o/userinfo/

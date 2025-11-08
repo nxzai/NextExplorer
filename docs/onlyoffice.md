@@ -8,6 +8,7 @@ Server configuration
   - `ONLYOFFICE_URL` – public URL of your Document Server, e.g. `https://office.vsoni.com`.
   - `PUBLIC_URL` – public base URL of this app, e.g. `https://files.example.com`. The Document Server fetches files and posts callbacks to this origin.
   - `ONLYOFFICE_SECRET` – Document Server JWT secret (must match DS `services.CoAuthoring.secret`). Used to sign `config.token` and verify DS requests.
+  - `ONLYOFFICE_LANG` – language code for the editor UI (e.g. `en`, `fr`). Defaults to `en`.
 
 Routes
 

@@ -104,7 +104,7 @@ router.post('/onlyoffice/config', async (req, res) => {
         customization: {
           anonymous: { request: false },
         },
-        lang: 'en',
+        lang: onlyoffice.lang || 'en',
         // Optionally attach current user info if available
         user: (req.user && req.user.id) ? {
           id: String(req.user.id),

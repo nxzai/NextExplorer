@@ -11,6 +11,7 @@
 /**
  * @typedef {Object} PreviewApi
  * @property {(path: string) => string | null} getPreviewUrl
+ * @property {(options?: { sorted?: boolean }) => PreviewItem[]} getCurrentDirItems
  * @property {(path: string) => Promise<{ content: string }>} fetchFileContent
  * @property {(path: string) => void} openEditor
  * @property {() => void} closePreview

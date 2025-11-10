@@ -296,15 +296,14 @@ export const useFileStore = defineStore('fileStore', () => {
     return pending;
   };
   
-  // Getters
   const getCurrentPath = computed(() => currentPath.value);
 
-  // get sorted currentPathItems
   const getCurrentPathItems = computed(() => {
     const settings = useSettingsStore();
     const direction = settings.sortBy.order === 'asc' ? 1 : -1;
 
     return [...currentPathItems.value].sort((a, b) => {
+      // keep directories first
       if (a.kind === 'directory' && b.kind != 'directory') return -1;
       if (a.kind != 'directory' && b.kind === 'directory') return 1;
       const aValue = a[settings.sortBy.by];

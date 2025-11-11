@@ -1,3 +1,4 @@
+const authRoutes = require('./auth');
 const uploadRoutes = require('./upload');
 const fileRoutes = require('./files');
 const browseRoutes = require('./browse');
@@ -14,6 +15,7 @@ const featuresRoutes = require('./features');
 const { onlyoffice } = require('../config/index');
 
 const registerRoutes = (app) => {
+  app.use('/api/auth', authRoutes);
   app.use('/api', uploadRoutes);
   app.use('/api', fileRoutes);
   app.use('/api', browseRoutes);

@@ -24,7 +24,7 @@ npm install
 npm start
 ```
 
-- `npm start` runs `nodemon app.js` and restarts on code changes.
+- `npm start` runs `node --watch app.js` to reload automatically on backend changes.
 - Environment variables:
   - `PORT` (default `3000`)
   - `VOLUME_ROOT` (default `/mnt`)

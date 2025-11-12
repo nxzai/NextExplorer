@@ -84,6 +84,9 @@ function toIconItem(it) {
           <div class="min-w-0">
             <div class="font-medium truncate">{{ it.name }}</div>
             <div class="text-xs text-neutral-500 font-mono truncate">/{{ it.path }}</div>
+            <div v-if="it.matchLine" class="mt-1 text-xs text-neutral-700 dark:text-neutral-300 font-mono truncate">
+              <template v-if="Number.isFinite(it.matchLineNumber)">line {{ it.matchLineNumber }} · </template>{{ it.matchLine }}
+            </div>
           </div>
         </div>
         <div class="shrink-0 ml-4">

@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs/promises');
 const { spawn } = require('child_process');
+const readline = require('readline');
 
 const { normalizeRelativePath, resolveVolumePath } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
@@ -11,188 +12,228 @@ const logger = require('../utils/logger');
 
 const router = express.Router();
 
+// Constants
 const IGNORED_DIRS = new Set(['.git', 'node_modules', 'dist', 'build']);
 const DEFAULT_LIMIT = 500;
 const MAX_LIMIT = 5000;
-const CONTENT_FALLBACK_MAX_SIZE = (Number.isFinite(searchConfig?.maxFileSizeBytes) && searchConfig.maxFileSizeBytes > 0)
-  ? searchConfig.maxFileSizeBytes
-  : 5 * 1024 * 1024; // default 5MB
+const CONTENT_FALLBACK_MAX_SIZE = searchConfig?.maxFileSizeBytes > 0 
+  ? searchConfig.maxFileSizeBytes 
+  : 5 * 1024 * 1024;
 
-function toLimit(value, def = DEFAULT_LIMIT) {
+// Utilities
+const toLimit = (value, def = DEFAULT_LIMIT) => {
   const n = Number(value);
-  if (Number.isFinite(n) && n > 0) {
-    return Math.min(n, MAX_LIMIT);
-  }
-  return def;
-}
+  return (Number.isFinite(n) && n > 0) ? Math.min(n, MAX_LIMIT) : def;
+};
 
-async function isDirectory(p) {
+const isDirectory = async (p) => {
   try {
-    const st = await fs.stat(p);
-    return st.isDirectory();
+    return (await fs.stat(p)).isDirectory();
   } catch {
     return false;
   }
-}
+};
 
-function hasRipgrep() {
-  return new Promise((resolve) => {
-    const child = spawn('rg', ['--version']);
-    child.on('error', () => resolve(false));
-    child.on('exit', (code) => resolve(code === 0));
-  });
-}
+const hasRipgrep = () => new Promise((resolve) => {
+  const child = spawn('rg', ['--version']);
+  child.on('error', () => resolve(false));
+  child.on('exit', (code) => resolve(code === 0));
+});
 
-function collectStdout(child) {
-  return new Promise((resolve, reject) => {
-    let out = '';
-    let err = '';
-    child.stdout.on('data', (d) => { out += d.toString(); });
-    child.stderr.on('data', (d) => { err += d.toString(); });
-    child.on('error', reject);
-    child.on('close', (code) => {
-      if (code === 0 || (code === 1 && out)) {
-        // rg returns 1 for no matches; still return output
-        resolve({ out, err, code });
-      } else {
-        resolve({ out: '', err, code });
-      }
-    });
-  });
-}
+// Search implementations
+const buildRipgrepArgs = () => ['-g', '!.git', '-g', '!node_modules', '-g', '!dist', '-g', '!build'];
 
-async function runRipgrepSearch(baseAbsPath, relBasePath, term, limit, deep = true) {
-  const globArgs = ['-g', '!.git', '-g', '!node_modules', '-g', '!dist', '-g', '!build'];
-  const fileSet = new Set();
-  if (deep) {
-    // Content matches (-l prints matching files only)
-    const rgContentArgs = [
-      '-l', '--hidden', '--no-messages', '--smart-case', 
-      '--max-filesize', searchConfig?.maxFileSize || CONTENT_FALLBACK_MAX_SIZE.toString(),
-      '-F', term, '.',
-      ...globArgs,
-    ];
-    const contentProc = spawn('rg', rgContentArgs, { cwd: baseAbsPath });
-    const contentRes = await collectStdout(contentProc);
-    for (const s of contentRes.out.split(/\r?\n/)) {
-      const p = s.trim();
-      if (!p) continue;
-      const normalized = p.replace(/\\/g, '/');
-      fileSet.add(relBasePath ? path.posix.join(relBasePath, normalized) : normalized);
+const normalizePath = (p, relBasePath) => {
+  const normalized = p.replace(/\\/g, '/');
+  return relBasePath ? path.posix.join(relBasePath, normalized) : normalized;
+};
+
+const shouldIgnore = (name) => IGNORED_DIRS.has(name) || excludedFiles.includes(name);
+
+const extractDirMatches = (fullPath, needle) => {
+  const dirs = new Set();
+  const dirPath = path.posix.dirname(fullPath);
+  
+  if (dirPath && dirPath !== '.') {
+    const parts = dirPath.split('/');
+    let acc = '';
+    
+    for (const part of parts) {
+      if (!part || shouldIgnore(part)) continue;
+      acc = acc ? `${acc}/${part}` : part;
+      if (part.toLowerCase().includes(needle)) dirs.add(acc);
     }
   }
+  
+  return dirs;
+};
 
-  // Filename matches and derive directory matches from file listing
-  const rgListArgs = ['--files', '--hidden', '--no-messages', ...globArgs];
-  const listProc = spawn('rg', rgListArgs, { cwd: baseAbsPath });
-  const listRes = await collectStdout(listProc);
+const shouldIncludeResult = async (rel) => {
+  const name = path.posix.basename(rel);
+  if (excludedFiles.includes(name)) return false;
+  if (await getPermissionForPath(rel) === 'hidden') return false;
+  return true;
+};
+
+const formatResult = (rel, kind, line, lineNumber) => {
+  const parent = path.posix.dirname(rel);
+  const item = { 
+    name: path.posix.basename(rel), 
+    path: parent === '.' ? '' : parent, 
+    kind 
+  };
+  
+  if (line != null) {
+    item.matchLine = line;
+    if (Number.isFinite(lineNumber)) item.matchLineNumber = lineNumber;
+  }
+  
+  return item;
+};
+
+// OPTIMIZED: Stream results as they come in
+async function* generateRipgrepResults(baseAbsPath, relBasePath, term, deep = true) {
+  const globArgs = buildRipgrepArgs();
   const needle = term.toLowerCase();
+  const seenPaths = new Set();
   const dirSet = new Set();
 
-  for (const line of listRes.out.split(/\r?\n/)) {
-    const rel = line.trim();
-    if (!rel) continue;
-    const normalizedRel = rel.replace(/\\/g, '/');
-    const fullRel = relBasePath ? path.posix.join(relBasePath, normalizedRel) : normalizedRel;
+  // Phase 1 & 2: Stream file list and yield directory/filename matches immediately
+  const fileListProcess = spawn('rg', 
+    ['--files', '--hidden', '--no-messages', ...globArgs], 
+    { cwd: baseAbsPath }
+  );
 
-    // Check filename
-    const base = path.posix.basename(fullRel).toLowerCase();
-    if (base.includes(needle)) {
-      fileSet.add(fullRel);
-    }
+  const rl = readline.createInterface({
+    input: fileListProcess.stdout,
+    crlfDelay: Infinity
+  });
 
-    // Derive and check directory names from the file path
-    const dirRel = path.posix.dirname(fullRel);
-    if (dirRel && dirRel !== '.') {
-      const parts = dirRel.split('/');
-      let acc = '';
-      for (const part of parts) {
-        if (!part) continue;
-        if (IGNORED_DIRS.has(part)) continue;
-        if (excludedFiles.includes(part)) continue;
-        acc = acc ? `${acc}/${part}` : part;
-        if (part.toLowerCase().includes(needle)) {
-          dirSet.add(acc);
+  // Process lines as they arrive
+  for await (const line of rl) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    const fullRel = normalizePath(trimmed, relBasePath);
+    
+    // Extract and yield directory matches immediately
+    for (const dirPath of extractDirMatches(fullRel, needle)) {
+      if (!dirSet.has(dirPath) && !seenPaths.has(dirPath)) {
+        dirSet.add(dirPath);
+        seenPaths.add(dirPath);
+        if (await shouldIncludeResult(dirPath)) {
+          yield formatResult(dirPath, 'dir');
         }
       }
     }
 
-    if (fileSet.size + dirSet.size >= limit) {
-      // We've likely collected enough candidates; continue mapping & filtering later
-      // but we can stop early here to avoid excessive processing.
-      break;
+    // Check filename match and yield immediately
+    const baseName = path.posix.basename(fullRel).toLowerCase();
+    if (baseName.includes(needle) && !seenPaths.has(fullRel)) {
+      seenPaths.add(fullRel);
+      if (await shouldIncludeResult(fullRel)) {
+        yield formatResult(fullRel, 'file');
+      }
     }
   }
 
-  const results = [];
-  for (const rel of fileSet) results.push({ rel, kind: 'file' });
-  for (const rel of dirSet) results.push({ rel, kind: 'dir' });
-  return results;
+  // Phase 3: Stream content matches
+  if (!deep) return;
+
+  const contentArgs = [
+    '-n', '-H', '--no-heading', '--hidden', '--no-messages', 
+    '--smart-case', '-F', term, '.', '-m', '1', ...globArgs
+  ];
+  if (searchConfig?.maxFileSize) {
+    contentArgs.unshift('--max-filesize', searchConfig.maxFileSize);
+  }
+
+  const contentProcess = spawn('rg', contentArgs, { cwd: baseAbsPath });
+  const contentRl = readline.createInterface({
+    input: contentProcess.stdout,
+    crlfDelay: Infinity
+  });
+
+  for await (const line of contentRl) {
+    const text = line.trim();
+    if (!text) continue;
+    
+    const [filePath, lineNum, ...rest] = text.split(':');
+    if (!lineNum || !rest.length) continue;
+    
+    const ln = Number(lineNum);
+    if (!Number.isFinite(ln)) continue;
+    
+    const rel = normalizePath(filePath, relBasePath);
+    if (seenPaths.has(rel)) continue;
+    
+    seenPaths.add(rel);
+    if (await shouldIncludeResult(rel)) {
+      yield formatResult(rel, 'file', rest.join(':'), ln);
+    }
+  }
 }
 
-async function fallbackSearch(baseAbsPath, relBasePath, term, limit, deep = true) {
-  const fileResults = new Set();
-  const dirResults = new Set();
+async function* generateFallbackResults(baseAbsPath, relBasePath, term, deep = true) {
+  const seenPaths = new Set();
   const needle = term.toLowerCase();
 
-  async function walk(dirAbs, dirRel) {
+  // Yield results immediately as we find them
+  const walk = async function* (dirAbs, dirRel) {
     const dirents = await fs.readdir(dirAbs, { withFileTypes: true });
+    
     for (const d of dirents) {
-      if (fileResults.size + dirResults.size >= limit) break;
-      const name = d.name;
-      if (IGNORED_DIRS.has(name)) continue;
-      if (excludedFiles.includes(name)) continue;
-
-      const abs = path.join(dirAbs, name);
-      const rel = dirRel ? path.posix.join(dirRel, name) : name;
+      if (shouldIgnore(d.name)) continue;
+      
+      const abs = path.join(dirAbs, d.name);
+      const rel = dirRel ? path.posix.join(dirRel, d.name) : d.name;
 
       if (d.isDirectory()) {
-        // directory name match
-        if (name.toLowerCase().includes(needle)) {
-          dirResults.add(rel);
-          if (fileResults.size + dirResults.size >= limit) continue; // still walk to find deeper matches
+        if (d.name.toLowerCase().includes(needle) && !seenPaths.has(rel)) {
+          seenPaths.add(rel);
+          if (await shouldIncludeResult(rel)) {
+            yield formatResult(rel, 'dir');
+          }
         }
-        await walk(abs, rel);
+        yield* walk(abs, rel);
       } else if (d.isFile()) {
-        // filename match
-        if (name.toLowerCase().includes(needle)) {
-          fileResults.add(rel);
-          if (fileResults.size + dirResults.size >= limit) break;
-          continue;
-        }
-        if (deep) {
-          // content match (small files only)
+        if (d.name.toLowerCase().includes(needle) && !seenPaths.has(rel)) {
+          seenPaths.add(rel);
+          if (await shouldIncludeResult(rel)) {
+            yield formatResult(rel, 'file');
+          }
+        } else if (deep && !seenPaths.has(rel)) {
           try {
             const st = await fs.stat(abs);
             if (st.size <= CONTENT_FALLBACK_MAX_SIZE) {
               const content = await fs.readFile(abs, 'utf8');
-              if (content.toLowerCase().includes(needle)) {
-                fileResults.add(rel);
-                if (fileResults.size + dirResults.size >= limit) break;
+              const lower = content.toLowerCase();
+              const idx = lower.indexOf(needle);
+              
+              if (idx !== -1) {
+                const lineNumber = (content.slice(0, idx).match(/\n/g)?.length ?? 0) + 1;
+                const matchedLine = content.split(/\r?\n/)[lineNumber - 1] || '';
+                seenPaths.add(rel);
+                if (await shouldIncludeResult(rel)) {
+                  yield formatResult(rel, 'file', matchedLine, lineNumber);
+                }
               }
             }
           } catch {
-            // ignore read/encoding errors
+            // Ignore read/encoding errors
           }
         }
       }
     }
-  }
+  };
 
-  await walk(baseAbsPath, relBasePath);
-  const results = [];
-  for (const rel of fileResults) results.push({ rel, kind: 'file' });
-  for (const rel of dirResults) results.push({ rel, kind: 'dir' });
-  return results;
+  yield* walk(baseAbsPath, relBasePath);
 }
 
 router.get('/search', async (req, res) => {
   try {
-    const qRaw = typeof req.query.q === 'string' ? req.query.q : '';
-    const q = qRaw.trim();
-    if (!q) {
-      return res.status(400).json({ error: 'Search term (q) is required.' });
-    }
+    const q = (req.query.q || '').trim();
+    if (!q) return res.status(400).json({ error: 'Search term (q) is required.' });
 
     const relBase = normalizeRelativePath(req.query.path || '');
     const baseAbs = resolveVolumePath(relBase);
@@ -205,26 +246,18 @@ router.get('/search', async (req, res) => {
     }
 
     const limit = toLimit(req.query.limit);
+    const ripgrepAllowed = searchConfig?.ripgrep !== false;
+    const useRipgrep = ripgrepAllowed && await hasRipgrep();
+    const deepEnabled = searchConfig?.deep !== false;
 
-    const useRipgrep = await hasRipgrep();
-    const deepEnabled = searchConfig?.deep !== false; // default to true
-    let entries = [];
-    if (useRipgrep) entries = await runRipgrepSearch(baseAbs, relBase, q, limit, deepEnabled);
-    else entries = await fallbackSearch(baseAbs, relBase, q, limit, deepEnabled);
+    const generator = useRipgrep 
+      ? generateRipgrepResults(baseAbs, relBase, q, deepEnabled)
+      : generateFallbackResults(baseAbs, relBase, q, deepEnabled);
 
-    // Map/normalize and filter hidden/excluded; include kind
     const items = [];
-    for (const entry of entries) {
-      const rel = entry?.rel;
-      const kind = entry?.kind === 'dir' ? 'dir' : 'file';
-      if (!rel) continue;
-      const name = path.posix.basename(rel);
-      if (excludedFiles.includes(name)) continue;
-      const perm = await getPermissionForPath(rel);
-      if (perm === 'hidden') continue;
-      const parent = path.posix.dirname(rel);
-      items.push({ name, path: parent === '.' ? '' : parent, kind });
-      if (items.length >= limit) break;
+    for await (const item of generator) {
+      items.push(item);
+      if (items.length >= limit) break; 
     }
 
     res.json({ items });

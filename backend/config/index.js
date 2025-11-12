@@ -164,7 +164,13 @@ module.exports = {
   },
   search: {
     // Enable deep (content) search. When false, only file/dir names are matched.
-    deep: (normalizeBoolean(process.env.DEEP_SEARCH) ?? true),
+    deep: (normalizeBoolean(process.env.SEARCH_DEEP) ?? true),
+    // Allow using ripgrep if available (set to false to force fallback search)
+    ripgrep: (() => {
+      const a = normalizeBoolean(process.env.SEARCH_RIPGREP);
+      if (a !== null) return a;
+      return true;
+    })(),
     // Optional: limit max file size considered for content search.
     // Example values: "5M", "512K", or raw bytes like "1048576".
     maxFileSize: (typeof process.env.SEARCH_MAX_FILESIZE === 'string' && process.env.SEARCH_MAX_FILESIZE.trim())

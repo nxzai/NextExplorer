@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSettingsStore } from '@/stores/settings'
 import FileObject from '@/components/FileObject.vue';
@@ -16,11 +16,21 @@ const selectedItems = ref([]);
 const { clearSelection } = useSelection();
 const contextMenu = useExplorerContextMenu();
 
+const applySelectionFromQuery = () => {
+  const selectName = typeof route.query?.select === 'string' ? route.query.select : '';
+  if (!selectName) return;
+  const match = fileStore.getCurrentPathItems.find((it) => it?.name === selectName);
+  if (match) {
+    fileStore.selectedItems = [match];
+  }
+};
+
 const loadFiles = async () => {
   loading.value = true
   const path = route.params.path || ''
   try {
     await fileStore.fetchPathItems(path)
+    applySelectionFromQuery();
   } catch (error) {
     console.error('Failed to load directory contents', error)
   } finally {

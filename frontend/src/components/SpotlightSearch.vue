@@ -11,6 +11,7 @@ const router = useRouter();
 const route = useRoute();
 const spotlight = useSpotlightStore();
 
+
 const query = ref('');
 const inputRef = ref(null);
 const results = ref([]);
@@ -18,19 +19,24 @@ const loading = ref(false);
 const errorMsg = ref('');
 const activeIndex = ref(-1);
 
+
 const basePath = computed(() => {
-  // Prefer current browse path; fall back to explicit query param
-  const fromBrowse = route.path.startsWith('/browse') && typeof route.params.path === 'string' ? route.params.path : '';
+  const fromBrowse = route.path.startsWith('/browse') && typeof route.params.path === 'string' 
+    ? route.params.path 
+    : '';
   const fromQuery = typeof route.query.path === 'string' ? route.query.path : '';
   return normalizePath(fromBrowse || fromQuery || '');
 });
 
 const performSearch = useDebounceFn(async () => {
   const term = query.value.trim();
+  
   results.value = [];
   errorMsg.value = '';
   activeIndex.value = -1;
+  
   if (!term) return;
+  
   loading.value = true;
   try {
     const { items = [] } = await searchApi(basePath.value, term);
@@ -40,87 +46,126 @@ const performSearch = useDebounceFn(async () => {
   } finally {
     loading.value = false;
   }
-}, 200);
+}, 1000);
 
-watch(query, () => {
-  performSearch();
-});
 
-watch(() => spotlight.isOpen, async (open) => {
-  if (open) {
-    await nextTick();
-    query.value = '';
-    results.value = [];
-    errorMsg.value = '';
-    activeIndex.value = -1;
-    inputRef.value && inputRef.value.focus();
+function navigateDown() {
+  const count = results.value.length;
+  if (count === 0) return;
+  activeIndex.value = (activeIndex.value + 1) % count;
+}
+
+function navigateUp() {
+  const count = results.value.length;
+  if (count === 0) return;
+  activeIndex.value = (activeIndex.value - 1 + count) % count;
+}
+
+function selectResult() {
+  if (results.value.length === 0) return;
+  const selectedItem = results.value[Math.max(0, activeIndex.value)];
+  if (selectedItem) openResult(selectedItem);
+}
+
+function openResult(item) {
+  if (!item) return;
+  
+  const isDirectory = item.kind === 'dir';
+  const targetPath = isDirectory
+    ? [item.path, item.name].filter(Boolean).join('/')
+    : item.path || '';
+  
+  const normalizedPath = normalizePath(targetPath);
+  // For files, open parent folder and preselect the file in that folder.
+  // For directories, just open the directory (no preselection since it's not listed inside itself).
+  if (!isDirectory && item.name) {
+    router.push({ path: `/browse/${normalizedPath}`, query: { select: item.name } });
+  } else {
+    router.push({ path: `/browse/${normalizedPath}` });
   }
-});
-
-function openResult(it) {
-  if (!it) return;
-  const kind = it.kind === 'dir' ? 'dir' : 'file';
-  const target = kind === 'dir'
-    ? [it.path, it.name].filter(Boolean).join('/')
-    : (it.path || '');
-  const normalized = normalizePath(target || '');
-  router.push({ path: `/browse/${normalized}` });
   spotlight.close();
 }
 
-// Input itself no longer handles keydown; we rely on VueUse handlers above
 
-// VueUse keyboard helpers
-const keys = useMagicKeys();
 
-// Helper to avoid handling when user is typing in other inputs/editable fields
-const isEditableElement = (el) => {
+
+function isEditableElement(el) {
   if (!el) return false;
   const tag = (el.tagName || '').toLowerCase();
-  if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
-  if (el.isContentEditable) return true;
-  return false;
-};
-const shouldIgnore = () => isEditableElement(document.activeElement);
+  if (['input', 'textarea', 'select'].includes(tag)) return true;
+  return el.isContentEditable;
+}
 
-// Open spotlight with ⌘K / Ctrl+K
-const openCombo = computed(() => (keys['Meta+K']?.value || keys['Ctrl+K']?.value));
-whenever(openCombo, () => {
-  if (spotlight.isOpen) return;
-  if (shouldIgnore()) return;
-  spotlight.open();
+function shouldIgnoreKeyboard() {
+  return isEditableElement(document.activeElement);
+}
+
+function resetSpotlight() {
+  query.value = '';
+  results.value = [];
+  errorMsg.value = '';
+  activeIndex.value = -1;
+}
+
+function toIconItem(item) {
+  if (!item) return { name: '', path: '', kind: 'unknown' };
+  
+  if (item.kind === 'dir') {
+    return { name: item.name, path: item.path, kind: 'directory' };
+  }
+  
+  const name = String(item.name || '');
+  const lastDotIndex = name.lastIndexOf('.');
+  const ext = lastDotIndex > -1 ? name.slice(lastDotIndex + 1).toLowerCase() : '';
+  const kind = (ext && ext.length <= 10) ? ext : 'unknown';
+  
+  return { name: item.name, path: item.path, kind };
+}
+
+
+
+watch(query, performSearch);
+
+watch(() => spotlight.isOpen, async (isOpen) => {
+  if (isOpen) {
+    await nextTick();
+    resetSpotlight();
+    inputRef.value?.focus();
+  }
 });
 
-// Close on Escape when open
-const escWhenOpen = computed(() => Boolean(keys.escape?.value) && spotlight.isOpen);
-whenever(escWhenOpen, () => {
+
+
+const keys = useMagicKeys();
+const openCombo = computed(() => keys['Meta+K']?.value || keys['Ctrl+K']?.value);
+const closeCombo = computed(() => keys.escape?.value && spotlight.isOpen);
+
+whenever(openCombo, () => {
+  if (!spotlight.isOpen && !shouldIgnoreKeyboard()) {
+    spotlight.open();
+  }
+});
+
+whenever(closeCombo, () => {
   spotlight.close();
 });
 
-// Arrow navigation and submit when spotlight is open
 onKeyStroke('ArrowDown', (e) => {
   if (!spotlight.isOpen) return;
-  const count = results.value.length;
-  if (count === 0) return;
   e.preventDefault();
-  activeIndex.value = (activeIndex.value + 1) % count;
+  navigateDown();
 }, { eventName: 'keydown' });
 
 onKeyStroke('ArrowUp', (e) => {
   if (!spotlight.isOpen) return;
-  const count = results.value.length;
-  if (count === 0) return;
   e.preventDefault();
-  activeIndex.value = (activeIndex.value - 1 + count) % count;
+  navigateUp();
 }, { eventName: 'keydown' });
 
 onKeyStroke('Enter', (e) => {
   if (!spotlight.isOpen) return;
-  const count = results.value.length;
-  if (count === 0) return;
   e.preventDefault();
-  const it = results.value[Math.max(0, activeIndex.value)];
-  if (it) openResult(it);
+  selectResult();
 }, { eventName: 'keydown' });
 
 </script>
@@ -130,7 +175,7 @@ onKeyStroke('Enter', (e) => {
     <div v-if="spotlight.isOpen" class="fixed inset-0 z-[550] flex items-start justify-center pt-[10vh]">
       <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="spotlight.close()"></div>
 
-      <div class="relative w-[90%] sm:w-[640px] max-w-[720px] rounded-2xl shadow-2xl border border-neutral-200/70 dark:border-neutral-700/60 bg-white/90 dark:bg-zinc-800/95  overflow-hidden">
+      <div class="relative w-[90%] sm:w-[640px] max-w-[720px] rounded-2xl shadow-2xl border border-neutral-200/70 dark:border-neutral-700/60 bg-white/90 dark:bg-zinc-800/95 overflow-hidden">
         <!-- Input row -->
         <div class="flex items-center gap-2 px-4 py-3 border-b border-neutral-200/70 dark:border-neutral-800/80">
           <MagnifyingGlassIcon class="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
@@ -157,19 +202,25 @@ onKeyStroke('Enter', (e) => {
 
           <div v-else class="divide-y divide-neutral-100 dark:divide-neutral-800">
             <button
-              v-for="(it, idx) in results"
-              :key="it.path + '/' + it.name"
+              v-for="(item, idx) in results"
+              :key="item.path + '/' + item.name"
               type="button"
               class="w-full text-left px-3 py-2 hover:bg-zinc-300/60 dark:hover:bg-slate-300/10 focus:bg-blue-50/70 dark:focus:bg-blue-500/10 outline-none"
-              :class="idx === activeIndex ? 'bg-zinc-300/60 dark:bg-slate-300/10' : ''"
+              :class="{ 'bg-zinc-300/60 dark:bg-slate-300/10': idx === activeIndex }"
               @mouseenter="activeIndex = idx"
-              @click="openResult(it)"
+              @click="openResult(item)"
             >
               <div class="flex items-center gap-3">
-                <FileIcon :item="toIconItem(it)" class="w-8 h-8 shrink-0" />
+                <FileIcon :item="toIconItem(item)" class="w-8 h-8 shrink-0" />
                 <div class="min-w-0">
-                  <div class="text-[15px] text-neutral-900 dark:text-neutral-100 truncate">{{ it.name }}</div>
-                  <div class="text-[12px] text-neutral-500 dark:text-neutral-400 font-mono truncate">/{{ it.path }}</div>
+                  <div class="text-[15px] text-neutral-900 dark:text-neutral-100 truncate">{{ item.name }}</div>
+                  <div class="text-[12px] text-neutral-500 dark:text-neutral-400 font-mono truncate">/{{ item.path }}</div>
+                  <div v-if="item.matchLine" class="mt-0.5 text-xs text-zinc-600 dark:text-yellow-500 font-mono truncate">
+                    <template v-if="Number.isFinite(item.matchLineNumber)">
+                      <span class="text-zinc-500 dark:text-zinc-300 pr-2">line #{{ item.matchLineNumber }}</span>
+                    </template>
+                    {{ item.matchLine }}
+                  </div>
                 </div>
               </div>
             </button>
@@ -179,33 +230,6 @@ onKeyStroke('Enter', (e) => {
     </div>
   </transition>
 </template>
-
-<script>
-export default {
-  methods: {
-    toIconItem(it) {
-      if (!it) return { name: '', path: '', kind: 'unknown' };
-      const isDir = it.kind === 'dir';
-      let ext = 'unknown';
-      if (!isDir) {
-        const name = String(it.name || '');
-        const idx = name.lastIndexOf('.');
-        if (idx > 0 && idx < name.length - 1) {
-          ext = name.slice(idx + 1).toLowerCase();
-          if (ext.length > 10) ext = 'unknown';
-        } else {
-          ext = 'unknown';
-        }
-      }
-      return {
-        name: it.name,
-        path: it.path,
-        kind: isDir ? 'directory' : ext,
-      };
-    }
-  }
-}
-</script>
 
 <style scoped>
 .fade-enter-active, .fade-leave-active { transition: opacity 0.12s ease; }

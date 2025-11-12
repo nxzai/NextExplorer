@@ -3,9 +3,11 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import HeaderLogo from '@/components/HeaderLogo.vue';
-import { apiBase } from '@/api';
+import ModalDialog from '@/components/ModalDialog.vue';
+import { LockClosedIcon, KeyIcon, InformationCircleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { useStorage } from '@vueuse/core';
+import { apiBase, fetchFeatures } from '@/api';
 import { useAuthStore } from '@/stores/auth';
-
 
 const version = __APP_VERSION__
 
@@ -17,6 +19,7 @@ const loginEmailValue = ref('');
 const loginPasswordValue = ref('');
 const loginError = ref('');
 const isSubmittingLogin = ref(false);
+const showResetInfo = ref(false);
 
 const statusError = computed(() => auth.lastError || '');
 const supportsLocal = computed(() => auth.strategies?.local !== false);
@@ -30,12 +33,39 @@ const redirectTarget = computed(() => {
 });
 
 const inputBaseClasses =
-  'mt-2 w-full rounded-lg border border-white/10 bg-nextzinc-900/70 px-4 py-2 text-nextgray-100 placeholder-nextgray-300 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/60 transition';
+  'mt-2 w-full h-12 rounded-lg ring-1 ring-inset ring-white/10 bg-zinc-800/30 px-4 text-nextgray-100 placeholder-zinc-500 focus:ring-accent/60 focus:outline-none transition';
 
 const buttonBaseClasses =
-  'w-full rounded-lg bg-accent px-4 py-2 font-semibold text-nextzinc-900 shadow-lg shadow-accent/30 transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60';
+  'w-full h-12 rounded-lg bg-accent px-4 font-semibold text-nextzinc-900 transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60';
 
 const helperTextClasses = 'text-sm text-red-400';
+
+// Announcements pulled from public features endpoint
+const announcement = ref(null);
+const hasAnnouncement = computed(() => Boolean(announcement.value));
+
+// Announcement callout styles, tailored for dark login background
+const LEVEL_BORDER = Object.freeze({
+  info: 'border-blue-400/70',
+  success: 'border-emerald-400/70',
+  warning: 'border-amber-400/70',
+  error: 'border-rose-400/70',
+});
+const LEVEL_ICON = Object.freeze({
+  info: 'text-blue-300',
+  success: 'text-emerald-300',
+  warning: 'text-amber-300',
+  error: 'text-rose-300',
+});
+
+// Persist dismissal locally for the login route only
+const dismissedOnLogin = useStorage('auth-login:announcements:dismissed', {});
+const currentAnnouncementId = computed(() => String(announcement.value?.id || '__generic'));
+const showAnnouncement = computed(() => hasAnnouncement.value && !dismissedOnLogin.value[currentAnnouncementId.value]);
+const dismissAnnouncement = () => {
+  const id = currentAnnouncementId.value;
+  dismissedOnLogin.value = { ...(dismissedOnLogin.value || {}), [id]: true };
+};
 
 const redirectToDestination = () => {
   const target = redirectTarget.value;
@@ -63,9 +93,18 @@ watch(
   { immediate: true },
 );
 
-onMounted(() => {
+onMounted(async () => {
   if (!auth.hasStatus && !auth.isLoading) {
     auth.initialize();
+  }
+  try {
+    const features = await fetchFeatures();
+    const anns = Array.isArray(features?.announcements) ? features.announcements : [];
+    // Prefer the migration announcement if present; else show the first
+    const mig = anns.find(a => a?.id === 'v3-user-migration');
+    announcement.value = mig || anns[0] || null;
+  } catch (_) {
+    // Non-fatal; announcements are optional
   }
 });
 
@@ -123,92 +162,170 @@ const handleOidcLogin = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-nextzinc-900 via-slateblue to-nextgray-400/40 text-nextgray-100">
-    <div class="flex min-h-screen items-center justify-center px-4 py-12">
-      <div v-if="auth.isLoading" class="flex flex-col items-center gap-3">
+  <div class="min-h-screen bg-nextzinc-900 text-nextgray-100">
+    <!-- Loading state covering screen -->
+    <div v-if="auth.isLoading" class="flex min-h-screen items-center justify-center px-4 py-12">
+      <div class="flex flex-col items-center gap-3">
         <div class="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-accent"></div>
         <p class="text-lg font-medium tracking-wide text-nextgray-100/80">Preparing your explorer…</p>
       </div>
+    </div>
 
-      <div
-        v-else
-        class="w-full max-w-lg rounded-3xl border border-white/10 bg-nextzinc-900/80 p-8 shadow-2xl shadow-black/40 backdrop-blur-md"
+    <div v-else class="grid min-h-screen grid-cols-1 md:grid-cols-2">
+      <!-- Left: Highlights / Branding -->
+      <section
+        class="relative hidden md:flex flex-col justify-between border-r border-white/10 bg-gradient-to-br from-nextzinc-900 via-slateblue to-nextzinc-900 px-12 py-10 overflow-hidden"
       >
-        <div class="flex items-center justify-between border-b border-white/5 pb-6">
-          <HeaderLogo class="mb-0" />
-          <span class="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white/70">
-            Version {{ version }}
+        <!-- subtle accent glow for depth -->
+        <div class="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-accent/10 blur-3xl"></div>
+        <div class="flex items-center justify-between">
+          <h1 class="mb-0 h-9 text-2xl font-bold tracking-tight text-white">
+            <HeaderLogo appname="NextExplorer"/>
+          </h1>
+          <span class="inline-flex h-9 items-center rounded-full bg-white/5 px-3 text-xs font-semibold uppercase tracking-widest text-white/70">
+            v{{ version }}
           </span>
         </div>
 
-        <div class="mt-6 space-y-6">
-          <div>
-            <h2 class="text-2xl font-semibold text-white">Unlock your explorer</h2>
-            <p class="mt-2 text-sm text-white/60">
-              Sign in with your email and password, or use your organization&apos;s single sign-on if available.
-            </p>
+        <div class="max-w-xl">
+          <h2 class="text-5xl font-semibold tracking-tight text-white">
+            The future of <span class="text-accent">file management</span> is here
+          </h2>
+          <p class="mt-4 text-base leading-relaxed text-white/70">Securely access, organize and collaborate on all your files from anywhere</p>
+          <ul class="mt-8 space-y-3 text-sm text-white/80">
+            <li class="flex items-center gap-3">
+              <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-accent"></span>
+              Keyboard-first navigation and blazing search.
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-accent"></span>
+              Granular access controls with audit-friendly actions.
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-accent"></span>
+              Seamless Single Sign-On with your IdP.
+            </li>
+          </ul>
+        </div>
+
+        <div class="text-xs text-white/40">© {{ new Date().getFullYear() }} NextExplorer</div>
+      </section>
+
+      <!-- Right: Auth form -->
+      <section class="flex items-center justify-center px-6 py-10">
+        <div class="w-full max-w-md">
+          <div class="mb-8 flex items-center justify-between md:hidden">
+            <h1 class="mb-0 text-2xl font-bold tracking-tight text-white">NextExplorer</h1>
+            <span class="inline-flex h-9 items-center rounded-full bg-white/5 px-3 text-xs font-semibold uppercase tracking-widest text-white/70">
+              v{{ version }}
+            </span>
+          </div>
+          <div class="mb-6">
+            <p class="text-3xl font-black leading-tight tracking-tight text-white">Welcome back</p>
+            <p class="mt-2 text-sm text-white/60">Log in to access NextExplorer.</p>
           </div>
 
-          <form v-if="supportsLocal" class="space-y-6" @submit.prevent="handleLoginSubmit">
-            <div class="space-y-4">
-              <div>
-                <label for="login-email" class="block text-sm font-medium uppercase tracking-wide text-white/70">
-                  Email
-                </label>
-                <input
-                  id="login-email"
-                  v-model="loginEmailValue"
-                  type="email"
-                  autocomplete="email"
-                  :class="inputBaseClasses"
-                  placeholder="Enter your email"
-                  :disabled="isSubmittingLogin"
-                />
-              </div>
-
-              <div>
-                <label for="login-password" class="block text-sm font-medium uppercase tracking-wide text-white/70">
-                  Password
-                </label>
-                <input
-                  id="login-password"
-                  v-model="loginPasswordValue"
-                  type="password"
-                  autocomplete="current-password"
-                  :class="inputBaseClasses"
-                  placeholder="Enter your password"
-                  :disabled="isSubmittingLogin"
-                />
+          <!-- Inline announcement if available -->
+          <div v-if="showAnnouncement" class="mb-6">
+            <div
+              class="relative rounded-xl px-4 py-4 ring-1 ring-inset ring-white/10 bg-white/5 border-l-4 shadow-lg shadow-black/30"
+              :class="LEVEL_BORDER[announcement.level] || LEVEL_BORDER.info"
+              aria-live="polite"
+            >
+              <button
+                type="button"
+                class="absolute right-2 top-2 p-1 rounded-md text-white/60 hover:text-white/90 hover:bg-white/10"
+                aria-label="Dismiss announcement"
+                @click="dismissAnnouncement"
+              >
+                <XMarkIcon class="h-4 w-4" />
+              </button>
+              <div class="flex items-start gap-3">
+                <InformationCircleIcon class="h-6 w-6 mt-0.5 flex-shrink-0" :class="LEVEL_ICON[announcement.level] || LEVEL_ICON.info" />
+                <div class="flex-1">
+                  <h3 v-if="announcement.title" class="font-semibold text-white mb-1">{{ announcement.title }}</h3>
+                  <div class="text-sm text-white/80 leading-relaxed whitespace-pre-line">{{ announcement.message }}</div>
+                </div>
               </div>
             </div>
+          </div>
+
+          <!-- SSO first, minimal outlined button -->
+          <div v-if="supportsOidc" class="mb-6">
+            <button
+              class="flex w-full items-center justify-center gap-2 h-12 px-4 rounded-lg ring-1 ring-inset ring-white/10 bg-neutral-700/40 text-white text-sm font-medium hover:bg-white/10"
+              type="button"
+              @click="handleOidcLogin"
+            >
+              <KeyIcon class="h-5 w-5" />
+              <span class="truncate">Continue with Single Sign-On</span>
+            </button>
+          </div>
+
+          <div v-if="supportsLocal && supportsOidc" class="my-4 flex items-center gap-4">
+            <div class="h-px w-full bg-white/10"></div>
+            <span class="text-xs text-white/50">OR</span>
+            <div class="h-px w-full bg-white/10"></div>
+          </div>
+
+          <!-- Email/password form -->
+          <form v-if="supportsLocal" class="space-y-5" @submit.prevent="handleLoginSubmit">
+            <label class="block">
+              <span class="block text-sm font-medium text-white/80">Email address</span>
+              <input
+                id="login-email"
+                v-model="loginEmailValue"
+                type="email"
+                autocomplete="email"
+                :class="inputBaseClasses"
+                placeholder="name@company.com"
+                :disabled="isSubmittingLogin"
+              />
+            </label>
+
+            <label class="block">
+              <span class="block text-sm font-medium text-white/80">Password</span>
+              <input
+                id="login-password"
+                v-model="loginPasswordValue"
+                type="password"
+                autocomplete="current-password"
+                :class="inputBaseClasses"
+                placeholder="••••••••"
+                :disabled="isSubmittingLogin"
+              />
+              <div class="mt-2 mb-4 text-right">
+                <!-- <button
+                  type="button"
+                  class="text-xs font-medium text-white/70 underline-offset-4 hover:text-white hover:underline"
+                  @click="showResetInfo = true"
+                >
+                  Forgot password?
+                </button> -->
+              </div>
+            </label>
 
             <p v-if="loginError" :class="helperTextClasses">{{ loginError }}</p>
             <p v-else-if="statusError" :class="helperTextClasses">{{ statusError }}</p>
 
             <button type="submit" :class="buttonBaseClasses" :disabled="isSubmittingLogin">
               <span v-if="isSubmittingLogin">Verifying…</span>
-              <span v-else>Sign In</span>
+              <span v-else class="inline-flex gap-2 items-center"> <LockClosedIcon class="w-5 h-5"/> Log In</span>
             </button>
           </form>
 
-          <div v-if="supportsLocal && supportsOidc" class="flex items-center gap-4">
-            <div class="h-px flex-1 bg-white/10"></div>
-            <span class="text-xs uppercase tracking-widest text-white/50">Or</span>
-            <div class="h-px flex-1 bg-white/10"></div>
-          </div>
-
-          <button
-            v-if="supportsOidc"
-            class="w-full rounded-lg border border-accent/40 bg-transparent px-4 py-2 font-semibold text-white transition hover:border-accent hover:bg-accent/10"
-            type="button"
-            @click="handleOidcLogin"
-          >
-            Continue with Single Sign-On
-          </button>
-
-          <p v-if="!supportsLocal && statusError" :class="helperTextClasses">{{ statusError }}</p>
+          <p v-if="!supportsLocal && statusError" class="mt-4" :class="helperTextClasses">{{ statusError }}</p>
         </div>
-      </div>
+      </section>
     </div>
+
+    <!-- Reset password info modal -->
+    <!-- <ModalDialog v-model="showResetInfo">
+      <template #title>Reset password</template>
+      <p class="text-white/80">
+        Password reset is managed by your administrator or identity provider. If you use Single Sign-On, use your
+        organization’s reset flow. Otherwise, contact your administrator to reset your password.
+      </p>
+    </ModalDialog> -->
   </div>
 </template>

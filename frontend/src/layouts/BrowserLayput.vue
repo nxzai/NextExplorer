@@ -101,7 +101,7 @@ useClipboardShortcuts();
       peer-checked:translate-x-0 lg:static lg:translate-x-0"
       :style="{ width: asideWidth + 'px' }"
     >
-      <HeaderLogo />
+      <HeaderLogo appname="Explorer"/>
       <CreateNew />
       <FavMenu />
       <VolMenu />
@@ -149,6 +149,7 @@ useClipboardShortcuts();
         class="ml-4 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center font-bold">
         </div> -->
       </div>
+
 
       <ExplorerContextMenu>
         <div class="p-6 pt-0 overflow-y-auto grow">

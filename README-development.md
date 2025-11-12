@@ -38,6 +38,8 @@ npm start
     - `OIDC_SCOPES` – e.g. `openid profile email` (add `groups` if your provider supports it)
     - `SESSION_SECRET` – optional; if omitted the backend generates a strong secret at startup (used for sessions and EOC cookies)
     - Optional overrides: `OIDC_AUTHORIZATION_URL`, `OIDC_TOKEN_URL`, `OIDC_USERINFO_URL`, `OIDC_CALLBACK_URL`
+  - Feature flags:
+    - `FEATURE_VOLUME_USAGE` – `true` to enable volume usage progress bar and used/total labels on the Volumes page. Defaults to `false`.
 
 When EOC is enabled, the backend exposes default OIDC routes:
 - `GET /login` – start login

@@ -1,20 +1,43 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, defineAsyncComponent } from 'vue';
 import { useFavoritesStore } from '@/stores/favorites';
-import { getVolumes } from '@/api';
+import { getVolumes, getUsage, fetchFeatures } from '@/api';
 import { useNavigation } from '@/composables/navigation';
 import * as OutlineIcons from '@heroicons/vue/24/outline';
 import * as SolidIcons from '@heroicons/vue/24/solid';
+const ProgressBar = defineAsyncComponent(() => import('@/components/ProgressBar.vue'));
+import IconDrive from '@/components/IconDrive.vue';
+import { formatBytes } from '@/utils';
+import DirectoryIcon from '@/icons/files/directory-icon.vue';
+
 
 const volumes = ref([]);
 const loading = ref(true);
 const favoritesStore = useFavoritesStore();
+const usage = ref({});
 const { openItem, openBreadcrumb } = useNavigation();
+const showVolumeUsage = ref(false);
 
 onMounted(async () => {
   try {
     favoritesStore.ensureLoaded();
+    // Load volumes first
     volumes.value = await getVolumes();
+
+    // Check server feature flags to determine whether to load usage
+    try {
+      const features = await fetchFeatures();
+      showVolumeUsage.value = Boolean(features?.volumeUsage?.enabled);
+    } catch (_) {
+      showVolumeUsage.value = false;
+    }
+
+    // Lazy-load usage for each volume only when the feature is enabled
+    if (showVolumeUsage.value) {
+      volumes.value.forEach(async (v) => {
+        try { usage.value[v.path] = await getUsage(v.path); } catch (_) {}
+      });
+    }
   } finally {
     loading.value = false;
   }
@@ -57,20 +80,23 @@ const handleOpenFavorite = (favorite) => {
   <div class="flex flex-col gap-8">
     <!-- Quick Access -->
     <section>
-      <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Quick access</h3>
-      <div v-if="quickAccess.length" class="flex flex-wrap gap-2">
+      <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Quick access</h3>
+      <div v-if="quickAccess.length" class="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <button
           v-for="fav in quickAccess"
           :key="fav.path"
           type="button"
-          @click="handleOpenFavorite(fav)"
-          class="inline-flex items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-sm text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-zinc-800 dark:text-neutral-200 dark:hover:bg-zinc-700"
+          :title="fav.label"
+          @dblclick="handleOpenFavorite(fav)"
+          class="flex items-center gap-3 py-4 rounded-md cursor-pointer select-none hover:bg-neutral-100 dark:hover:bg-zinc-800"
         >
-          <component :is="fav.iconComponent" class="h-4 w-4" />
-          <span class="truncate max-w-[16rem]">{{ fav.label }}</span>
+          <DirectoryIcon class="h-16 shrink-0" />
+          <div class="text-sm text-left break-all line-clamp-2 rounded-md px-2 -mx-2">
+            {{ fav.label }}
+          </div>
         </button>
       </div>
-      <div v-else class="rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-neutral-500 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-neutral-400">
+      <div v-else class="text-xs">
         Pin folders as favorites to access them quickly here.
       </div>
     </section>
@@ -78,18 +104,42 @@ const handleOpenFavorite = (favorite) => {
     <!-- Volumes -->
     <section>
       <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Volumes</h3>
-      <div v-if="!loading" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <div v-if="!loading" class="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        
         <button
           v-for="vol in volumes"
           :key="vol.name"
           type="button"
-          @click="openItem(vol)"
-          class="flex flex-col items-start gap-3 rounded-lg border border-neutral-200 bg-white p-4 text-left shadow-sm transition hover:border-neutral-300 hover:shadow dark:border-neutral-700 dark:bg-zinc-800 dark:hover:border-neutral-600"
+          @dblclick="openItem(vol)"
+          class="flex items-center gap-3 py-4 text-left  "
         >
-          <component :is="OutlineIcons.ServerIcon" class="h-8 w-8 text-neutral-600 dark:text-neutral-300" />
+          <IconDrive class="h-16 shrink-0"/>
           <div>
-            <div class="truncate text-sm font-medium text-neutral-900 dark:text-white">{{ vol.name }}</div>
-            <div class="text-xs text-neutral-500 dark:text-neutral-400">Volume</div>
+            <div class="mb-1 truncate text-sm font-medium text-neutral-900 dark:text-white">{{ vol.name }}</div>
+            <template v-if="showVolumeUsage">
+              <template v-if="usage[vol.path]">
+                <ProgressBar
+                  :used="usage[vol.path].size || 0"
+                  :total="usage[vol.path].total || ((usage[vol.path].size || 0) + (usage[vol.path].free || 0) || 1)"
+                  size="sm"
+                  :warnAt="75"
+                  :dangerAt="90"
+                  style="width:120px"
+                  class="mb-1"
+                />
+                <div class="flex justify-between text-xs w-[120px]">
+                  <span>{{ formatBytes(usage[vol.path].size || 0) }}</span>
+                  <span>{{ formatBytes(usage[vol.path].total || 0) }}</span>
+                </div>
+              </template>
+              <template v-else>
+                <div class="mb-2 w-[120px] h-2 rounded-full bg-neutral-200 dark:bg-neutral-700 animate-pulse"></div>
+                <div class="flex justify-between text-xs w-[120px]">
+                  <span class="h-3 w-10 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse"></span>
+                  <span class="h-3 w-10 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse"></span>
+                </div>
+              </template>
+            </template>
           </div>
         </button>
       </div>

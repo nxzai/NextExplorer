@@ -80,7 +80,7 @@ const handleOpenFavorite = (favorite) => {
   <h4
     class="group flex items-center justify-between py-2 pt-6 text-sm text-neutral-400 dark:text-neutral-500 font-medium"
   >
-    Quick access
+    Favourites
     <button
       @click="open = !open"
       class="hidden group-hover:block active:text-black dark:active:text-white text-neutral-500"
@@ -111,11 +111,11 @@ const handleOpenFavorite = (favorite) => {
             :class="[
                         'cursor-pointer flex w-full items-center gap-3 my-3 rounded-lg transition-colors duration-200 text-sm',
                         isActiveFav(favorite.path)
-                            ? 'text-neutral-900 dark:text-white'
-                            : 'text-neutral-500 dark:text-neutral-300/80'
+                            ? 'text-neutral-950 dark:text-white'
+                            : 'text-neutral-950 dark:text-neutral-300/80'
                     ]"
           >
-            <component :is="favorite.iconComponent" class="h-5" />
+            <component :is="favorite.iconComponent" class="h-5 shrink-0" />
             <span class="truncate">{{ favorite.label }}</span>
           </button>
         </template>

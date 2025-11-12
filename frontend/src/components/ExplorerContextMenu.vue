@@ -19,6 +19,9 @@ import { normalizePath } from '@/api';
 import { modKeyLabel, deleteKeyLabel } from '@/utils/keyboard';
 import { useDeleteConfirm } from '@/composables/useDeleteConfirm';
 import ModalDialog from '@/components/ModalDialog.vue';
+import { useFavoritesStore } from '@/stores/favorites';
+import { StarIcon as StarOutline } from '@heroicons/vue/24/outline';
+import { StarIcon as StarSolid } from '@heroicons/vue/24/solid';
 // Icons
 import {
   CreateNewFolderRound,
@@ -35,11 +38,13 @@ const fileStore = useFileStore();
 const previewManager = usePreviewManager();
 const infoPanel = useInfoPanelStore();
 const { clearSelection } = useSelection();
+const favoritesStore = useFavoritesStore();
 
 const isOpen = ref(false);
 const pointer = ref({ x: 0, y: 0 });
 const contextKind = ref('background'); // background | file | directory
 const targetItem = ref(null);
+const isMutatingFavorite = ref(false);
 
 const referenceRef = ref(null);
 const floatingRef = ref(null);
@@ -186,6 +191,57 @@ const runGetInfo = () => {
   infoPanel.open(primaryItem.value);
 };
 
+// Favorites support
+const selectedDirectoryPath = computed(() => {
+  if (contextKind.value !== 'directory') return null;
+  const item = targetItem.value;
+  if (!item || item.kind !== 'directory') return null;
+  return normalizePath(actions.resolveItemPath(item));
+});
+
+const isFavoriteDirectory = computed(() => {
+  const path = selectedDirectoryPath.value;
+  if (!path) return false;
+  return favoritesStore.isFavorite(path);
+});
+
+const currentDirectoryPath = computed(() => normalizePath(fileStore.getCurrentPath || ''));
+const isFavoriteCurrentDirectory = computed(() => {
+  const path = currentDirectoryPath.value;
+  if (!path) return false;
+  return favoritesStore.isFavorite(path);
+});
+
+const runToggleFavoriteForDirectory = async () => {
+  const path = selectedDirectoryPath.value;
+  if (!path || isMutatingFavorite.value) return;
+  isMutatingFavorite.value = true;
+  try {
+    if (isFavoriteDirectory.value) {
+      await favoritesStore.removeFavorite(path);
+    } else {
+      await favoritesStore.addFavorite({ path, icon: 'solid:StarIcon' });
+    }
+  } finally {
+    isMutatingFavorite.value = false;
+  }
+};
+
+const runToggleFavoriteForCurrent = async () => {
+  const path = currentDirectoryPath.value;
+  if (!path || isMutatingFavorite.value) return;
+  isMutatingFavorite.value = true;
+  try {
+    if (isFavoriteCurrentDirectory.value) {
+      await favoritesStore.removeFavorite(path);
+    } else {
+      await favoritesStore.addFavorite({ path, icon: 'solid:StarIcon' });
+    }
+  } finally {
+    isMutatingFavorite.value = false;
+  }
+};
+
 // Build grouped, themed menu sections with icons + shortcuts
 const menuSections = computed(() => {
   if (!isOpen.value) return [];
@@ -206,6 +262,15 @@ const menuSections = computed(() => {
         mk('get-info', 'Get Info', InfoRound, runGetInfo, {
           disabled: !primaryItem.value,
         }),
+      ],
+      [
+        mk(
+          'fav-current',
+          isFavoriteCurrentDirectory.value ? 'Remove from Favorites' : 'Add to Favorites',
+          isFavoriteCurrentDirectory.value ? StarSolid : StarOutline,
+          runToggleFavoriteForCurrent,
+          { disabled: !currentDirectoryPath.value || isMutatingFavorite.value },
+        ),
       ],
       [
         mk('new-folder', 'New Folder', CreateNewFolderRound, runCreateFolder),
@@ -239,6 +304,18 @@ const menuSections = computed(() => {
   sections.push([
     mk('rename', 'Rename', DriveFileRenameOutlineRound, runRename, { disabled: !canRename.value }),
   ]);
+
+  if (contextKind.value === 'directory') {
+    sections.push([
+      mk(
+        'fav',
+        isFavoriteDirectory.value ? 'Remove from Favorites' : 'Add to Favorites',
+        isFavoriteDirectory.value ? StarSolid : StarOutline,
+        runToggleFavoriteForDirectory,
+        { disabled: !selectedDirectoryPath.value || isMutatingFavorite.value },
+      ),
+    ]);
+  }
 
   sections.push([
   mk('delete', 'Delete', DeleteRound, requestDelete, { disabled: !hasSelection.value, danger: true, shortcut: deleteKeyLabel }),

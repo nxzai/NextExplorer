@@ -229,4 +229,10 @@ module.exports = {
       .map((s) => s.trim().toLowerCase())
       .filter(Boolean),
   },
+  // Feature flags derived from environment variables
+  features: {
+    // Toggle volume usage UI and calculations in the frontend
+    // Default is off when unset or invalid
+    volumeUsage: (normalizeBoolean(process.env.SHOW_VOLUME_USAGE) ?? false),
+  },
 };

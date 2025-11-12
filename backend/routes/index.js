@@ -5,6 +5,7 @@ const browseRoutes = require('./browse');
 const thumbnailRoutes = require('./thumbnails');
 const editorRoutes = require('./editor');
 const volumeRoutes = require('./volumes');
+const usageRoutes = require('./usage');
 const favoritesRoutes = require('./favorites');
 const settingsRoutes = require('./settings');
 const searchRoutes = require('./search');
@@ -21,6 +22,7 @@ const registerRoutes = (app) => {
   app.use('/api', browseRoutes);
   app.use('/api', editorRoutes);
   app.use('/api', volumeRoutes);
+  app.use('/api', usageRoutes);
   app.use('/api', favoritesRoutes);
   app.use('/api', settingsRoutes);
   app.use('/api', thumbnailRoutes);

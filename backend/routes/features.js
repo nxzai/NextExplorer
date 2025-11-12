@@ -28,8 +28,8 @@ router.get('/features', async (_req, res) => {
             payload.announcements.push({
               id: 'v3-user-migration',
               level: 'info',
-              title: 'Action required: Sign-in change',
-              message: 'We updated local accounts to use email-style usernames.\n\nTo sign in now, enter your new email-style username in the Email field (for example: <strong>username@example.local</strong>). Your password is unchanged.”.',
+              title: 'We\'ve updated how you sign in',
+              message: 'You now need to use your new email-style username. To sign in, add @example.local to your username (for example: username@example.local). Your password stays the same.',
               once: true,
             });
           }

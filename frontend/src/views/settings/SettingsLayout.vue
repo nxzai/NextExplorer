@@ -4,7 +4,6 @@ import { useRouter, useRoute, RouterView } from 'vue-router';
 import { useAppSettings } from '@/stores/appSettings';
 import { useAuthStore } from '@/stores/auth';
 import HeaderLogo from '@/components/HeaderLogo.vue';
-import NotificationCenter from '@/components/NotificationCenter.vue';
 import { XMarkIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
@@ -104,7 +103,6 @@ const closeSettings = () => {
       </div>
 
       <div class="p-6 pt-0 overflow-y-auto grow">
-        <NotificationCenter />
         <RouterView />
       </div>
     </main>

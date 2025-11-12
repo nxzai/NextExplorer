@@ -22,7 +22,6 @@ import ExplorerContextMenu from '@/components/ExplorerContextMenu.vue';
 import { useSettingsStore } from '@/stores/settings';
 import PhotoSizeControl from '@/components/PhotoSizeControl.vue';
 import InfoPanel from '@/components/InfoPanel.vue';
-import NotificationCenter from '@/components/NotificationCenter.vue';
 import { useFileUploader, useUppyDropTarget } from '@/composables/fileUploader';
 import { useUppyStore } from '@/stores/uppyStore';
 import { useFileStore } from '@/stores/fileStore';
@@ -151,8 +150,6 @@ useClipboardShortcuts();
         </div> -->
       </div>
 
-      <!-- Announcements / Notifications -->
-      <NotificationCenter />
 
       <ExplorerContextMenu>
         <div class="p-6 pt-0 overflow-y-auto grow">

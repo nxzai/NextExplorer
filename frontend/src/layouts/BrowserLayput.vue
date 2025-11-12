@@ -26,6 +26,7 @@ import { useFileUploader, useUppyDropTarget } from '@/composables/fileUploader';
 import { useUppyStore } from '@/stores/uppyStore';
 import { useFileStore } from '@/stores/fileStore';
 import { useClipboardShortcuts } from '@/composables/clipboardShortcuts';
+import SpotlightSearch from '@/components/SpotlightSearch.vue';
 
 
 const route = useRoute()
@@ -172,6 +173,7 @@ useClipboardShortcuts();
   <UploadProgress class="z-550"/>
   <PreviewHost/>
   <InfoPanel/>
+  <SpotlightSearch/>
   </div>
 
 </template>

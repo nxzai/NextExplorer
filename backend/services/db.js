@@ -97,6 +97,7 @@ const migrate = (db) => {
 
       // Migrate existing users
       const existingUsers = db.prepare('SELECT * FROM users').all();
+      const preMigrationLocalCount = existingUsers.filter(u => u.provider === 'local').length;
       const insertUser = db.prepare(`
         INSERT INTO users_new (id, email, email_verified, username, display_name, roles, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -163,6 +164,19 @@ const migrate = (db) => {
 
       console.log('[DB Migration] Migration to v3 completed successfully!');
       db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run('schema_version', String(3));
+      // Set a one-time announcement flag if there were any local users migrated
+      try {
+        if (preMigrationLocalCount > 0) {
+          const notice = JSON.stringify({ 
+            pending: true, 
+            localMigrated: preMigrationLocalCount, 
+            createdAt: new Date().toISOString() }
+          );
+          db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run('notice_migration_v3', notice);
+        }
+      } catch (_) {
+        // non-fatal
+      }
       version = 3;
     }
   })();

@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import HeaderLogo from '@/components/HeaderLogo.vue';
 import { apiBase } from '@/api';
 import { useAuthStore } from '@/stores/auth';
+import NotificationCenter from '@/components/NotificationCenter.vue';
 
 
 const version = __APP_VERSION__
@@ -210,5 +211,7 @@ const handleOidcLogin = () => {
         </div>
       </div>
     </div>
+    <!-- Announcement popover (bottom-right) -->
+    <NotificationCenter />
   </div>
 </template>

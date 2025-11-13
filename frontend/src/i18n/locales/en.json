@@ -163,6 +163,7 @@
     "login": {
       "welcome": "Welcome back",
       "subtitle": "Log in to access NextExplorer.",
+      "announcementConfirm": "Mark as read",
       "submit": "Log In"
     },
     "setup": {

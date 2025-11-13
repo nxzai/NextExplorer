@@ -163,6 +163,7 @@
     "login": {
       "welcome": "Content de vous revoir",
       "subtitle": "Connectez-vous pour accéder à NextExplorer.",
+      "announcementConfirm": "Marquer comme lu",
       "submit": "Connexion"
     },
     "setup": {

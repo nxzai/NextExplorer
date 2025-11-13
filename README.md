@@ -83,7 +83,7 @@ services:
     environment:
       - NODE_ENV=production
       - PUBLIC_URL=http://localhost:3000
-      - LOG_LEVEL=info          # use "debug" for verbose logging
+      - LOG_LEVEL=info  # use "debug" for verbose logging
       # - SESSION_SECRET=please-change-me       # optional static session secret
       # - PUID=1000                              # optional host user UID
       # - PGID=1000                              # optional host group GID
@@ -101,7 +101,7 @@ services:
       # - ONLYOFFICE_FILE_EXTENSIONS=doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,rtf,txt,pdf
     volumes:
       - /srv/nextexplorer/config:/config   # persistent config, DB, and extensions
-      - /srv/nextexplorer/cache:/cache     # thumbnails & search caches
+      - /srv/nextexplorer/cache:/cache     # (OPTIONAL) 0thumbnails & search caches
       - /srv/data/Projects:/mnt/Projects  # mount "Projects" volume
       - /srv/data/Media:/mnt/Media        # mount "Media" volume
 ```

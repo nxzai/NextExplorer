@@ -163,6 +163,7 @@
     "login": {
       "welcome": "欢迎回来",
       "subtitle": "登录以访问 NextExplorer。",
+      "announcementConfirm": "标记为已阅读",
       "submit": "登录"
     },
     "setup": {

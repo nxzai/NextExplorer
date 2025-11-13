@@ -163,6 +163,7 @@
     "login": {
       "welcome": "Bienvenido de nuevo",
       "subtitle": "Inicia sesión para acceder a NextExplorer.",
+      "announcementConfirm": "Marcar como leído",
       "submit": "Iniciar sesión"
     },
     "setup": {

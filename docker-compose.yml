@@ -32,5 +32,7 @@ services:
       - ONLYOFFICE_SECRET=ha96M546Hl5oSSvrjvabmXK1D6qlRH15
       - ONLYOFFICE_LANG=en
       - ONLYOFFICE_FILE_EXTENSIONS=doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,rtf,txt,pdf
-      
+
+      # - AUTH_ENABLED=false
+
     restart: unless-stopped

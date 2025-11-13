@@ -178,7 +178,7 @@
       }
     },
     "email": "电子邮箱",
-    "emailPlaceholder": "name@company.com",
+    "emailPlaceholder": "name{'@'}company.com",
     "usernameOptional": "用户名（可选）",
     "usernamePlaceholder": "默认使用邮箱前缀",
     "password": "密码",
@@ -292,7 +292,7 @@
       "failedRemove": "删除用户失败",
       "createUser": "创建用户",
       "email": "邮箱",
-      "emailPlaceholder": "user@example.com",
+      "emailPlaceholder": "user{'@'}example.com",
       "username": "用户名",
       "usernameOptional": "可选",
       "password": "密码",

@@ -178,7 +178,7 @@
       }
     },
     "email": "Email address",
-    "emailPlaceholder": "name@company.com",
+    "emailPlaceholder": "name{'@'}company.com",
     "usernameOptional": "Username (optional)",
     "usernamePlaceholder": "Defaults to email prefix",
     "password": "Password",
@@ -293,7 +293,7 @@
       "failedRemove": "Failed to remove user",
       "createUser": "Create User",
       "email": "Email",
-      "emailPlaceholder": "user@example.com",
+      "emailPlaceholder": "user{'@'}example.com",
       "username": "Username",
       "usernameOptional": "Optional",
       "password": "Password",

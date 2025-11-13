@@ -178,7 +178,7 @@
       }
     },
     "email": "Correo electrónico",
-    "emailPlaceholder": "nombre@empresa.com",
+    "emailPlaceholder": "nombre{'@'}empresa.com",
     "usernameOptional": "Nombre de usuario (opcional)",
     "usernamePlaceholder": "Por defecto, el prefijo del correo",
     "password": "Contraseña",
@@ -293,7 +293,7 @@
       "failedRemove": "Error al eliminar usuario",
       "createUser": "Crear usuario",
       "email": "Correo",
-      "emailPlaceholder": "usuario@ejemplo.com",
+      "emailPlaceholder": "usuario{'@'}ejemplo.com",
       "username": "Usuario",
       "usernameOptional": "Opcional",
       "password": "Contraseña",

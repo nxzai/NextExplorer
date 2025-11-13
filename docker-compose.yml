@@ -16,7 +16,7 @@ services:
 
       # Match these to your host user/group IDs (check with `id -u` / `id -g`)
       - PUID=1000
-      - PGID=1000 
+      - PGID=1000
       # Centralized public URL (frontend + backend behind proxy)
       - PUBLIC_URL=https://files.vsoni.com
       
@@ -32,4 +32,5 @@ services:
       - ONLYOFFICE_SECRET=ha96M546Hl5oSSvrjvabmXK1D6qlRH15
       - ONLYOFFICE_LANG=en
       - ONLYOFFICE_FILE_EXTENSIONS=doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,rtf,txt,pdf
+      
     restart: unless-stopped

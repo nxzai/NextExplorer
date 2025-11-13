@@ -129,6 +129,13 @@ const corsOptions = {
 const supportedAuthModes = new Set(['local', 'oidc', 'both']);
 const normalizedAuthMode = 'oidc';
 
+// New: central auth.enabled flag
+const authEnabled = (() => {
+  const value = normalizeBoolean(process.env.AUTH_ENABLED);
+  // Default: enabled, unless explicitly set to false
+  if (value === false) return false;
+  return true;
+})();
 
 const rawEnvScopes = process.env.OIDC_SCOPES || process.env.OIDC_SCOPE || null;
 const rawAdminGroups = process.env.OIDC_ADMIN_GROUPS || process.env.OIDC_ADMIN_GROUP || null;
@@ -151,7 +158,10 @@ const envOidcConfig = {
 };
 
 const envAuthConfig = {
-  sessionSecret: process.env.SESSION_SECRET || process.env.AUTH_SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
+  enabled: authEnabled,
+  sessionSecret: process.env.SESSION_SECRET 
+                || process.env.AUTH_SESSION_SECRET 
+                || crypto.randomBytes(32).toString('hex'),
   authMode: normalizedAuthMode,
   oidc: envOidcConfig,
 };
@@ -238,5 +248,5 @@ module.exports = {
     // Toggle volume usage UI and calculations in the frontend
     // Default is off when unset or invalid
     volumeUsage: (normalizeBoolean(process.env.SHOW_VOLUME_USAGE) ?? false),
-  },
+  }
 };

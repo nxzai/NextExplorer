@@ -178,7 +178,7 @@
       }
     },
     "email": "Adresse e-mail",
-    "emailPlaceholder": "nom@entreprise.com",
+    "emailPlaceholder": "nom{'@'}entreprise.com",
     "usernameOptional": "Nom d’utilisateur (optionnel)",
     "usernamePlaceholder": "Par défaut : début de l’e-mail",
     "password": "Mot de passe",
@@ -292,7 +292,7 @@
       "failedRemove": "Échec de suppression",
       "createUser": "Créer un utilisateur",
       "email": "E-mail",
-      "emailPlaceholder": "utilisateur@exemple.com",
+      "emailPlaceholder": "utilisateur{'@'}exemple.com",
       "username": "Nom d’utilisateur",
       "usernameOptional": "Facultatif",
       "password": "Mot de passe",

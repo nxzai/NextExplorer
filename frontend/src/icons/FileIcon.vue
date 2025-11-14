@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, onMounted } from 'vue';
 
 import { apiBase } from '@/api';
 import { useAppSettings } from '@/stores/appSettings';
@@ -21,15 +21,27 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  // Add prop to disable thumbnail loading for search results
+  disableThumbnails: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const fileStore = useFileStore();
 const appSettings = useAppSettings();
+
+// Load settings once if needed
 if (!appSettings.loaded && !appSettings.loading) {
   appSettings.load();
 }
 
 const thumbnailUrl = computed(() => {
+  // Early exit if thumbnails disabled via prop
+  if (props.disableThumbnails) {
+    return null;
+  }
+
   const kind = (props.item?.kind || '').toLowerCase();
   if (kind === 'pdf') {
     return null;
@@ -66,7 +78,12 @@ const isPreviewable = computed(() => {
   return isPreviewableImage(ext.value) || isPreviewableVideo(ext.value);
 });
 
+// Only request thumbnail once on mount, not on every prop change
 const requestThumbnailIfNeeded = () => {
+  if (props.disableThumbnails) {
+    return;
+  }
+
   if (!props.item || props.item.kind === 'directory') {
     return;
   }
@@ -75,7 +92,7 @@ const requestThumbnailIfNeeded = () => {
     return;
   }
 
-  // respect settings: if not loaded yet, wait; if disabled, skip
+  // Respect settings: if not loaded yet, wait; if disabled, skip
   if (!appSettings.loaded) {
     return;
   }
@@ -90,13 +107,10 @@ const requestThumbnailIfNeeded = () => {
   fileStore.ensureItemThumbnail(props.item);
 };
 
-watch(
-  () => [props.item?.name, props.item?.path, props.item?.thumbnail, isPreviewable.value, appSettings.loaded, appSettings.state.thumbnails?.enabled],
-  () => {
-    requestThumbnailIfNeeded();
-  },
-  { immediate: true },
-);
+// Request thumbnail only once on mount, not on every reactive change
+onMounted(() => {
+  requestThumbnailIfNeeded();
+});
 
 // Additional type groupings
 const audioExts = new Set(['mp3', 'wav', 'flac', 'aac', 'm4a', 'ogg', 'opus', 'wma']);

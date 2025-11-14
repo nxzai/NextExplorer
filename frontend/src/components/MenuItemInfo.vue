@@ -1,9 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { ArrowDownTrayIcon, TrashIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
+import { ArrowDownTrayIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import { useFileStore } from '@/stores/fileStore';
 import { useFileActions } from '@/composables/fileActions';
-import { normalizePath, downloadItems } from '@/api';
+import { normalizePath } from '@/api';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { Rename20Regular } from '@vicons/fluent';
 
@@ -17,7 +17,6 @@ const isSingleItemSelected = actions.isSingleItemSelected;
 const isSingleFileSelected = computed(() => isSingleItemSelected.value && selectedItem.value?.kind !== 'directory');
 const canRename = actions.canRename;
 const currentPath = computed(() => normalizePath(fileStore.getCurrentPath || ''));
-const isPreparingDownload = ref(false);
 const isDeleteConfirmOpen = ref(false);
 const isDeleting = ref(false);
 
@@ -51,62 +50,38 @@ const getResolvedPaths = () => selectedItems.value
   })
   .filter(Boolean);
 
-const extractFilename = (contentDisposition) => {
-  if (!contentDisposition) return null;
-
-  const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
-  if (utf8Match && utf8Match[1]) {
-    try {
-      return decodeURIComponent(utf8Match[1].replace(/"/g, ''));
-    } catch (error) {
-      return utf8Match[1].replace(/"/g, '');
-    }
-  }
-
-  const asciiMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
-  if (asciiMatch && asciiMatch[1]) {
-    return asciiMatch[1];
-  }
-
-  return null;
-};
-
 const handleDownload = async () => {
-  if (!hasSelection.value || isPreparingDownload.value) return;
+  if (!hasSelection.value) return;
 
   const paths = getResolvedPaths();
   if (!paths.length) return;
 
-  isPreparingDownload.value = true;
-  try {
-    const response = await downloadItems(paths, currentPath.value);
-    const blob = await response.blob();
-    const disposition = response.headers.get('Content-Disposition');
-    const suggestedName = extractFilename(disposition)
-      || (isSingleFileSelected.value && selectedItem.value
-        ? selectedItem.value.name
-        : selectedItems.value.length === 1 && selectedItem.value
-          ? `${selectedItem.value.name}.zip`
-          : (() => {
-            const segments = currentPath.value.split('/').filter(Boolean);
-            const base = segments[segments.length - 1];
-            return base ? `${base}.zip` : 'download.zip';
-          })());
+  // Create a hidden form to submit the download request
+  // This triggers the browser's native download with progress bar
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/api/download';
+  form.style.display = 'none';
 
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = downloadUrl;
-    anchor.rel = 'noopener';
-    anchor.download = suggestedName;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 1000);
-  } catch (error) {
-    console.error('Download failed', error);
-  } finally {
-    isPreparingDownload.value = false;
-  }
+  // Add each path as a separate 'paths' field (form arrays)
+  paths.forEach((path) => {
+    const pathInput = document.createElement('input');
+    pathInput.type = 'hidden';
+    pathInput.name = 'paths';
+    pathInput.value = path;
+    form.appendChild(pathInput);
+  });
+
+  // Add basePath
+  const basePathInput = document.createElement('input');
+  basePathInput.type = 'hidden';
+  basePathInput.name = 'basePath';
+  basePathInput.value = currentPath.value;
+  form.appendChild(basePathInput);
+
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
 };
 
 const handleDelete = () => {
@@ -155,15 +130,14 @@ const handleRename = () => {
     <button
       type="button"
       @click="handleDownload"
-      :disabled="!hasSelection || isPreparingDownload"
+      :disabled="!hasSelection"
       class="p-[6px] rounded-md transition-colors
         hover:bg-[rgb(239,239,240)] active:bg-zinc-200
         dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
-      :class="{ 'opacity-50 cursor-default pointer-events-none': !hasSelection || isPreparingDownload }"
-      :title="isPreparingDownload ? $t('download.preparing') : $t('download.download')"
+      :class="{ 'opacity-50 cursor-default pointer-events-none': !hasSelection }"
+      :title="$t('download.download')"
     >
-      <ArrowPathIcon v-if="isPreparingDownload" class="w-6 animate-spin" />
-      <ArrowDownTrayIcon v-else class="w-6" />
+      <ArrowDownTrayIcon class="w-6" />
     </button>
     <!-- <button
       type="button"

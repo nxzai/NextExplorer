@@ -14,8 +14,8 @@ const router = express.Router();
 
 // Constants
 const IGNORED_DIRS = new Set(['.git', 'node_modules', 'dist', 'build']);
-const DEFAULT_LIMIT = 500;
-const MAX_LIMIT = 5000;
+const DEFAULT_LIMIT = 100;
+const MAX_LIMIT = 500;
 const CONTENT_FALLBACK_MAX_SIZE = searchConfig?.maxFileSizeBytes > 0 
   ? searchConfig.maxFileSizeBytes 
   : 5 * 1024 * 1024;

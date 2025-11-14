@@ -2,7 +2,8 @@
 layout: home
 
 hero:
-  name: "nextExplorer"
+  # name: "nextExplorer"
+  text: "nextExplorer"
   tagline: "Self-hosted file access for teams, homelabs, and agencies with a refined interface."
   actions:
     - theme: brand

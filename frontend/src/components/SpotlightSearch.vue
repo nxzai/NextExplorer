@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue';
+import { ref, computed, watch, nextTick, shallowRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDebounceFn, useMagicKeys, whenever, onKeyStroke } from '@vueuse/core';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
@@ -13,14 +13,14 @@ const route = useRoute();
 const spotlight = useSpotlightStore();
 const { t } = useI18n();
 
-
 const query = ref('');
 const inputRef = ref(null);
-const results = ref([]);
+const resultsContainerRef = ref(null);
+// Use shallowRef to prevent deep reactivity on large result arrays
+const results = shallowRef([]);
 const loading = ref(false);
 const errorMsg = ref('');
 const activeIndex = ref(-1);
-
 
 const basePath = computed(() => {
   const fromBrowse = route.path.startsWith('/browse') && typeof route.params.path === 'string' 
@@ -33,34 +33,58 @@ const basePath = computed(() => {
 const performSearch = useDebounceFn(async () => {
   const term = query.value.trim();
   
-  results.value = [];
   errorMsg.value = '';
   activeIndex.value = -1;
   
-  if (!term) return;
+  if (!term) {
+    results.value = [];
+    return;
+  }
   
   loading.value = true;
   try {
     const { items = [] } = await searchApi(basePath.value, term);
-    results.value = Array.isArray(items) ? items : [];
+    // Limit results to prevent performance issues with massive lists
+    const limitedItems = Array.isArray(items) ? items : [];
+    results.value = Object.freeze(limitedItems);
   } catch (e) {
     errorMsg.value = e?.message || t('search.failed');
+    results.value = [];
   } finally {
     loading.value = false;
   }
 }, 1000);
 
+function scrollToActiveItem() {
+  if (activeIndex.value < 0 || activeIndex.value >= results.value.length) return;
+  
+  nextTick(() => {
+    const container = resultsContainerRef.value;
+    if (!container) return;
+    
+    const activeButton = container.querySelector(`[data-index="${activeIndex.value}"]`);
+    if (activeButton) {
+      activeButton.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest'
+      });
+    }
+  });
+}
 
 function navigateDown() {
   const count = results.value.length;
   if (count === 0) return;
   activeIndex.value = (activeIndex.value + 1) % count;
+  scrollToActiveItem();
 }
 
 function navigateUp() {
   const count = results.value.length;
   if (count === 0) return;
   activeIndex.value = (activeIndex.value - 1 + count) % count;
+  scrollToActiveItem();
 }
 
 function selectResult() {
@@ -78,8 +102,7 @@ function openResult(item) {
     : item.path || '';
   
   const normalizedPath = normalizePath(targetPath);
-  // For files, open parent folder and preselect the file in that folder.
-  // For directories, just open the directory (no preselection since it's not listed inside itself).
+  
   if (!isDirectory && item.name) {
     router.push({ path: `/browse/${normalizedPath}`, query: { select: item.name } });
   } else {
@@ -87,9 +110,6 @@ function openResult(item) {
   }
   spotlight.close();
 }
-
-
-
 
 function isEditableElement(el) {
   if (!el) return false;
@@ -104,11 +124,14 @@ function shouldIgnoreKeyboard() {
 
 function resetSpotlight() {
   query.value = '';
+  // Clear results immediately to prevent rendering issues
   results.value = [];
   errorMsg.value = '';
   activeIndex.value = -1;
+  loading.value = false;
 }
 
+// Create a stable item object that won't trigger FileIcon watchers
 function toIconItem(item) {
   if (!item) return { name: '', path: '', kind: 'unknown' };
   
@@ -121,22 +144,23 @@ function toIconItem(item) {
   const ext = lastDotIndex > -1 ? name.slice(lastDotIndex + 1).toLowerCase() : '';
   const kind = (ext && ext.length <= 10) ? ext : 'unknown';
   
-  return { name: item.name, path: item.path, kind };
+  // Return frozen object to prevent reactivity
+  return Object.freeze({ name: item.name, path: item.path, kind });
 }
 
-
-
+// Only watch query changes, not spotlight state
 watch(query, performSearch);
 
+// Separate watcher for spotlight open/close
 watch(() => spotlight.isOpen, async (isOpen) => {
   if (isOpen) {
     await nextTick();
-    resetSpotlight();
     inputRef.value?.focus();
+  } else {
+    // Clear results when closing to prevent unmounting large lists next time
+    resetSpotlight();
   }
-});
-
-
+}, { flush: 'post' });
 
 const keys = useMagicKeys();
 const openCombo = computed(() => keys['Meta+K']?.value || keys['Ctrl+K']?.value);
@@ -169,12 +193,12 @@ onKeyStroke('Enter', (e) => {
   e.preventDefault();
   selectResult();
 }, { eventName: 'keydown' });
-
 </script>
 
 <template>
+  <!-- Use v-show instead of v-if to keep component mounted but hidden -->
   <transition name="fade">
-    <div v-if="spotlight.isOpen" class="fixed inset-0 z-[550] flex items-start justify-center pt-[10vh]">
+    <div v-show="spotlight.isOpen" class="fixed inset-0 z-[550] flex items-start justify-center pt-[10vh]">
       <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="spotlight.close()"></div>
 
       <div class="relative w-[90%] sm:w-[640px] max-w-[720px] rounded-2xl shadow-2xl border border-neutral-200/70 dark:border-neutral-700/60 bg-white/90 dark:bg-zinc-800/95 overflow-hidden">
@@ -196,32 +220,35 @@ onKeyStroke('Enter', (e) => {
         </div>
 
         <!-- Results -->
-        <div class="max-h-[60vh] overflow-y-auto">
+        <div ref="resultsContainerRef" class="max-h-[60vh] overflow-y-auto">
           <div v-if="loading" class="px-4 py-3 text-sm text-neutral-500 dark:text-neutral-400">{{ t('search.searching') }}</div>
           <div v-else-if="errorMsg" class="px-4 py-3 text-sm text-red-600">{{ errorMsg }}</div>
           <div v-else-if="!query.trim()" class="px-4 py-6 text-sm text-neutral-500 dark:text-neutral-400">{{ t('spotlight.hintWithin') }} <span class="font-mono">/{{ basePath }}</span></div>
           <div v-else-if="results.length === 0" class="px-4 py-6 text-sm text-neutral-500 dark:text-neutral-400">{{ t('search.noMatches') }}</div>
 
-          <div v-else class="divide-y divide-neutral-100 dark:divide-neutral-800">
+          <div v-else class="divide-y divide-neutral-200 dark:divide-neutral-700/50">
             <button
               v-for="(item, idx) in results"
               :key="item.path + '/' + item.name"
+              :data-index="idx"
               type="button"
               class="w-full text-left px-3 py-2 hover:bg-zinc-300/60 dark:hover:bg-slate-300/10 focus:bg-blue-50/70 dark:focus:bg-blue-500/10 outline-none"
-              :class="{ 'bg-zinc-300/60 dark:bg-slate-300/10': idx === activeIndex }"
+              :class="{ 'bg-zinc-300/60 dark:bg-slate-300/10 ': idx === activeIndex }"
               @mouseenter="activeIndex = idx"
               @click="openResult(item)"
             >
               <div class="flex items-center gap-3">
-                <FileIcon :item="toIconItem(item)" class="w-8 h-8 shrink-0" />
+                <!-- Pass frozen item to prevent reactivity -->
+                <FileIcon :item="toIconItem(item)" :disable-thumbnails="true" class="w-8 h-8 shrink-0" />
                 <div class="min-w-0">
                   <div class="text-[15px] text-neutral-900 dark:text-neutral-100 truncate">{{ item.name }}</div>
                   <div class="text-[12px] text-neutral-500 dark:text-neutral-400 font-mono truncate">/{{ item.path }}</div>
-                  <div v-if="item.matchLine" class="mt-0.5 text-xs text-zinc-600 dark:text-yellow-500 font-mono truncate">
+                  <div v-if="item.matchLine" class="mt-0.5 text-xs text-zinc-600 dark:text-sky-500 font-mono truncate">
                     <template v-if="Number.isFinite(item.matchLineNumber)">
-                      <span class="text-zinc-500 dark:text-zinc-300 pr-2">{{ t('search.line') }} #{{ item.matchLineNumber }}</span>
+                      <span class="text-zinc-500 dark:text-zinc-300 pr-2">{{ t('search.line') }} {{ item.matchLineNumber }}</span>
                     </template>
-                    {{ item.matchLine }}
+                    <span class="truncate">
+                    {{ item.matchLine }}</span>
                   </div>
                 </div>
               </div>

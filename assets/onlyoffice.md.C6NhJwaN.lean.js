@@ -1,1 +1,0 @@
-import{_ as o,c,o as t,ae as i}from"./chunks/framework.BefrkHQ3.js";const p=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"onlyoffice.md","filePath":"onlyoffice.md"}'),n={name:"onlyoffice.md"};function r(l,e,s,d,a,f){return t(),c("div",null,[...e[0]||(e[0]=[i("",10)])])}const h=o(n,[["render",r]]);export{p as __pageData,h as default};

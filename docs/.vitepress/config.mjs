@@ -9,6 +9,7 @@ export default defineConfig({
   base: '/nextExplorer/',
 
   themeConfig: {
+    logo: '/images/logo.png',
     search: {
       provider: 'local'
     },

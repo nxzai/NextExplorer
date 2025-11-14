@@ -4,10 +4,6 @@ export default defineConfig({
   lang: 'en-US',
   title: 'nextExplorer',
   description: 'Modern, self-hosted file explorer',
-
-  // If hosted on GitHub Pages under /nextExplorer/
-  base: '/nextExplorer/',
-
   themeConfig: {
     logo: '/images/logo.png',
     search: {

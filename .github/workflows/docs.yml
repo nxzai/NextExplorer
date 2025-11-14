@@ -1,31 +1,54 @@
-name: Deploy Docs to GitHub Pages
+name: Deploy VitePress docs to GitHub Pages
 
 on:
   push:
     branches:
-      - main
+      - main   # or 'master' or whatever your default branch is
+  workflow_dispatch:  # allows manual triggers from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  deploy:
-    permissions:
-      contents: write
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Install dependencies (docs)
-        run: |
-          cd docs
-          npm ci || npm install
+          node-version: 22   # or 20/18 if that's what your project uses
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build VitePress site
+        working-directory: ./docs
         run: |
-          cd docs
-          npm run docs:build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+          npm install
+          npx vitepress build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/.vitepress/dist
+          path: docs/.vitepress/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

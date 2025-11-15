@@ -328,7 +328,7 @@ const handleDownloadRequest = async (paths, res, basePath = '') => {
   res.setHeader('Content-Type', 'application/zip');
   res.setHeader('Content-Disposition', `attachment; filename="${archiveName}"`);
 
-  const archive = archiver('zip', { zlib: { level: 9 } });
+  const archive = archiver('zip', { zlib: { level: 1 } });
   archive.on('error', (archiveError) => {
     logger.error({ err: archiveError }, 'Archive creation failed');
     if (!res.headersSent) {

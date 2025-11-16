@@ -6,7 +6,7 @@ async function fetchFavorites() {
   return requestJson('/api/favorites', { method: 'GET' });
 }
 
-async function addFavorite(path, { label, icon } = {}) {
+async function addFavorite(path, { label, icon, color } = {}) {
   const normalizedPath = normalizePath(path || '');
   return requestJson('/api/favorites', {
     method: 'POST',
@@ -14,16 +14,18 @@ async function addFavorite(path, { label, icon } = {}) {
       path: normalizedPath,
       label,
       icon,
+      color,
     }),
   });
 }
 
-async function updateFavorite(id, { label, icon, position } = {}) {
+async function updateFavorite(id, { label, icon, color, position } = {}) {
   return requestJson(`/api/favorites/${encodeURIComponent(id)}`, {
     method: 'PATCH',
     body: JSON.stringify({
       label,
       icon,
+      color,
       position,
     }),
   });

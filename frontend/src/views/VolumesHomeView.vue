@@ -68,6 +68,7 @@ const quickAccess = computed(() => favoritesStore.favorites.map((favorite) => {
     ...favorite,
     label: favorite.label || autoLabel,
     iconComponent: resolveIconComponent(favorite.icon),
+    color: favorite.color || null,
   };
 }));
 
@@ -89,9 +90,14 @@ const handleOpenFavorite = (favorite) => {
           type="button"
           :title="fav.label"
           @dblclick="handleOpenFavorite(fav)"
-          class="flex items-center gap-3 py-4 rounded-md cursor-pointer select-none"
+          class="flex items-center gap-3 py-4 rounded-md cursor-pointer select-none
+          text-neutral-700 dark:text-neutral-300"
         >
-          <component :is="fav.iconComponent" class="h-12 shrink-0" />
+          <component
+            :is="fav.iconComponent"
+            class="h-12 shrink-0"
+            :style="{ color: fav.color || 'currentColor' }"
+          />
           <div class="text-sm text-left break-all line-clamp-2 rounded-md px-2 -mx-2">
             {{ fav.label }}
           </div>

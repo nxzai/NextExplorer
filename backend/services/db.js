@@ -190,6 +190,7 @@ const migrate = (db) => {
           path TEXT NOT NULL,
           label TEXT,
           icon TEXT DEFAULT '${DEFAULT_FAVORITE_ICON.replace(/'/g, "''")}',
+          color TEXT DEFAULT NULL,
           position INTEGER NOT NULL DEFAULT 0,
           created_at TEXT NOT NULL,
           updated_at TEXT NOT NULL,

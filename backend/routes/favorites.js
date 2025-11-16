@@ -40,8 +40,8 @@ router.get('/favorites', async (req, res) => {
  */
 router.post('/favorites', async (req, res) => {
   try {
-    const { path, label, icon } = req.body || {};
-    const favorite = await addFavorite(req.user.id, { path, label, icon });
+    const { path, label, icon, color } = req.body || {};
+    const favorite = await addFavorite(req.user.id, { path, label, icon, color });
     res.json(favorite);
   } catch (error) {
     const status = typeof error?.status === 'number' ? error.status : 500;
@@ -79,9 +79,9 @@ router.patch('/favorites/reorder', async (req, res) => {
 router.patch('/favorites/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { label, icon, position } = req.body || {};
+    const { label, icon, color, position } = req.body || {};
 
-    const favorite = await updateFavorite(req.user.id, id, { label, icon, position });
+    const favorite = await updateFavorite(req.user.id, id, { label, icon, color, position });
     res.json(favorite);
   } catch (error) {
     const status = typeof error?.status === 'number' ? error.status : 500;

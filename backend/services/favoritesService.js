@@ -26,6 +26,7 @@ const sanitize = (favorite) => {
       path,
       label: favorite.label?.trim() || null,
       icon: favorite.icon?.trim() || DEFAULT_FAVORITE_ICON,
+      color: favorite.color?.trim() || null,
     };
   } catch {
     return null;
@@ -40,6 +41,7 @@ const mapDbFavorite = (row) => ({
   path: row.path,
   label: row.label,
   icon: row.icon,
+  color: row.color || null,
   position: row.position ?? 0,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -91,7 +93,7 @@ const getFavorites = async (userId) => {
 
   const db = await getDb();
   const favorites = db.prepare(`
-    SELECT id, path, label, icon, created_at, updated_at, position
+    SELECT id, path, label, icon, color, created_at, updated_at, position
     FROM favorites
     WHERE user_id = ?
     ORDER BY position ASC, created_at ASC
@@ -103,10 +105,10 @@ const getFavorites = async (userId) => {
 /**
  * Add or update a favorite for a user
  */
-const addFavorite = async (userId, { path, label, icon }) => {
+const addFavorite = async (userId, { path, label, icon, color }) => {
   ensureUserId(userId);
 
-  const favorite = sanitize({ path, label, icon });
+  const favorite = sanitize({ path, label, icon, color });
   if (!favorite) {
     const err = new Error('Invalid path');
     err.status = 400;
@@ -121,16 +123,17 @@ const addFavorite = async (userId, { path, label, icon }) => {
   const position = getNextFavoritePosition(db, userId);
 
   db.prepare(`
-    INSERT INTO favorites (id, user_id, path, label, icon, created_at, updated_at, position)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO favorites (id, user_id, path, label, icon, color, created_at, updated_at, position)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(user_id, path) DO UPDATE SET
       label = excluded.label,
       icon = excluded.icon,
+      color = excluded.color,
       updated_at = excluded.updated_at
-  `).run(id, userId, favorite.path, favorite.label, favorite.icon, now, now, position);
+  `).run(id, userId, favorite.path, favorite.label, favorite.icon, favorite.color, now, now, position);
 
   const row = db.prepare(`
-    SELECT id, path, label, icon, created_at, updated_at, position
+    SELECT id, path, label, icon, color, created_at, updated_at, position
     FROM favorites
     WHERE user_id = ? AND path = ?
   `).get(userId, favorite.path);
@@ -177,6 +180,11 @@ const updateFavorite = async (userId, favoriteId, updates) => {
     values.push(updates.icon?.trim() || DEFAULT_FAVORITE_ICON);
   }
 
+  if (updates.color !== undefined) {
+    fields.push('color = ?');
+    values.push(updates.color?.trim() || null);
+  }
+
   if (updates.position !== undefined) {
     fields.push('position = ?');
     const numericPosition = Number(updates.position);
@@ -207,7 +215,7 @@ const updateFavorite = async (userId, favoriteId, updates) => {
   }
 
   const updated = db.prepare(`
-    SELECT id, path, label, icon, created_at, updated_at, position
+    SELECT id, path, label, icon, color, created_at, updated_at, position
     FROM favorites
     WHERE id = ? AND user_id = ?
   `).get(favoriteId, userId);
@@ -282,7 +290,7 @@ const reorderFavorites = async (userId, orderedIds) => {
   transact(orderedIds);
 
   const rows = db.prepare(`
-    SELECT id, path, label, icon, created_at, updated_at, position
+    SELECT id, path, label, icon, color, created_at, updated_at, position
     FROM favorites
     WHERE user_id = ?
     ORDER BY position ASC, created_at ASC

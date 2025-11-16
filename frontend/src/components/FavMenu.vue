@@ -63,6 +63,7 @@ const favorites = computed(() => favoritesStore.favorites.map((favorite) => {
     ...favorite,
     label: favorite.label || autoLabel,
     iconComponent: resolveIconComponent(favorite.icon),
+    color: favorite.color || null,
   };
 }));
 const { t } = useI18n();
@@ -279,7 +280,11 @@ onBeforeUnmount(() => {
                     : 'text-neutral-950 dark:text-neutral-300/80'
                 ]"
               >
-                <component :is="favorite.iconComponent" class="h-5 shrink-0" />
+                <component
+                  :is="favorite.iconComponent"
+                  class="h-5 shrink-0"
+                  :style="{ color: favorite.color || 'currentColor' }"
+                />
                 <span class="truncate">{{ favorite.label }}</span>
               </button>
               <template v-if="isEditMode">

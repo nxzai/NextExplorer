@@ -14,6 +14,8 @@ export function useFavoriteEditor() {
   const editorName = ref('');
   const editorPath = ref('');
   const editorIcon = ref('');
+  const editorIconVariant = ref('outline');
+  const editorColor = ref(null);
   const isSaving = ref(false);
 
   const openEditorForFavorite = (favorite) => {
@@ -22,7 +24,19 @@ export function useFavoriteEditor() {
     editorPath.value = favorite.path || '';
     const autoName = favorite.path.split('/').pop() || favorite.path;
     editorName.value = favorite.label || autoName;
-    editorIcon.value = favorite.icon || '';
+
+    // Parse icon to extract variant and icon name
+    const iconStr = favorite.icon || 'outline:StarIcon';
+    if (iconStr.includes(':')) {
+      const [variant, iconName] = iconStr.split(':', 2);
+      editorIconVariant.value = variant.toLowerCase();
+      editorIcon.value = iconName.trim();
+    } else {
+      editorIconVariant.value = 'outline';
+      editorIcon.value = iconStr;
+    }
+
+    editorColor.value = favorite.color || null;
     isFavoriteEditorOpen.value = true;
   };
 
@@ -39,9 +53,13 @@ export function useFavoriteEditor() {
 
     isSaving.value = true;
     try {
+      // Combine variant and icon name
+      const iconValue = `${editorIconVariant.value}:${editorIcon.value}`;
+
       await favoritesStore.updateFavorite(currentFavorite.value.id, {
         label: editorName.value,
-        icon: editorIcon.value,
+        icon: iconValue,
+        color: editorColor.value,
       });
     } catch (err) {
       console.error('Failed to update favorite', err);
@@ -57,6 +75,8 @@ export function useFavoriteEditor() {
     editorName,
     editorPath,
     editorIcon,
+    editorIconVariant,
+    editorColor,
     isSaving,
     openEditorForFavorite,
     closeFavoriteEditor,

@@ -7,7 +7,7 @@ import { useNavigation } from '@/composables/navigation';
 import * as OutlineIcons from '@heroicons/vue/24/outline';
 import * as SolidIcons from '@heroicons/vue/24/solid';
 const ProgressBar = defineAsyncComponent(() => import('@/components/ProgressBar.vue'));
-import IconDrive from '@/components/IconDrive.vue';
+import IconDrive from '@/icons/IconDrive.vue';
 import { formatBytes } from '@/utils';
 import DirectoryIcon from '@/icons/files/directory-icon.vue';
 

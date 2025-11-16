@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useSettingsStore } from '@/stores/settings';
 
 const settings = useSettingsStore()
-const fillColor = computed(() => settings.isDark ? '#bbbbbb' : '#000')
+const fillColor = computed(() => settings.isDark ? '#bbbbbb' : '#777')
 
 </script>
 

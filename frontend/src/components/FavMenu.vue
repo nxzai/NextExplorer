@@ -207,7 +207,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="rootEl">
+  <div ref="rootEl" >
     <h4
       class="group flex items-center justify-between py-2 pt-6 text-sm text-neutral-400 dark:text-neutral-500 font-medium"
     >

@@ -77,7 +77,7 @@ const isActiveVolume = (volumeName = '') => {
                         'cursor-pointer flex w-full items-center gap-3 my-3 rounded-lg transition-colors duration-200 text-sm',
                         isActiveVolume(volume.name)
                             ? 'dark:text-white'
-                            : 'dark:text-neutral-300/80'
+                            : 'dark:text-neutral-300/90'
                     ]"
                 >
                     <ServerIcon class="h-[1.38rem]"/> {{volume.name}}

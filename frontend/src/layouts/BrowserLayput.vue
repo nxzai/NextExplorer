@@ -12,6 +12,9 @@ import SearchBar from '@/components/SearchBar.vue';
 import MenuItemInfo from '@/components/MenuItemInfo.vue';
 import UploadProgress from '@/components/UploadProgress.vue';
 import UserMenu from '@/components/UserMenu.vue';
+import NotificationBell from '@/components/NotificationBell.vue';
+import NotificationToastContainer from '@/components/NotificationToastContainer.vue';
+import NotificationPanel from '@/components/NotificationPanel.vue';
 import { RouterView, useRoute } from 'vue-router'
 import { useTitle, useStorage, useEventListener } from '@vueuse/core'
 
@@ -146,6 +149,7 @@ useClipboardShortcuts();
         <PhotoSizeControl />
         <div class="h-8 w-[1px] mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
         <SearchBar/>
+        <NotificationBell/>
 
         <!-- <div 
         style="background:url('http://gravatar.com/userimage/106458114/6eb8be0fbf770f939299c3e5f67ff6da.jpeg?size=256'); background-size: contain"
@@ -177,6 +181,8 @@ useClipboardShortcuts();
   <InfoPanel/>
   <SpotlightSearch/>
   <FavoriteEditDialog/>
+  <NotificationToastContainer/>
+  <NotificationPanel/>
   </div>
 
 </template>

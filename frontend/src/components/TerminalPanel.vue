@@ -41,7 +41,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 
-import { apiBase } from '@/api';
+import { apiBase, createTerminalSession } from '@/api';
 import { useTerminalStore } from '@/stores/terminal';
 import { onClickOutside } from '@vueuse/core';
 
@@ -73,18 +73,26 @@ const toWebSocketScheme = (url) => {
   return url;
 };
 
-const buildTerminalUrl = () => {
+const buildTerminalUrl = (token) => {
   const base = `${apiBase}/api/terminal`;
   const withScheme = toWebSocketScheme(base);
+  const url = `${withScheme}?token=${encodeURIComponent(token)}`;
   console.log('Terminal WebSocket URL - apiBase:', apiBase);
   console.log('Terminal WebSocket URL - base:', base);
-  console.log('Terminal WebSocket URL - final:', withScheme);
-  return withScheme;
+  console.log('Terminal WebSocket URL - final:', url);
+  return url;
 };
 
-const connectToBackend = () => {
+const connectToBackend = async () => {
   try {
-    const url = buildTerminalUrl();
+    const session = await createTerminalSession();
+    const token = session?.token;
+    if (!token) {
+      console.error('Failed to obtain terminal session token');
+      return;
+    }
+
+    const url = buildTerminalUrl(token);
     console.log('Attempting to connect to terminal WebSocket:', url);
     socket = new WebSocket(url);
 

@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/auth';
 import { apiBase } from '@/api';
 import {
   ArrowRightOnRectangleIcon,
-  ChevronDownIcon,
+  ChevronUpIcon,
   Cog8ToothIcon,
   UserCircleIcon,
 } from '@heroicons/vue/24/outline';
@@ -132,8 +132,8 @@ const handleLogout = async () => {
           <span v-if="secondaryLabel" class="text-xs text-neutral-500 dark:text-white/60 truncate">{{ secondaryLabel
             }}</span>
         </div>
-        <ChevronDownIcon
-          class="h-5 w-5 text-neutral-400 transition group-hover:text-neutral-700 dark:text-white/40 dark:group-hover:text-white/70"
+        <ChevronUpIcon
+          class="h-4 w-4 text-neutral-400 transition group-hover:text-neutral-700 dark:text-white/60 dark:group-hover:text-white/80"
           :class="{ 'rotate-180': isExpanded }" />
       </div>
     </div>

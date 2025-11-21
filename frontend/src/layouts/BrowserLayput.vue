@@ -101,7 +101,7 @@ useClipboardShortcuts();
     <input id="sidebar-toggle" type="checkbox" class="peer hidden" />
 
     <aside
-      class="flex flex-col bg-nextgray-100 dark:bg-zinc-800 lg:dark:bg-opacity-70 p-4 px-8 shrink-0
+      class="flex flex-col bg-nextgray-100 dark:bg-zinc-800 lg:dark:bg-opacity-70 pt-4 pb-2 px-8 shrink-0
       fixed inset-y-0 left-0 -translate-x-full transition-transform duration-200 ease-in-out z-40
       peer-checked:translate-x-0 lg:static lg:translate-x-0"
       :style="{ width: asideWidth + 'px' }"
@@ -113,12 +113,12 @@ useClipboardShortcuts();
         <VolMenu/>
         <TerminalMenu/>
       </div>
-      <UserMenu class="mt-auto -mx-4"/>
+      <UserMenu class="mt-auto -mx-6"/>
     </aside>
 
     <!-- Resizer handle -->
     <div
-      class="relative w-1 cursor-col-resize bg-transparent group select-none hidden lg:block"
+      class="relative w-[2px] cursor-col-resize bg-transparent group select-none hidden lg:block"
       @pointerdown="onPointerDown"
       :aria-label="$t('browser.resizeSidebar')"
     >

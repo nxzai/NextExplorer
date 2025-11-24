@@ -6,14 +6,8 @@ import FavMenu from '@/components/FavMenu.vue';
 import VolMenu from '@/components/VolMenu.vue';
 import TerminalMenu from '@/components/TerminalMenu.vue';
 import CreateNew from '@/components/CreateNew.vue';
-import ViewMode from '@/components/ViewMode.vue';
-import BreadCrumb from '@/components/BreadCrumb.vue';
-import NavButtons from '@/components/NavButtons.vue';
-import SearchBar from '@/components/SearchBar.vue';
-import MenuItemInfo from '@/components/MenuItemInfo.vue';
 import UploadProgress from '@/components/UploadProgress.vue';
 import UserMenu from '@/components/UserMenu.vue';
-import NotificationBell from '@/components/NotificationBell.vue';
 import NotificationToastContainer from '@/components/NotificationToastContainer.vue';
 import NotificationPanel from '@/components/NotificationPanel.vue';
 import { RouterView, useRoute } from 'vue-router'
@@ -24,7 +18,6 @@ import PreviewHost from '@/plugins/preview/PreviewHost.vue';
 import ExplorerContextMenu from '@/components/ExplorerContextMenu.vue';
 import TerminalPanel from '@/components/TerminalPanel.vue';
 import { useSettingsStore } from '@/stores/settings';
-import PhotoSizeControl from '@/components/PhotoSizeControl.vue';
 import InfoPanel from '@/components/InfoPanel.vue';
 import { useFileUploader, useUppyDropTarget } from '@/composables/fileUploader';
 import { useUppyStore } from '@/stores/uppyStore';
@@ -132,36 +125,11 @@ useClipboardShortcuts();
     >
       
 
-       <div class="flex z-10 items-center p-3">
-        <!-- Hamburger (small screens) -->
-        <label for="sidebar-toggle" class="lg:hidden -ml-2 mr-3 p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 inline-flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
-            <path fill-rule="evenodd" d="M3.75 5.25a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75zm0 6a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75zm0 6a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-          </svg>
-        </label>
-        
-        <NavButtons />
-        <BreadCrumb class="mr-auto "/>
 
-        <MenuItemInfo/>
-        <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
-        <MenuSortBy/>
-        <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
-        <ViewMode/>
-        <PhotoSizeControl />
-        <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
-        <SearchBar/>
-        <NotificationBell/>
-
-        <!-- <div 
-        style="background:url('http://gravatar.com/userimage/106458114/6eb8be0fbf770f939299c3e5f67ff6da.jpeg?size=256'); background-size: contain"
-        class="ml-4 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center font-bold">
-        </div> -->
-      </div>
 
 
       <ExplorerContextMenu>
-        <div class="p-6 pt-0 overflow-y-auto grow">
+        <div class="overflow-y-auto grow">
           <router-view :key="route.fullPath">
           </router-view>
         </div>

@@ -11,6 +11,15 @@ import { isPreviewableImage } from '@/config/media';
 import { PhotoIcon } from '@heroicons/vue/24/outline';
 import { ImagesOutline } from '@vicons/ionicons5';
 
+import NavButtons from '@/components/NavButtons.vue';
+import BreadCrumb from '@/components/BreadCrumb.vue';
+import MenuItemInfo from '@/components/MenuItemInfo.vue';
+import MenuSortBy from '@/components/MenuSortBy.vue'
+import ViewMode from '@/components/ViewMode.vue';
+import PhotoSizeControl from '@/components/PhotoSizeControl.vue';
+import SearchBar from '@/components/SearchBar.vue';
+import NotificationBell from '@/components/NotificationBell.vue';
+
 const settings = useSettingsStore()
 const fileStore = useFileStore()
 const route = useRoute()
@@ -96,14 +105,44 @@ const showNoPhotosMessage = computed(() => {
 <template>
   <div
     v-if="!loading"
-    class="min-h-full relative"
+    class="min-h-full relative flex flex-col max-h-screen"
+    @click.self="clearSelection()"
+    @contextmenu.prevent.self="handleBackgroundContextMenu">
+
+      <!-- top toolbar -->
+       <div class="flex z-10 items-center p-3 shrink-0 sticky top-0">
+
+        <!-- Hamburger (small screens) -->
+        <label for="sidebar-toggle" class="lg:hidden -ml-2 mr-3 p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 inline-flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
+            <path fill-rule="evenodd" d="M3.75 5.25a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75zm0 6a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75zm0 6a.75.75 0 01.75-.75h15a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+          </svg>
+        </label>
+        
+        <NavButtons />
+        <BreadCrumb class="mr-auto "/>
+
+        <MenuItemInfo/>
+        <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <MenuSortBy/>
+        <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <ViewMode/>
+        <PhotoSizeControl />
+        <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
+        <NotificationBell/>
+        <SearchBar/>
+        
+
+      </div>
+
+    <div
     :class="settings.view === 'grid' ? 'grid content-start items-start grid-cols-[repeat(auto-fill,6rem)] gap-2' : 
     settings.view === 'tab'? 'grid content-start items-start grid-cols-[repeat(auto-fill,20rem)] gap-2' :
     settings.view === 'photos' ? 'grid content-start items-start gap-1 md:gap-2' :
-    'flex flex-col gap-[2px]'"
+    'flex flex-col gap-0.5'"
     :style="settings.view === 'photos' ? { gridTemplateColumns: `repeat(auto-fill, ${settings.photoSize}px)` } : undefined"
-    @click.self="clearSelection()"
-    @contextmenu.prevent.self="handleBackgroundContextMenu">
+    class="grow overflow-y-scroll px-2"
+    >
       <!-- Detail view header -->
       <div
         v-if="settings.view === 'list'"
@@ -140,6 +179,8 @@ const showNoPhotosMessage = computed(() => {
     </div>
 
     
+
+    </div>
 
     <div v-else class="flex grow items-center h-full justify-center text-sm text-neutral-500 dark:text-neutral-400">
       <div class="flex  items-center pr-4 bg-neutral-300 dark:bg-black bg-opacity-20 rounded-lg">

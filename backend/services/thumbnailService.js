@@ -77,6 +77,7 @@ configureFfmpegBinaries();
 const isImage = (ext) => extensions.images.includes(ext);
 const isVideo = (ext) => extensions.videos.includes(ext);
 const isPdf = (ext) => ext === 'pdf';
+const isHeic = (ext) => ext === 'heic';
 
 const inflight = new Map();
 
@@ -195,10 +196,43 @@ const makeVideoThumb = async (srcPath, destPath) => {
   });
 };
 
+const makeHeicThumb = async (srcPath, destPath) => {
+  if (!canProcessVideoThumbnails) {
+    logger.warn({ srcPath }, 'Skipping HEIC thumbnail (no ffmpeg/ffprobe)');
+    return;
+  }
+
+  const { size, quality } = await getThumbOptions();
+
+  await new Promise((resolve, reject) => {
+    const command = ffmpeg(srcPath)
+      .inputOptions(['-hide_banner', '-loglevel', 'error'])
+      .outputOptions(['-frames:v', '1', '-vf', `scale=${size}:-1:flags=lanczos`, '-vcodec', 'png'])
+      .format('image2pipe')
+      .on('error', reject);
+
+    const stream = command.pipe();
+    stream.on('error', reject);
+
+    const pipeline = sharp().webp({ quality, effort: 4 });
+    stream.pipe(pipeline);
+    pipeline
+      .toBuffer()
+      .then((buffer) => atomicWrite(destPath, buffer))
+      .then(resolve)
+      .catch(reject);
+  });
+};
+
 const generateThumbnail = async (filePath, thumbPath) => {
   const extension = path.extname(filePath).toLowerCase().slice(1);
 
   if (isPdf(extension)) {
+    return;
+  }
+
+  if (isHeic(extension)) {
+    await makeHeicThumb(filePath, thumbPath);
     return;
   }
 

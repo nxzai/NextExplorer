@@ -119,17 +119,19 @@ const showNoPhotosMessage = computed(() => {
           <div>{{ $t('folder.dateModified') }}</div>
         </div>
 
-        <DragSelectOption
+        <!-- <DragSelectOption
           v-for="item in fileStore.getCurrentPathItems"
           :key="item.name"
           :value="item"
           class="h-full"
-        >
+        > -->
           <FileObject
+            v-for="item in fileStore.getCurrentPathItems"
+            :key="item.name"
             :item="item"
             :view="settings.view"
           />
-        </DragSelectOption>
+        <!-- </DragSelectOption> -->
 
         <!-- No photos message -->
         <div v-if="showNoPhotosMessage" class="absolute inset-0 flex flex-col items-center justify-center min-h-[400px] text-center px-4">

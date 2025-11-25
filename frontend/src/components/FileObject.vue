@@ -12,6 +12,7 @@ import { isPreviewableImage } from '@/config/media';
 import { useSettingsStore } from '@/stores/settings';
 import { ellipses } from '@/utils/ellipses';
 import { useViewConfig } from '@/composables/useViewConfig';
+import { DragSelectOption } from '@coleqiu/vue-drag-select';
 
 const props = defineProps(['item', 'view'])
 const settings = useSettingsStore();
@@ -141,6 +142,11 @@ const isPhotoItem = computed(() => {
 </script>
 
 <template>
+
+  <DragSelectOption
+    v-if="(view==='photos' && isPhotoItem) || view!='photos'"
+    :value="props.item"
+  >
 
     <div
     v-if="view==='photos' && isPhotoItem"
@@ -276,7 +282,7 @@ const isPhotoItem = computed(() => {
             {{ formatDate(item.dateModified) }}
         </div>
     </div>
-
+  </DragSelectOption>
 </template>
 
 <style scoped>

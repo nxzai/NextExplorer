@@ -4,6 +4,7 @@ const fs = require('fs');
 const fsPromises = require('fs/promises');
 const sharp = require('sharp');
 const ffmpeg = require('fluent-ffmpeg');
+const PQueue = require('p-queue').default;
 
 const { ensureDir } = require('../utils/fsUtils');
 const { directories, extensions } = require('../config/index');
@@ -78,6 +79,39 @@ const isVideo = (ext) => extensions.videos.includes(ext);
 const isPdf = (ext) => ext === 'pdf';
 
 const inflight = new Map();
+
+// Create thumbnail generation queue with concurrency limit
+// This prevents overwhelming the system with too many concurrent sharp/ffmpeg operations
+// Concurrency is dynamically updated from settings
+const thumbnailQueue = new PQueue({
+  concurrency: 10, // Default: 10 concurrent thumbnail generations (updated from settings)
+  timeout: 30000, // 30 second timeout per thumbnail
+  throwOnTimeout: false,
+});
+
+// Update queue concurrency from settings
+const updateQueueConcurrency = async () => {
+  try {
+    const settings = await getSettings();
+    const concurrency = settings?.thumbnails?.concurrency || 10;
+    thumbnailQueue.concurrency = concurrency;
+    logger.info({ concurrency }, 'Thumbnail queue concurrency set');
+  } catch (error) {
+    logger.warn({ err: error }, 'Failed to update thumbnail queue concurrency');
+  }
+};
+
+// Initialize concurrency from settings
+updateQueueConcurrency();
+
+// Log queue stats periodically for monitoring
+thumbnailQueue.on('active', () => {
+  logger.debug({
+    size: thumbnailQueue.size,
+    pending: thumbnailQueue.pending,
+    concurrency: thumbnailQueue.concurrency,
+  }, 'Thumbnail queue status');
+});
 
 const hashForFile = async (filePath, stats = null) => {
   const info = stats || await fsPromises.stat(filePath);
@@ -220,25 +254,52 @@ const getThumbnail = async (filePath) => {
 
   const { thumbFile, thumbPath } = await buildThumbnailPaths(filePath);
 
-  const createOrReuse = async () => {
-    try {
-      await fsPromises.access(thumbPath, fs.constants.F_OK);
-      return `/static/thumbnails/${thumbFile}`;
-    } catch (error) {
-      await generateThumbnail(filePath, thumbPath);
+  // Check if thumbnail already exists (fast path)
+  try {
+    await fsPromises.access(thumbPath, fs.constants.F_OK);
+    return `/static/thumbnails/${thumbFile}`;
+  } catch (error) {
+    // Thumbnail doesn't exist, need to generate
+  }
 
-      try {
-        await fsPromises.access(thumbPath, fs.constants.F_OK);
-        return `/static/thumbnails/${thumbFile}`;
-      } catch (missing) {
-        return '';
-      }
-    }
-  };
+  // Update queue concurrency from settings (non-blocking)
+  updateQueueConcurrency().catch(() => {});
 
+  // Check if generation is already in progress for this file
   let pending = inflight.get(thumbPath);
   if (!pending) {
-    pending = createOrReuse().finally(() => inflight.delete(thumbPath));
+    // Queue the thumbnail generation with concurrency limit
+    pending = thumbnailQueue.add(async () => {
+      try {
+        // Double-check if another request created it while we were queued
+        try {
+          await fsPromises.access(thumbPath, fs.constants.F_OK);
+          return `/static/thumbnails/${thumbFile}`;
+        } catch (error) {
+          // Still doesn't exist, generate it
+        }
+
+        logger.debug({ filePath, thumbPath }, 'Generating thumbnail');
+        await generateThumbnail(filePath, thumbPath);
+
+        // Verify generation succeeded
+        try {
+          await fsPromises.access(thumbPath, fs.constants.F_OK);
+          logger.debug({ filePath, thumbPath }, 'Thumbnail generated successfully');
+          return `/static/thumbnails/${thumbFile}`;
+        } catch (missing) {
+          logger.warn({ filePath, thumbPath }, 'Thumbnail generation completed but file not found');
+          return '';
+        }
+      } catch (error) {
+        logger.error({ filePath, err: error }, 'Thumbnail generation failed');
+        throw error;
+      }
+    }).finally(() => {
+      // Clean up inflight map when done
+      inflight.delete(thumbPath);
+    });
+
     inflight.set(thumbPath, pending);
   }
 

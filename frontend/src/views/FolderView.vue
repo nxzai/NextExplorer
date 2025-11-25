@@ -58,6 +58,7 @@ const loadFiles = async () => {
 onMounted(loadFiles)
 
 const handleBackgroundContextMenu = (event) => {
+  if (!contextMenu || !event) return;
   contextMenu?.openBackgroundMenu(event);
 };
 
@@ -85,19 +86,22 @@ const showNoPhotosMessage = computed(() => {
     v-if="!loading"
     class="h-full relative flex flex-col max-h-screen"
     @click.self="clearSelection()"
-    @contextmenu.prevent.self="handleBackgroundContextMenu">
+    >
 
       <!-- Toolbar -->
-      <FolderViewToolbar />
+    <FolderViewToolbar />
 
     <DragSelect
       v-model="selectionModel"
       :click-option-to-select="false"
       class="grow overflow-y-scroll px-2"
       @click.self="clearSelection()"
-      @contextmenu.prevent.self="handleBackgroundContextMenu"
+      @contextmenu.prevent="handleBackgroundContextMenu"
     >
-      <div :class="gridClasses" :style="gridStyle">
+      <div
+        :class="[gridClasses, 'min-h-full']"
+        :style="gridStyle"
+      >
         <!-- Detail view header -->
         <div
           v-if="settings.view === 'list'"

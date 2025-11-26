@@ -461,6 +461,11 @@ const getOrCreateOidcUser = async ({ issuer, sub, email, emailVerified, username
 };
 
 const getRequestUser = async (req) => {
+  // Synthetic or pre-populated user (e.g., AUTH_ENABLED=false)
+  if (req?.user && typeof req.user === 'object' && req.user.id) {
+    return req.user;
+  }
+
   // Local session
   if (req?.session?.localUserId) {
     const db = await getDb();

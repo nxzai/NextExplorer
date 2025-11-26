@@ -154,7 +154,7 @@ const isPhotoItem = computed(() => {
     :title="item.name"
     @click="handleClick"
     @dblclick="handleDblClick"
-    @contextmenu.prevent="handleContextMenu"
+    @contextmenu.prevent.stop="handleContextMenu"
     class="photo-cell relative rounded-md overflow-hidden cursor-pointer select-none bg-neutral-100 dark:bg-zinc-800/60 hover:brightness-105"
     :class="{ 'ring-2 ring-blue-500 dark:ring-blue-400': isSelected(item), 'opacity-60': isCut }"
     :style="{ width: settings.photoSize + 'px', height: settings.photoSize + 'px' }"
@@ -162,13 +162,13 @@ const isPhotoItem = computed(() => {
       <FileIcon :item="item" class="w-full h-full" />
     </div>
 
-    <div 
+    <div
     :title="item.name"
     v-if="view==='grid'"
     @click="handleClick"
     @dblclick="handleDblClick"
-    @contextmenu.prevent="handleContextMenu"
-    class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer select-none"    
+    @contextmenu.prevent.stop="handleContextMenu"
+    class="flex flex-col items-center gap-2 p-4 rounded-md cursor-pointer select-none"
     :class="{ 'opacity-60': isCut }"
     > 
         <FileIcon 
@@ -197,13 +197,13 @@ const isPhotoItem = computed(() => {
     </div>
 
 
-    <div 
+    <div
     :title="item.name"
     v-if="view==='tab'"
     @click="handleClick"
     @dblclick="handleDblClick"
-    @contextmenu.prevent="handleContextMenu"
-    
+    @contextmenu.prevent.stop="handleContextMenu"
+
     class="flex items-center gap-2 p-4 rounded-md cursor-pointer select-none"
     :class="{ 'opacity-60': isCut }">
         
@@ -242,12 +242,12 @@ const isPhotoItem = computed(() => {
     v-if="view==='list'"
     @click="handleClick"
     @dblclick="handleDblClick"
-    @contextmenu.prevent="handleContextMenu"
+    @contextmenu.prevent.stop="handleContextMenu"
     :class="['grid select-none items-center', LIST_VIEW_GRID_COLS,
     'cursor-pointer auto-cols-fr p-1 px-4 rounded-md',
-    'group-odd/item:bg-zinc-100 dark:group-odd/item:bg-neutral-700/30',
+    'group-even/item:bg-zinc-100 dark:group-even/item:bg-neutral-700/30',
     {
-      'text-white dark:text-white bg-blue-600 dark:bg-blue-600/80 group-odd/item:bg-blue-600! dark:group-odd/item:bg-blue-600/80!': isSelected(item),
+      'text-white dark:text-white bg-blue-600 dark:bg-blue-600/80 group-even/item:bg-blue-600! dark:group-even/item:bg-blue-600/80!': isSelected(item),
       'opacity-60': isCut && !isSelected(item)
     }]"
      >

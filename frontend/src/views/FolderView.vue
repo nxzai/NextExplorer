@@ -109,7 +109,7 @@ const showNoPhotosMessage = computed(() => {
           'px-4 py-2 text-xs',
           'text-neutral-600 dark:text-neutral-300',
           'uppercase tracking-wide select-none sticky top-0',
-          'bg-white dark:bg-zinc-800',
+          'bg-white dark:bg-base',
           'backdrop-blur-sm']"
         >
           <div></div>

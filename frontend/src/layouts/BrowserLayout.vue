@@ -93,7 +93,7 @@ useClipboardShortcuts();
     <input id="sidebar-toggle" type="checkbox" class="peer hidden" />
 
     <aside
-      class="flex flex-col bg-neutral-200/60 dark:bg-neutral-800 pt-4 pb-2 px-6 shrink-0
+      class="flex flex-col bg-base-muted dark:bg-base-muted pt-4 pb-2 px-6 shrink-0
       fixed inset-y-0 left-0 -translate-x-full transition-transform duration-200 ease-in-out z-40
       peer-checked:translate-x-0 lg:static lg:translate-x-0"
       :style="{ width: asideWidth + 'px' }"
@@ -120,7 +120,7 @@ useClipboardShortcuts();
 
     <main
       ref="dropTargetRef"
-      class="upload-drop-target flex flex-col grow relative dark:bg-neutral-800/80 shadow-lg"
+      class="upload-drop-target flex flex-col grow relative bg-base shadow-lg"
     >
       
 

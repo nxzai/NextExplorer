@@ -10,7 +10,7 @@ import {
   ListBulletIcon,
   PhotoIcon,
 } from '@heroicons/vue/24/outline'
-import { ChevronDownIcon, CheckIcon } from '@heroicons/vue/20/solid';
+import { ChevronUpDownIcon, CheckIcon } from '@heroicons/vue/20/solid';
 
 const settings = useSettingsStore()
 const { t } = useI18n();
@@ -77,7 +77,7 @@ onClickOutside(menuPopup, () => {
         :title="activeView?.label"
       >
         <component :is="activeView?.icon" class="w-6" />
-        <ChevronDownIcon class="w-4 h-4" />
+        <ChevronUpDownIcon class="w-4 h-4" />
       </button>
 
       <transition

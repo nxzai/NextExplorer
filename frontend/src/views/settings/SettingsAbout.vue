@@ -1,14 +1,29 @@
 <script setup>
-/* global __APP_VERSION__, __GIT_COMMIT__, __GIT_BRANCH__, __REPO_URL__ */
-// Build-time constants are injected via Vite define (see: frontend/vite.config.js)
-const version = __APP_VERSION__
-const gitCommit = typeof __GIT_COMMIT__ !== 'undefined' ? __GIT_COMMIT__ : ''
-const gitBranch = typeof __GIT_BRANCH__ !== 'undefined' ? __GIT_BRANCH__ : ''
-const repoUrl = typeof __REPO_URL__ !== 'undefined' ? __REPO_URL__ : ''
-const commitShort = gitCommit ? gitCommit.slice(0, 7) : ''
-const commitUrl = repoUrl && gitCommit ? `${repoUrl}/commit/${gitCommit}` : ''
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useFeaturesStore } from '@/stores/features';
+
 const { t } = useI18n();
+const featuresStore = useFeaturesStore();
+
+const commitShort = computed(() => {
+  const commit = featuresStore.gitCommit;
+  return commit ? commit.slice(0, 7) : '';
+});
+
+const commitUrl = computed(() => {
+  const repo = featuresStore.repoUrl;
+  const commit = featuresStore.gitCommit;
+  return repo && commit ? `${repo}/commit/${commit}` : '';
+});
+
+onMounted(async () => {
+  try {
+    await featuresStore.ensureLoaded();
+  } catch (_) {
+    // Non-fatal; version info is optional
+  }
+});
 </script>
 
 <template>
@@ -25,7 +40,7 @@ const { t } = useI18n();
           <div class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('settings.about.appVersionHelp') }}</div>
         </div>
         <div class="rounded-md border border-white/10 bg-transparent px-3 py-1 text-sm">
-          <span>v{{ version }}</span>
+          <span>v{{ featuresStore.version }}</span>
         </div>
       </div>
 
@@ -51,7 +66,7 @@ const { t } = useI18n();
           <div class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('settings.about.branchHelp') }}</div>
         </div>
         <div class="rounded-md border border-white/10 bg-transparent px-3 py-1 text-sm">
-          <span v-if="gitBranch">{{ gitBranch }}</span>
+          <span v-if="featuresStore.gitBranch">{{ featuresStore.gitBranch }}</span>
           <span v-else class="text-neutral-500">{{ t('settings.about.unknown') }}</span>
         </div>
       </div>

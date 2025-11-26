@@ -1,12 +1,11 @@
 const express = require('express');
 const { onlyoffice, editor, features } = require('../config/index');
-const { getDb } = require('../services/db');
-const asyncHandler = require('../utils/asyncHandler');
+const packageJson = require('../package.json');
 
 const router = express.Router();
 
 // GET /api/features -> returns enabled/disabled feature flags derived from env
-router.get('/features', asyncHandler(async (_req, res) => {
+router.get('/features', (_req, res) => {
   const payload = {
     onlyoffice: {
       enabled: Boolean(onlyoffice && onlyoffice.serverUrl),
@@ -18,35 +17,15 @@ router.get('/features', asyncHandler(async (_req, res) => {
     volumeUsage: {
       enabled: Boolean(features?.volumeUsage),
     },
-    announcements: [],
+    version: {
+      app: packageJson.version || '1.0.0',
+      gitCommit: process.env.GIT_COMMIT || '',
+      gitBranch: process.env.GIT_BRANCH || '',
+      repoUrl: process.env.REPO_URL || '',
+    },
   };
 
-  // Read one-time announcements from DB meta
-  try {
-    const db = await getDb();
-    // Ensure meta table exists and read keys
-    const getMeta = db.prepare('SELECT value FROM meta WHERE key = ?').pluck();
-    const raw = getMeta.get('notice_migration_v3');
-    if (raw) {
-      try {
-        const notice = JSON.parse(raw);
-        if (notice && notice.pending) {
-          payload.announcements.push({
-            id: 'v3-user-migration',
-            level: 'info',
-            title: 'We\'ve updated how you sign in',
-            message: 'You now need to use your new email-style username. To sign in, add @example.local to your username (for example: username@example.local). Your password stays the same.',
-            once: true,
-          });
-        }
-      } catch (_) {
-        // ignore parse issues
-      }
-    }
-  } catch (_) {
-    // DB may not be initialized; announcements are optional
-  }
   res.json(payload);
-}));
+});
 
 module.exports = router;

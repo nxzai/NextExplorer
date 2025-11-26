@@ -110,12 +110,12 @@ useClipboardShortcuts();
 
     <!-- Resizer handle -->
     <div
-      class="relative w-[2px] cursor-col-resize bg-transparent group select-none hidden lg:block"
+      class="relative w-px cursor-col-resize bg-transparent group select-none hidden lg:block"
       @pointerdown="onPointerDown"
       :aria-label="$t('browser.resizeSidebar')"
     >
       <!-- Visual guide line -->
-      <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-neutral-200 dark:bg-neutral-700 group-hover:bg-neutral-500"></div>
+      <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-neutral-200 dark:bg-neutral-900 group-hover:bg-neutral-500"></div>
     </div>
 
     <main
@@ -123,9 +123,6 @@ useClipboardShortcuts();
       class="upload-drop-target flex flex-col grow relative bg-base shadow-lg"
     >
       
-
-
-
 
       <ExplorerContextMenu>
         <div class="overflow-y-auto grow h-full pb-0.5">

@@ -4,11 +4,11 @@ import { useRoute, useRouter } from 'vue-router';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { LockClosedIcon } from '@heroicons/vue/24/outline';
 import { useAuthStore } from '@/stores/auth';
+import { useFeaturesStore } from '@/stores/features';
 import { useI18n } from 'vue-i18n';
 
-const version = __APP_VERSION__
-
 const auth = useAuthStore();
+const featuresStore = useFeaturesStore();
 const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
@@ -50,9 +50,14 @@ watch(
   { immediate: true },
 );
 
-onMounted(() => {
+onMounted(async () => {
   if (!auth.hasStatus && !auth.isLoading) {
     auth.initialize();
+  }
+  try {
+    await featuresStore.ensureLoaded();
+  } catch (_) {
+    // Non-fatal; version is optional
   }
 });
 
@@ -101,7 +106,7 @@ const handleSetupSubmit = async () => {
 </script>
 
 <template>
-  <AuthLayout :version="version" :is-loading="auth.isLoading">
+  <AuthLayout :version="featuresStore.version" :is-loading="auth.isLoading">
     <template #heading>
       <p class="text-3xl font-black leading-tight tracking-tight text-white">
         {{ $t('auth.setup.headline') }}

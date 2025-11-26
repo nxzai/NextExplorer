@@ -311,7 +311,7 @@ const ensureAnonymousUser = (db) => {
         1,
         'anonymous',
         'Anonymous User',
-        '[]',
+        '["admin"]',
         now,
         now
       );

@@ -18,7 +18,12 @@ const authMiddleware = async (req, res, next) => {
 
   if (auth.enabled===false) {
     // Inject a synthetic anonymous user for features that require user context
-    req.user = { id: 'anonymous', username: 'anonymous', email:'anonymous@local',  displayName: 'Anonymous User' };
+    req.user = { id: 'anonymous', 
+      username: 'anonymous', 
+      email:'anonymous@local',  
+      displayName: 'Anonymous User', 
+      roles:['admin']
+    };
     next();
     return;
   }

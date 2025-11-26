@@ -79,7 +79,7 @@ const handleOpenFavorite = (favorite) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-8 px-8">
     <!-- Quick Access -->
     <section>
       <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">{{ $t('volumes.quickAccess') }}</h3>
@@ -142,8 +142,8 @@ const handleOpenFavorite = (favorite) => {
               <template v-else>
                 <div class="mb-2 w-[120px] h-2 rounded-full bg-neutral-200 dark:bg-neutral-700 animate-pulse"></div>
                 <div class="flex justify-between text-xs w-[120px]">
-                  <span class="h-3 w-10 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse"></span>
-                  <span class="h-3 w-10 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse"></span>
+                  <span class="h-3 w-10 rounded-sm bg-neutral-200 dark:bg-neutral-700 animate-pulse"></span>
+                  <span class="h-3 w-10 rounded-sm bg-neutral-200 dark:bg-neutral-700 animate-pulse"></span>
                 </div>
               </template>
             </template>

@@ -30,7 +30,7 @@ const redirectTarget = computed(() => {
 });
 
 const inputBaseClasses =
-  'mt-2 w-full h-12 rounded-lg ring-1 ring-inset ring-white/10 bg-zinc-800/30 px-4 text-nextgray-100 placeholder-zinc-500 focus:ring-accent/60 focus:outline-none transition';
+  'mt-2 w-full h-12 rounded-lg ring-1 ring-inset ring-white/10 bg-zinc-800/30 px-4 text-neutral-100 placeholder-neutral-500 focus:ring-yellow-500/60 focus:outline-hidden transition';
 
 
 const helperTextClasses = 'text-sm text-red-400';
@@ -170,7 +170,7 @@ const handleSetupSubmit = async () => {
       <p v-else-if="statusError" :class="helperTextClasses">{{ statusError }}</p>
 
       <button type="submit" class=
-      "w-full h-12 rounded-lg bg-accent px-4 font-semibold text-nextzinc-900 transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
+      "w-full h-12 rounded-lg bg-accent px-4 font-semibold text-neutral-900 transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
       :disabled="isSubmittingSetup">
         <span v-if="isSubmittingSetup">{{ $t('auth.creating') }}</span>
         <span v-else class="inline-flex gap-2 items-center">

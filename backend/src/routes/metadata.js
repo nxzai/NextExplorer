@@ -89,7 +89,10 @@ router.get('/metadata/*', asyncHandler(async (req, res) => {
 
   let resolved;
   try {
-    resolved = resolveLogicalPath(relativePath, { user: req.user });
+    resolved = await resolveLogicalPath(relativePath, {
+      user: req.user,
+      guestSession: req.guestSession
+    });
   } catch (error) {
     throw new NotFoundError('Path not found.');
   }

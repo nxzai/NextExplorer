@@ -58,15 +58,32 @@ const transferItems = async (items, destination, operation, options = {}) => {
     throw new Error('Cannot copy or move items to the root path. Please select a specific volume or folder first.');
   }
 
-  const { absolutePath: destinationAbsolute } = resolveLogicalPath(destinationRelative, options);
+  const resolved = await resolveLogicalPath(destinationRelative, options);
+  const { absolutePath: destinationAbsolute, shareInfo } = resolved;
+
+  // Check if destination is a readonly share
+  if (shareInfo && shareInfo.accessMode === 'readonly') {
+    throw new Error('Cannot copy or move items to a read-only share.');
+  }
+
   await ensureDir(destinationAbsolute);
 
   const results = [];
 
   for (const item of items) {
-    const { relativePath: sourceRelative, absolutePath: sourceAbsolute } = resolveItemPaths(item, options);
+    const sourceResolved = await resolveLogicalPath(
+      combineRelativePath(item.path || '', item.name),
+      options
+    );
+    const { relativePath: sourceRelative, absolutePath: sourceAbsolute, shareInfo: sourceShareInfo } = sourceResolved;
+
     if (!(await pathExists(sourceAbsolute))) {
       throw new Error(`Source path not found: ${sourceRelative}`);
+    }
+
+    // Check if moving from a readonly share (move = delete from source)
+    if (operation === 'move' && sourceShareInfo && sourceShareInfo.accessMode === 'readonly') {
+      throw new Error('Cannot move items from a read-only share.');
     }
 
     const stats = await fs.stat(sourceAbsolute);
@@ -104,7 +121,17 @@ const deleteItems = async (items = [], options = {}) => {
   const results = [];
 
   for (const item of items) {
-    const { relativePath, absolutePath } = resolveItemPaths(item, options);
+    const itemResolved = await resolveLogicalPath(
+      combineRelativePath(item.path || '', item.name),
+      options
+    );
+    const { relativePath, absolutePath, shareInfo } = itemResolved;
+
+    // Check if deleting from a readonly share
+    if (shareInfo && shareInfo.accessMode === 'readonly') {
+      throw new Error('Cannot delete items from a read-only share.');
+    }
+
     if (!(await pathExists(absolutePath))) {
       results.push({ path: relativePath, status: 'missing' });
       continue;

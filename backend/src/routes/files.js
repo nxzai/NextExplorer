@@ -65,7 +65,16 @@ router.post('/files/folder', asyncHandler(async (req, res) => {
 
   await assertWritable(parentRelative);
 
-  const { absolutePath: parentAbsolute } = resolveLogicalPath(parentRelative, { user: req.user });
+  const resolved = await resolveLogicalPath(parentRelative, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
+  const { absolutePath: parentAbsolute, shareInfo } = resolved;
+
+  // Check if creating folder in a readonly share
+  if (shareInfo && shareInfo.accessMode === 'readonly') {
+    throw new ForbiddenError('Cannot create folders in a read-only share.');
+  }
 
   let parentStats;
   try {
@@ -104,12 +113,24 @@ router.post('/files/rename', asyncHandler(async (req, res) => {
   }
 
   const parentRelative = normalizeRelativePath(parentPath);
-  const { absolutePath: parentAbsolute } = resolveLogicalPath(parentRelative, { user: req.user });
+  const parentResolved = await resolveLogicalPath(parentRelative, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
+  const { absolutePath: parentAbsolute, shareInfo: parentShareInfo } = parentResolved;
 
   const currentRelative = combineRelativePath(parentRelative, originalName);
-  const { absolutePath: currentAbsolute } = resolveLogicalPath(currentRelative, { user: req.user });
+  const { absolutePath: currentAbsolute } = await resolveLogicalPath(currentRelative, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
 
   await assertWritable(parentRelative);
+
+  // Check if renaming in a readonly share
+  if (parentShareInfo && parentShareInfo.accessMode === 'readonly') {
+    throw new ForbiddenError('Cannot rename items in a read-only share.');
+  }
 
   if (!(await pathExists(currentAbsolute))) {
     throw new NotFoundError('Item not found.');
@@ -130,7 +151,10 @@ router.post('/files/rename', asyncHandler(async (req, res) => {
   }
 
   const targetRelative = combineRelativePath(parentRelative, validatedNewName);
-  const { absolutePath: targetAbsolute } = resolveLogicalPath(targetRelative, { user: req.user });
+  const { absolutePath: targetAbsolute } = await resolveLogicalPath(targetRelative, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
 
   if (await pathExists(targetAbsolute)) {
     throw new ConflictError(`The name "${validatedNewName}" is already taken.`);
@@ -280,7 +304,10 @@ const handleDownloadRequest = async (paths, req, res, basePath = '') => {
   const baseNormalized = basePath ? normalizeRelativePath(basePath) : '';
 
   const targets = await Promise.all(normalizedPaths.map(async (relativePath) => {
-    const { absolutePath, relativePath: logicalPath } = resolveLogicalPath(relativePath, { user: req.user });
+    const { absolutePath, relativePath: logicalPath } = await resolveLogicalPath(relativePath, {
+      user: req.user,
+      guestSession: req.guestSession
+    });
     const stats = await fs.stat(absolutePath);
     return { relativePath: logicalPath, absolutePath, stats };
   }));
@@ -376,7 +403,10 @@ router.get('/preview', asyncHandler(async (req, res) => {
   }
 
   const relativePath = normalizeRelativePath(relative);
-  const { absolutePath } = resolveLogicalPath(relativePath, { user: req.user });
+  const { absolutePath } = await resolveLogicalPath(relativePath, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
   const stats = await fs.stat(absolutePath);
 
   if (stats.isDirectory()) {

@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const { port } = require('./config/index');
 const { configureTrustProxy } = require('./middleware/trustProxy');
@@ -28,6 +29,8 @@ const initializeApp = async () => {
   configureCors(app);
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
+  logger.debug('Mounted cookie parser middleware');
 
   await bootstrap();
 

@@ -72,27 +72,26 @@ const createFile = async () => {
 </script>
 <template>
   <div class="relative">
-    <button 
+    <button
     @click="toggle()"
-    class="box-border flex items-center justify-center gap-2 p-2 pl-3 pr-5 mb-4 
-    shadow-md text-md rounded-lg
-    dark:text-white
-    bg-white hover:bg-opacity-80 active:bg-opacity-60 
-    dark:bg-zinc-600 dark:hover:bg-opacity-90 dark:active:bg-opacity-80 ">
-      <PlusIcon class="w-6 h-6"/>
-      {{ $t('create.createNew') }}
+    class="flex items-center justify-center p-2 rounded-lg
+    hover:bg-neutral-100 active:bg-neutral-200
+    dark:hover:bg-neutral-700 dark:active:bg-neutral-600
+    transition-colors"
+    :title="$t('create.createNew')">
+      <PlusIcon class="w-5 h-5"/>
     </button>
 
-    <div 
+    <div
     ref="popuplRef"
     v-if="menuOpen"
     class="
-    absolute top-0
-    bg-white dark:bg-zinc-700 rounded-lg shadow-lg">
+    absolute top-full mt-2 left-0 z-50 min-w-[200px]
+    bg-white dark:bg-zinc-700 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-600">
       <button
       @click="createFolder"
       :disabled="isCreating"
-      class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600 rounded-t-lg disabled:opacity-60 disabled:cursor-not-allowed"> 
+      class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600 rounded-t-lg disabled:opacity-60 disabled:cursor-not-allowed">
         <CreateNewFolderRound class="w-6 text-yellow-400"/> {{ $t('create.newFolder') }}</button>
       <button
       @click="createFile"
@@ -103,12 +102,12 @@ const createFile = async () => {
       @click="uploadFiles"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600">
         <UploadFileOutlined class="w-6 text-sky-400"/>{{ $t('create.fileUpload') }}</button>
-      <button 
+      <button
       @click="uploadFolder"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white rounded-b-lg">
         <DriveFolderUploadOutlined class="w-6 text-green-400"/>{{ $t('create.folderUpload') }}
       </button>
     </div>
-    
+
   </div>
 </template>

@@ -9,14 +9,24 @@ const { readMetaField } = require('../utils/requestUtils');
 const { getPermissionForPath } = require('./accessControlService');
 const logger = require('../utils/logger');
 
-const resolveUploadPaths = (req, file) => {
+const resolveUploadPaths = async (req, file) => {
   const relativePathMeta = readMetaField(req, 'relativePath');
   const uploadToMeta = readMetaField(req, 'uploadTo');
 
   const uploadTo = normalizeRelativePath(uploadToMeta);
   const relativePath = normalizeRelativePath(relativePathMeta) || path.basename(file.originalname);
 
-  const { absolutePath: destinationRoot, relativePath: logicalBase } = resolveLogicalPath(uploadTo, { user: req.user });
+  const resolved = await resolveLogicalPath(uploadTo, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
+  const { absolutePath: destinationRoot, relativePath: logicalBase, shareInfo } = resolved;
+
+  // Check if uploading to a readonly share
+  if (shareInfo && shareInfo.accessMode === 'readonly') {
+    throw new Error('Cannot upload files to a read-only share.');
+  }
+
   const destinationPath = path.join(destinationRoot, relativePath);
   const destinationDir = path.dirname(destinationPath);
 
@@ -38,7 +48,7 @@ function CustomStorage() {
 CustomStorage.prototype._handleFile = function handleFile(req, file, cb) {
   (async () => {
     try {
-      const { destinationPath, destinationDir, logicalRelativePath } = resolveUploadPaths(req, file);
+      const { destinationPath, destinationDir, logicalRelativePath } = await resolveUploadPaths(req, file);
 
       // Enforce access control: destination directory must be writable
       const relDestDir = normalizeRelativePath(path.dirname(logicalRelativePath));

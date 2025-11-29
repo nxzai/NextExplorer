@@ -18,6 +18,7 @@ export const useFileStore = defineStore('fileStore', () => {
   // State
   const currentPath = ref('');
   const currentPathItems = ref([]);
+  const currentPathData = ref(null);
   const selectedItems = ref([]);
   const renameState = ref(null);
 
@@ -327,7 +328,27 @@ export const useFileStore = defineStore('fileStore', () => {
     const normalizedPath = normalizePath(typeof path === 'string' ? path : currentPath.value);
     currentPath.value = normalizedPath;
     selectedItems.value = [];
-    currentPathItems.value = await browse(normalizedPath);
+
+    const response = await browse(normalizedPath);
+
+    // Handle new response format with items and access metadata
+    if (response && typeof response === 'object' && Array.isArray(response.items)) {
+      currentPathItems.value = response.items;
+      currentPathData.value = {
+        path: response.path || normalizedPath,
+        canRead: response.access?.canRead ?? true,
+        canWrite: response.access?.canWrite ?? false,
+        canUpload: response.access?.canUpload ?? false,
+        canDelete: response.access?.canDelete ?? false,
+        canShare: response.access?.canShare ?? false,
+        canDownload: response.access?.canDownload ?? true,
+      };
+    } else {
+      // Fallback for old response format (array of items)
+      currentPathItems.value = Array.isArray(response) ? response : [];
+      currentPathData.value = null;
+    }
+
     return currentPathItems.value;
   }
 
@@ -336,6 +357,7 @@ export const useFileStore = defineStore('fileStore', () => {
     getCurrentPath,
     setCurrentPath,
     currentPathItems,
+    currentPathData,
     getCurrentPathItems,
     fetchPathItems,
     selectedItems,
@@ -343,7 +365,7 @@ export const useFileStore = defineStore('fileStore', () => {
     cutItems,
     hasSelection,
     hasClipboardItems,
-    copy, 
+    copy,
     cut,
     paste,
     del,

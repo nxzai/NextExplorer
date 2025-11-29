@@ -207,6 +207,64 @@ const migrate = (db) => {
       db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run('schema_version', String(4));
       version = 4;
     }
+    if (version < 5) {
+      console.log('[DB Migration] Migrating to v5: Adding shares functionality...');
+
+      db.exec(`
+        CREATE TABLE shares (
+          id TEXT PRIMARY KEY,
+          share_token TEXT UNIQUE NOT NULL,
+          owner_id TEXT NOT NULL,
+          source_space TEXT NOT NULL,
+          source_path TEXT NOT NULL,
+          is_directory INTEGER NOT NULL,
+          access_mode TEXT NOT NULL CHECK(access_mode IN ('readonly', 'readwrite')),
+          sharing_type TEXT NOT NULL CHECK(sharing_type IN ('anyone', 'users')),
+          password_hash TEXT,
+          expires_at TEXT,
+          label TEXT,
+          download_count INTEGER DEFAULT 0,
+          last_accessed_at TEXT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE share_permissions (
+          id TEXT PRIMARY KEY,
+          share_id TEXT NOT NULL,
+          user_id TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (share_id) REFERENCES shares(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          UNIQUE(share_id, user_id)
+        );
+
+        CREATE TABLE guest_sessions (
+          id TEXT PRIMARY KEY,
+          share_id TEXT NOT NULL,
+          ip_address TEXT,
+          user_agent TEXT,
+          created_at TEXT NOT NULL,
+          expires_at TEXT NOT NULL,
+          last_activity_at TEXT NOT NULL,
+          FOREIGN KEY (share_id) REFERENCES shares(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX idx_shares_owner ON shares(owner_id);
+        CREATE INDEX idx_shares_token ON shares(share_token);
+        CREATE INDEX idx_shares_expires ON shares(expires_at);
+        CREATE INDEX idx_shares_source ON shares(source_space, source_path);
+        CREATE INDEX idx_share_permissions_share ON share_permissions(share_id);
+        CREATE INDEX idx_share_permissions_user ON share_permissions(user_id);
+        CREATE INDEX idx_guest_sessions_share ON guest_sessions(share_id);
+        CREATE INDEX idx_guest_sessions_expires ON guest_sessions(expires_at);
+      `);
+
+      console.log('[DB Migration] Migration to v5 completed successfully!');
+      db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run('schema_version', String(5));
+      version = 5;
+    }
   })();
 };
 

@@ -60,12 +60,18 @@ router.post('/onlyoffice/config', asyncHandler(async (req, res) => {
   }
 
   const relativePath = normalizeRelativePath(relativeRaw);
-  const resolved = resolveLogicalPath(relativePath, { user: req.user });
+  const resolved = await resolveLogicalPath(relativePath, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
   const abs = resolved.absolutePath;
   const stat = await fsp.stat(abs);
   if (stat.isDirectory()) {
     throw new ValidationError('Cannot open a directory in ONLYOFFICE.');
   }
+
+  // Check if this is a readonly share
+  const isReadonlyShare = resolved.shareInfo && resolved.shareInfo.accessMode === 'readonly';
 
   const filename = path.basename(abs);
   const ext = toExt(filename);
@@ -85,6 +91,8 @@ router.post('/onlyoffice/config', asyncHandler(async (req, res) => {
       logicalPath: resolved.relativePath,
       space: resolved.space,
       userId: req.user && req.user.id ? String(req.user.id) : null,
+      guestSessionId: req.guestSession?.id || null,
+      shareToken: resolved.shareInfo?.shareToken || null,
     };
     backendToken = jwt.sign(backendPayload, onlyoffice.secret, { algorithm: 'HS256' });
     fileUrl.searchParams.set('backend', backendToken);
@@ -97,7 +105,8 @@ router.post('/onlyoffice/config', asyncHandler(async (req, res) => {
     .update(String(stat.mtimeMs))
     .digest('hex');
 
-  const canEdit = mode !== 'view';
+  // Disable editing for readonly shares or when mode is view
+  const canEdit = mode !== 'view' && !isReadonlyShare;
 
   const config = {
     documentType, // text | spreadsheet | presentation
@@ -111,7 +120,7 @@ router.post('/onlyoffice/config', asyncHandler(async (req, res) => {
         edit: canEdit,
         download: true,
         print: true,
-        review: true,
+        review: canEdit,
       },
     },
     editorConfig: {
@@ -125,6 +134,9 @@ router.post('/onlyoffice/config', asyncHandler(async (req, res) => {
       user: (req.user && req.user.id) ? {
         id: String(req.user.id),
         name: req.user.displayName || req.user.username || 'User',
+      } : req.guestSession ? {
+        id: `guest_${req.guestSession.id}`,
+        name: 'Guest User',
       } : undefined,
     },
   };
@@ -181,13 +193,16 @@ router.get('/onlyoffice/file', asyncHandler(async (req, res) => {
   }
 
   // Determine absolute path:
-  // - Prefer signed backend context when available (works for personal paths)
+  // - Prefer signed backend context when available (works for personal/share paths)
   // - Fallback to resolving logical path without user for volume-only paths
   let abs = null;
   if (backendCtx && typeof backendCtx.absolutePath === 'string' && backendCtx.absolutePath) {
     abs = backendCtx.absolutePath;
   } else {
-    const resolved = resolveLogicalPath(relativePath);
+    const resolved = await resolveLogicalPath(relativePath, {
+      user: req.user,
+      guestSession: req.guestSession
+    });
     abs = resolved.absolutePath;
   }
 
@@ -253,7 +268,10 @@ router.post('/onlyoffice/callback', asyncHandler(async (req, res) => {
       if (backendCtx && typeof backendCtx.absolutePath === 'string' && backendCtx.absolutePath) {
         abs = backendCtx.absolutePath;
       } else {
-        const resolved = resolveLogicalPath(relativePath);
+        const resolved = await resolveLogicalPath(relativePath, {
+          user: req.user,
+          guestSession: req.guestSession
+        });
         abs = resolved.absolutePath;
       }
       await ensureDir(path.dirname(abs));

@@ -15,6 +15,8 @@ import SettingsAbout from '@/views/settings/SettingsAbout.vue'
 import AboutView from '@/views/AboutView.vue'
 import AuthSetupView from '@/views/AuthSetupView.vue'
 import AuthLoginView from '@/views/AuthLoginView.vue'
+import ShareLoginView from '@/views/ShareLoginView.vue'
+import SharedWithMeView from '@/views/SharedWithMeView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -62,14 +64,29 @@ const router = createRouter({
       children: [
         {
           path: '',
+          name: 'HomeView',
           component: HomeView,
         },
         {
           path: ':path(.+)',
+          name: 'FolderView',
           component: FolderView,
+          meta: { allowGuest: true }, // Allow guest access for share paths
         },
       ],
 
+    },
+    {
+      path: '/shares',
+      component: BrowserLayout,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: 'shared-with-me',
+          name: 'SharedWithMe',
+          component: SharedWithMeView,
+        },
+      ],
     },
     {
       path: '/search',
@@ -82,7 +99,7 @@ const router = createRouter({
     {
       path: '/editor',
       component: EditorLayout,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, allowGuest: true },
       children: [
         {
           path: ":path(.*)",
@@ -107,11 +124,51 @@ const router = createRouter({
       component: AuthLoginView,
       meta: { authScreen: true },
     },
+    {
+      path: '/share/:token',
+      name: 'ShareLogin',
+      component: ShareLoginView,
+      meta: { public: true }, // Public route, doesn't require auth
+    },
   ]
 })
 
 router.beforeEach(async (to) => {
   const auth = useAuthStore();
+
+  // Allow public routes (like share links) without auth
+  const isPublicRoute = Boolean(to.meta?.public);
+  if (isPublicRoute) {
+    return true;
+  }
+
+  // Allow guest access for share paths (check if path starts with share/)
+  const isGuestRoute = Boolean(to.meta?.allowGuest);
+  const pathParam = typeof to.params?.path === 'string' ? to.params.path : '';
+  const isSharePath = pathParam.startsWith('share/');
+
+  if (isGuestRoute && isSharePath) {
+    // Check for guest session OR authenticated user
+    const guestSessionId = sessionStorage.getItem('guestSessionId');
+
+    // Initialize auth if needed to check authentication status
+    if (!auth.hasStatus && !auth.isLoading) {
+      await auth.initialize();
+    } else if (auth.isLoading) {
+      await auth.initialize();
+    }
+
+    // Allow if user is authenticated OR has guest session
+    if (auth.isAuthenticated || guestSessionId) {
+      return true;
+    }
+
+    // No guest session and not authenticated - redirect to share login
+    const shareToken = pathParam.split('/')[1];
+    if (shareToken) {
+      return { name: 'ShareLogin', params: { token: shareToken } };
+    }
+  }
 
   // Initialize auth store
   if (!auth.hasStatus && !auth.isLoading) {

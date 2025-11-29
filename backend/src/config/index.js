@@ -129,6 +129,17 @@ const favorites = {
   defaultIcon: env.FAVORITES_DEFAULT_ICON,
 };
 
+// --- Shares ---
+const shares = {
+  enabled: env.SHARES_ENABLED,
+  tokenLength: env.SHARES_TOKEN_LENGTH,
+  maxSharesPerUser: env.SHARES_MAX_PER_USER,
+  defaultExpiryDays: env.SHARES_DEFAULT_EXPIRY_DAYS,
+  guestSessionHours: env.SHARES_GUEST_SESSION_HOURS,
+  allowPasswordProtection: env.SHARES_ALLOW_PASSWORD,
+  allowAnonymous: env.SHARES_ALLOW_ANONYMOUS,
+};
+
 // --- Main Export ---
 module.exports = {
   port: env.PORT,
@@ -164,10 +175,12 @@ module.exports = {
   onlyoffice,
   editor,
   favorites,
+  shares,
 
   features: {
     volumeUsage: env.SHOW_VOLUME_USAGE,
     personalFolders: env.USER_DIR_ENABLED,
+    shares: env.SHARES_ENABLED,
   },
   
   logging: {

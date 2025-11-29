@@ -92,6 +92,10 @@ router.post('/setup', setupLimiter, asyncHandler(async (req, res) => {
     roles: ['admin']
   });
   if (req.session) req.session.localUserId = user.id;
+
+  // Clear guest session cookie when user sets up account
+  res.clearCookie('guestSession', { path: '/api' });
+
   res.status(201).json({ user });
 }));
 
@@ -114,6 +118,10 @@ router.post('/login', loginLimiter, asyncHandler(async (req, res) => {
     throw new UnauthorizedError('Invalid credentials.');
   }
   if (req.session) req.session.localUserId = user.id;
+
+  // Clear guest session cookie when user logs in
+  res.clearCookie('guestSession', { path: '/api' });
+
   res.json({ user });
 }));
 

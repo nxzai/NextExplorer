@@ -28,7 +28,10 @@ const dirSize = async (root) => {
 router.get('/usage/*', asyncHandler(async (req, res) => {
   const raw = req.params[0] || '';
   const inputRel = normalizeRelativePath(raw);
-  const { absolutePath: abs, relativePath: rel } = resolveLogicalPath(inputRel, { user: req.user });
+  const { absolutePath: abs, relativePath: rel } = await resolveLogicalPath(inputRel, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
 
   // Run both commands in parallel for maximum speed
   const [size, dfResult] = await Promise.all([

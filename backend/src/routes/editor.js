@@ -17,7 +17,10 @@ router.post('/editor', asyncHandler(async (req, res) => {
   }
 
   const relativePath = normalizeRelativePath(relative);
-  const { absolutePath } = resolveLogicalPath(relativePath, { user: req.user });
+  const { absolutePath } = await resolveLogicalPath(relativePath, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
   const stats = await fs.stat(absolutePath);
 
   if (stats.isDirectory()) {
@@ -42,7 +45,16 @@ router.put('/editor', asyncHandler(async (req, res) => {
     throw new ValidationError('Cannot create files in the root volume path. Please select a specific volume first.');
   }
 
-  const { absolutePath } = resolveLogicalPath(relativePath, { user: req.user });
+  const { absolutePath, shareInfo } = await resolveLogicalPath(relativePath, {
+    user: req.user,
+    guestSession: req.guestSession
+  });
+
+  // Check write permission for shares
+  if (shareInfo && shareInfo.accessMode === 'readonly') {
+    throw new ValidationError('This share is read-only.');
+  }
+
   await ensureDir(path.dirname(absolutePath));
   await fs.writeFile(absolutePath, content, { encoding: 'utf-8' });
   res.send({ success: true });

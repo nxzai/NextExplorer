@@ -12,6 +12,7 @@ const { NotFoundError } = require('../errors/AppError');
 
 const router = express.Router();
 const { getPermissionForPath } = require('../services/accessControlService');
+const { getAccessInfo } = require('../services/accessManager');
 const previewable = new Set([
   ...extensions.images,
   ...extensions.videos,
@@ -24,9 +25,20 @@ router.get('/browse/*', asyncHandler(async (req, res) => {
   const rawPath = req.params[0] || '';
   const inputRelativePath = normalizeRelativePath(rawPath);
 
+  // Check access permissions before resolving path (especially for shares)
+  const context = { user: req.user, guestSession: req.guestSession };
+  const accessInfo = await getAccessInfo(context, inputRelativePath);
+
+  if (!accessInfo.canAccess) {
+    throw new NotFoundError(accessInfo.denialReason || 'Access denied');
+  }
+
   let resolved;
   try {
-    resolved = resolveLogicalPath(inputRelativePath, { user: req.user });
+    resolved = await resolveLogicalPath(inputRelativePath, {
+      user: req.user,
+      guestSession: req.guestSession
+    });
   } catch (error) {
     logger.warn({ path: rawPath, err: error }, 'Failed to resolve browse path');
     throw new NotFoundError('Path not found.');
@@ -83,11 +95,58 @@ router.get('/browse/*', asyncHandler(async (req, res) => {
       item.supportsThumbnail = true;
     }
 
+    // Add access metadata
+    try {
+      const context = {
+        user: req.user,
+        guestSession: req.guestSession,
+      };
+      const accessInfo = await getAccessInfo(context, fullRel);
+
+      item.access = {
+        canRead: accessInfo.canRead,
+        canWrite: accessInfo.canWrite,
+        canDelete: accessInfo.canDelete,
+        canShare: accessInfo.canShare,
+        canDownload: accessInfo.canDownload,
+        isShared: accessInfo.isShared || false,
+      };
+
+      // Add share info if available
+      if (accessInfo.shareInfo) {
+        item.shareInfo = accessInfo.shareInfo;
+      }
+    } catch (err) {
+      // Fallback to basic permissions if access check fails
+      logger.warn({ fullRel, err }, 'Failed to get access info');
+      item.access = {
+        canRead: true,
+        canWrite: perm === 'rw',
+        canDelete: perm === 'rw',
+        canShare: Boolean(req.user),
+        canDownload: true,
+        isShared: false,
+      };
+    }
+
     return item;
   });
 
   const fileData = (await Promise.all(fileDataPromises)).filter(Boolean);
-  res.json(fileData);
+
+  // Include directory access metadata in response
+  res.json({
+    items: fileData,
+    access: {
+      canRead: accessInfo.canRead,
+      canWrite: accessInfo.canWrite,
+      canUpload: accessInfo.canUpload,
+      canDelete: accessInfo.canDelete,
+      canShare: accessInfo.canShare,
+      canDownload: accessInfo.canDownload,
+    },
+    path: relativePath,
+  });
 }));
 
 module.exports = router;

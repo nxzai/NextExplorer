@@ -15,6 +15,7 @@ const onlyofficeRoutes = require('./onlyoffice');
 const featuresRoutes = require('./features');
 const terminalRoutes = require('./terminal');
 const permissionsRoutes = require('./permissions');
+const sharesRoutes = require('./shares');
 const { onlyoffice } = require('../config/index');
 
 const registerRoutes = (app) => {
@@ -32,6 +33,9 @@ const registerRoutes = (app) => {
   app.use('/api', usersRoutes);
   app.use('/api', metadataRoutes);
   app.use('/api', permissionsRoutes);
+  // Share routes (supports guest sessions)
+  app.use('/api/shares', sharesRoutes);
+  app.use('/api/share', sharesRoutes);
   // Public features endpoint (always available)
   app.use('/api', featuresRoutes);
   // Admin-only terminal session endpoint

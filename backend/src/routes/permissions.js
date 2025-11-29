@@ -36,7 +36,7 @@ router.get('/permissions/*', asyncHandler(async (req, res) => {
     throw new ForbiddenError('Path is not accessible.');
   }
 
-  const { absolutePath } = resolveLogicalPath(relativePath, { user: req.user });
+  const { absolutePath } = await resolveLogicalPath(relativePath, { user: req.user });
 
   try {
     const stats = await fs.stat(absolutePath);
@@ -99,7 +99,7 @@ router.post('/permissions/chmod', asyncHandler(async (req, res) => {
   const relativePath = normalizeRelativePath(rawPath);
   await assertWritable(relativePath);
 
-  const { absolutePath } = resolveLogicalPath(relativePath, { user: req.user });
+  const { absolutePath } = await resolveLogicalPath(relativePath, { user: req.user });
 
   try {
     // Check if path exists
@@ -164,7 +164,7 @@ router.post('/permissions/chown', asyncHandler(async (req, res) => {
   const relativePath = normalizeRelativePath(rawPath);
   await assertWritable(relativePath);
 
-  const { absolutePath } = resolveLogicalPath(relativePath, { user: req.user });
+  const { absolutePath } = await resolveLogicalPath(relativePath, { user: req.user });
 
   try {
     // Check if path exists

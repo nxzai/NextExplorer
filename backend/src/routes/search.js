@@ -292,7 +292,7 @@ router.get('/search', asyncHandler(async (req, res) => {
 
   let resolvedBase;
   try {
-    resolvedBase = resolveLogicalPath(relBaseInput, { user: req.user });
+    resolvedBase = await resolveLogicalPath(relBaseInput, { user: req.user });
   } catch (error) {
     throw new NotFoundError('Base path not found.');
   }

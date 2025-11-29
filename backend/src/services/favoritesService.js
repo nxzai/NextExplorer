@@ -75,7 +75,7 @@ const getNextFavoritePosition = (db, userId) => {
  * Ensure path exists and is a directory
  */
 const validatePath = async (relativePath, user) => {
-  const { absolutePath } = resolveLogicalPath(relativePath, { user });
+  const { absolutePath } = await resolveLogicalPath(relativePath, { user });
   const stats = await fs.stat(absolutePath);
 
   if (!stats.isDirectory()) {

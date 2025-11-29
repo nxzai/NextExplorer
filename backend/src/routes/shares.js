@@ -100,8 +100,10 @@ router.post('/', asyncHandler(async (req, res) => {
     label,
   });
 
-  // Generate share URL
-  const shareUrl = `${req.protocol}://${req.get('host')}/share/${share.shareToken}`;
+  // Generate share URL using PUBLIC_URL if configured, otherwise use request host
+  const { public: publicConfig } = require('../config/index');
+  const baseUrl = publicConfig.origin || `${req.protocol}://${req.get('host')}`;
+  const shareUrl = `${baseUrl}/share/${share.shareToken}`;
 
   res.status(201).json({
     ...share,

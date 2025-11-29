@@ -32,10 +32,7 @@ const redirectTarget = computed(() => {
 });
 
 const inputBaseClasses =
-  'mt-2 w-full h-12 rounded-xl ring-1 ring-inset ring-white/10 bg-neutral-800/70 px-4 text-neutral-100 placeholder-neutral-500 focus:ring-blue-500/60 focus:outline-hidden transition';
-
-const buttonBaseClasses =
-  'w-full h-12 rounded-xl bg-blue-500 px-4 font-semibold text-neutral-100 transition hover:bg-blue-500/90 disabled:cursor-not-allowed disabled:opacity-60';
+  'mt-2 w-full h-12 rounded-xl ring-1 ring-inset ring-white/10 bg-neutral-800/70 px-4 text-neutral-100 placeholder-neutral-500 focus:ring-white/60 focus:outline-hidden transition';
 
 const helperTextClasses = 'text-sm text-red-400';
 
@@ -180,7 +177,12 @@ const handleOidcLogin = () => {
       <p v-if="loginError" :class="helperTextClasses">{{ loginError }}</p>
       <p v-else-if="statusError" :class="helperTextClasses">{{ statusError }}</p>
 
-      <button type="submit" :class="buttonBaseClasses" :disabled="isSubmittingLogin">
+      <button type="submit" 
+      class="w-full h-12 px-4 rounded-xl 
+      bg-neutral-100 hover:bg-neutral-100/90 active:bg-neutral-100/70  
+      font-semibold text-neutral-900 
+      disabled:cursor-not-allowed disabled:opacity-60" 
+      :disabled="isSubmittingLogin">
         <span v-if="isSubmittingLogin">{{ $t('auth.verifying') }}</span>
         <span v-else class="inline-flex items-center gap-2">
           <LockClosedIcon class="h-5 w-5" />
@@ -197,7 +199,9 @@ const handleOidcLogin = () => {
 
     <div v-if="supportsOidc" class="mb-2">
       <button
-        class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-neutral-500/20 px-4 text-sm font-medium text-white ring-1 ring-inset ring-white/10 hover:bg-white/10"
+        class="flex h-12 w-full items-center justify-center gap-2 rounded-xl 
+        bg-neutral-700/50 hover:bg-neutral-700/70 active:bg-neutral-700/90 
+        px-4 text-sm font-medium text-white ring-1 ring-inset ring-white/10 "
         type="button"
         @click="handleOidcLogin"
       >

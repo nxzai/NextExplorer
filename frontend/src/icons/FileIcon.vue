@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watchEffect } from 'vue';
+import { computed, ref, watch, watchEffect } from 'vue';
 
 import { apiBase } from '@/api';
 import { useAppSettings } from '@/stores/appSettings';
@@ -78,8 +78,19 @@ const isPreviewable = computed(() => {
   return isPreviewableImage(ext.value) || isPreviewableVideo(ext.value);
 });
 
-// Track if we've already requested the thumbnail
+// Track if we've already requested the thumbnail in this component instance
 const hasRequestedThumbnail = ref(false);
+
+// If the underlying item changes and loses its thumbnail (for example after
+// a directory refresh), allow a new request to be made.
+watch(
+  () => props.item && props.item.thumbnail,
+  (newThumb) => {
+    if (!newThumb) {
+      hasRequestedThumbnail.value = false;
+    }
+  }
+);
 
 // Automatically request thumbnail when all conditions are met
 // watchEffect automatically tracks all reactive dependencies and re-runs when they change

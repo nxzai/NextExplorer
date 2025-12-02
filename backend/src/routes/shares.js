@@ -21,9 +21,9 @@ const {
   getGuestSession,
   isGuestSessionValid,
 } = require('../services/guestSessionService');
-const { resolveLogicalPath, resolveSharePath, parsePathSpace } = require('../utils/pathUtils');
+const { resolveLogicalPath, parsePathSpace } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
-const { getAccessInfo } = require('../services/accessManager');
+const { resolvePathWithAccess } = require('../services/accessManager');
 
 const router = express.Router();
 
@@ -431,79 +431,124 @@ router.get('/:token/access', asyncHandler(async (req, res) => {
 
 /**
  * GET /api/share/:token/browse/* - Browse share contents
+ *
+ * For directory shares, returns the contents of the directory.
+ * For file shares, treats the share as a virtual one-item directory
+ * and returns a single item representing the shared file.
+ *
+ * Response shape matches /api/browse:
+ * {
+ *   items: [...],
+ *   access: { canRead, canWrite, canUpload, canDelete, canShare, canDownload },
+ *   path: 'share/<token>/<innerPath>'
+ * }
  */
 router.get('/:token/browse/*', asyncHandler(async (req, res) => {
   const shareToken = req.params.token;
   const innerPath = req.params[0] || '';
 
-  // Get share and validate access
-  const share = await getShareByToken(shareToken);
-  if (!share) {
-    throw new NotFoundError('Share not found');
-  }
+  const logicalPath = innerPath
+    ? `share/${shareToken}/${innerPath}`
+    : `share/${shareToken}`;
 
-  if (isShareExpired(share)) {
-    throw new ForbiddenError('Share has expired');
-  }
-
-  // Check access permissions
   const context = { user: req.user, guestSession: req.guestSession };
-  const accessInfo = await getAccessInfo(context, `share/${shareToken}/${innerPath}`);
+  const { accessInfo, resolved } = await resolvePathWithAccess(context, logicalPath);
 
-  if (!accessInfo.canAccess) {
-    throw new ForbiddenError(accessInfo.denialReason || 'Access denied');
+  if (!accessInfo || !accessInfo.canAccess || !resolved) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'Access denied');
   }
-
-  // Resolve share path
-  const resolved = await resolveSharePath(`share/${shareToken}/${innerPath}`);
 
   if (!(await pathExists(resolved.absolutePath))) {
     throw new NotFoundError('Path not found');
   }
 
   const stats = await fs.stat(resolved.absolutePath);
-
-  if (!stats.isDirectory()) {
-    throw new ValidationError('Path is not a directory');
-  }
-
-  // Read directory
-  const files = await fs.readdir(resolved.absolutePath);
   const { excludedFiles } = require('../config/index');
 
-  const filteredFiles = files.filter(file => !excludedFiles.includes(file));
+  // Directory share or navigating inside a directory share
+  if (stats.isDirectory()) {
+    const files = await fs.readdir(resolved.absolutePath);
+    const filteredFiles = files.filter(file => !excludedFiles.includes(file));
 
-  const fileDataPromises = filteredFiles.map(async (file) => {
-    const filePath = path.join(resolved.absolutePath, file);
-    let fileStats;
+    const itemsPromises = filteredFiles.map(async (file) => {
+      const filePath = path.join(resolved.absolutePath, file);
+      let fileStats;
 
-    try {
-      fileStats = await fs.stat(filePath);
-    } catch (err) {
-      return null;
-    }
+      try {
+        fileStats = await fs.stat(filePath);
+      } catch (err) {
+        return null;
+      }
 
-    const extension = fileStats.isDirectory() ? 'directory' : path.extname(file).slice(1).toLowerCase();
+      const ext = fileStats.isDirectory()
+        ? 'directory'
+        : path.extname(file).slice(1).toLowerCase();
+      const kind = ext.length > 10 ? 'unknown' : (ext || 'unknown');
 
-    return {
-      name: file,
-      path: `share/${shareToken}/${innerPath}`,
-      dateModified: fileStats.mtime,
-      size: fileStats.size,
-      kind: extension.length > 10 ? 'unknown' : extension,
+      return {
+        name: file,
+        path: resolved.relativePath,
+        dateModified: fileStats.mtime,
+        size: fileStats.size,
+        kind,
+        access: {
+          canRead: true,
+          canWrite: accessInfo.canWrite,
+          canDelete: accessInfo.canDelete,
+          canShare: false,
+          canDownload: true,
+        },
+      };
+    });
+
+    const items = (await Promise.all(itemsPromises)).filter(Boolean);
+
+    return res.json({
+      items,
       access: {
-        canRead: true,
+        canRead: accessInfo.canRead,
         canWrite: accessInfo.canWrite,
+        canUpload: accessInfo.canUpload,
         canDelete: accessInfo.canDelete,
         canShare: false,
-        canDownload: true,
+        canDownload: accessInfo.canDownload,
       },
-    };
+      path: resolved.relativePath,
+    });
+  }
+
+  // File share (virtual one-item directory)
+  const name = path.basename(resolved.absolutePath);
+  const ext = path.extname(name).slice(1).toLowerCase();
+  const kind = ext.length > 10 ? 'unknown' : (ext || 'unknown');
+
+  const item = {
+    name,
+    path: resolved.relativePath,
+    dateModified: stats.mtime,
+    size: stats.size,
+    kind,
+    access: {
+      canRead: true,
+      canWrite: accessInfo.canWrite,
+      canDelete: accessInfo.canDelete,
+      canShare: false,
+      canDownload: true,
+    },
+  };
+
+  return res.json({
+    items: [item],
+    access: {
+      canRead: accessInfo.canRead,
+      canWrite: accessInfo.canWrite,
+      canUpload: false,
+      canDelete: accessInfo.canDelete,
+      canShare: false,
+      canDownload: accessInfo.canDownload,
+    },
+    path: resolved.relativePath,
   });
-
-  const fileData = (await Promise.all(fileDataPromises)).filter(Boolean);
-
-  res.json(fileData);
 }));
 
 module.exports = router;

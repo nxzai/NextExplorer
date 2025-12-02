@@ -4,9 +4,10 @@ const fss = require('fs');
 const multer = require('multer');
 
 const { ensureDir, pathExists } = require('../utils/fsUtils');
-const { normalizeRelativePath, resolveLogicalPath, findAvailableName } = require('../utils/pathUtils');
+const { normalizeRelativePath, findAvailableName } = require('../utils/pathUtils');
 const { readMetaField } = require('../utils/requestUtils');
 const { getPermissionForPath } = require('./accessControlService');
+const { resolvePathWithAccess } = require('./accessManager');
 const logger = require('../utils/logger');
 
 const resolveUploadPaths = async (req, file) => {
@@ -16,16 +17,14 @@ const resolveUploadPaths = async (req, file) => {
   const uploadTo = normalizeRelativePath(uploadToMeta);
   const relativePath = normalizeRelativePath(relativePathMeta) || path.basename(file.originalname);
 
-  const resolved = await resolveLogicalPath(uploadTo, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
-  const { absolutePath: destinationRoot, relativePath: logicalBase, shareInfo } = resolved;
+  const context = { user: req.user, guestSession: req.guestSession };
+  const { accessInfo, resolved } = await resolvePathWithAccess(context, uploadTo);
 
-  // Check if uploading to a readonly share
-  if (shareInfo && shareInfo.accessMode === 'readonly') {
-    throw new Error('Cannot upload files to a read-only share.');
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canUpload) {
+    throw new Error(accessInfo?.denialReason || 'Cannot upload files to this path.');
   }
+
+  const { absolutePath: destinationRoot, relativePath: logicalBase } = resolved;
 
   const destinationPath = path.join(destinationRoot, relativePath);
   const destinationDir = path.dirname(destinationPath);

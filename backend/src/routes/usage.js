@@ -1,7 +1,8 @@
 const express = require('express');
 const { promisify } = require('util');
 const { exec } = require('child_process');
-const { normalizeRelativePath, resolveLogicalPath } = require('../utils/pathUtils');
+const { normalizeRelativePath } = require('../utils/pathUtils');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const execp = promisify(exec);
@@ -28,10 +29,16 @@ const dirSize = async (root) => {
 router.get('/usage/*', asyncHandler(async (req, res) => {
   const raw = req.params[0] || '';
   const inputRel = normalizeRelativePath(raw);
-  const { absolutePath: abs, relativePath: rel } = await resolveLogicalPath(inputRel, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
+  const context = { user: req.user, guestSession: req.guestSession };
+
+  const { accessInfo, resolved } = await resolvePathWithAccess(context, inputRel);
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+    // Treat denied access the same as du failing; zero usage
+    return res.json({ path: inputRel, size: 0, free: 0, total: 0 });
+  }
+
+  const { absolutePath: abs, relativePath: rel } = resolved;
 
   // Run both commands in parallel for maximum speed
   const [size, dfResult] = await Promise.all([

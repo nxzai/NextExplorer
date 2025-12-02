@@ -2,11 +2,12 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs/promises');
 
-const { normalizeRelativePath, resolveLogicalPath } = require('../utils/pathUtils');
+const { normalizeRelativePath } = require('../utils/pathUtils');
 const { ensureDir } = require('../utils/fsUtils');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
-const { ValidationError } = require('../errors/AppError');
+const { ValidationError, ForbiddenError, NotFoundError } = require('../errors/AppError');
 
 const router = express.Router();
 
@@ -17,10 +18,20 @@ router.post('/editor', asyncHandler(async (req, res) => {
   }
 
   const relativePath = normalizeRelativePath(relative);
-  const { absolutePath } = await resolveLogicalPath(relativePath, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
+  const context = { user: req.user, guestSession: req.guestSession };
+  let accessInfo;
+  let resolved;
+  try {
+    ({ accessInfo, resolved } = await resolvePathWithAccess(context, relativePath));
+  } catch (error) {
+    throw new NotFoundError('A valid file path is required.');
+  }
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'Access denied.');
+  }
+
+  const { absolutePath } = resolved;
   const stats = await fs.stat(absolutePath);
 
   if (stats.isDirectory()) {
@@ -45,15 +56,20 @@ router.put('/editor', asyncHandler(async (req, res) => {
     throw new ValidationError('Cannot create files in the root volume path. Please select a specific volume first.');
   }
 
-  const { absolutePath, shareInfo } = await resolveLogicalPath(relativePath, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
-
-  // Check write permission for shares
-  if (shareInfo && shareInfo.accessMode === 'readonly') {
-    throw new ValidationError('This share is read-only.');
+  const context = { user: req.user, guestSession: req.guestSession };
+  let accessInfo;
+  let resolved;
+  try {
+    ({ accessInfo, resolved } = await resolvePathWithAccess(context, relativePath));
+  } catch (error) {
+    throw new NotFoundError('A valid file path is required.');
   }
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canWrite) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'This path is read-only.');
+  }
+
+  const { absolutePath } = resolved;
 
   await ensureDir(path.dirname(absolutePath));
   await fs.writeFile(absolutePath, content, { encoding: 'utf-8' });

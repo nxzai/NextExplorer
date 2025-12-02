@@ -127,7 +127,7 @@ const handleGuestLogin = () => {
         </button>
       </div>
 
-      <div class="overflow-y-scroll -mx-6 px-6 scroll-on-hover">
+      <div class="overflow-y-scroll -mx-6 px-6 mt-6 scroll-on-hover">
         <FavMenu v-if="!auth.isGuest" />
         <SharesMenu v-if="!auth.isGuest" />
         <VolMenu v-if="!auth.isGuest" />

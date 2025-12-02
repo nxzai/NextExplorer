@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs/promises');
 
-const { normalizeRelativePath, resolveLogicalPath } = require('../utils/pathUtils');
+const { normalizeRelativePath } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
 const { excludedFiles, extensions } = require('../config/index');
 const { getSettings } = require('../services/settingsService');
@@ -12,7 +12,7 @@ const { NotFoundError } = require('../errors/AppError');
 
 const router = express.Router();
 const { getPermissionForPath } = require('../services/accessControlService');
-const { getAccessInfo } = require('../services/accessManager');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const previewable = new Set([
   ...extensions.images,
   ...extensions.videos,
@@ -25,23 +25,18 @@ router.get('/browse/*', asyncHandler(async (req, res) => {
   const rawPath = req.params[0] || '';
   const inputRelativePath = normalizeRelativePath(rawPath);
 
-  // Check access permissions before resolving path (especially for shares)
   const context = { user: req.user, guestSession: req.guestSession };
-  const accessInfo = await getAccessInfo(context, inputRelativePath);
-
-  if (!accessInfo.canAccess) {
-    throw new NotFoundError(accessInfo.denialReason || 'Access denied');
-  }
-
+  let accessInfo;
   let resolved;
   try {
-    resolved = await resolveLogicalPath(inputRelativePath, {
-      user: req.user,
-      guestSession: req.guestSession
-    });
+    ({ accessInfo, resolved } = await resolvePathWithAccess(context, inputRelativePath));
   } catch (error) {
     logger.warn({ path: rawPath, err: error }, 'Failed to resolve browse path');
     throw new NotFoundError('Path not found.');
+  }
+
+  if (!accessInfo || !accessInfo.canAccess) {
+    throw new NotFoundError(accessInfo?.denialReason || 'Access denied');
   }
 
   const { absolutePath: directoryPath, relativePath } = resolved;
@@ -61,7 +56,6 @@ router.get('/browse/*', asyncHandler(async (req, res) => {
     try {
       stats = await fs.stat(filePath);
     } catch (err) {
-      // Gracefully skip entries we cannot stat due to permissions or races
       if (['EPERM', 'EACCES', 'ENOENT'].includes(err?.code)) {
         logger.warn({ filePath, err }, 'Skipping unreadable entry');
         return null;
@@ -89,44 +83,8 @@ router.get('/browse/*', asyncHandler(async (req, res) => {
       return null;
     }
 
-    // Mark files that support thumbnails without blocking on existence checks
-    // Client will request thumbnails lazily via /thumbnails/* endpoint
     if (thumbsEnabled && stats.isFile() && previewable.has(extension.toLowerCase()) && extension !== 'pdf') {
       item.supportsThumbnail = true;
-    }
-
-    // Add access metadata
-    try {
-      const context = {
-        user: req.user,
-        guestSession: req.guestSession,
-      };
-      const accessInfo = await getAccessInfo(context, fullRel);
-
-      item.access = {
-        canRead: accessInfo.canRead,
-        canWrite: accessInfo.canWrite,
-        canDelete: accessInfo.canDelete,
-        canShare: accessInfo.canShare,
-        canDownload: accessInfo.canDownload,
-        isShared: accessInfo.isShared || false,
-      };
-
-      // Add share info if available
-      if (accessInfo.shareInfo) {
-        item.shareInfo = accessInfo.shareInfo;
-      }
-    } catch (err) {
-      // Fallback to basic permissions if access check fails
-      logger.warn({ fullRel, err }, 'Failed to get access info');
-      item.access = {
-        canRead: true,
-        canWrite: perm === 'rw',
-        canDelete: perm === 'rw',
-        canShare: Boolean(req.user),
-        canDownload: true,
-        isShared: false,
-      };
     }
 
     return item;
@@ -134,7 +92,6 @@ router.get('/browse/*', asyncHandler(async (req, res) => {
 
   const fileData = (await Promise.all(fileDataPromises)).filter(Boolean);
 
-  // Include directory access metadata in response
   res.json({
     items: fileData,
     access: {

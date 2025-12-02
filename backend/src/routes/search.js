@@ -4,13 +4,14 @@ const fs = require('fs/promises');
 const { spawn } = require('child_process');
 const readline = require('readline');
 
-const { normalizeRelativePath, resolveLogicalPath } = require('../utils/pathUtils');
+const { normalizeRelativePath } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
 const { excludedFiles, search: searchConfig } = require('../config/index');
 const { getPermissionForPath } = require('../services/accessControlService');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
-const { ValidationError, NotFoundError } = require('../errors/AppError');
+const { ValidationError, NotFoundError, ForbiddenError } = require('../errors/AppError');
 
 const router = express.Router();
 
@@ -290,11 +291,17 @@ router.get('/search', asyncHandler(async (req, res) => {
 
   const relBaseInput = normalizeRelativePath(req.query.path || '');
 
+  const context = { user: req.user, guestSession: req.guestSession };
+  let accessInfo;
   let resolvedBase;
   try {
-    resolvedBase = await resolveLogicalPath(relBaseInput, { user: req.user });
+    ({ accessInfo, resolved: resolvedBase } = await resolvePathWithAccess(context, relBaseInput));
   } catch (error) {
     throw new NotFoundError('Base path not found.');
+  }
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'Search base is not accessible.');
   }
 
   const baseAbs = resolvedBase.absolutePath;

@@ -4,11 +4,11 @@ const fs = require('fs/promises');
 const { ensureDir, pathExists } = require('../utils/fsUtils');
 const {
   normalizeRelativePath,
-  resolveLogicalPath,
   resolveItemPaths,
   combineRelativePath,
   findAvailableName,
 } = require('../utils/pathUtils');
+const { resolvePathWithAccess } = require('./accessManager');
 
 const copyEntry = async (sourcePath, destinationPath, isDirectory) => {
   if (isDirectory) {
@@ -58,32 +58,37 @@ const transferItems = async (items, destination, operation, options = {}) => {
     throw new Error('Cannot copy or move items to the root path. Please select a specific volume or folder first.');
   }
 
-  const resolved = await resolveLogicalPath(destinationRelative, options);
-  const { absolutePath: destinationAbsolute, shareInfo } = resolved;
+  const context = { user: options.user || null, guestSession: options.guestSession || null };
 
-  // Check if destination is a readonly share
-  if (shareInfo && shareInfo.accessMode === 'readonly') {
-    throw new Error('Cannot copy or move items to a read-only share.');
+  const { accessInfo: destAccess, resolved: destResolved } = await resolvePathWithAccess(context, destinationRelative);
+
+  if (!destAccess || !destAccess.canAccess || !destAccess.canWrite) {
+    throw new Error(destAccess?.denialReason || 'Destination path is not writable.');
   }
+
+  const { absolutePath: destinationAbsolute } = destResolved;
 
   await ensureDir(destinationAbsolute);
 
   const results = [];
 
   for (const item of items) {
-    const sourceResolved = await resolveLogicalPath(
-      combineRelativePath(item.path || '', item.name),
-      options
-    );
-    const { relativePath: sourceRelative, absolutePath: sourceAbsolute, shareInfo: sourceShareInfo } = sourceResolved;
+    const sourceCombined = combineRelativePath(item.path || '', item.name);
+    const { accessInfo: srcAccess, resolved: srcResolved } = await resolvePathWithAccess(context, sourceCombined);
+
+    if (!srcAccess || !srcAccess.canAccess || !srcAccess.canRead) {
+      throw new Error(srcAccess?.denialReason || `Source path not accessible: ${sourceCombined}`);
+    }
+
+    const { relativePath: sourceRelative, absolutePath: sourceAbsolute } = srcResolved;
 
     if (!(await pathExists(sourceAbsolute))) {
       throw new Error(`Source path not found: ${sourceRelative}`);
     }
 
-    // Check if moving from a readonly share (move = delete from source)
-    if (operation === 'move' && sourceShareInfo && sourceShareInfo.accessMode === 'readonly') {
-      throw new Error('Cannot move items from a read-only share.');
+    // Check delete permission for moves (move = delete from source)
+    if (operation === 'move' && !srcAccess.canDelete) {
+      throw new Error('Cannot move items from a read-only or protected path.');
     }
 
     const stats = await fs.stat(sourceAbsolute);
@@ -119,18 +124,17 @@ const deleteItems = async (items = [], options = {}) => {
   }
 
   const results = [];
+  const context = { user: options.user || null, guestSession: options.guestSession || null };
 
   for (const item of items) {
-    const itemResolved = await resolveLogicalPath(
-      combineRelativePath(item.path || '', item.name),
-      options
-    );
-    const { relativePath, absolutePath, shareInfo } = itemResolved;
+    const combined = combineRelativePath(item.path || '', item.name);
+    const { accessInfo, resolved } = await resolvePathWithAccess(context, combined);
 
-    // Check if deleting from a readonly share
-    if (shareInfo && shareInfo.accessMode === 'readonly') {
-      throw new Error('Cannot delete items from a read-only share.');
+    if (!accessInfo || !accessInfo.canAccess || !accessInfo.canDelete || !resolved) {
+      throw new Error(accessInfo?.denialReason || 'Cannot delete items from this path.');
     }
+
+    const { relativePath, absolutePath } = resolved;
 
     if (!(await pathExists(absolutePath))) {
       results.push({ path: relativePath, status: 'missing' });

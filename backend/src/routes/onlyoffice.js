@@ -7,11 +7,12 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 
 const { onlyoffice, public: publicConfig, mimeTypes } = require('../config/index');
-const { normalizeRelativePath, resolveLogicalPath } = require('../utils/pathUtils');
+const { normalizeRelativePath } = require('../utils/pathUtils');
 const { ensureDir } = require('../utils/fsUtils');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
-const { ValidationError, UnauthorizedError } = require('../errors/AppError');
+const { ValidationError, UnauthorizedError, ForbiddenError } = require('../errors/AppError');
 
 const router = express.Router();
 
@@ -60,10 +61,12 @@ router.post('/onlyoffice/config', asyncHandler(async (req, res) => {
   }
 
   const relativePath = normalizeRelativePath(relativeRaw);
-  const resolved = await resolveLogicalPath(relativePath, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
+  const context = { user: req.user, guestSession: req.guestSession };
+  const { accessInfo, resolved } = await resolvePathWithAccess(context, relativePath);
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'Access denied.');
+  }
   const abs = resolved.absolutePath;
   const stat = await fsp.stat(abs);
   if (stat.isDirectory()) {
@@ -199,10 +202,13 @@ router.get('/onlyoffice/file', asyncHandler(async (req, res) => {
   if (backendCtx && typeof backendCtx.absolutePath === 'string' && backendCtx.absolutePath) {
     abs = backendCtx.absolutePath;
   } else {
-    const resolved = await resolveLogicalPath(relativePath, {
-      user: req.user,
-      guestSession: req.guestSession
-    });
+    const context = { user: req.user, guestSession: req.guestSession };
+    const { accessInfo, resolved } = await resolvePathWithAccess(context, relativePath);
+
+    if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+      throw new ForbiddenError(accessInfo?.denialReason || 'Access denied.');
+    }
+
     abs = resolved.absolutePath;
   }
 
@@ -268,10 +274,13 @@ router.post('/onlyoffice/callback', asyncHandler(async (req, res) => {
       if (backendCtx && typeof backendCtx.absolutePath === 'string' && backendCtx.absolutePath) {
         abs = backendCtx.absolutePath;
       } else {
-        const resolved = await resolveLogicalPath(relativePath, {
-          user: req.user,
-          guestSession: req.guestSession
-        });
+        const context = { user: req.user, guestSession: req.guestSession };
+        const { accessInfo, resolved } = await resolvePathWithAccess(context, relativePath);
+
+        if (!accessInfo || !accessInfo.canAccess || !accessInfo.canWrite) {
+          throw new ForbiddenError(accessInfo?.denialReason || 'Access denied.');
+        }
+
         abs = resolved.absolutePath;
       }
       await ensureDir(path.dirname(abs));

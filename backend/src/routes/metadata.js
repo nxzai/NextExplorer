@@ -5,9 +5,9 @@ const sharp = require('sharp');
 const ffmpeg = require('fluent-ffmpeg');
 let exifr = null;
 
-const { normalizeRelativePath, resolveLogicalPath } = require('../utils/pathUtils');
+const { normalizeRelativePath } = require('../utils/pathUtils');
 const { extensions } = require('../config/index');
-const { getPermissionForPath } = require('../services/accessControlService');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const { ValidationError, ForbiddenError, NotFoundError } = require('../errors/AppError');
@@ -82,19 +82,18 @@ router.get('/metadata/*', asyncHandler(async (req, res) => {
     throw new ValidationError('A file path is required.');
   }
 
-  const perm = await getPermissionForPath(relativePath);
-  if (perm === 'hidden') {
-    throw new ForbiddenError('Path is not accessible.');
-  }
-
+  const context = { user: req.user, guestSession: req.guestSession };
+  let accessInfo;
   let resolved;
   try {
-    resolved = await resolveLogicalPath(relativePath, {
-      user: req.user,
-      guestSession: req.guestSession
-    });
+    ({ accessInfo, resolved } = await resolvePathWithAccess(context, relativePath));
   } catch (error) {
     throw new NotFoundError('Path not found.');
+  }
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+    // For metadata, treat denied access as forbidden (explicit signal to caller)
+    throw new ForbiddenError(accessInfo?.denialReason || 'Path is not accessible.');
   }
 
     const absolutePath = resolved.absolutePath;

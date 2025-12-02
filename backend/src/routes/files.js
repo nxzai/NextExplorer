@@ -7,7 +7,6 @@ const archiver = require('archiver');
 const { transferItems, deleteItems } = require('../services/fileTransferService');
 const {
   normalizeRelativePath,
-  resolveLogicalPath,
   combineRelativePath,
   findAvailableFolderName,
   ensureValidName,
@@ -15,6 +14,7 @@ const {
 const { pathExists } = require('../utils/fsUtils');
 const { extensions, mimeTypes } = require('../config/index');
 const { getPermissionForPath } = require('../services/accessControlService');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const {
@@ -63,18 +63,14 @@ router.post('/files/folder', asyncHandler(async (req, res) => {
     throw new ValidationError('Cannot create folders in the root path. Please select a specific volume or folder first.');
   }
 
-  await assertWritable(parentRelative);
+  const context = { user: req.user, guestSession: req.guestSession };
+  const { accessInfo, resolved } = await resolvePathWithAccess(context, parentRelative);
 
-  const resolved = await resolveLogicalPath(parentRelative, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
-  const { absolutePath: parentAbsolute, shareInfo } = resolved;
-
-  // Check if creating folder in a readonly share
-  if (shareInfo && shareInfo.accessMode === 'readonly') {
-    throw new ForbiddenError('Cannot create folders in a read-only share.');
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canCreateFolder) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'Cannot create folders in this path.');
   }
+
+  const { absolutePath: parentAbsolute } = resolved;
 
   let parentStats;
   try {
@@ -113,24 +109,24 @@ router.post('/files/rename', asyncHandler(async (req, res) => {
   }
 
   const parentRelative = normalizeRelativePath(parentPath);
-  const parentResolved = await resolveLogicalPath(parentRelative, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
-  const { absolutePath: parentAbsolute, shareInfo: parentShareInfo } = parentResolved;
+  const context = { user: req.user, guestSession: req.guestSession };
+
+  const { accessInfo: parentAccess, resolved: parentResolved } = await resolvePathWithAccess(context, parentRelative);
+
+  if (!parentAccess || !parentAccess.canAccess || !parentAccess.canWrite) {
+    throw new ForbiddenError(parentAccess?.denialReason || 'Destination path is read-only.');
+  }
+
+  const { absolutePath: parentAbsolute } = parentResolved;
 
   const currentRelative = combineRelativePath(parentRelative, originalName);
-  const { absolutePath: currentAbsolute } = await resolveLogicalPath(currentRelative, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
+  const { accessInfo: currentAccess, resolved: currentResolved } = await resolvePathWithAccess(context, currentRelative);
 
-  await assertWritable(parentRelative);
-
-  // Check if renaming in a readonly share
-  if (parentShareInfo && parentShareInfo.accessMode === 'readonly') {
-    throw new ForbiddenError('Cannot rename items in a read-only share.');
+  if (!currentAccess || !currentAccess.canAccess || !currentAccess.canWrite) {
+    throw new ForbiddenError(currentAccess?.denialReason || 'Cannot rename items in this path.');
   }
+
+  const { absolutePath: currentAbsolute } = currentResolved;
 
   if (!(await pathExists(currentAbsolute))) {
     throw new NotFoundError('Item not found.');
@@ -151,10 +147,8 @@ router.post('/files/rename', asyncHandler(async (req, res) => {
   }
 
   const targetRelative = combineRelativePath(parentRelative, validatedNewName);
-  const { absolutePath: targetAbsolute } = await resolveLogicalPath(targetRelative, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
+  const { resolved: targetResolved } = await resolvePathWithAccess(context, targetRelative);
+  const { absolutePath: targetAbsolute } = targetResolved;
 
   if (await pathExists(targetAbsolute)) {
     throw new ConflictError(`The name "${validatedNewName}" is already taken.`);
@@ -179,7 +173,10 @@ router.post('/files/copy', asyncHandler(async (req, res) => {
   }
   await assertWritable(normalizeRelativePath(destination));
 
-  const result = await transferItems(items, destination, 'copy', { user: req.user });
+  const result = await transferItems(items, destination, 'copy', {
+    user: req.user,
+    guestSession: req.guestSession,
+  });
   res.json({ success: true, ...result });
 }));
 
@@ -191,7 +188,10 @@ router.post('/files/move', asyncHandler(async (req, res) => {
   }
   await assertWritable(normalizeRelativePath(destination));
 
-  const result = await transferItems(items, destination, 'move', { user: req.user });
+  const result = await transferItems(items, destination, 'move', {
+    user: req.user,
+    guestSession: req.guestSession,
+  });
   res.json({ success: true, ...result });
 }));
 
@@ -201,7 +201,10 @@ router.delete('/files', asyncHandler(async (req, res) => {
     const parent = normalizeRelativePath(item?.path || '');
     await assertWritable(parent);
   }
-  const results = await deleteItems(items, { user: req.user });
+  const results = await deleteItems(items, {
+    user: req.user,
+    guestSession: req.guestSession,
+  });
   res.json({ success: true, items: results });
 }));
 
@@ -303,11 +306,16 @@ const handleDownloadRequest = async (paths, req, res, basePath = '') => {
 
   const baseNormalized = basePath ? normalizeRelativePath(basePath) : '';
 
+  const context = { user: req.user, guestSession: req.guestSession };
+
   const targets = await Promise.all(normalizedPaths.map(async (relativePath) => {
-    const { absolutePath, relativePath: logicalPath } = await resolveLogicalPath(relativePath, {
-      user: req.user,
-      guestSession: req.guestSession
-    });
+    const { accessInfo, resolved } = await resolvePathWithAccess(context, relativePath);
+
+    if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead || !accessInfo.canDownload || !resolved) {
+      throw new ForbiddenError(accessInfo?.denialReason || 'Download not allowed.');
+    }
+
+    const { absolutePath, relativePath: logicalPath } = resolved;
     const stats = await fs.stat(absolutePath);
     return { relativePath: logicalPath, absolutePath, stats };
   }));
@@ -403,10 +411,14 @@ router.get('/preview', asyncHandler(async (req, res) => {
   }
 
   const relativePath = normalizeRelativePath(relative);
-  const { absolutePath } = await resolveLogicalPath(relativePath, {
-    user: req.user,
-    guestSession: req.guestSession
-  });
+  const context = { user: req.user, guestSession: req.guestSession };
+  const { accessInfo, resolved } = await resolvePathWithAccess(context, relativePath);
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'Preview not allowed.');
+  }
+
+  const { absolutePath } = resolved;
   const stats = await fs.stat(absolutePath);
 
   if (stats.isDirectory()) {

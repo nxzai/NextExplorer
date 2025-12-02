@@ -2,9 +2,10 @@ const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
 
-const { normalizeRelativePath, resolveLogicalPath } = require('../utils/pathUtils');
+const { normalizeRelativePath } = require('../utils/pathUtils');
 const { extensions } = require('../config/index');
 const { getThumbnail } = require('../services/thumbnailService');
+const { resolvePathWithAccess } = require('../services/accessManager');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const { ValidationError, NotFoundError } = require('../errors/AppError');
@@ -32,14 +33,17 @@ router.get('/thumbnails/*', asyncHandler(async (req, res) => {
     throw new ValidationError('A file path is required.');
   }
 
+  const context = { user: req.user, guestSession: req.guestSession };
+  let accessInfo;
   let resolved;
   try {
-    resolved = await resolveLogicalPath(relativePath, {
-      user: req.user,
-      guestSession: req.guestSession
-    });
+    ({ accessInfo, resolved } = await resolvePathWithAccess(context, relativePath));
   } catch (error) {
     throw new NotFoundError('File not found.');
+  }
+
+  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canRead) {
+    throw new NotFoundError(accessInfo?.denialReason || 'File not found.');
   }
 
   const { absolutePath, relativePath: logicalPath } = resolved;

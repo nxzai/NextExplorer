@@ -1,4 +1,4 @@
-const { parsePathSpace } = require('../utils/pathUtils');
+const { parsePathSpace, resolveLogicalPath } = require('../utils/pathUtils');
 const { getPermissionForPath } = require('./accessControlService');
 const {
   getShareByToken,
@@ -212,6 +212,32 @@ const canWrite = async (context, relativePath) => {
 };
 
 /**
+ * Resolve a logical path to filesystem path with unified access checks.
+ * - First evaluates access via getAccessInfo.
+ * - If canAccess is false, returns { accessInfo, resolved: null }.
+ * - If canAccess is true, resolves the logical path to an absolute path
+ *   using resolveLogicalPath with the same user/guestSession context.
+ *
+ * @param {Object} context - { user, guestSession }
+ * @param {string} relativePath - Logical path (e.g., 'personal/docs', 'share/abc123/file.txt')
+ * @returns {Promise<{ accessInfo: Object, resolved: Object|null }>}
+ */
+const resolvePathWithAccess = async (context, relativePath) => {
+  const accessInfo = await getAccessInfo(context, relativePath);
+
+  if (!accessInfo.canAccess) {
+    return { accessInfo, resolved: null };
+  }
+
+  const resolved = await resolveLogicalPath(relativePath, {
+    user: context.user || null,
+    guestSession: context.guestSession || null,
+  });
+
+  return { accessInfo, resolved };
+};
+
+/**
  * Check if user can create shares (only authenticated users, not guests)
  */
 const canCreateShare = (context) => {
@@ -247,4 +273,5 @@ module.exports = {
   canCreateShare,
   getContextFromRequest,
   createDeniedAccess,
+  resolvePathWithAccess,
 };

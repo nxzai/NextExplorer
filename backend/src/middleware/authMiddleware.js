@@ -92,7 +92,10 @@ const authMiddleware = async (req, res, next) => {
 
   // Allow public share access routes (single share with token: /api/share/:token/*)
   // Note: /api/shares/* are management endpoints and require authentication
-  const isPublicShareRoute = requestPath.startsWith('/api/share/');
+  // Important: exclude /api/share/:token/browse/* so that browse requests
+  // still attach authenticated users and/or guest sessions via the logic below.
+  const isPublicShareRoute = requestPath.startsWith('/api/share/')
+    && !requestPath.includes('/browse/');
   if (isPublicShareRoute) {
     next();
     return;

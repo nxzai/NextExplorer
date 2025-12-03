@@ -29,7 +29,7 @@ onMounted(async () => {
 <template>
   <div class="space-y-6">
     <section class="rounded-lg   p-4">
-      <h2 class="mb-2 text-base font-semibold">{{ t('settings.about.title') }}</h2>
+      <h2 class="mb-2 text-base font-semibold">{{ t('titles.about') }}</h2>
       <p class="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
         {{ t('settings.about.subtitle') }}
       </p>
@@ -56,7 +56,7 @@ onMounted(async () => {
             </a>
             <span v-else>{{ commitShort }}</span>
           </template>
-          <span v-else class="text-neutral-500">{{ t('settings.about.unknown') }}</span>
+          <span v-else class="text-neutral-500">{{ t('common.unknown') }}</span>
         </div>
       </div>
 
@@ -67,7 +67,7 @@ onMounted(async () => {
         </div>
         <div class="rounded-md border border-white/10 bg-transparent px-3 py-1 text-sm">
           <span v-if="featuresStore.gitBranch">{{ featuresStore.gitBranch }}</span>
-          <span v-else class="text-neutral-500">{{ t('settings.about.unknown') }}</span>
+          <span v-else class="text-neutral-500">{{ t('common.unknown') }}</span>
         </div>
       </div>
     </section>

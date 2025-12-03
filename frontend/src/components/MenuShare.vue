@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ShareIcon } from '@heroicons/vue/24/outline';
 import { useFileStore } from '@/stores/fileStore';
 import ShareDialog from '@/components/ShareDialog.vue';
 
+const { t } = useI18n();
 const fileStore = useFileStore();
 
 const isShareDialogOpen = ref(false);
@@ -43,7 +45,7 @@ function handleShareCreated(share) {
         hover:bg-[rgb(239,239,240)] active:bg-zinc-200
         dark:hover:bg-zinc-700 dark:active:bg-zinc-600"
       :class="{ 'opacity-50 cursor-not-allowed': !canShare }"
-      :title="canShare ? 'Share selected item' : 'Select an item to share'"
+      :title="canShare ? t('share.shareSelectedItem') : t('share.selectItemToShare')"
     >
       <ShareIcon class="w-6 h-6" />
     </button>

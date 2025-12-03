@@ -110,12 +110,12 @@ function toggleUserSelection(userId) {
 
 async function createShareLink() {
   if (!sourcePath.value) {
-    error.value = 'Invalid source path';
+    error.value = t('share.errors.invalidSourcePath');
     return;
   }
 
   if (sharingType.value === 'users' && selectedUserIds.value.length === 0) {
-    error.value = 'Please select at least one user';
+    error.value = t('share.errors.selectAtLeastOneUser');
     return;
   }
 
@@ -138,7 +138,7 @@ async function createShareLink() {
 
     emit('shareCreated', result);
   } catch (err) {
-    error.value = err.message || 'Failed to create share';
+    error.value = err.message || t('share.errors.failedToCreateShare');
   } finally {
     isCreating.value = false;
   }
@@ -167,7 +167,7 @@ function closeDialog() {
   <ModalDialog v-model="isOpen">
     <template #title>
       <ShareIcon class="w-5 h-5" />
-      {{ shareResult ? 'Share Created' : 'Create Share Link' }}
+      {{ shareResult ? t('share.shareCreated') : t('share.createShareLink') }}
     </template>
 
     <!-- Share created success view -->
@@ -175,12 +175,12 @@ function closeDialog() {
       <div class="p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
         <div class="flex items-center gap-2 text-green-800 dark:text-green-200">
           <CheckIcon class="w-5 h-5" />
-          <span class="font-medium">Share link created successfully!</span>
+          <span class="font-medium">{{ t('share.shareLinkCreatedSuccess') }}</span>
         </div>
       </div>
 
       <div>
-        <label class="block mb-2 text-sm font-medium">Share Link</label>
+        <label class="block mb-2 text-sm font-medium">{{ t('share.shareLink') }}</label>
         <div class="flex gap-2">
           <input
             type="text"
@@ -201,19 +201,19 @@ function closeDialog() {
 
       <div class="grid grid-cols-2 gap-4 text-sm">
         <div>
-          <span class="text-gray-500 dark:text-gray-400">Access:</span>
-          <span class="ml-2 font-medium">{{ shareResult.accessMode === 'readonly' ? 'Read Only' : 'Read & Write' }}</span>
+          <span class="text-gray-500 dark:text-gray-400">{{ t('share.access') }}</span>
+          <span class="ml-2 font-medium">{{ shareResult.accessMode === 'readonly' ? t('settings.access.readOnly') : t('settings.access.readWrite') }}</span>
         </div>
         <div>
-          <span class="text-gray-500 dark:text-gray-400">Type:</span>
-          <span class="ml-2 font-medium">{{ shareResult.sharingType === 'anyone' ? 'Anyone with link' : 'Specific users' }}</span>
+          <span class="text-gray-500 dark:text-gray-400">{{ t('share.type') }}</span>
+          <span class="ml-2 font-medium">{{ shareResult.sharingType === 'anyone' ? t('share.anyoneWithLink') : t('share.specificUsers') }}</span>
         </div>
         <div v-if="shareResult.hasPassword">
-          <span class="text-gray-500 dark:text-gray-400">Password:</span>
-          <span class="ml-2 font-medium text-green-600">Protected</span>
+          <span class="text-gray-500 dark:text-gray-400">{{ t('share.password') }}</span>
+          <span class="ml-2 font-medium text-green-600">{{ t('share.protected') }}</span>
         </div>
         <div v-if="shareResult.expiresAt">
-          <span class="text-gray-500 dark:text-gray-400">Expires:</span>
+          <span class="text-gray-500 dark:text-gray-400">{{ t('share.expires') }}</span>
           <span class="ml-2 font-medium">{{ new Date(shareResult.expiresAt).toLocaleDateString() }}</span>
         </div>
       </div>
@@ -223,7 +223,7 @@ function closeDialog() {
           @click="closeDialog"
           class="px-4 py-2 text-sm font-medium transition border rounded-lg border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
         >
-          Done
+          {{ t('common.done') }}
         </button>
       </div>
     </div>
@@ -236,25 +236,25 @@ function closeDialog() {
 
       <!-- Source info -->
       <div class="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800">
-        <div class="text-sm text-gray-500 dark:text-gray-400">Sharing:</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">{{ t('share.sharing') }}</div>
         <div class="font-medium">{{ item?.name }}</div>
         <div class="text-xs text-gray-500">{{ sourcePath }}</div>
       </div>
 
       <!-- Label -->
       <div>
-        <label class="block mb-2 text-sm font-medium">Label (Optional)</label>
+        <label class="block mb-2 text-sm font-medium">{{ t('share.label') }}</label>
         <input
           v-model="label"
           type="text"
-          placeholder="My Shared Files"
+          :placeholder="t('share.labelPlaceholder')"
           class="w-full px-3 py-2 text-sm border rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <!-- Access Mode -->
       <div>
-        <label class="block mb-2 text-sm font-medium">Access Mode</label>
+        <label class="block mb-2 text-sm font-medium">{{ t('share.accessMode') }}</label>
         <div class="grid grid-cols-2 gap-2">
           <button
             @click="accessMode = 'readonly'"
@@ -263,7 +263,7 @@ function closeDialog() {
               ? 'bg-blue-600 text-white border-blue-600'
               : 'border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800'"
           >
-            Read Only
+            {{ t('settings.access.readOnly') }}
           </button>
           <button
             @click="accessMode = 'readwrite'"
@@ -272,14 +272,14 @@ function closeDialog() {
               ? 'bg-blue-600 text-white border-blue-600'
               : 'border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800'"
           >
-            Read & Write
+            {{ t('settings.access.readWrite') }}
           </button>
         </div>
       </div>
 
       <!-- Sharing Type -->
       <div>
-        <label class="block mb-2 text-sm font-medium">Who can access</label>
+        <label class="block mb-2 text-sm font-medium">{{ t('share.whoCanAccess') }}</label>
         <div class="grid grid-cols-2 gap-2">
           <button
             @click="sharingType = 'anyone'"
@@ -289,7 +289,7 @@ function closeDialog() {
               : 'border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800'"
           >
             <GlobeAltIcon class="w-4 h-4" />
-            Anyone with link
+            {{ t('share.anyoneWithLink') }}
           </button>
           <button
             @click="sharingType = 'users'"
@@ -299,16 +299,16 @@ function closeDialog() {
               : 'border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800'"
           >
             <UsersIcon class="w-4 h-4" />
-            Specific users
+            {{ t('share.specificUsers') }}
           </button>
         </div>
       </div>
 
       <!-- User Selection (if sharing type is 'users') -->
       <div v-if="sharingType === 'users'" class="p-3 border rounded-lg border-zinc-300 dark:border-zinc-700">
-        <div class="mb-2 text-sm font-medium">Select Users</div>
-        <div v-if="loadingUsers" class="text-sm text-gray-500">Loading users...</div>
-        <div v-else-if="availableUsers.length === 0" class="text-sm text-gray-500">No users available</div>
+        <div class="mb-2 text-sm font-medium">{{ t('share.selectUsers') }}</div>
+        <div v-if="loadingUsers" class="text-sm text-gray-500">{{ t('share.loadingUsers') }}</div>
+        <div v-else-if="availableUsers.length === 0" class="text-sm text-gray-500">{{ t('share.noUsersAvailable') }}</div>
         <div v-else class="space-y-2 max-h-40 overflow-y-auto">
           <label
             v-for="user in availableUsers"
@@ -336,13 +336,13 @@ function closeDialog() {
             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <LockClosedIcon class="w-4 h-4" />
-          <span class="text-sm font-medium">Password protect</span>
+          <span class="text-sm font-medium">{{ t('share.passwordProtect') }}</span>
         </label>
         <input
           v-if="enablePassword"
           v-model="password"
           type="password"
-          placeholder="Enter password"
+          :placeholder="t('share.enterPassword')"
           class="w-full px-3 py-2 text-sm border rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -356,7 +356,7 @@ function closeDialog() {
             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <CalendarIcon class="w-4 h-4" />
-          <span class="text-sm font-medium">Set expiration date</span>
+          <span class="text-sm font-medium">{{ t('share.setExpirationDate') }}</span>
         </label>
         <input
           v-if="enableExpiry"
@@ -373,14 +373,14 @@ function closeDialog() {
           :disabled="isCreating"
           class="px-4 py-2 text-sm font-medium transition border rounded-lg border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-50"
         >
-          Cancel
+          {{ t('common.cancel') }}
         </button>
         <button
           @click="createShareLink"
           :disabled="isCreating"
           class="px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
-          {{ isCreating ? 'Creating...' : 'Create Share Link' }}
+          {{ isCreating ? t('share.creating') : t('share.createShareLink') }}
         </button>
       </div>
     </div>

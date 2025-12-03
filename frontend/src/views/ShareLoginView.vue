@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import {
   getShareInfo,
   verifySharePassword,
@@ -17,6 +18,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import LoadingIcon from '@/icons/LoadingIcon.vue';
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
@@ -94,7 +96,7 @@ async function handleAutoAccess() {
 
 async function handlePasswordSubmit() {
   if (!password.value) {
-    verificationError.value = 'Please enter a password';
+    verificationError.value = t('errors.pleaseEnterPassword');
     return;
   }
 
@@ -131,7 +133,7 @@ async function handlePasswordSubmit() {
     }
   } catch (err) {
     console.error('[DEBUG] Password verification failed:', err);
-    verificationError.value = err.message || 'Invalid password';
+    verificationError.value = err.message || t('errors.invalidPassword');
   } finally {
     isVerifying.value = false;
   }
@@ -144,21 +146,21 @@ async function handlePasswordSubmit() {
       <!-- Loading State -->
       <div v-if="loading" class="text-center">
         <LoadingIcon class="w-12 h-12 mx-auto mb-4 text-blue-600 animate-spin" />
-        <p class="text-gray-600 dark:text-gray-400">Loading share...</p>
+        <p class="text-gray-600 dark:text-gray-400">{{ t('loading.share') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="text-center">
         <ExclamationTriangleIcon class="w-16 h-16 mx-auto mb-4 text-red-500" />
         <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Share Not Found
+          {{ t('share.shareNotFound') }}
         </h2>
         <p class="mb-6 text-gray-600 dark:text-gray-400">{{ error }}</p>
         <button
           @click="router.push('/')"
           class="px-6 py-2 text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          Go to Home
+          {{ t('share.goToHome') }}
         </button>
       </div>
 
@@ -166,16 +168,16 @@ async function handlePasswordSubmit() {
       <div v-else-if="isExpired" class="text-center">
         <ClockIcon class="w-16 h-16 mx-auto mb-4 text-orange-500" />
         <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Share Expired
+          {{ t('share.shareExpired') }}
         </h2>
         <p class="mb-6 text-gray-600 dark:text-gray-400">
-          This share link has expired and is no longer accessible.
+          {{ t('share.shareExpiredMessage') }}
         </p>
         <button
           @click="router.push('/')"
           class="px-6 py-2 text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          Go to Home
+          {{ t('share.goToHome') }}
         </button>
       </div>
 
@@ -187,7 +189,7 @@ async function handlePasswordSubmit() {
             <ShareIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
           <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Shared {{ shareInfo.isDirectory ? 'Folder' : 'File' }}
+            {{ shareInfo.isDirectory ? t('share.sharedFolder') : t('share.sharedFile') }}
           </h2>
           <p v-if="shareInfo.label" class="text-lg text-gray-700 dark:text-gray-300">
             {{ shareInfo.label }}
@@ -202,21 +204,21 @@ async function handlePasswordSubmit() {
               class="w-5 h-5 text-gray-500 dark:text-gray-400"
             />
             <span class="text-gray-600 dark:text-gray-300">
-              {{ shareInfo.isDirectory ? 'Folder' : 'File' }}
+              {{ shareInfo.isDirectory ? t('common.folder') : t('folder.kind') }}
             </span>
           </div>
 
           <div v-if="shareInfo.expiresAt" class="flex items-center gap-3 text-sm">
             <ClockIcon class="w-5 h-5 text-gray-500 dark:text-gray-400" />
             <span class="text-gray-600 dark:text-gray-300">
-              Expires {{ expiryDate.toLocaleDateString() }} at {{ expiryDate.toLocaleTimeString() }}
+              {{ t('share.expiresAt') }} {{ expiryDate.toLocaleDateString() }} at {{ expiryDate.toLocaleTimeString() }}
             </span>
           </div>
 
           <div v-if="requiresPassword" class="flex items-center gap-3 text-sm">
             <LockClosedIcon class="w-5 h-5 text-gray-500 dark:text-gray-400" />
             <span class="text-gray-600 dark:text-gray-300">
-              Password protected
+              {{ t('common.passwordProtected') }}
             </span>
           </div>
         </div>
@@ -225,12 +227,12 @@ async function handlePasswordSubmit() {
         <div v-if="requiresPassword" class="space-y-4">
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Enter Password
+              {{ t('share.enterPassword') }}
             </label>
             <input
               v-model="password"
               type="password"
-              placeholder="Password"
+              :placeholder="t('common.password')"
               @keyup.enter="handlePasswordSubmit"
               class="w-full px-4 py-2 border rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -245,20 +247,20 @@ async function handlePasswordSubmit() {
             :disabled="isVerifying || !password"
             class="w-full px-6 py-3 font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ isVerifying ? 'Verifying...' : 'Access Share' }}
+            {{ isVerifying ? t('common.verifying') : t('share.accessShare') }}
           </button>
         </div>
 
         <!-- User-specific share message -->
         <div v-else-if="shareInfo.sharingType === 'users'" class="space-y-4">
           <p class="text-sm text-center text-gray-600 dark:text-gray-400">
-            This share requires authentication.
+            {{ t('share.requiresAuthentication') }}
           </p>
           <button
             @click="router.push({ name: 'auth-login', query: { redirect: `/share/${shareToken}` } })"
             class="w-full px-6 py-3 font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
           >
-            Sign In to Access
+            {{ t('share.signInToAccess') }}
           </button>
         </div>
       </div>

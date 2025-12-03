@@ -82,17 +82,17 @@ const handleLoginSubmit = async () => {
   resetErrors();
 
   if (!supportsLocal.value) {
-    loginError.value = t('auth.errors.localSignInDisabled');
+    loginError.value = t('errors.localSignInDisabled');
     return;
   }
 
   if (!loginEmailValue.value.trim()) {
-    loginError.value = t('auth.errors.emailRequired');
+    loginError.value = t('errors.emailRequired');
     return;
   }
 
   if (!loginPasswordValue.value) {
-    loginError.value = t('auth.errors.passwordRequired');
+    loginError.value = t('errors.passwordRequired');
     return;
   }
 
@@ -107,7 +107,7 @@ const handleLoginSubmit = async () => {
     loginPasswordValue.value = '';
     redirectToDestination();
   } catch (error) {
-    loginError.value = error instanceof Error ? error.message : t('auth.errors.signInFailed');
+    loginError.value = error instanceof Error ? error.message : t('errors.signIn');
   } finally {
     isSubmittingLogin.value = false;
   }
@@ -140,20 +140,20 @@ const handleOidcLogin = () => {
 
     <form v-if="supportsLocal" class="space-y-5" @submit.prevent="handleLoginSubmit">
       <label class="block">
-        <span class="block text-sm font-medium text-white/80">{{ $t('auth.email') }}</span>
+        <span class="block text-sm font-medium text-white/80">{{ $t('auth.emailAddress') }}</span>
         <input
           id="login-email"
           v-model="loginEmailValue"
           type="email"
           autocomplete="email"
           :class="inputBaseClasses"
-          :placeholder="$t('auth.emailPlaceholder')"
+          :placeholder="$t('placeholders.emailCompany')"
           :disabled="isSubmittingLogin"
         />
       </label>
 
       <label class="block">
-        <span class="block text-sm font-medium text-white/80">{{ $t('auth.password') }}</span>
+        <span class="block text-sm font-medium text-white/80">{{ $t('common.password') }}</span>
         <input
           id="login-password"
           v-model="loginPasswordValue"
@@ -183,7 +183,7 @@ const handleOidcLogin = () => {
       font-semibold text-neutral-900 
       disabled:cursor-not-allowed disabled:opacity-60" 
       :disabled="isSubmittingLogin">
-        <span v-if="isSubmittingLogin">{{ $t('auth.verifying') }}</span>
+        <span v-if="isSubmittingLogin">{{ $t('common.verifying') }}</span>
         <span v-else class="inline-flex items-center gap-2">
           <LockClosedIcon class="h-5 w-5" />
           {{ $t('auth.login.submit') }}

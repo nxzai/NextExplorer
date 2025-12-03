@@ -1,9 +1,11 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { ChevronDownIcon, ShareIcon } from '@heroicons/vue/24/outline';
 import { normalizePath } from '@/api';
 
+const { t } = useI18n();
 const open = ref(true);
 const route = useRoute();
 const router = useRouter();
@@ -22,7 +24,7 @@ const handleOpenSharedWithMe = () => {
     <h4
       class="group flex items-center justify-between py-2 pt-2 text-sm text-neutral-400 dark:text-neutral-500 font-medium"
     >
-      Shares
+      {{ t('share.shares') }}
       <button
         @click="open = !open"
         class="hidden group-hover:block active:text-black dark:active:text-white text-neutral-500"
@@ -56,7 +58,7 @@ const handleOpenSharedWithMe = () => {
               ]"
             >
               <ShareIcon class="h-5 shrink-0" />
-              <span class="truncate">Shared With Me</span>
+              <span class="truncate">{{ t('share.sharedWithMe') }}</span>
             </button>
           </div>
         </div>

@@ -69,17 +69,17 @@ const handleSetupSubmit = async () => {
   resetErrors();
 
   if (!setupEmailValue.value.trim()) {
-    setupError.value = t('auth.errors.emailRequired');
+    setupError.value = t('errors.emailRequired');
     return;
   }
 
   if (setupPasswordValue.value.length < 6) {
-    setupError.value = t('auth.errors.passwordLength');
+    setupError.value = t('errors.passwordLength');
     return;
   }
 
   if (setupPasswordValue.value !== setupConfirmValue.value) {
-    setupError.value = t('auth.errors.passwordMismatch');
+    setupError.value = t('errors.passwordMismatch');
     return;
   }
 
@@ -97,7 +97,7 @@ const handleSetupSubmit = async () => {
     setupConfirmValue.value = '';
     redirectToDestination();
   } catch (error) {
-    setupError.value = error instanceof Error ? error.message : t('auth.errors.createAccountFailed');
+    setupError.value = error instanceof Error ? error.message : t('errors.createAccount');
   } finally {
     isSubmittingSetup.value = false;
   }
@@ -119,14 +119,14 @@ const handleSetupSubmit = async () => {
 
     <form class="space-y-5" @submit.prevent="handleSetupSubmit">
       <label class="block">
-        <span class="block text-sm font-medium text-white/80">{{ $t('auth.email') }}</span>
+        <span class="block text-sm font-medium text-white/80">{{ $t('auth.emailAddress') }}</span>
         <input
           id="setup-email"
           v-model="setupEmailValue"
           type="email"
           autocomplete="email"
           :class="inputBaseClasses"
-          :placeholder="$t('auth.emailPlaceholder')"
+          :placeholder="$t('placeholders.emailCompany')"
           :disabled="isSubmittingSetup"
         />
       </label>
@@ -139,20 +139,20 @@ const handleSetupSubmit = async () => {
           type="text"
           autocomplete="username"
           :class="inputBaseClasses"
-          :placeholder="$t('auth.usernamePlaceholder')"
+          :placeholder="$t('placeholders.username')"
           :disabled="isSubmittingSetup"
         />
       </label>
 
       <label class="block">
-        <span class="block text-sm font-medium text-white/80">{{ $t('auth.password') }}</span>
+        <span class="block text-sm font-medium text-white/80">{{ $t('common.password') }}</span>
         <input
           id="setup-password"
           v-model="setupPasswordValue"
           type="password"
           autocomplete="new-password"
           :class="inputBaseClasses"
-          :placeholder="$t('auth.passwordPlaceholder')"
+          :placeholder="$t('placeholders.password')"
           :disabled="isSubmittingSetup"
         />
       </label>
@@ -165,7 +165,7 @@ const handleSetupSubmit = async () => {
           type="password"
           autocomplete="new-password"
           :class="inputBaseClasses"
-          :placeholder="$t('auth.confirmPasswordPlaceholder')"
+          :placeholder="$t('placeholders.confirmPassword')"
           :disabled="isSubmittingSetup"
         />
       </label>
@@ -181,7 +181,7 @@ const handleSetupSubmit = async () => {
         disabled:cursor-not-allowed disabled:opacity-60"
         :disabled="isSubmittingSetup"
       >
-        <span v-if="isSubmittingSetup">{{ $t('auth.creating') }}</span>
+        <span v-if="isSubmittingSetup">{{ $t('common.creating') }}</span>
         <span v-else class="inline-flex items-center gap-2">
           <LockClosedIcon class="h-5 w-5" />
           {{ $t('auth.setup.submit') }}

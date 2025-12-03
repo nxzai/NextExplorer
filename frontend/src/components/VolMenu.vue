@@ -57,7 +57,7 @@ const openPersonal = () => {
     text-neutral-400 dark:text-neutral-500
     font-medium"
     >
-      {{ $t('volumes.title') }}
+      {{ $t('titles.volumes') }}
       <button
         @click="open = !open"
         class="hidden group-hover:block 

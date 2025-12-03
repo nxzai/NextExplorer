@@ -116,8 +116,8 @@ const showNoPhotosMessage = computed(() => {
             'backdrop-blur-sm']"
           >
             <div></div>
-            <div>{{ $t('folder.name') }}</div>
-            <div>{{ $t('folder.size') }}</div>
+            <div>{{ $t('common.name') }}</div>
+            <div>{{ $t('common.size') }}</div>
             <div>{{ $t('folder.kind') }}</div>
             <div>{{ $t('folder.dateModified') }}</div>
           </div>
@@ -151,7 +151,7 @@ const showNoPhotosMessage = computed(() => {
     <template v-else>
       <div class="flex grow items-center h-full justify-center text-sm text-neutral-500 dark:text-neutral-400">
         <div class="flex items-center pr-4 bg-neutral-300 dark:bg-black bg-opacity-20 rounded-lg">
-          <LoadingIcon /> {{ $t('folder.loading') }}
+          <LoadingIcon /> {{ $t('common.loading') }}
         </div>
       </div>
     </template>

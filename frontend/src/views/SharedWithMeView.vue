@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { getSharedWithMe } from '@/api/shares.api';
 import {
   ShareIcon,
@@ -13,6 +14,7 @@ import {
   ArrowRightIcon,
 } from '@heroicons/vue/24/outline';
 
+const { t } = useI18n();
 const router = useRouter();
 const shares = ref([]);
 const loading = ref(false);
@@ -30,7 +32,7 @@ const loadShares = async () => {
     shares.value = response.shares || [];
   } catch (err) {
     console.error('Failed to load shared items:', err);
-    error.value = err.message || 'Failed to load shared items';
+    error.value = err.message || t('errors.loadShares');
   } finally {
     loading.value = false;
   }
@@ -44,7 +46,7 @@ const getShareLabel = (share) => {
   if (share.sourceName) {
     return share.sourceName;
   }
-  return 'Shared Item';
+  return t('share.sharedItem');
 };
 
 const formatDate = (dateString) => {
@@ -138,10 +140,10 @@ onMounted(async () => {
         </span>
         <div>
           <h1 class="text-base font-semibold text-neutral-900 dark:text-neutral-50">
-            Shared With Me
+            {{ t('share.sharedWithMe') }}
           </h1>
           <p class="text-xs text-neutral-500 dark:text-neutral-400">
-            Files and folders other people have shared with your account.
+            {{ t('share.sharedWithMeDescription') }}
           </p>
         </div>
       </div>
@@ -156,7 +158,7 @@ onMounted(async () => {
         >
           <span class="h-1.5 w-1.5 rounded-full bg-blue-500" />
           <span class="font-medium">{{ summary.active }}</span>
-          <span class="text-neutral-500 dark:text-neutral-400">active</span>
+          <span class="text-neutral-500 dark:text-neutral-400">{{ t('common.active').toLowerCase() }}</span>
         </span>
         <span
           v-if="summary.expired"
@@ -165,7 +167,7 @@ onMounted(async () => {
         >
           <span class="h-1.5 w-1.5 rounded-full bg-red-500" />
           <span class="font-medium">{{ summary.expired }}</span>
-          <span>expired</span>
+          <span>{{ t('common.expired').toLowerCase() }}</span>
         </span>
       </div>
     </header>
@@ -192,7 +194,7 @@ onMounted(async () => {
               : 'hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70'"
             @click="filterMode = 'active'"
           >
-            Active
+            {{ t('common.active') }}
           </button>
           <button
             type="button"
@@ -202,7 +204,7 @@ onMounted(async () => {
               : 'hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70'"
             @click="filterMode = 'expired'"
           >
-            Expired
+            {{ t('common.expired') }}
           </button>
           <button
             type="button"
@@ -212,12 +214,12 @@ onMounted(async () => {
               : 'hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70'"
             @click="filterMode = 'all'"
           >
-            All
+            {{ t('common.all') }}
           </button>
         </div>
 
         <div class="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
-          <span class="hidden sm:inline">Sort by</span>
+          <span class="hidden sm:inline">{{ t('actions.sortBy') }}</span>
           <button
             type="button"
             class="rounded-md px-2 py-1 transition"
@@ -226,7 +228,7 @@ onMounted(async () => {
               : 'hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80'"
             @click="sortMode = 'recent'"
           >
-            Recent
+            {{ t('common.recent') }}
           </button>
           <button
             type="button"
@@ -236,7 +238,7 @@ onMounted(async () => {
               : 'hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80'"
             @click="sortMode = 'label'"
           >
-            Name
+            {{ t('common.name') }}
           </button>
         </div>
 
@@ -248,7 +250,7 @@ onMounted(async () => {
               class="w-44 rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-xs text-neutral-700
               placeholder:text-neutral-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
               dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-              placeholder="Filter by name or path"
+              :placeholder="t('share.filterByNameOrPath')"
             />
           </div>
 
@@ -260,7 +262,7 @@ onMounted(async () => {
             @click="loadShares"
           >
             <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
-            <span>Refresh</span>
+            <span>{{ t('common.refresh') }}</span>
           </button>
         </div>
       </div>
@@ -273,7 +275,7 @@ onMounted(async () => {
             <div
               class="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-blue-500 border-b-transparent"
             />
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">Loading shares…</p>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">{{ t('loading.shares') }}</p>
           </div>
         </div>
 
@@ -289,7 +291,7 @@ onMounted(async () => {
             <ShareIcon class="h-7 w-7" />
           </div>
           <h3 class="mb-2 text-sm font-semibold text-neutral-900 dark:text-neutral-50">
-            Failed to load shared items
+            {{ t('errors.loadShares') }}
           </h3>
           <p class="mb-4 max-w-md text-xs text-neutral-600 dark:text-neutral-400">
             {{ error }}
@@ -299,7 +301,7 @@ onMounted(async () => {
             class="rounded-md bg-blue-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-blue-700"
             @click="loadShares"
           >
-            Try again
+            {{ t('common.tryAgain') }}
           </button>
         </div>
 
@@ -315,14 +317,14 @@ onMounted(async () => {
             <ShareIcon class="h-8 w-8" />
           </div>
           <h3 class="mb-2 text-base font-medium text-neutral-900 dark:text-neutral-50">
-            No shared items to show
+            {{ t('share.noSharedItemsToShow') }}
           </h3>
           <p class="max-w-md text-xs text-neutral-600 dark:text-neutral-400">
             <span v-if="shares.length === 0">
-              When someone shares files or folders with you, they will appear here.
+              {{ t('share.noSharedItemsYet') }}
             </span>
             <span v-else>
-              Adjust your filters or clear the search to see more items.
+              {{ t('share.adjustFilters') }}
             </span>
           </p>
         </div>
@@ -368,14 +370,14 @@ onMounted(async () => {
                   class="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-700
                   dark:bg-red-900/50 dark:text-red-200"
                 >
-                  Expired
+                  {{ t('share.expired') }}
                 </span>
                 <span
                   v-else
                   class="inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-green-700
                   dark:bg-green-900/40 dark:text-green-200"
                 >
-                  Active
+                  {{ t('share.active') }}
                 </span>
               </div>
 
@@ -385,7 +387,7 @@ onMounted(async () => {
               >
                 <span class="inline-flex items-center gap-1">
                   <UserIcon class="h-3.5 w-3.5" />
-                  <span>Shared by owner</span>
+                  <span>{{ t('share.sharedBy') }}</span>
                 </span>
 
                 <span class="inline-flex items-center gap-1">
@@ -394,13 +396,13 @@ onMounted(async () => {
                     class="h-3.5 w-3.5"
                   />
                   <span>
-                    {{ share.accessMode === 'readonly' ? 'Read only' : 'Read &amp; write' }}
+                    {{ share.accessMode === 'readonly' ? t('settings.access.readOnly') : t('settings.access.readWrite') }}
                   </span>
                 </span>
 
                 <span class="inline-flex items-center gap-1">
                   <span class="h-1 w-1 rounded-full bg-neutral-400 dark:bg-neutral-500" />
-                  <span>{{ share.isDirectory ? 'Folder' : 'File' }}</span>
+                  <span>{{ share.isDirectory ? t('common.folder') : t('folder.kind') }}</span>
                 </span>
 
                 <span
@@ -413,7 +415,7 @@ onMounted(async () => {
                       'text-red-600 dark:text-red-400': isExpired(share)
                     }"
                   >
-                    {{ isExpired(share) ? 'Expired' : 'Expires' }}
+                    {{ isExpired(share) ? t('common.expired') : t('share.expiresAt') }}
                     {{ formatDate(share.expiresAt) }}
                   </span>
                 </span>
@@ -422,7 +424,7 @@ onMounted(async () => {
                   class="inline-flex items-center gap-1"
                 >
                   <ClockIcon class="h-3.5 w-3.5" />
-                  <span>No expiration</span>
+                  <span>{{ t('common.noExpiration') }}</span>
                 </span>
 
                 <span
@@ -432,10 +434,10 @@ onMounted(async () => {
                   <span class="h-1 w-1 rounded-full bg-neutral-400 dark:bg-neutral-500" />
                   <span>
                     <template v-if="share.lastAccessedAt">
-                      Last accessed {{ formatDate(share.lastAccessedAt) }}
+                      {{ t('share.lastAccessed') }} {{ formatDate(share.lastAccessedAt) }}
                     </template>
                     <template v-else>
-                      Created {{ formatDate(share.createdAt) }}
+                      {{ t('share.created') }} {{ formatDate(share.createdAt) }}
                     </template>
                   </span>
                 </span>

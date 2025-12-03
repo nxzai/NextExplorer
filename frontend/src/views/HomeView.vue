@@ -9,8 +9,6 @@ import * as SolidIcons from '@heroicons/vue/24/solid';
 const ProgressBar = defineAsyncComponent(() => import('@/components/ProgressBar.vue'));
 import IconDrive from '@/icons/IconDrive.vue';
 import { formatBytes } from '@/utils';
-
-
 const volumes = ref([]);
 const loading = ref(true);
 const favoritesStore = useFavoritesStore();
@@ -120,7 +118,7 @@ const openPersonal = () => {
 
     <!-- Volumes -->
     <section>
-      <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">{{ $t('volumes.title') }}</h3>
+      <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">{{ $t('titles.volumes') }}</h3>
       <div v-if="!loading" class="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         
         <button
@@ -160,7 +158,7 @@ const openPersonal = () => {
           </div>
         </button>
       </div>
-      <div v-else class="text-sm text-neutral-500 dark:text-neutral-400">{{ $t('volumes.loading') }}</div>
+      <div v-else class="text-sm text-neutral-500 dark:text-neutral-400">{{ $t('loading.volumes') }}</div>
     </section>
 
     <!-- Personal -->
@@ -182,7 +180,7 @@ const openPersonal = () => {
           </div>
         </button>
       </div>
-      <div v-else class="text-sm text-neutral-500 dark:text-neutral-400">{{ $t('volumes.loading') }}</div>
+      <div v-else class="text-sm text-neutral-500 dark:text-neutral-400">{{ $t('loading.volumes') }}</div>
     </section>
   </div>
 </template>

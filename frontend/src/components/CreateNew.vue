@@ -98,20 +98,20 @@ const createFile = async () => {
       @click="createFolder"
       :disabled="isCreating"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600 rounded-t-lg disabled:opacity-60 disabled:cursor-not-allowed">
-        <CreateNewFolderRound class="w-6 text-yellow-400"/> {{ $t('create.newFolder') }}</button>
+        <CreateNewFolderRound class="w-6 text-yellow-400"/> {{ $t('actions.newFolder') }}</button>
       <button
       @click="createFile"
       :disabled="isCreating"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600 disabled:opacity-60 disabled:cursor-not-allowed">
-        <FileOpenOutlined class="w-6 text-orange-400"/>{{ $t('create.newFile') }}</button>
+        <FileOpenOutlined class="w-6 text-orange-400"/>{{ $t('actions.newFile') }}</button>
       <button
       @click="uploadFiles"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white border-b border-gray-300 dark:border-gray-600">
-        <UploadFileOutlined class="w-6 text-sky-400"/>{{ $t('create.fileUpload') }}</button>
+        <UploadFileOutlined class="w-6 text-sky-400"/>{{ $t('actions.fileUpload') }}</button>
       <button
       @click="uploadFolder"
       class="cursor-pointer w-full flex items-center gap-2 p-2 px-4 hover:bg-blue-500 hover:text-white rounded-b-lg">
-        <DriveFolderUploadOutlined class="w-6 text-green-400"/>{{ $t('create.folderUpload') }}
+        <DriveFolderUploadOutlined class="w-6 text-green-400"/>{{ $t('actions.folderUpload') }}
       </button>
     </div>
 

@@ -23,8 +23,8 @@ const isLocalUser = computed(() => auth.currentUser?.provider === 'local');
 
 // User-facing settings
 const userCategories = [
-  { key: 'account-password', name: 'Change Password', icon: Cog8ToothIcon, requiresLocal: true },
-  { key: 'about', name: 'About', icon: Cog8ToothIcon },
+  { key: 'account-password', i18nKey: 'accountPassword', name: 'Change Password', icon: Cog8ToothIcon, requiresLocal: true },
+  { key: 'about', i18nKey: 'about', name: 'About', icon: Cog8ToothIcon },
   // Coming soon (user scope)
   // { key: 'general', name: 'General', icon: Cog8ToothIcon, comingSoon: true },
   // { key: 'appearance', name: 'Appearance', icon: Cog8ToothIcon, comingSoon: true },
@@ -32,9 +32,9 @@ const userCategories = [
 
 // Admin-only settings
 const adminCategories = [
-  { key: 'files-thumbnails', name: 'Files & Thumbnails', icon: Cog8ToothIcon },
-  { key: 'access-control', name: 'Access Control', icon: Cog8ToothIcon },
-  { key: 'admin-users', name: 'User Management', icon: Cog8ToothIcon },
+  { key: 'files-thumbnails', i18nKey: 'filesThumbnails', name: 'Files & Thumbnails', icon: Cog8ToothIcon },
+  { key: 'access-control', i18nKey: 'accessControl', name: 'Access Control', icon: Cog8ToothIcon },
+  { key: 'admin-users', i18nKey: 'adminUsers', name: 'User Management', icon: Cog8ToothIcon },
   // { key: 'admin-overview', name: 'Admin Overview', icon: Cog8ToothIcon, comingSoon: true },
   // { key: 'admin-mounts', name: 'Mounts & Shares', icon: Cog8ToothIcon, comingSoon: true },
   // { key: 'admin-audit', name: 'Audit & Events', icon: Cog8ToothIcon, comingSoon: true },
@@ -68,12 +68,12 @@ const closeSettings = () => {
           <Cog8ToothIcon class="h-5 w-5" />
         </span>
         <h1 class="text-base font-semibold text-neutral-900 dark:text-white">
-          {{ t('settings.title') }}
+          {{ t('titles.settings') }}
         </h1>
       </div>
 
       <button
-        :title="t('settings.close')"
+        :title="t('common.close')"
         class="ml-auto inline-flex items-center justify-center rounded-md p-1.5 text-neutral-500
         hover:bg-neutral-100 hover:text-neutral-800
         dark:text-neutral-300 dark:hover:bg-neutral-700/70 dark:hover:text-white"
@@ -94,7 +94,7 @@ const closeSettings = () => {
         <div class="mb-3 space-y-4">
           <section>
             <h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-              {{ t('settings.user') }}
+              {{ t('common.user') }}
             </h2>
             <nav class="flex gap-2 overflow-x-auto pb-1 md:flex-col md:gap-1 md:overflow-visible md:pb-0">
               <button
@@ -111,14 +111,14 @@ const closeSettings = () => {
                 @click="goCategory(c.key)"
               >
                 <component :is="c.icon" class="h-4 w-4 shrink-0" />
-                <span class="truncate">{{ t('settings.categories.' + c.key) }}</span>
+                <span class="truncate">{{ t('settings.categories.' + (c.i18nKey || c.key)) }}</span>
               </button>
             </nav>
           </section>
 
           <section v-if="isAdmin">
             <h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-              {{ t('settings.admin') }}
+              {{ t('common.admin') }}
             </h2>
             <nav class="flex gap-2 overflow-x-auto pb-1 md:flex-col md:gap-1 md:overflow-visible md:pb-0">
               <button
@@ -135,7 +135,7 @@ const closeSettings = () => {
                 @click="goCategory(c.key)"
               >
                 <component :is="c.icon" class="h-4 w-4 shrink-0" />
-                <span class="truncate">{{ t('settings.categories.' + c.key) }}</span>
+                <span class="truncate">{{ t('settings.categories.' + (c.i18nKey || c.key)) }}</span>
               </button>
             </nav>
           </section>

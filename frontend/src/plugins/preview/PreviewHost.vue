@@ -13,7 +13,7 @@
         class="fixed inset-0 z-2000 flex items-center justify-center text-sm text-neutral-200"
       >
         <div class="flex  items-center pr-4 bg-neutral-300 dark:bg-black bg-opacity-20 rounded-lg">
-        <LoadingIcon/> {{ $t('folder.loading') }}
+        <LoadingIcon/> {{ $t('common.loading') }}
       </div>
       </div>
     </div>

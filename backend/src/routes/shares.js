@@ -24,6 +24,8 @@ const {
 const { resolveLogicalPath, parsePathSpace } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
 const { resolvePathWithAccess } = require('../services/accessManager');
+const { extensions } = require('../config/index');
+const { getSettings } = require('../services/settingsService');
 
 const router = express.Router();
 
@@ -465,6 +467,15 @@ router.get('/:token/browse/*', asyncHandler(async (req, res) => {
   const stats = await fs.stat(resolved.absolutePath);
   const { excludedFiles } = require('../config/index');
 
+  // Determine thumbnail settings
+  const settings = await getSettings();
+  const thumbsEnabled = settings?.thumbnails?.enabled !== false;
+  const previewable = new Set([
+    ...extensions.images,
+    ...extensions.videos,
+    ...(extensions.documents || []),
+  ]);
+
   // Directory share or navigating inside a directory share
   if (stats.isDirectory()) {
     const files = await fs.readdir(resolved.absolutePath);
@@ -485,7 +496,7 @@ router.get('/:token/browse/*', asyncHandler(async (req, res) => {
         : path.extname(file).slice(1).toLowerCase();
       const kind = ext.length > 10 ? 'unknown' : (ext || 'unknown');
 
-      return {
+      const item = {
         name: file,
         path: resolved.relativePath,
         dateModified: fileStats.mtime,
@@ -499,6 +510,18 @@ router.get('/:token/browse/*', asyncHandler(async (req, res) => {
           canDownload: true,
         },
       };
+
+      // Mark files that support thumbnails; client will lazily request them
+      if (
+        thumbsEnabled &&
+        fileStats.isFile() &&
+        kind !== 'pdf' &&
+        previewable.has(kind.toLowerCase())
+      ) {
+        item.supportsThumbnail = true;
+      }
+
+      return item;
     });
 
     const items = (await Promise.all(itemsPromises)).filter(Boolean);
@@ -548,6 +571,15 @@ router.get('/:token/browse/*', asyncHandler(async (req, res) => {
       canDownload: true,
     },
   };
+
+  if (
+    thumbsEnabled &&
+    !stats.isDirectory() &&
+    kind !== 'pdf' &&
+    previewable.has(kind.toLowerCase())
+  ) {
+    item.supportsThumbnail = true;
+  }
 
   const response = {
     items: [item],

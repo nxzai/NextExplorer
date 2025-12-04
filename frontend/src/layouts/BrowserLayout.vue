@@ -152,7 +152,7 @@ const handleGuestLogin = () => {
       <div class="flex flex-col h-full">
         <!-- Mobile top bar -->
         <header
-          class="absolute z-40 lg:hidden grid grid-cols-3 items-center gap-2 px-3 py-2 "
+          class="absolute z-40 lg:hidden  px-3 py-2 "
         >
           <div class="flex justify-start">
             <label

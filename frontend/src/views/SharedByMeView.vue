@@ -207,10 +207,8 @@ onMounted(async () => {
       <div class="flex items-center gap-3">
         <!-- Title/Icon -->
         <div class="flex items-center gap-2 mr-4">
-          <div class="p-1.5 rounded-md bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-            <ShareIcon class="w-5 h-5" />
-          </div>
-          <h1 class="font-medium text-neutral-800 dark:text-neutral-200 hidden sm:block">
+          
+          <h1 class="font-medium text-neutral-800 dark:text-neutral-200 hidden sm:block text-lg ml-2">
             {{ t('share.sharedByMe') }}
           </h1>
         </div>

@@ -10,6 +10,7 @@ import {
 } from 'vue';
 import { offset, flip, shift, useFloating } from '@floating-ui/vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { explorerContextMenuSymbol } from '@/composables/contextMenu';
 import { useFileStore } from '@/stores/fileStore';
 import { useSelection } from '@/composables/itemSelection';
@@ -21,7 +22,7 @@ import { modKeyLabel, deleteKeyLabel } from '@/utils/keyboard';
 import { useDeleteConfirm } from '@/composables/useDeleteConfirm';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { useFavoritesStore } from '@/stores/favorites';
-import { StarIcon as StarOutline } from '@heroicons/vue/24/outline';
+import { StarIcon as StarOutline, DocumentTextIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/vue/24/solid';
 import { useFavoriteEditor } from '@/composables/useFavoriteEditor';
 // Icons
@@ -42,6 +43,7 @@ const infoPanel = useInfoPanelStore();
 const { clearSelection } = useSelection();
 const favoritesStore = useFavoritesStore();
 const { openEditorForFavorite } = useFavoriteEditor();
+const router = useRouter();
 
 const isOpen = ref(false);
 const pointer = ref({ x: 0, y: 0 });
@@ -195,6 +197,16 @@ const runGetInfo = () => {
   infoPanel.open(primaryItem.value);
 };
 
+const runOpenWithEditor = () => {
+  if (!primaryItem.value) return;
+  const item = primaryItem.value;
+  const basePath = item.path ? `${item.path}/${item.name}` : item.name;
+  const fileToEdit = basePath.replace(/^\/+/, '');
+  // Encode each segment for editor path
+  const encodedPath = fileToEdit.split('/').map(encodeURIComponent).join('/');
+  router.push({ path: `/editor/${encodedPath}` });
+};
+
 // Favorites support
 const selectedDirectoryPath = computed(() => {
   if (contextKind.value !== 'directory') return null;
@@ -299,6 +311,13 @@ const menuSections = computed(() => {
   sections.push([
     mk('get-info', t('context.getInfo'), InfoRound, runGetInfo, { disabled: !primaryItem.value }),
   ]);
+
+  // Add "Open with Editor" for files only
+  if (contextKind.value === 'file') {
+    sections.push([
+      mk('open-with-editor', t('context.openWithEditor'), DocumentTextIcon, runOpenWithEditor, { disabled: !primaryItem.value }),
+    ]);
+  }
 
   const clipboardSection = [
     mk('cut', t('actions.cut'), ContentCutRound, runCut, { disabled: !actions.canCut.value, shortcut: `${modKeyLabel}X` }),

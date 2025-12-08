@@ -22,7 +22,7 @@ import { modKeyLabel, deleteKeyLabel } from '@/utils/keyboard';
 import { useDeleteConfirm } from '@/composables/useDeleteConfirm';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { useFavoritesStore } from '@/stores/favorites';
-import { StarIcon as StarOutline, DocumentTextIcon } from '@heroicons/vue/24/outline';
+import { StarIcon as StarOutline, DocumentTextIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/vue/24/solid';
 import { useFavoriteEditor } from '@/composables/useFavoriteEditor';
 // Icons
@@ -189,6 +189,8 @@ const runCreateFolder = async () => {
 
 const runRename = () => actions.runRename();
 
+const runDownload = () => actions.runDownload();
+
 // requestDelete and confirmDelete are provided by useDeleteConfirm()
 
 const runGetInfo = () => {
@@ -318,6 +320,11 @@ const menuSections = computed(() => {
       mk('open-with-editor', t('context.openWithEditor'), DocumentTextIcon, runOpenWithEditor, { disabled: !primaryItem.value }),
     ]);
   }
+
+  // Add download option
+  sections.push([
+    mk('download', t('actions.download'), ArrowDownTrayIcon, runDownload, { disabled: !hasSelection.value }),
+  ]);
 
   const clipboardSection = [
     mk('cut', t('actions.cut'), ContentCutRound, runCut, { disabled: !actions.canCut.value, shortcut: `${modKeyLabel}X` }),

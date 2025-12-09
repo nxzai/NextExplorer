@@ -14,6 +14,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { useViewConfig } from '@/composables/useViewConfig';
 import { DragSelectOption } from '@coleqiu/vue-drag-select';
 import MiddleEllipsis from '@/components/MiddleEllipsis.vue';
+import { ellipses } from '@/utils/ellipses';
 
 const props = defineProps(['item', 'view'])
 const settings = useSettingsStore();

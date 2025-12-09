@@ -188,6 +188,7 @@ module.exports = {
     volumeUsage: env.SHOW_VOLUME_USAGE,
     personalFolders: env.USER_DIR_ENABLED,
     shares: env.SHARES_ENABLED,
+    skipHome: env.SKIP_HOME,
   },
   
   logging: {

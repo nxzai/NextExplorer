@@ -5,6 +5,8 @@ const {
   hasUserPermission,
   isShareExpired,
 } = require('./sharesService');
+const { getUserVolumeForPath } = require('./userVolumesService');
+const { features } = require('../config/index');
 
 /**
  * Get comprehensive access information for a path
@@ -44,6 +46,44 @@ const getVolumeAccess = async (context, relativePath) => {
     return createDeniedAccess('Authentication required');
   }
 
+  const isAdmin = user.roles && user.roles.includes('admin');
+
+  // Check user volume restrictions when USER_VOLUMES is enabled
+  if (features.userVolumes && !isAdmin) {
+    const userVolume = await getUserVolumeForPath(user.id, relativePath);
+    if (!userVolume) {
+      return createDeniedAccess('You do not have access to this volume');
+    }
+
+    // Use the volume's access mode
+    const isReadOnly = userVolume.accessMode === 'readonly';
+
+    // Also check path-level access control rules
+    const permission = await getPermissionForPath(relativePath);
+    if (permission === 'hidden') {
+      return createDeniedAccess('Path is hidden');
+    }
+
+    const effectiveReadOnly = isReadOnly || permission === 'ro';
+
+    return {
+      canAccess: true,
+      canRead: true,
+      canWrite: !effectiveReadOnly,
+      canDelete: !effectiveReadOnly,
+      canUpload: !effectiveReadOnly,
+      canCreateFolder: !effectiveReadOnly,
+      canShare: true,
+      canDownload: true,
+      isShared: false,
+      shareInfo: null,
+      userVolume, // Include user volume info for path resolution
+      effectivePermission: effectiveReadOnly ? 'ro' : 'rw',
+      denialReason: null,
+    };
+  }
+
+  // Standard access for admins or when USER_VOLUMES is disabled
   // Check access control rules
   const permission = await getPermissionForPath(relativePath);
   if (permission === 'hidden') {
@@ -51,7 +91,6 @@ const getVolumeAccess = async (context, relativePath) => {
   }
 
   const isReadOnly = permission === 'ro';
-  const isAdmin = user.roles && user.roles.includes('admin');
 
   return {
     canAccess: true,
@@ -230,11 +269,12 @@ const resolvePathWithAccess = async (context, relativePath) => {
     return { accessInfo, resolved: null };
   }
 
-  // Pass pre-fetched share to avoid duplicate DB query
+  // Pass pre-fetched share and user volume to avoid duplicate DB queries
   const resolved = await resolveLogicalPath(relativePath, {
     user: context.user || null,
     guestSession: context.guestSession || null,
     share: accessInfo.share || null,
+    userVolume: accessInfo.userVolume || null,
   });
 
   return { accessInfo, resolved };

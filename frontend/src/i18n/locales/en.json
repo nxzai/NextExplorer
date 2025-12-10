@@ -65,7 +65,9 @@
     "settings": "Settings",
     "share": "Share",
     "shares": "Shares",
-    "unsavedChanges": "You have unsaved changes"
+    "unsavedChanges": "You have unsaved changes",
+    "readonly": "Read Only",
+    "readwrite": "Read/Write"
   },
   "status": {
     "updated": "Updated successfully",
@@ -97,7 +99,8 @@
     "confirmPassword": "Re-type your password",
     "label": "My Shared Files",
     "path": "e.g. Pictures/Holidays",
-    "search": "Search files and folders…"
+    "search": "Search files and folders…",
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "Loading…",
@@ -132,7 +135,12 @@
     "passwordMin": "Password must be at least 6 characters",
     "passwordMismatch": "Passwords do not match",
     "localSignInDisabled": "Local sign-in is disabled",
-    "deleteShare": "Failed to delete share"
+    "deleteShare": "Failed to delete share",
+    "browseDirectories": "Failed to browse directories",
+    "labelRequired": "Label is required",
+    "pathRequired": "Path is required",
+    "saveVolume": "Failed to save volume",
+    "removeVolume": "Failed to remove volume"
   },
   "titles": {
     "volumes": "Volumes",
@@ -391,7 +399,27 @@
       "resetPassword": "Set/Reset password",
       "removeUser": "Remove user",
       "promptNewPassword": "Enter a new password for {user} (min 6 chars):",
-      "editUser": "Edit user"
+      "editUser": "Edit user",
+      "volumes": "Volumes",
+      "assignedVolumes": "Assigned Volumes",
+      "addVolume": "Add Volume",
+      "editVolume": "Edit Volume",
+      "noVolumes": "No volumes assigned",
+      "noVolumesHint": "Add volumes to give this user access to specific directories.",
+      "volumesInfo": "Volumes assigned here will be the only directories this user can access. Admins always have full access to all volumes.",
+      "confirmRemoveVolume": "Remove volume \"{label}\"? The user will lose access to this directory.",
+      "volumeLabel": "Volume Label",
+      "volumeLabelHint": "A friendly name for this volume that the user will see.",
+      "selectDirectory": "Select Directory",
+      "currentPath": "Current path",
+      "selectThis": "Select this",
+      "parentDirectory": "Parent Directory",
+      "noSubdirectories": "No subdirectories found",
+      "enterDirectory": "Enter directory",
+      "selectedPath": "Selected",
+      "volumePath": "Volume Path",
+      "pathCannotChange": "The path cannot be changed after creation. Remove this volume and create a new one if needed.",
+      "accessMode": "Access Mode"
     }
   },
   "share": {

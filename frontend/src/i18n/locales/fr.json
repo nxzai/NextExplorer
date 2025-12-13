@@ -147,7 +147,8 @@
     "changePassword": "Changer le mot de passe",
     "userManagement": "Gestion des utilisateurs",
     "share": "Partage",
-    "sortOptions": "Options de tri"
+    "sortOptions": "Options de tri",
+    "locations": "Emplacements"
   },
   "i18n": {
     "language": "Langue",

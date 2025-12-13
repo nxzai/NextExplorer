@@ -148,7 +148,8 @@
     "changePassword": "Cambiar contraseña",
     "userManagement": "Gestión de usuarios",
     "share": "Compartir",
-    "sortOptions": "Opciones de ordenación"
+    "sortOptions": "Opciones de ordenación",
+    "locations": "Ubicaciones"
   },
   "i18n": {
     "language": "Idioma",

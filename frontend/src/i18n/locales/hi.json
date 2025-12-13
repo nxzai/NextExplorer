@@ -147,7 +147,8 @@
     "changePassword": "पासवर्ड बदलें",
     "userManagement": "उपयोगकर्ता प्रबंधन",
     "share": "शेयर",
-    "sortOptions": "क्रमबद्ध विकल्प"
+    "sortOptions": "क्रमबद्ध विकल्प",
+    "locations": "स्थान"
   },
   "i18n": {
     "language": "भाषा",

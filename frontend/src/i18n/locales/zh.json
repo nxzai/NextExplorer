@@ -147,7 +147,8 @@
     "changePassword": "修改密码",
     "userManagement": "用户管理",
     "share": "共享",
-    "sortOptions": "排序选项"
+    "sortOptions": "排序选项",
+    "locations": "位置"
   },
   "i18n": {
     "language": "语言",

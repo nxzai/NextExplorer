@@ -156,7 +156,8 @@
     "changePassword": "Change Password",
     "userManagement": "User Management",
     "share": "Share",
-    "sortOptions": "Sort options"
+    "sortOptions": "Sort options",
+    "locations":"Locations"
   },
   "i18n": {
     "language": "Language",

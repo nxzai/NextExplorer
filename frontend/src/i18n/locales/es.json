@@ -159,7 +159,8 @@
     "german": "Alemán",
     "chinese": "Chino",
     "hindi": "Hindi",
-    "polish": "Polaco"
+    "polish": "Polaco",
+    "swedish":"Sueco"
   },
   "search": {
     "openShortcutTitle": "Abrir búsqueda (⌘/Ctrl + K)",

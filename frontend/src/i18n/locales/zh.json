@@ -158,7 +158,8 @@
     "german": "德语",
     "chinese": "中文",
     "hindi": "印地语",
-    "polish": "波兰语"
+    "polish": "波兰语",
+    "swedish":"瑞典"
   },
   "search": {
     "openShortcutTitle": "打开搜索 (⌘/Ctrl + K)",

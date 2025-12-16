@@ -200,7 +200,9 @@
     "kind": "Typ",
     "dateModified": "Ändringsdatum",
     "noPhotos": "Inga bilder i denna mapp",
-    "noPhotosHint": "Växla till en annan vy för att se alla filer"
+    "noPhotosHint": "Växla till en annan vy för att se alla filer",
+    "empty": "Den här mappen är tom",
+    "emptyHint": "Ladda upp eller skapa filer för att komma igång."
   },
   "volumes": {
     "quickAccess": "Snabbåtkomst",

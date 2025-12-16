@@ -20,6 +20,7 @@ const availableLocaleOptions = [
   { code: 'zh', label: 'i18n.chinese' },
   { code: 'hi', label: 'i18n.hindi' },
   { code: 'pl', label: 'i18n.polish' },
+  { code: 'sv', label: 'i18n.swedish' },
 ];
 
 const languages = computed(() =>

@@ -421,7 +421,15 @@
     "passwordProtect": "पासवर्ड से सुरक्षित करें",
     "enterPassword": "पासवर्ड दर्ज करें",
     "setExpirationDate": "समाप्ति तिथि सेट करें",
+    "expirationPlaceholder": "YYYY-MM-DD HH:MM",
     "expiresAt": "समाप्त होगा",
+    "errors": {
+      "invalidSourcePath": "आइटम का साझा करने योग्य पथ निर्धारित नहीं किया जा सका।",
+      "selectAtLeastOneUser": "कम से कम एक उपयोगकर्ता चुनें।",
+      "failedToCreateShare": "शेयर लिंक नहीं बना सके।",
+      "expirationRequired": "कृपया मान्य समाप्ति तिथि चुनें।",
+      "expirationMustBeFuture": "समाप्ति तिथि भविष्य में होनी चाहिए।"
+    },
     "shareExpired": "शेयर की अवधि समाप्त",
     "shareNotFound": "शेयर नहीं मिला",
     "shareExpiredMessage": "यह शेयर लिंक समाप्त हो गया है और अब उपलब्ध नहीं है।",

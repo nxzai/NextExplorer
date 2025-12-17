@@ -421,7 +421,15 @@
     "passwordProtect": "密码保护",
     "enterPassword": "输入密码",
     "setExpirationDate": "设置到期日期",
+    "expirationPlaceholder": "YYYY-MM-DD HH:MM",
     "expiresAt": "到期",
+    "errors": {
+      "invalidSourcePath": "无法确定要共享的项目路径。",
+      "selectAtLeastOneUser": "请至少选择一位用户。",
+      "failedToCreateShare": "创建共享链接失败。",
+      "expirationRequired": "请选择有效的过期日期。",
+      "expirationMustBeFuture": "过期时间必须晚于当前时间。"
+    },
     "shareExpired": "共享已过期",
     "shareNotFound": "未找到共享",
     "shareExpiredMessage": "此共享链接已过期，不再可访问。",

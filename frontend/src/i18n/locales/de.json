@@ -421,7 +421,15 @@
     "passwordProtect": "Mit Passwort schützen",
     "enterPassword": "Passwort eingeben",
     "setExpirationDate": "Ablaufdatum festlegen",
+    "expirationPlaceholder": "JJJJ-MM-TT HH:MM",
     "expiresAt": "Läuft ab",
+    "errors": {
+      "invalidSourcePath": "Der zu teilende Elementpfad kann nicht ermittelt werden.",
+      "selectAtLeastOneUser": "Wählen Sie mindestens einen Benutzer aus.",
+      "failedToCreateShare": "Freigabelink konnte nicht erstellt werden.",
+      "expirationRequired": "Wählen Sie ein gültiges Ablaufdatum.",
+      "expirationMustBeFuture": "Das Ablaufdatum muss in der Zukunft liegen."
+    },
     "shareExpired": "Freigabe abgelaufen",
     "shareNotFound": "Freigabe nicht gefunden",
     "shareExpiredMessage": "Dieser Freigabelink ist abgelaufen und nicht mehr zugänglich.",

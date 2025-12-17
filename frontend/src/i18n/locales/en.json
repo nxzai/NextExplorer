@@ -450,7 +450,15 @@
     "passwordProtect": "Password protect",
     "enterPassword": "Enter password",
     "setExpirationDate": "Set expiration date",
+    "expirationPlaceholder": "YYYY-MM-DD HH:MM",
     "expiresAt": "Expires",
+    "errors": {
+      "invalidSourcePath": "Unable to determine the item path to share.",
+      "selectAtLeastOneUser": "Select at least one user.",
+      "failedToCreateShare": "Failed to create share link.",
+      "expirationRequired": "Choose a valid expiration date.",
+      "expirationMustBeFuture": "Expiration must be in the future."
+    },
     "shareExpired": "Share Expired",
     "shareNotFound": "Share Not Found",
     "shareExpiredMessage": "This share link has expired and is no longer accessible.",

@@ -421,7 +421,15 @@
     "passwordProtect": "Protéger par mot de passe",
     "enterPassword": "Entrer le mot de passe",
     "setExpirationDate": "Définir une date d'expiration",
+    "expirationPlaceholder": "AAAA-MM-JJ HH:MM",
     "expiresAt": "Expire",
+    "errors": {
+      "invalidSourcePath": "Impossible de déterminer le chemin de l'élément à partager.",
+      "selectAtLeastOneUser": "Sélectionnez au moins un utilisateur.",
+      "failedToCreateShare": "Échec de la création du lien de partage.",
+      "expirationRequired": "Choisissez une date d'expiration valide.",
+      "expirationMustBeFuture": "La date d'expiration doit être dans le futur."
+    },
     "shareExpired": "Partage expiré",
     "shareNotFound": "Partage introuvable",
     "shareExpiredMessage": "Ce lien de partage a expiré et n'est plus accessible.",

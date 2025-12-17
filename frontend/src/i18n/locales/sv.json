@@ -420,8 +420,16 @@
     "noUsersAvailable": "Inga användare tillgängliga",
     "passwordProtect": "Lösenordsskyddad",
     "enterPassword": "Ange lösenordet",
-    "setExpirationDate": "Ställ ut utgångsdatum",
+    "setExpirationDate": "Ställ in utgångsdatum",
+    "expirationPlaceholder": "ÅÅÅÅ-MM-DD TT:MM",
     "expiresAt": "Går ut",
+    "errors": {
+      "invalidSourcePath": "Det gick inte att fastställa sökvägen till objektet som ska delas.",
+      "selectAtLeastOneUser": "Välj minst en användare.",
+      "failedToCreateShare": "Kunde inte skapa delningslänk.",
+      "expirationRequired": "Välj ett giltigt utgångsdatum.",
+      "expirationMustBeFuture": "Utgångsdatumet måste vara i framtiden."
+    },
     "shareExpired": "Utdelning har gått ut",
     "shareNotFound": "Utdelningen hittades inte",
     "shareExpiredMessage": "Denna utdelningslänk har gått ut och är inte längre tillgänglig.",

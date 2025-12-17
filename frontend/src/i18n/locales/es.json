@@ -422,7 +422,15 @@
     "passwordProtect": "Proteger con contraseña",
     "enterPassword": "Introduce la contraseña",
     "setExpirationDate": "Establecer fecha de vencimiento",
+    "expirationPlaceholder": "AAAA-MM-DD HH:MM",
     "expiresAt": "Expira",
+    "errors": {
+      "invalidSourcePath": "No se puede determinar la ruta del elemento para compartir.",
+      "selectAtLeastOneUser": "Seleccione al menos un usuario.",
+      "failedToCreateShare": "No se pudo crear el enlace para compartir.",
+      "expirationRequired": "Elija una fecha de caducidad válida.",
+      "expirationMustBeFuture": "La caducidad debe estar en el futuro."
+    },
     "shareExpired": "Compartición vencida",
     "shareNotFound": "Compartición no encontrada",
     "shareExpiredMessage": "Este enlace de compartición ha vencido y ya no es accesible.",

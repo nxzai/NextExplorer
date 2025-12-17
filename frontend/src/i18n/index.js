@@ -8,7 +8,18 @@ import hi from './locales/hi.json'
 import pl from './locales/pl.json'
 import sv from './locales/sv.json'
 
-const supportedLocales = ['en', 'es', 'fr', 'de', 'zh', 'hi', 'pl', 'sv']
+export const supportedLocaleOptions = [
+  { code: 'en', labelKey: 'i18n.english' },
+  { code: 'es', labelKey: 'i18n.spanish' },
+  { code: 'fr', labelKey: 'i18n.french' },
+  { code: 'de', labelKey: 'i18n.german' },
+  { code: 'zh', labelKey: 'i18n.chinese' },
+  { code: 'hi', labelKey: 'i18n.hindi' },
+  { code: 'pl', labelKey: 'i18n.polish' },
+  { code: 'sv', labelKey: 'i18n.swedish' },
+]
+
+export const supportedLocales = supportedLocaleOptions.map(({ code }) => code)
 
 function detectLocale() {
   try {

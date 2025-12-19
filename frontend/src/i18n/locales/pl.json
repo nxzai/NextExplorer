@@ -67,6 +67,9 @@
     "shares": "Udostępnienia",
     "unsavedChanges": "Masz niezapisane zmiany"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Masz niezapisane zmiany. Zamknąć bez zapisywania?"
+  },
   "status": {
     "updated": "Pomyślnie zaktualizowano",
     "failed": "Niepowodzenie",
@@ -327,6 +330,8 @@
     "nameZToA": "Nazwa od Z do A",
     "smallToLarge": "Od najmniejszego do największego",
     "largeToSmall": "Od największego do najmniejszego",
+    "kindAToZ": "Typ od A do Z",
+    "kindZToA": "Typ od Z do A",
     "oldToNew": "Od najstarszych do najnowszych",
     "newToOld": "Od najnowszych do najstarszych"
   },

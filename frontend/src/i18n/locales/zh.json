@@ -67,6 +67,9 @@
     "shares": "共享",
     "unsavedChanges": "您有未保存的更改"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "您有未保存的更改。要在不保存的情况下关闭吗？"
+  },
   "status": {
     "updated": "更新成功",
     "failed": "失败",
@@ -327,6 +330,8 @@
     "nameZToA": "名称从 Z 到 A",
     "smallToLarge": "从小到大",
     "largeToSmall": "从大到小",
+    "kindAToZ": "类型从 A 到 Z",
+    "kindZToA": "类型从 Z 到 A",
     "oldToNew": "从旧到新",
     "newToOld": "从新到旧"
   },

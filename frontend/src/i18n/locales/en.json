@@ -69,6 +69,9 @@
     "readonly": "Read Only",
     "readwrite": "Read/Write"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "You have unsaved changes. Close without saving?"
+  },
   "status": {
     "updated": "Updated successfully",
     "failed": "Failed",
@@ -336,6 +339,8 @@
     "nameZToA": "Name Z to A",
     "smallToLarge": "Small to large",
     "largeToSmall": "Large to small",
+    "kindAToZ": "Kind A to Z",
+    "kindZToA": "Kind Z to A",
     "oldToNew": "Old to new",
     "newToOld": "New to old"
   },

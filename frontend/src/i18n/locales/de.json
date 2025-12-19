@@ -67,6 +67,9 @@
     "shares": "Freigaben",
     "unsavedChanges": "Sie haben ungespeicherte Änderungen"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Sie haben ungespeicherte Änderungen. Ohne Speichern schließen?"
+  },
   "status": {
     "updated": "Erfolgreich aktualisiert",
     "failed": "Fehlgeschlagen",
@@ -327,6 +330,8 @@
     "nameZToA": "Name Z bis A",
     "smallToLarge": "Klein nach groß",
     "largeToSmall": "Groß nach klein",
+    "kindAToZ": "Typ A bis Z",
+    "kindZToA": "Typ Z bis A",
     "oldToNew": "Alt nach neu",
     "newToOld": "Neu nach alt"
   },

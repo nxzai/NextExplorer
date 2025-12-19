@@ -67,6 +67,9 @@
     "shares": "Compartidos",
     "unsavedChanges": "Tienes cambios sin guardar"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Tienes cambios sin guardar. ¿Cerrar sin guardar?"
+  },
   "status": {
     "updated": "Actualizado correctamente",
     "failed": "Error",
@@ -328,6 +331,8 @@
     "nameZToA": "Nombre de la Z a la A",
     "smallToLarge": "De pequeño a grande",
     "largeToSmall": "De grande a pequeño",
+    "kindAToZ": "Tipo de la A a la Z",
+    "kindZToA": "Tipo de la Z a la A",
     "oldToNew": "De antiguo a nuevo",
     "newToOld": "De nuevo a antiguo"
   },

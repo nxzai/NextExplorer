@@ -48,8 +48,7 @@ const canCreate = computed(() => {
 
 <template>
   <div
-    class="sticky top-0 z-40 border-b border-neutral-200/90 bg-white/90 p-3 backdrop-blur
-    dark:border-white/10 dark:bg-base/90"
+    class="sticky top-0 z-40 bg-white/90 p-3 backdrop-blur dark:bg-base/90"
   >
     <div class="flex flex-wrap items-center shrink-0">
       <button
@@ -63,7 +62,7 @@ const canCreate = computed(() => {
 
       <CreateNew v-if="canCreate" class="mr-3"/>
       
-      <div class="flex items-center max-sm:order-2 max-sm:basis-full max-sm:bg-zinc-800 max-sm:p-1 max-sm:my-1 max-sm:rounded-xl">
+      <div class="flex items-center max-sm:order-2 max-sm:basis-full max-sm:bg-zinc-100 max-sm:dark:bg-zinc-800 max-sm:p-1 max-sm:my-1 max-sm:rounded-xl">
         <NavButtons />
         <BreadCrumb class="ml-2"/>
       </div>

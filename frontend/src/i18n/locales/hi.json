@@ -67,6 +67,9 @@
     "shares": "शेयर",
     "unsavedChanges": "आपके पास बिना सहेजे परिवर्तन हैं"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "आपके पास बिना सहेजे परिवर्तन हैं। बिना सहेजे बंद करें?"
+  },
   "status": {
     "updated": "सफलतापूर्वक अपडेट किया गया",
     "failed": "विफल",
@@ -327,6 +330,8 @@
     "nameZToA": "नाम Z से A",
     "smallToLarge": "छोटे से बड़े तक",
     "largeToSmall": "बड़े से छोटे तक",
+    "kindAToZ": "प्रकार A से Z",
+    "kindZToA": "प्रकार Z से A",
     "oldToNew": "पुराने से नए तक",
     "newToOld": "नए से पुराने तक"
   },

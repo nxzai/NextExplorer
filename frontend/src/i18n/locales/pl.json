@@ -67,6 +67,9 @@
     "shares": "Udostępnienia",
     "unsavedChanges": "Masz niezapisane zmiany"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Masz niezapisane zmiany. Zamknąć bez zapisywania?"
+  },
   "status": {
     "updated": "Pomyślnie zaktualizowano",
     "failed": "Niepowodzenie",

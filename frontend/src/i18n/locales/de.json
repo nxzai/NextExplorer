@@ -67,6 +67,9 @@
     "shares": "Freigaben",
     "unsavedChanges": "Sie haben ungespeicherte Änderungen"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Sie haben ungespeicherte Änderungen. Ohne Speichern schließen?"
+  },
   "status": {
     "updated": "Erfolgreich aktualisiert",
     "failed": "Fehlgeschlagen",

@@ -67,6 +67,9 @@
     "shares": "Compartidos",
     "unsavedChanges": "Tienes cambios sin guardar"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Tienes cambios sin guardar. ¿Cerrar sin guardar?"
+  },
   "status": {
     "updated": "Actualizado correctamente",
     "failed": "Error",

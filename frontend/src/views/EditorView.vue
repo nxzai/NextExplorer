@@ -70,17 +70,20 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { computed, onMounted, ref, shallowRef, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { Codemirror } from 'vue-codemirror';
 import { Compartment } from '@codemirror/state';
 import { fetchFileContent, saveFileContent, normalizePath } from '@/api';
 import { githubDark } from '@fsegurai/codemirror-theme-github-dark'
 import { XMarkIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import { Save20Regular } from '@vicons/fluent';
+import { onKeyStroke } from '@vueuse/core';
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 
 const fileContent = ref('');
 const originalContent = ref('');
@@ -125,6 +128,34 @@ const canCancel = computed(() => !isSaving.value);
 const resetStatus = () => {
   saveError.value = '';
 };
+
+const requestCloseEditor = () => {
+  if (!canCancel.value) return;
+  if (hasUnsavedChanges.value) {
+    const ok = window.confirm(t('editor.confirmCloseWithoutSaving'));
+    if (!ok) return;
+  }
+  closeEditor();
+};
+
+// Use `keyup` for Escape so the same Escape press doesn't immediately cancel the native confirm dialog.
+onKeyStroke(
+  'Escape',
+  () => requestCloseEditor(),
+  { target: window, eventName: 'keyup' },
+);
+
+// Cmd/Ctrl+S to save (and prevent browser "Save page" dialog).
+onKeyStroke(
+  ['s', 'S'],
+  (event) => {
+    if (!(event.ctrlKey || event.metaKey)) return;
+    event.preventDefault();
+    if (!canSave.value) return;
+    saveFile();
+  },
+  { target: window, eventName: 'keydown', passive: false },
+);
 
 let loadRequestId = 0;
 
@@ -178,7 +209,6 @@ const saveFile = async () => {
   try {
     await saveFileContent(targetPath, fileContent.value);
     originalContent.value = fileContent.value;
-    closeEditor();
   } catch (error) {
     console.error('Failed to save file:', error);
     saveError.value = error?.message || 'Failed to save file.';
@@ -188,8 +218,7 @@ const saveFile = async () => {
 };
 
 const cancelEditing = () => {
-  if (!canCancel.value) return;
-  closeEditor();
+  requestCloseEditor();
 };
 
 const closeEditor = () => {
@@ -199,15 +228,6 @@ const closeEditor = () => {
   }
   const destination = `/browse${segments.length > 0 ? `/${segments.join('/')}` : ''}`;
   router.push({ path: destination });
-};
-
-const handleKeydown = (event) => {
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
-    event.preventDefault();
-    if (canSave.value) {
-      saveFile();
-    }
-  }
 };
 
 // Dynamically load and apply a language based on the file path/extension
@@ -282,7 +302,6 @@ watch(fileContent, () => {
 });
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeydown);
   // Apply language when the editor view becomes ready
   const stop = watch(view, (v) => {
     if (v) {
@@ -290,9 +309,5 @@ onMounted(() => {
       stop();
     }
   });
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeydown);
 });
 </script>

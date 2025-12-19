@@ -67,6 +67,9 @@
     "shares": "Utdelningar",
     "unsavedChanges": "Du har osparade ändringar"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Du har osparade ändringar. Stäng utan att spara?"
+  },
   "status": {
     "updated": "Uppdaterades",
     "failed": "Misslyckades",

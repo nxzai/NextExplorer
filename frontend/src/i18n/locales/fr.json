@@ -67,6 +67,9 @@
     "shares": "Partages",
     "unsavedChanges": "Vous avez des modifications non enregistrées"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "Vous avez des modifications non enregistrées. Fermer sans enregistrer ?"
+  },
   "status": {
     "updated": "Mis à jour avec succès",
     "failed": "Échec",

@@ -69,6 +69,9 @@
     "readonly": "Read Only",
     "readwrite": "Read/Write"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "You have unsaved changes. Close without saving?"
+  },
   "status": {
     "updated": "Updated successfully",
     "failed": "Failed",

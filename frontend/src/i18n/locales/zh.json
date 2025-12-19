@@ -67,6 +67,9 @@
     "shares": "共享",
     "unsavedChanges": "您有未保存的更改"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "您有未保存的更改。要在不保存的情况下关闭吗？"
+  },
   "status": {
     "updated": "更新成功",
     "failed": "失败",

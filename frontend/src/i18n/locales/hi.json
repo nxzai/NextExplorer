@@ -67,6 +67,9 @@
     "shares": "शेयर",
     "unsavedChanges": "आपके पास बिना सहेजे परिवर्तन हैं"
   },
+  "editor": {
+    "confirmCloseWithoutSaving": "आपके पास बिना सहेजे परिवर्तन हैं। बिना सहेजे बंद करें?"
+  },
   "status": {
     "updated": "सफलतापूर्वक अपडेट किया गया",
     "failed": "विफल",

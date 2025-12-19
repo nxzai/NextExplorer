@@ -1,38 +1,43 @@
 <template>
-  <div class="flex h-full w-full flex-col bg-white dark:bg-zinc-900">
+  <div class="flex h-full w-full flex-col bg-white dark:bg-base">
     <header
-      class="flex flex-wrap items-center gap-4 border-b border-neutral-200 bg-white px-6 py-2 shadow-xs
-             dark:border-neutral-700 dark:bg-zinc-800"
+      class="sticky top-0 z-40 flex flex-wrap items-center gap-4 border-b border-neutral-200 bg-white/90 px-4 py-2 shadow-xs backdrop-blur
+             dark:border-neutral-800 dark:bg-base/90"
     >
       <div class="min-w-0">
         <p class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Editing</p>
-        <h1 class="truncate text-lg font-semibold text-neutral-900 dark:text-white">
+        <h1 class="truncate text-md text-neutral-900 dark:text-white">
           {{ displayPath || '—' }}
         </h1>
-        <p v-if="hasUnsavedChanges" class="text-xs text-amber-600 dark:text-amber-400">Unsaved changes</p>
+        
       </div>
-      <div class="ml-auto flex items-center gap-3">
+      <div class="ml-auto flex items-center gap-2">
         <span v-if="saveError" class="text-sm text-red-600 dark:text-red-400">
           {{ saveError }}
         </span>
-        <button
-          type="button"
-          @click="cancelEditing"
-          :disabled="!canCancel"
-          class="rounded-md border border-neutral-300 px-3 py-1 text-sm font-medium text-neutral-700 transition
-                 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-60
-                 dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-700"
-        >
-          Cancel
-        </button>
+        <p v-if="hasUnsavedChanges" class="mr-4 text-xs text-amber-600 dark:text-amber-400">Unsaved changes</p>
         <button
           type="button"
           @click="saveFile"
           :disabled="!canSave"
-          class="rounded-md bg-blue-600 px-3 py-1 text-sm font-medium text-white transition
-                 hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-blue-400 disabled:opacity-70"
+          class="rounded-md p-1 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-800 disabled:cursor-not-allowed disabled:opacity-60
+                 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
+          :aria-label="$t('common.save')"
+          :title="$t('common.save')"
         >
-          {{ isSaving ? 'Saving…' : 'Save' }}
+          <ArrowPathIcon v-if="isSaving" class="h-5 w-5 animate-spin" />
+          <Save20Regular v-else class="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          @click="cancelEditing"
+          :disabled="!canCancel"
+          class="rounded-md p-1 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-800 disabled:cursor-not-allowed disabled:opacity-60
+                 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
+          :aria-label="$t('common.close')"
+          :title="$t('common.close')"
+        >
+          <XMarkIcon class="h-5 w-5" />
         </button>
       </div>
     </header>
@@ -71,7 +76,8 @@ import { Codemirror } from 'vue-codemirror';
 import { Compartment } from '@codemirror/state';
 import { fetchFileContent, saveFileContent, normalizePath } from '@/api';
 import { githubDark } from '@fsegurai/codemirror-theme-github-dark'
-
+import { XMarkIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
+import { Save20Regular } from '@vicons/fluent';
 
 const route = useRoute();
 const router = useRouter();

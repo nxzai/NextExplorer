@@ -62,7 +62,7 @@ const canCreate = computed(() => {
 
       <CreateNew v-if="canCreate" class="mr-3"/>
       
-      <div class="flex items-center max-sm:order-2 max-sm:basis-full max-sm:bg-zinc-800 max-sm:p-1 max-sm:my-1 max-sm:rounded-xl">
+      <div class="flex items-center max-sm:order-2 max-sm:basis-full max-sm:bg-zinc-100 max-sm:dark:bg-zinc-800 max-sm:p-1 max-sm:my-1 max-sm:rounded-xl">
         <NavButtons />
         <BreadCrumb class="ml-2"/>
       </div>

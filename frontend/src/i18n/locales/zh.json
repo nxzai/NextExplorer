@@ -222,6 +222,7 @@
     "closeSidebar": "关闭侧边栏"
   },
   "nav": {
+    "home": "主页",
     "back": "后退",
     "forward": "前进",
     "upOneFolder": "上一级文件夹"

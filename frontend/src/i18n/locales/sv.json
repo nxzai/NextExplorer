@@ -222,6 +222,7 @@
     "closeSidebar": "Stäng sidofält"
   },
   "nav": {
+    "home": "Hem",
     "back": "Bakåt",
     "forward": "Framåt",
     "upOneFolder": "Upp en mapp"

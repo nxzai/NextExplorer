@@ -13,13 +13,14 @@ import CreateNew from '@/components/CreateNew.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useAuthStore } from '@/stores/auth';
 import { useFileStore } from '@/stores/fileStore';
-import { useRoute } from 'vue-router';
-import { Bars3Icon } from '@heroicons/vue/24/outline';
+import { useRoute, useRouter } from 'vue-router';
+import { Bars3Icon, HomeIcon } from '@heroicons/vue/24/outline';
 
 const settings = useSettingsStore();
 const auth = useAuthStore();
 const fileStore = useFileStore();
 const route = useRoute();
+const router = useRouter();
 
 defineEmits(['toggle-sidebar']);
 
@@ -44,6 +45,10 @@ const canCreate = computed(() => {
   return currentPathData?.canUpload === true;
 });
 
+const goHome = async () => {
+  await router.push('/browse/');
+};
+
 </script>
 
 <template>
@@ -60,9 +65,24 @@ const canCreate = computed(() => {
         <Bars3Icon class="h-6 w-6" />
       </button>
 
+      
+
       <CreateNew v-if="canCreate" class="mr-3"/>
       
-      <div class="flex items-center max-sm:order-2 max-sm:basis-full max-sm:bg-zinc-100 max-sm:dark:bg-zinc-800 max-sm:p-1 max-sm:my-1 max-sm:rounded-xl">
+      <div class="flex items-center max-sm:order-2 max-sm:basis-full 
+      max-sm:bg-zinc-100 max-sm:dark:bg-zinc-800 
+      max-sm:p-1 max-sm:my-1 max-sm:rounded-xl">
+
+        <button
+          v-if="!isVolumesView"
+          type="button"
+          class="p-1.5 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700 md:hidden"
+          :aria-label="$t('nav.home')"
+          :title="$t('nav.home')"
+          @click="goHome"
+        >
+          <HomeIcon class="h-5 w-5" />
+        </button>
         <NavButtons />
         <BreadCrumb class="ml-2"/>
       </div>
@@ -70,7 +90,6 @@ const canCreate = computed(() => {
       <div class="flex items-center ml-auto">
         <template v-if="!isVolumesView">
           <MenuItemInfo class="ml-auto"/>
-          <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
           <MenuShare />
           <div class="h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
           <MenuSortBy />

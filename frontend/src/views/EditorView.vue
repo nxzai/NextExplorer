@@ -1,8 +1,8 @@
 <template>
-  <div class="flex h-full w-full flex-col bg-white dark:bg-base">
+  <div class="flex h-full w-full flex-col bg-white dark:bg-default">
     <header
       class="sticky top-0 z-40 flex flex-wrap items-center gap-4 border-b border-neutral-200 bg-white/90 px-4 py-2 shadow-xs backdrop-blur
-             dark:border-neutral-800 dark:bg-base/90"
+             dark:border-neutral-800 dark:bg-default/90"
     >
       <div class="min-w-0">
         <p class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Editing</p>

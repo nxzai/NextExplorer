@@ -1,6 +1,7 @@
 import { usePreviewManager } from '@/plugins/preview/manager';
 import { imagePreviewPlugin } from '@/plugins/image/imagePreview';
 import { videoPreviewPlugin } from '@/plugins/video/videoPreview';
+import { audioPreviewPlugin } from '@/plugins/audio/audioPreview';
 import { markdownPreviewPlugin } from '@/plugins/markdown/markdownPreview';
 import { pdfPreviewPlugin } from '@/plugins/pdf/pdfPreview';
 import { onlyofficePreviewPlugin } from '@/plugins/onlyoffice/onlyofficePreview';
@@ -43,6 +44,7 @@ function registerCorePlugins(manager) {
   const plugins = [
     imagePreviewPlugin(),
     videoPreviewPlugin(),
+    audioPreviewPlugin(),
     pdfPreviewPlugin(),
     markdownPreviewPlugin(),
   ];

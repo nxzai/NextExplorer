@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { LockClosedIcon, KeyIcon } from '@heroicons/vue/24/outline';
@@ -41,31 +41,26 @@ const redirectToDestination = () => {
   router.replace(typeof target === 'string' ? target : '/browse/');
 };
 
-watch(
-  () => auth.isAuthenticated,
-  (isAuthenticated) => {
-    if (isAuthenticated) {
-      redirectToDestination();
-    }
-  },
-  { immediate: true },
-);
-
-watch(
-  () => auth.requiresSetup,
-  (requiresSetup) => {
-    if (requiresSetup && auth.hasStatus) {
-      const redirect = redirectTarget.value;
-      router.replace({ name: 'auth-setup', ...(redirect ? { query: { redirect } } : {}) });
-    }
-  },
-  { immediate: true },
-);
+const ensureAuthReady = async () => {
+  if (!auth.hasStatus || auth.isLoading) {
+    await auth.ensureStatus();
+  }
+};
 
 onMounted(async () => {
-  if (!auth.hasStatus && !auth.isLoading) {
-    auth.initialize();
+  await ensureAuthReady();
+
+  if (auth.requiresSetup) {
+    const redirect = redirectTarget.value;
+    router.replace({ name: 'auth-setup', ...(redirect ? { query: { redirect } } : {}) });
+    return;
   }
+
+  if (auth.isAuthenticated) {
+    redirectToDestination();
+    return;
+  }
+
   try {
     await featuresStore.ensureLoaded();
   } catch (_) {
@@ -77,6 +72,31 @@ const resetErrors = () => {
   loginError.value = '';
   auth.clearError();
 };
+
+const syncErrorFromRoute = (nextRoute) => {
+  const query = nextRoute?.query || {};
+  const errorDescription = query.error_description;
+  const error = query.error;
+  const message = typeof errorDescription === 'string' && errorDescription.trim()
+    ? errorDescription.trim()
+    : (typeof error === 'string' && error.trim() ? error.trim() : '');
+
+  if (message && !loginError.value) {
+    loginError.value = message;
+  }
+
+  if (typeof query.error === 'string' || typeof query.error_description === 'string') {
+    const cleanedQuery = { ...query };
+    delete cleanedQuery.error;
+    delete cleanedQuery.error_description;
+    router.replace({ query: cleanedQuery });
+  }
+};
+
+syncErrorFromRoute(route);
+onBeforeRouteUpdate((to) => {
+  syncErrorFromRoute(to);
+});
 
 const handleLoginSubmit = async () => {
   resetErrors();
@@ -211,11 +231,11 @@ const handleOidcLogin = () => {
     </div>
 
     <p
-      v-if="!supportsLocal && statusError"
+      v-if="!supportsLocal && (loginError || statusError)"
       class="mt-4"
       :class="helperTextClasses"
     >
-      {{ statusError }}
+      {{ loginError || statusError }}
     </p>
   </AuthLayout>
 </template>

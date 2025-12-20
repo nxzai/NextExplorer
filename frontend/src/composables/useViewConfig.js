@@ -32,7 +32,7 @@ export function useViewConfig() {
    */
   const gridStyle = computed(() => {
     if (settings.view === 'photos') {
-      return { gridTemplateColumns: `repeat(auto-fill, ${settings.photoSize}px)` };
+      return { gridTemplateColumns: `repeat(auto-fill, minmax(${settings.photoSize}px, 1fr))` };
     }
     return undefined;
   });

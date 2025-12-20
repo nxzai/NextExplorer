@@ -46,6 +46,27 @@ const videoPreviewExtensionsSet = new Set([
   ...envVideoExtensions,
 ]);
 
+const DEFAULT_AUDIO_PREVIEW_EXTENSIONS = [
+  'mp3',
+  'wav',
+  'flac',
+  'aac',
+  'm4a',
+  'ogg',
+  'opus',
+  'wma',
+];
+
+const envAudioExtensions = (import.meta.env.VITE_AUDIO_PREVIEW_EXTENSIONS || '')
+  .split(',')
+  .map((value) => value.trim().toLowerCase())
+  .filter(Boolean);
+
+const audioPreviewExtensionsSet = new Set([
+  ...DEFAULT_AUDIO_PREVIEW_EXTENSIONS,
+  ...envAudioExtensions,
+]);
+
 const getImagePreviewExtensions = () => Array.from(imagePreviewExtensionsSet.values());
 
 const isPreviewableImage = (extension = '') => {
@@ -60,9 +81,18 @@ const isPreviewableVideo = (extension = '') => {
   return videoPreviewExtensionsSet.has(extension.toLowerCase());
 };
 
+const getAudioPreviewExtensions = () => Array.from(audioPreviewExtensionsSet.values());
+
+const isPreviewableAudio = (extension = '') => {
+  if (!extension) return false;
+  return audioPreviewExtensionsSet.has(extension.toLowerCase());
+};
+
 export {
   getImagePreviewExtensions,
   isPreviewableImage,
   getVideoPreviewExtensions,
   isPreviewableVideo,
+  getAudioPreviewExtensions,
+  isPreviewableAudio,
 };

@@ -2,6 +2,21 @@ const logger = require('../utils/logger');
 const { AppError } = require('../errors/AppError');
 const { v4: uuidv4 } = require('uuid');
 
+const isOidcDocumentRequest = (req) => {
+  const path = req?.path || '';
+  if (path !== '/callback') return false;
+  const accept = typeof req.headers?.accept === 'string' ? req.headers.accept : '';
+  const secFetchDest = typeof req.headers?.['sec-fetch-dest'] === 'string' ? req.headers['sec-fetch-dest'] : '';
+  const secFetchMode = typeof req.headers?.['sec-fetch-mode'] === 'string' ? req.headers['sec-fetch-mode'] : '';
+  return accept.includes('text/html') || secFetchDest === 'document' || secFetchMode === 'navigate';
+};
+
+const clearOidcSessionCookies = (res) => {
+  // express-openid-connect defaults to "appSession"
+  try { res.clearCookie('appSession', { path: '/', sameSite: 'Lax', secure: true, httpOnly: true }); } catch (_) { /* ignore */ }
+  try { res.clearCookie('appSession', { path: '/', sameSite: 'Lax', secure: false, httpOnly: true }); } catch (_) { /* ignore */ }
+};
+
 /**
  * Centralized error handling middleware
  * Must be registered AFTER all routes in app.js
@@ -16,6 +31,16 @@ const errorHandler = (err, req, res, next) => {
   const isOperational = err.isOperational || false;
   const statusCode = err.statusCode || 500;
   const message = err.message || 'An unexpected error occurred';
+
+  // For OIDC callback navigations, redirect back into the SPA so the login screen can show the error.
+  // Otherwise, the browser will render the JSON payload as a standalone error page.
+  if (!res.headersSent && isOidcDocumentRequest(req)) {
+    clearOidcSessionCookies(res);
+    const nextUrl = `/auth/login?error=${encodeURIComponent(message)}`;
+    res.setHeader('Cache-Control', 'no-store');
+    res.redirect(302, nextUrl);
+    return;
+  }
 
   // Build error context for logging
   const errorContext = {

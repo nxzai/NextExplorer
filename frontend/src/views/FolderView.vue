@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
             'px-4 py-2 text-xs',
             'text-neutral-600 dark:text-neutral-300',
             'uppercase tracking-wide select-none',
-            'bg-white dark:bg-base',
+            'bg-white dark:bg-default',
             'backdrop-blur-sm',
             'min-w-max']"
             :style="{ gridTemplateColumns: settings.listViewGridTemplateColumns }"

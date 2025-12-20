@@ -147,7 +147,7 @@ onMounted(async () => {
 <template>
   <div class="h-full relative flex flex-col max-h-screen">
     <!-- Toolbar -->
-    <div class="z-10 p-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-base">
+    <div class="z-10 p-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-default">
       <div class="flex items-center gap-3">
         <!-- Title/Icon -->
         <div class="flex items-center gap-2 mr-4">
@@ -222,7 +222,7 @@ onMounted(async () => {
       <div v-else class="min-w-[800px]">
         <!-- Header Row -->
         <div
-          :class="['grid items-center gap-4 px-4 py-2 text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider border-b border-neutral-100 dark:border-neutral-800 sticky top-0 bg-white dark:bg-base z-10', GRID_COLS]"
+          :class="['grid items-center gap-4 px-4 py-2 text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider border-b border-neutral-100 dark:border-neutral-800 sticky top-0 bg-white dark:bg-default z-10', GRID_COLS]"
         >
           <div></div>
           <div>{{ t('common.name') }}</div>

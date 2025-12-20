@@ -162,6 +162,7 @@ module.exports = {
   extensions: {
     images: constants.IMAGE_EXTENSIONS,
     videos: constants.VIDEO_EXTENSIONS,
+    audios: constants.AUDIO_EXTENSIONS,
     documents: constants.DOCUMENT_EXTENSIONS,
     previewable: constants.PREVIEWABLE_EXTENSIONS,
   },

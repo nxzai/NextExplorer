@@ -222,6 +222,7 @@
     "closeSidebar": "Zamknij pasek boczny"
   },
   "nav": {
+    "home": "Strona główna",
     "back": "Wstecz",
     "forward": "Dalej",
     "upOneFolder": "Folder wyżej"

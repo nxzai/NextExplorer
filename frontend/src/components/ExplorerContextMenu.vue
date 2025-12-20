@@ -21,8 +21,9 @@ import { normalizePath } from '@/api';
 import { modKeyLabel, deleteKeyLabel } from '@/utils/keyboard';
 import { useDeleteConfirm } from '@/composables/useDeleteConfirm';
 import ModalDialog from '@/components/ModalDialog.vue';
+import ShareDialog from '@/components/ShareDialog.vue';
 import { useFavoritesStore } from '@/stores/favorites';
-import { StarIcon as StarOutline, DocumentTextIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/outline';
+import { StarIcon as StarOutline, DocumentTextIcon, ArrowDownTrayIcon, ShareIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/vue/24/solid';
 import { useFavoriteEditor } from '@/composables/useFavoriteEditor';
 // Icons
@@ -79,6 +80,20 @@ const hasSelection = actions.hasSelection;
 const primaryItem = actions.primaryItem;
 const isSingleItemSelected = actions.isSingleItemSelected;
 const canRename = actions.canRename;
+const isShareDialogOpen = ref(false);
+const itemToShare = ref(null);
+
+const isVolumesView = computed(() => {
+  const p = normalizePath(fileStore.getCurrentPath || '');
+  return !p || p.trim() === '';
+});
+
+const canShare = computed(() => (
+  !isVolumesView.value
+  && isSingleItemSelected.value
+  && Boolean(primaryItem.value)
+  && primaryItem.value?.kind !== 'volume'
+));
 
 const deleteDialogTitle = computed(() => {
   const count = selectedItems.value.length;
@@ -190,6 +205,12 @@ const runCreateFolder = async () => {
 const runRename = () => actions.runRename();
 
 const runDownload = () => actions.runDownload();
+
+const runShare = () => {
+  if (!canShare.value) return;
+  itemToShare.value = primaryItem.value;
+  isShareDialogOpen.value = true;
+};
 
 // requestDelete and confirmDelete are provided by useDeleteConfirm()
 
@@ -325,6 +346,13 @@ const menuSections = computed(() => {
   sections.push([
     mk('download', t('actions.download'), ArrowDownTrayIcon, runDownload, { disabled: !hasSelection.value }),
   ]);
+
+  // Add share option (same availability rules as toolbar)
+  if (!isVolumesView.value) {
+    sections.push([
+      mk('share', t('share.shareSelectedItem'), ShareIcon, runShare, { disabled: !canShare.value }),
+    ]);
+  }
 
   const clipboardSection = [
     mk('cut', t('actions.cut'), ContentCutRound, runCut, { disabled: !actions.canCut.value, shortcut: `${modKeyLabel}X` }),
@@ -487,4 +515,9 @@ provide(explorerContextMenuSymbol, {
       </button>
     </div>
   </ModalDialog>
+
+  <ShareDialog
+    v-model="isShareDialogOpen"
+    :item="itemToShare"
+  />
 </template>

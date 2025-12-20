@@ -222,6 +222,7 @@
     "closeSidebar": "Fermer la barre latérale"
   },
   "nav": {
+    "home": "Accueil",
     "back": "Retour",
     "forward": "Avancer",
     "upOneFolder": "Remonter d'un dossier"

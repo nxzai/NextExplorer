@@ -231,6 +231,7 @@
     "closeSidebar": "Close sidebar"
   },
   "nav": {
+    "home": "Home",
     "back": "Back",
     "forward": "Forward",
     "upOneFolder": "Up one folder"

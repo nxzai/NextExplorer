@@ -63,7 +63,7 @@ onClickOutside(menuPopup, () => {
             @click="settings.setSortBy(option.key); menuOpen = false"
             class="
             flex items-center 
-            gap-1 p-[2px] px-2 rounded-md text-left
+            gap-1 p-0.5 px-2 rounded-md text-left
             hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 dark:active:bg-blue-600 dark:focus:bg-blue-600"
             :class="{'dark:bg-blue-600': settings.sortBy.key === option.key}"
             >

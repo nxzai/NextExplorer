@@ -222,6 +222,7 @@
     "closeSidebar": "Seitenleiste schließen"
   },
   "nav": {
+    "home": "Startseite",
     "back": "Zurück",
     "forward": "Vorwärts",
     "upOneFolder": "Einen Ordner nach oben"

@@ -223,6 +223,7 @@
     "closeSidebar": "Cerrar barra lateral"
   },
   "nav": {
+    "home": "Inicio",
     "back": "Atrás",
     "forward": "Adelante",
     "upOneFolder": "Subir una carpeta"

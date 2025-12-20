@@ -1,9 +1,10 @@
 {
     "name": "finder",
-    "version": "2.0.3",
+    "version": "2.0.6",
     "description": "explorer",
     "main": "src/app.js",
     "scripts": {
+        "download_samples": "node src/scripts/downloadSamples.js",
         "test": "node --test",
         "start": "node --watch src/app.js"
     },
@@ -34,7 +35,8 @@
         "pino-pretty": "^13.1.2",
         "sharp": "^0.34.4",
         "uuid": "^13.0.0",
-        "ws": "^8.17.0"
+        "ws": "^8.17.0",
+        "yauzl": "^2.10.0"
     },
     "devDependencies": {
         "supertest": "^7.1.4"

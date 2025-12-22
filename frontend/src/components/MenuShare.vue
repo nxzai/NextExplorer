@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ShareIcon } from '@heroicons/vue/24/outline';
 import { useFileStore } from '@/stores/fileStore';
+import { normalizePath } from '@/api';
 import ShareDialog from '@/components/ShareDialog.vue';
 
 const { t } = useI18n();
@@ -11,9 +12,13 @@ const fileStore = useFileStore();
 const isShareDialogOpen = ref(false);
 const itemToShare = ref(null);
 
+const isShareView = computed(() => normalizePath(fileStore.getCurrentPath || '').startsWith('share/'));
+const locationCanShare = computed(() => fileStore.currentPathData?.canShare ?? true);
+const isShareAllowedHere = computed(() => locationCanShare.value && !isShareView.value);
+
 const canShare = computed(() => {
   // Can share if exactly one item is selected
-  return fileStore.selectedItems && fileStore.selectedItems.length === 1;
+  return isShareAllowedHere.value && fileStore.selectedItems && fileStore.selectedItems.length === 1;
 });
 
 const selectedItem = computed(() => {
@@ -36,7 +41,7 @@ function handleShareCreated(share) {
 </script>
 
 <template>
-  <div class="flex gap-1 items-center">
+  <div v-if="isShareAllowedHere" class="flex gap-1 items-center">
     <button
       type="button"
       @click="openShareDialog"

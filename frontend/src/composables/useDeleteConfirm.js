@@ -13,7 +13,7 @@ export function useDeleteConfirm() {
   const isDeleting = ref(false);
 
   const openDeleteConfirm = () => {
-    if (!actions.hasSelection.value) return;
+    if (!actions.canDelete.value) return;
     isDeleteConfirmOpen.value = true;
   };
 
@@ -26,7 +26,7 @@ export function useDeleteConfirm() {
   };
 
   const confirmDelete = async () => {
-    if (!actions.hasSelection.value || isDeleting.value) return;
+    if (!actions.canDelete.value || isDeleting.value) return;
     isDeleting.value = true;
     try {
       await actions.deleteNow();

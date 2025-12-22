@@ -121,7 +121,7 @@ const handleGuestLogin = () => {
 
   <div class="relative flex w-full min-h-dvh">
     <aside
-      class="flex flex-col bg-base-muted dark:bg-base-muted pt-4 pb-2 px-6 shrink-0
+      class="flex flex-col bg-default-muted dark:bg-default-muted pt-4 pb-2 px-6 shrink-0
       fixed inset-y-0 left-0 transition-transform duration-200 ease-in-out z-50
       lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0"
       :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'"
@@ -169,7 +169,7 @@ const handleGuestLogin = () => {
     </div>
 
     <main
-      class="flex min-w-0 flex-col grow relative bg-base shadow-lg"
+      class="flex min-w-0 flex-col grow relative bg-default shadow-lg"
     >
       <FolderViewToolbar
         v-if="showBrowseToolbar"

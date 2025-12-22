@@ -74,7 +74,7 @@
 
 
 @theme {
-  --color-base: var(--clr-base);
-  --color-base-muted: var(--clr-base-muted);
+  /* Avoid collision with Tailwind's built-in `text-base` font-size utility. */
+  --color-default: var(--clr-base);
+  --color-default-muted: var(--clr-base-muted);
 }
-

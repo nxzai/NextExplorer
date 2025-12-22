@@ -433,7 +433,7 @@ router.get('/preview', asyncHandler(async (req, res) => {
   }
 
     const mimeType = mimeTypes[extension] || 'application/octet-stream';
-    const isVideo = extensions.videos.includes(extension);
+    const isSeekableMedia = extensions.videos.includes(extension) || (extensions.audios || []).includes(extension);
 
     const streamFile = (options = undefined) => {
       const stream = options ? fss.createReadStream(absolutePath, options) : fss.createReadStream(absolutePath);
@@ -448,7 +448,7 @@ router.get('/preview', asyncHandler(async (req, res) => {
       stream.pipe(res);
     };
 
-    if (isVideo) {
+    if (isSeekableMedia) {
       const rangeHeader = req.headers.range;
       if (rangeHeader) {
         const bytesPrefix = 'bytes=';

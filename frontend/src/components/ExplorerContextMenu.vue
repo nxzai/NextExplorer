@@ -15,7 +15,6 @@ import { explorerContextMenuSymbol } from '@/composables/contextMenu';
 import { useFileStore } from '@/stores/fileStore';
 import { useSelection } from '@/composables/itemSelection';
 import { useFileActions } from '@/composables/fileActions';
-import { usePreviewManager } from '@/plugins/preview/manager';
 import { useInfoPanelStore } from '@/stores/infoPanel';
 import { normalizePath } from '@/api';
 import { modKeyLabel, deleteKeyLabel } from '@/utils/keyboard';
@@ -39,7 +38,6 @@ import {
 } from '@vicons/material';
 
 const fileStore = useFileStore();
-const previewManager = usePreviewManager();
 const infoPanel = useInfoPanelStore();
 const { clearSelection } = useSelection();
 const favoritesStore = useFavoritesStore();
@@ -80,6 +78,10 @@ const hasSelection = actions.hasSelection;
 const primaryItem = actions.primaryItem;
 const isSingleItemSelected = actions.isSingleItemSelected;
 const canRename = actions.canRename;
+const locationCanWrite = actions.locationCanWrite;
+const locationCanUpload = actions.locationCanUpload;
+const locationCanDelete = actions.locationCanDelete;
+const canAcceptPasteHere = computed(() => locationCanWrite.value || locationCanUpload.value);
 const isShareDialogOpen = ref(false);
 const itemToShare = ref(null);
 
@@ -88,8 +90,17 @@ const isVolumesView = computed(() => {
   return !p || p.trim() === '';
 });
 
+const isShareView = computed(() => {
+  const p = normalizePath(fileStore.getCurrentPath || '');
+  return p.startsWith('share/');
+});
+
+const locationCanShare = computed(() => fileStore.currentPathData?.canShare ?? true);
+
 const canShare = computed(() => (
   !isVolumesView.value
+  && !isShareView.value
+  && locationCanShare.value
   && isSingleItemSelected.value
   && Boolean(primaryItem.value)
   && primaryItem.value?.kind !== 'volume'
@@ -302,32 +313,39 @@ const menuSections = computed(() => {
   });
 
   if (contextKind.value === 'background') {
-    return [
-      [
-        mk('get-info', t('context.getInfo'), InfoRound, runGetInfo, {
-          disabled: !primaryItem.value,
-        }),
-      ],
-      [
-        mk(
-          'fav-current',
-          isFavoriteCurrentDirectory.value ? t('context.removeFromFavorites') : t('context.addToFavorites'),
-          isFavoriteCurrentDirectory.value ? StarSolid : StarOutline,
-          runToggleFavoriteForCurrent,
-          { disabled: !currentDirectoryPath.value || isMutatingFavorite.value },
-        ),
-      ],
-      [
+    const sections = [];
+    sections.push([
+      mk('get-info', t('context.getInfo'), InfoRound, runGetInfo, {
+        disabled: !primaryItem.value,
+      }),
+    ]);
+    sections.push([
+      mk(
+        'fav-current',
+        isFavoriteCurrentDirectory.value ? t('context.removeFromFavorites') : t('context.addToFavorites'),
+        isFavoriteCurrentDirectory.value ? StarSolid : StarOutline,
+        runToggleFavoriteForCurrent,
+        { disabled: !currentDirectoryPath.value || isMutatingFavorite.value },
+      ),
+    ]);
+
+    if (locationCanWrite.value) {
+      sections.push([
         mk('new-folder', t('actions.newFolder'), CreateNewFolderRound, runCreateFolder),
         mk('new-file', t('actions.newFile'), InsertDriveFileRound, runCreateFile),
-      ],
-      [
+      ]);
+    }
+
+    if (canAcceptPasteHere.value) {
+      sections.push([
         mk('paste', t('actions.paste'), ContentPasteRound, runPasteIntoCurrent, {
           disabled: !actions.canPaste.value,
           shortcut: `${modKeyLabel}V`,
         }),
-      ],
-    ];
+      ]);
+    }
+
+    return sections;
   }
 
   const sections = [];
@@ -348,26 +366,37 @@ const menuSections = computed(() => {
   ]);
 
   // Add share option (same availability rules as toolbar)
-  if (!isVolumesView.value) {
+  if (!isVolumesView.value && !isShareView.value && locationCanShare.value) {
     sections.push([
       mk('share', t('share.shareSelectedItem'), ShareIcon, runShare, { disabled: !canShare.value }),
     ]);
   }
 
-  const clipboardSection = [
-    mk('cut', t('actions.cut'), ContentCutRound, runCut, { disabled: !actions.canCut.value, shortcut: `${modKeyLabel}X` }),
-    mk('copy', t('actions.copy'), ContentCopyRound, runCopy, { disabled: !actions.canCopy.value, shortcut: `${modKeyLabel}C` }),
-  ];
-  if (contextKind.value === 'directory') {
+  const clipboardSection = [];
+  if (locationCanWrite.value && locationCanDelete.value) {
     clipboardSection.push(
-      mk('paste', t('actions.paste'), ContentPasteRound, runPasteIntoDirectory, { disabled: !actions.canPaste.value, shortcut: `${modKeyLabel}V` }),
+      mk('cut', t('actions.cut'), ContentCutRound, runCut, { disabled: !actions.canCut.value, shortcut: `${modKeyLabel}X` }),
     );
   }
-  sections.push(clipboardSection);
+  clipboardSection.push(
+    mk('copy', t('actions.copy'), ContentCopyRound, runCopy, { disabled: !actions.canCopy.value, shortcut: `${modKeyLabel}C` }),
+  );
+  if (contextKind.value === 'directory') {
+    if (canAcceptPasteHere.value) {
+      clipboardSection.push(
+        mk('paste', t('actions.paste'), ContentPasteRound, runPasteIntoDirectory, { disabled: !actions.canPaste.value, shortcut: `${modKeyLabel}V` }),
+      );
+    }
+  }
+  if (clipboardSection.length) {
+    sections.push(clipboardSection);
+  }
 
-  sections.push([
-    mk('rename', t('actions.rename'), DriveFileRenameOutlineRound, runRename, { disabled: !canRename.value }),
-  ]);
+  if (locationCanWrite.value) {
+    sections.push([
+      mk('rename', t('actions.rename'), DriveFileRenameOutlineRound, runRename, { disabled: !canRename.value }),
+    ]);
+  }
 
   if (contextKind.value === 'directory') {
     sections.push([
@@ -381,9 +410,15 @@ const menuSections = computed(() => {
     ]);
   }
 
-  sections.push([
-  mk('delete', t('common.delete'), DeleteRound, requestDelete, { disabled: !hasSelection.value, danger: true, shortcut: deleteKeyLabel }),
-  ]);
+  if (locationCanDelete.value) {
+    sections.push([
+      mk('delete', t('common.delete'), DeleteRound, requestDelete, {
+        disabled: !actions.canDelete.value,
+        danger: true,
+        shortcut: deleteKeyLabel,
+      }),
+    ]);
+  }
 
   return sections;
 });

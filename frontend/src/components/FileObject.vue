@@ -203,9 +203,8 @@ if (isTouchDevice.value) {
     @click="handleClick"
     @dblclick="handleDblClick"
     @contextmenu.prevent.stop="handleContextMenu"
-    class="photo-cell relative rounded-md overflow-hidden cursor-pointer select-none bg-neutral-100 dark:bg-zinc-800/60 hover:brightness-105"
+    class="photo-cell relative w-full rounded-md overflow-hidden cursor-pointer select-none bg-neutral-100 dark:bg-zinc-800/60 hover:brightness-105"
     :class="{ 'ring-2 ring-blue-500 dark:ring-blue-400': isSelected(item), 'opacity-60': isCut }"
-    :style="{ width: settings.photoSize + 'px', height: settings.photoSize + 'px' }"
     >
       <FileIcon :item="item" class="w-full h-full" />
     </div>
@@ -340,6 +339,10 @@ if (isTouchDevice.value) {
 </template>
 
 <style scoped>
+.photo-cell {
+  aspect-ratio: 1 / 1;
+}
+
 .photo-cell :deep(img) {
   width: 100%;
   height: 100%;

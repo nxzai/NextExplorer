@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
             'px-4 py-2 text-xs',
             'text-neutral-600 dark:text-neutral-300',
             'uppercase tracking-wide select-none',
-            'bg-white dark:bg-base',
+            'bg-white dark:bg-default',
             'backdrop-blur-sm',
             'min-w-max']"
             :style="{ gridTemplateColumns: settings.listViewGridTemplateColumns }"
@@ -250,8 +250,8 @@ onBeforeUnmount(() => {
     </template>
 
     <template v-else>
-      <div class="flex flex-1 items-center justify-center text-sm text-neutral-500 dark:text-neutral-400">
-        <div class="flex items-center pr-4 bg-neutral-300 dark:bg-black bg-opacity-20 rounded-lg">
+      <div class="flex flex-1 items-center justify-center text-sm text-neutral-600 dark:text-neutral-300">
+        <div class="flex items-center pr-4 bg-neutral-200 dark:bg-zinc-700/50 rounded-xl">
           <LoadingIcon /> {{ $t('common.loading') }}
         </div>
       </div>

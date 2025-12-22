@@ -388,14 +388,19 @@ export const useFileStore = defineStore('fileStore', () => {
     // Handle new response format with items and access metadata
     if (response && typeof response === 'object' && Array.isArray(response.items)) {
       currentPathItems.value = mergeItems(response.items);
+      const access = response.access && typeof response.access === 'object'
+        ? response.access
+        : null;
       currentPathData.value = {
         path: response.path || normalizedPath,
-        canRead: response.access?.canRead ?? true,
-        canWrite: response.access?.canWrite ?? false,
-        canUpload: response.access?.canUpload ?? false,
-        canDelete: response.access?.canDelete ?? false,
-        canShare: response.access?.canShare ?? false,
-        canDownload: response.access?.canDownload ?? true,
+        canRead: access?.canRead ?? true,
+        // If the backend doesn't include access metadata, fail open so the UI
+        // doesn't hide core actions for older response formats.
+        canWrite: access?.canWrite ?? true,
+        canUpload: access?.canUpload ?? true,
+        canDelete: access?.canDelete ?? true,
+        canShare: access?.canShare ?? true,
+        canDownload: access?.canDownload ?? true,
         // Include share metadata if present
         shareInfo: response.shareInfo || null,
       };

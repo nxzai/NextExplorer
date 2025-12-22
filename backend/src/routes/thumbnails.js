@@ -13,11 +13,12 @@ const { ValidationError, NotFoundError } = require('../errors/AppError');
 const router = express.Router();
 const { getSettings } = require('../services/settingsService');
 
-const isPreviewable = (extension = '') => {
+const isThumbnailable = (extension = '') => {
   if (!extension) {
     return false;
   }
-  return extensions.previewable.has(extension.toLowerCase());
+  const ext = extension.toLowerCase();
+  return extensions.images.includes(ext) || extensions.videos.includes(ext);
 };
 
 router.get('/thumbnails/*', asyncHandler(async (req, res) => {
@@ -66,7 +67,7 @@ router.get('/thumbnails/*', asyncHandler(async (req, res) => {
     throw new ValidationError('Thumbnails are not available for PDF files.');
   }
 
-  if (!isPreviewable(extension)) {
+  if (!isThumbnailable(extension)) {
     throw new ValidationError('Thumbnails are not available for this file type.');
   }
 

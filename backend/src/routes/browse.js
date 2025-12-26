@@ -65,8 +65,12 @@ router.get(
       try {
         stats = await fs.stat(filePath);
       } catch (err) {
-        if (['EPERM', 'EACCES', 'ENOENT'].includes(err?.code)) {
+        if (['EPERM', 'EACCES', 'ENOENT', 'ELOOP'].includes(err?.code)) {
           logger.warn({ filePath, err }, 'Skipping unreadable entry');
+          return null;
+        }
+        if (['ELOOP'].includes(err?.code)) {
+          logger.warn({ filePath, err }, 'Skipping cyclical symbolic links');
           return null;
         }
         throw err;

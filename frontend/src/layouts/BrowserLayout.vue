@@ -208,7 +208,7 @@ const handleGuestLogin = () => {
       @click="closeSidebar"
     ></button>
     <UploadProgress class="z-550" />
-    <ClipboardProgress class="z-[560]" />
+    <ClipboardProgress class="z-560" />
     <PreviewHost />
     <InfoPanel />
     <SpotlightSearch />

@@ -1,0 +1,502 @@
+{
+  "common": {
+    "or": "OPPURE",
+    "in": "in",
+    "to": "a",
+    "all": "Tutto",
+    "and": "e",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "open": "Apri",
+    "edit": "Modifica",
+    "save": "Salva",
+    "discard": "Scarta",
+    "delete": "Elimina",
+    "deleting": "Eliminazione...",
+    "remove": "Rimuovi",
+    "create": "Crea",
+    "creating": "Creazione…",
+    "saving": "Salvataggio...",
+    "loading": "Caricamento",
+    "loadingEllipsis": "Caricamento…",
+    "verifying": "Verifica…",
+    "updating": "Aggiornamento…",
+    "preparing": "Preparazione",
+    "dismiss": "Ignora",
+    "disabled": "Disabilitato",
+    "enabled": "Abilitato",
+    "refresh": "Aggiorna",
+    "tryAgain": "Riprova",
+    "done": "Fatto",
+    "remaining": "rimanenti",
+    "unknown": "sconosciuto",
+    "optional": "Facoltativo",
+    "name": "Nome",
+    "size": "Dimensione",
+    "type": "Tipo",
+    "path": "Percorso",
+    "email": "Email",
+    "username": "Nome utente",
+    "password": "Password",
+    "label": "Etichetta",
+    "actions": "Azioni",
+    "permissions": "Permessi",
+    "details": "Dettagli",
+    "location": "Posizione",
+    "modified": "Modificato",
+    "expires": "Scade",
+    "expired": "Scaduto",
+    "active": "Attivo",
+    "protected": "Protetto",
+    "passwordProtected": "Protetto da password",
+    "noExpiration": "Nessuna scadenza",
+    "recent": "Recenti",
+    "item": "elemento",
+    "items": "elementi",
+    "files": "file",
+    "folders": "cartelle",
+    "file": "File",
+    "folder": "Cartella",
+    "image": "Immagine",
+    "video": "Video",
+    "user": "Utente",
+    "admin": "Amministratore",
+    "roles": "Ruoli",
+    "settings": "Impostazioni",
+    "share": "Condividi",
+    "shares": "Condivisioni",
+    "unsavedChanges": "Hai modifiche non salvate",
+    "readonly": "Sola lettura",
+    "readwrite": "Lettura/Scrittura"
+  },
+  "editor": {
+    "confirmCloseWithoutSaving": "Hai modifiche non salvate. Chiudere senza salvare?"
+  },
+  "status": {
+    "updated": "Aggiornato con successo",
+    "failed": "Operazione non riuscita",
+    "passwordUpdated": "Password aggiornata",
+    "completePercent": "{percent}% completato"
+  },
+  "actions": {
+    "newFolder": "Nuova cartella",
+    "newFile": "Nuovo file",
+    "fileUpload": "Carica file",
+    "folderUpload": "Carica cartella",
+    "copy": "Copia",
+    "cut": "Taglia",
+    "paste": "Incolla",
+    "rename": "Rinomina",
+    "download": "Scarica",
+    "search": "Cerca",
+    "sortBy": "Ordina per",
+    "addRule": "Aggiungi regola",
+    "clearAll": "Cancella tutto",
+    "cancelAll": "Annulla tutto"
+  },
+  "placeholders": {
+    "email": "utente{'@'}esempio.com",
+    "emailCompany": "nome{'@'}azienda.com",
+    "username": "Predefinito: prefisso email",
+    "password": "Scegli una password robusta",
+    "confirmPassword": "Reinserisci la password",
+    "label": "I miei file condivisi",
+    "path": "es. Immagini/Vacanze",
+    "search": "Cerca file e cartelle…",
+    "volumeLabel": "es. Documenti, Progetti, Media"
+  },
+  "loading": {
+    "default": "Caricamento…",
+    "users": "Caricamento utenti...",
+    "metadata": "Caricamento metadati…",
+    "share": "Caricamento condivisione...",
+    "shares": "Caricamento condivisioni…",
+    "volumes": "Caricamento volumi…"
+  },
+  "errors": {
+    "failed": "Operazione non riuscita",
+    "searchFailed": "Ricerca non riuscita",
+    "loadMetadata": "Impossibile caricare i metadati",
+    "loadUsers": "Impossibile caricare gli utenti",
+    "loadShares": "Impossibile caricare gli elementi condivisi",
+    "updateRoles": "Impossibile aggiornare i ruoli",
+    "createUser": "Impossibile creare l'utente",
+    "updateUser": "Impossibile aggiornare l'utente",
+    "removeUser": "Impossibile rimuovere l'utente",
+    "resetPassword": "Impossibile reimpostare la password",
+    "changePassword": "Impossibile cambiare la password",
+    "createShare": "Impossibile creare la condivisione",
+    "signIn": "Impossibile accedere",
+    "createAccount": "Impossibile creare l'account",
+    "invalidSourcePath": "Percorso sorgente non valido",
+    "invalidPassword": "Password non valida",
+    "selectAtLeastOneUser": "Seleziona almeno un utente",
+    "pleaseEnterPassword": "Inserisci una password",
+    "emailRequired": "L'email è obbligatoria",
+    "passwordRequired": "La password è obbligatoria",
+    "passwordLength": "La password deve contenere almeno 6 caratteri",
+    "passwordMin": "La password deve contenere almeno 6 caratteri",
+    "passwordMismatch": "Le password non corrispondono",
+    "localSignInDisabled": "L'accesso locale è disabilitato",
+    "deleteShare": "Impossibile eliminare la condivisione",
+    "browseDirectories": "Impossibile sfogliare le directory",
+    "labelRequired": "L'etichetta è obbligatoria",
+    "pathRequired": "Il percorso è obbligatorio",
+    "saveVolume": "Impossibile salvare il volume",
+    "removeVolume": "Impossibile rimuovere il volume"
+  },
+  "titles": {
+    "volumes": "Volumi",
+    "favorites": "Preferiti",
+    "notifications": "Notifiche",
+    "terminal": "Terminale",
+    "settings": "Impostazioni",
+    "about": "Informazioni",
+    "thumbnails": "Miniature",
+    "authentication": "Autenticazione",
+    "folderRules": "Regole cartelle",
+    "comingSoon": "In arrivo",
+    "changePassword": "Cambia password",
+    "userManagement": "Gestione utenti",
+    "share": "Condividi",
+    "sortOptions": "Opzioni di ordinamento",
+    "locations": "Posizioni"
+  },
+  "i18n": {
+    "language": "Lingua",
+    "english": "Inglese",
+    "spanish": "Spagnolo",
+    "french": "Francese",
+    "german": "Tedesco",
+    "chinese": "Cinese",
+    "hindi": "Hindi",
+    "polish": "Polacco",
+    "swedish": "Svedese",
+    "italian": "Italiano",
+    "romanian": "Rumeno"
+  },
+  "search": {
+    "openShortcutTitle": "Apri ricerca (⌘/Ctrl + K)",
+    "resultsFor": "Risultati per \"{q}\"",
+    "searching": "Ricerca in corso…",
+    "noMatches": "Nessun risultato trovato",
+    "openFolder": "Apri cartella",
+    "line": "riga"
+  },
+  "user": {
+    "account": "Account",
+    "signOut": "Esci",
+    "useSystemTheme": "Usa tema di sistema",
+    "useLightTheme": "Usa tema chiaro",
+    "useDarkTheme": "Usa tema scuro",
+    "systemTheme": "Tema di sistema",
+    "lightTheme": "Tema chiaro",
+    "darkTheme": "Tema scuro"
+  },
+  "create": {
+    "createNew": "Nuovo"
+  },
+  "context": {
+    "getInfo": "Ottieni informazioni",
+    "openWithEditor": "Apri con editor",
+    "addToFavorites": "Aggiungi ai preferiti",
+    "removeFromFavorites": "Rimuovi dai preferiti",
+    "deleteTitle": {
+      "single": "Eliminare \"{name}\"?",
+      "multiple": "Eliminare {count} elementi?",
+      "generic": "Elimina elementi"
+    },
+    "deleteMessage": {
+      "single": "Sei sicuro di voler eliminare \"{name}\"? Questa azione non può essere annullata.",
+      "multiple": "Sei sicuro di voler eliminare questi {count} elementi? Questa azione non può essere annullata.",
+      "generic": "Nessun elemento selezionato."
+    }
+  },
+  "folder": {
+    "kind": "Tipo",
+    "dateModified": "Data modifica",
+    "noPhotos": "Nessuna foto in questa cartella",
+    "noPhotosHint": "Passa a un'altra modalità di visualizzazione per vedere tutti i file",
+    "empty": "Questa cartella è vuota",
+    "emptyHint": "Carica o crea file per iniziare."
+  },
+  "volumes": {
+    "quickAccess": "Accesso rapido",
+    "quickAccessEmpty": "Aggiungi cartelle ai preferiti per accedervi rapidamente qui."
+  },
+  "drives": {
+    "personal": "I miei file"
+  },
+  "browser": {
+    "resizeSidebar": "Ridimensiona barra laterale",
+    "openSidebar": "Apri barra laterale",
+    "closeSidebar": "Chiudi barra laterale"
+  },
+  "nav": {
+    "home": "Home",
+    "back": "Indietro",
+    "forward": "Avanti",
+    "upOneFolder": "Su di una cartella"
+  },
+  "view": {
+    "list": "Vista elenco",
+    "column": "Vista colonne",
+    "grid": "Vista griglia",
+    "photos": "Vista foto"
+  },
+  "photos": {
+    "menuTitle": "Dimensione foto",
+    "menuAria": "Apri i controlli dimensione foto",
+    "thumbnailSize": "Dimensione miniatura"
+  },
+  "favorites": {
+    "emptyTitle": "Nessun preferito",
+    "emptyDescription": "Seleziona una directory e tocca la stella nella barra principale per fissarla qui.",
+    "editTitle": "Modifica preferito",
+    "icon": "Icona"
+  },
+  "notifications": {
+    "open": "Apri notifiche",
+    "closePanel": "Chiudi pannello notifiche",
+    "empty": "Nessuna notifica",
+    "filters": {
+      "error": "Errori",
+      "warning": "Avvisi",
+      "success": "Successo",
+      "info": "Info"
+    }
+  },
+  "spotlight": {
+    "hintWithin": "Digita per cercare all'interno"
+  },
+  "download": {
+    "preparing": "Preparazione download..."
+  },
+  "clipboard": {
+    "copying": "Copia di {count} {items}…",
+    "moving": "Spostamento di {count} {items}…",
+    "working": "In corso…"
+  },
+  "upload": {
+    "toggleDetailsShow": "Mostra dettagli",
+    "toggleDetailsHide": "Nascondi dettagli",
+    "pauseUploads": "Metti in pausa caricamenti",
+    "resumeUploads": "Riprendi caricamenti",
+    "uploads": "Caricamento di {count} {items}"
+  },
+  "info": {
+    "aria": "Pannello informazioni",
+    "fileName": "Nome file",
+    "folderSize": "Dimensione: {size}",
+    "itemsCount": "Elementi: {files} file, {folders} cartelle",
+    "dimensions": "Dimensioni: {w} × {h}",
+    "dateTaken": "Data scatto: {date}",
+    "camera": "Fotocamera: {makeModel}",
+    "lens": "Obiettivo: {lens}",
+    "duration": "Durata: {seconds}s"
+  },
+  "auth": {
+    "preparing": "Preparazione del tuo explorer…",
+    "marketing": {
+      "headline": "Il futuro della gestione file è qui",
+      "subtitle": "Accedi in modo sicuro, organizza e collabora su tutti i tuoi file ovunque ti trovi",
+      "bullets": {
+        "keyboard": "Navigazione con tastiera e ricerca fulminea.",
+        "access": "Controlli di accesso granulari con azioni adatte agli audit.",
+        "sso": "Single Sign-On senza interruzioni con il tuo IdP."
+      }
+    },
+    "login": {
+      "welcome": "Bentornato",
+      "subtitle": "Accedi per usare NextExplorer.",
+      "announcementConfirm": "Segna come letto",
+      "submit": "Accedi",
+      "announcementMigration": {
+        "title": "Abbiamo aggiornato il modo in cui accedi",
+        "intro": "Ora devi usare il tuo nuovo nome utente in formato email.",
+        "bulletAddSuffix": "Aggiungi {suffix} al tuo nome utente",
+        "bulletPasswordSame": "La tua password resta la stessa.",
+        "bulletUpdateUsers": "Puoi aggiornare gli utenti esistenti dal menu Admin"
+      }
+    },
+    "setup": {
+      "headline": "Configuriamo tutto",
+      "subtitle": "Crea il tuo account amministratore per proteggere e gestire i tuoi file.",
+      "formTitle": "Crea il tuo account",
+      "formSubtitle": "Inserisci un'email e una password sicura per completare la configurazione.",
+      "submit": "Completa configurazione",
+      "bullets": {
+        "encryption": "Crittografia forte e azioni adatte agli audit.",
+        "permissions": "Permessi granulari e gestione utenti.",
+        "sso": "Supporto Single Sign-On senza interruzioni."
+      }
+    },
+    "emailAddress": "Indirizzo email",
+    "usernameOptional": "Nome utente (facoltativo)",
+    "confirmPassword": "Conferma password",
+    "sso": {
+      "continue": "Continua con Single Sign-On"
+    }
+  },
+  "breadcrumb": {
+    "volumes": "Volumi",
+    "share": "Condividi"
+  },
+  "sort": {
+    "nameAToZ": "Nome A–Z",
+    "nameZToA": "Nome Z–A",
+    "smallToLarge": "Dal più piccolo al più grande",
+    "largeToSmall": "Dal più grande al più piccolo",
+    "kindAToZ": "Tipo A–Z",
+    "kindZToA": "Tipo Z–A",
+    "oldToNew": "Dal più vecchio al più recente",
+    "newToOld": "Dal più recente al più vecchio"
+  },
+  "terminal": {
+    "menuHeading": "Strumenti",
+    "menuOpen": "Terminale"
+  },
+  "settings": {
+    "categories": {
+      "accountPassword": "Cambia password",
+      "about": "Informazioni",
+      "filesThumbnails": "File e miniature",
+      "security": "Sicurezza",
+      "accessControl": "Controllo accessi",
+      "adminUsers": "Gestione utenti"
+    },
+    "about": {
+      "subtitle": "Visualizza le informazioni di build per questa applicazione.",
+      "appVersion": "Versione app",
+      "appVersionHelp": "La versione di build attualmente in esecuzione.",
+      "gitCommit": "Commit git",
+      "gitCommitHelp": "Revisione sorgente incorporata al momento della build.",
+      "branch": "Branch",
+      "branchHelp": "Branch git al momento della build."
+    },
+    "thumbs": {
+      "subtitle": "Personalizza le miniature di anteprima per immagini e video.",
+      "enable": "Abilita miniature",
+      "enableHelp": "Disattiva per velocizzare la navigazione senza generare anteprime.",
+      "quality": "Qualità miniatura",
+      "qualityHelp": "Controlla la qualità in uscita (1–100). Il valore predefinito è 70.",
+      "maxDim": "Dimensione massima",
+      "maxDimHelp": "Lato più lungo in pixel. Il valore predefinito è 200.",
+      "concurrency": "Generazione parallela",
+      "concurrencyHelp": "Numero di miniature da generare contemporaneamente (1–50). Il valore predefinito è 10."
+    },
+    "security": {
+      "subtitle": "Controlla l'accesso all'app.",
+      "enable": "Abilita autenticazione",
+      "enableHelp": "Se disattivata, chiunque può accedere ai tuoi file.",
+      "confirmDisable": "Disattivare l'autenticazione renderà i tuoi file accessibili pubblicamente. Continuare?"
+    },
+    "access": {
+      "subtitle": "Imposta i permessi per cartella: lettura-scrittura, sola lettura o nascosta.",
+      "recursive": "Ricorsivo",
+      "readWrite": "Lettura e scrittura",
+      "readOnly": "Sola lettura",
+      "hidden": "Nascosta"
+    },
+    "comingSoon": {
+      "subtitle": "Questa sezione delle impostazioni è in costruzione. Resta sintonizzato!"
+    },
+    "password": {
+      "notLocalUser": "La password può essere cambiata solo per utenti locali. Il tuo account è gestito dal tuo provider di identità.",
+      "current": "Password attuale",
+      "new": "Nuova password",
+      "confirm": "Conferma nuova password",
+      "update": "Aggiorna password",
+      "success": "Password aggiornata con successo.",
+      "validation": "Compila tutti i campi; la nuova password deve avere almeno 6 caratteri e corrispondere alla conferma."
+    },
+    "users": {
+      "cannotDeleteSelf": "Non puoi eliminare il tuo account.",
+      "confirmRemove": "Rimuovere l'utente {user}? Questa azione non può essere annullata.",
+      "createUser": "Crea utente",
+      "grantAdmin": "Concedi admin",
+      "displayName": "Nome visualizzato",
+      "makeAdmin": "Rendi admin",
+      "resetPassword": "Imposta/Reimposta password",
+      "removeUser": "Rimuovi utente",
+      "promptNewPassword": "Inserisci una nuova password per {user} (min 6 caratteri):",
+      "editUser": "Modifica utente",
+      "volumes": "Volumi",
+      "assignedVolumes": "Volumi assegnati",
+      "addVolume": "Aggiungi volume",
+      "editVolume": "Modifica volume",
+      "noVolumes": "Nessun volume assegnato",
+      "noVolumesHint": "Aggiungi volumi per dare a questo utente accesso a directory specifiche.",
+      "volumesInfo": "I volumi assegnati qui saranno le uniche directory a cui questo utente potrà accedere. Gli admin hanno sempre accesso completo a tutti i volumi.",
+      "confirmRemoveVolume": "Rimuovere il volume \"{label}\"? L'utente perderà l'accesso a questa directory.",
+      "volumeLabel": "Etichetta volume",
+      "volumeLabelHint": "Un nome descrittivo per questo volume che l'utente vedrà.",
+      "selectDirectory": "Seleziona directory",
+      "currentPath": "Percorso attuale",
+      "selectThis": "Seleziona questo",
+      "parentDirectory": "Directory padre",
+      "noSubdirectories": "Nessuna sottodirectory trovata",
+      "enterDirectory": "Entra nella directory",
+      "selectedPath": "Selezionato",
+      "volumePath": "Percorso volume",
+      "pathCannotChange": "Il percorso non può essere cambiato dopo la creazione. Rimuovi questo volume e creane uno nuovo se necessario.",
+      "accessMode": "Modalità di accesso"
+    }
+  },
+  "share": {
+    "sharedWithMe": "Condivisi con me",
+    "sharedWithMeDescription": "File e cartelle che altre persone hanno condiviso con il tuo account.",
+    "sharedByMe": "Condivisi da me",
+    "sharedByMeDescription": "Link e cartelle che hai condiviso con altre persone.",
+    "shareCreated": "Condivisione creata",
+    "createShareLink": "Crea link di condivisione",
+    "shareLink": "Link di condivisione",
+    "shareLinkCreatedSuccess": "Link di condivisione creato con successo!",
+    "shareSelectedItem": "Condividi elemento selezionato",
+    "selectItemToShare": "Seleziona un elemento da condividere",
+    "sharing": "Condivisione:",
+    "sharedItem": "Elemento condiviso",
+    "sharedFolder": "Cartella condivisa",
+    "sharedFile": "File condiviso",
+    "accessMode": "Modalità di accesso",
+    "whoCanAccess": "Chi può accedere",
+    "anyoneWithLink": "Chiunque con il link",
+    "specificUsers": "Utenti specifici",
+    "selectUsers": "Seleziona utenti",
+    "noUsersAvailable": "Nessun utente disponibile",
+    "passwordProtect": "Proteggi con password",
+    "enterPassword": "Inserisci password",
+    "setExpirationDate": "Imposta data di scadenza",
+    "expirationPlaceholder": "YYYY-MM-DD HH:MM",
+    "expiresAt": "Scade",
+    "errors": {
+      "invalidSourcePath": "Impossibile determinare il percorso dell'elemento da condividere.",
+      "selectAtLeastOneUser": "Seleziona almeno un utente.",
+      "failedToCreateShare": "Impossibile creare il link di condivisione.",
+      "expirationRequired": "Scegli una data di scadenza valida.",
+      "expirationMustBeFuture": "La scadenza deve essere nel futuro."
+    },
+    "shareExpired": "Condivisione scaduta",
+    "shareNotFound": "Condivisione non trovata",
+    "shareExpiredMessage": "Questo link di condivisione è scaduto e non è più accessibile.",
+    "goToHome": "Vai alla home",
+    "accessShare": "Accedi alla condivisione",
+    "signInToAccess": "Accedi per accedere",
+    "requiresAuthentication": "Questa condivisione richiede autenticazione.",
+    "noSharedItemsToShow": "Nessun elemento condiviso da mostrare",
+    "noSharedItemsYet": "Quando qualcuno condivide file o cartelle con te, appariranno qui.",
+    "adjustFilters": "Regola i filtri o cancella la ricerca per vedere più elementi.",
+    "filterByNameOrPath": "Filtra per nome o percorso",
+    "sharedBy": "Condiviso dal proprietario",
+    "lastAccessed": "Ultimo accesso",
+    "created": "Creato",
+    "noMyShares": "Non hai ancora creato condivisioni.",
+    "noMySharesDescription": "Crea una condivisione da qualsiasi file o cartella per vederla elencata qui.",
+    "mySharesCount": "{count} link di condivisione attivi",
+    "confirmDeleteShare": "Rimuovere questa condivisione? Le persone con il link non avranno più accesso.",
+    "removeShare": "Rimuovi condivisione",
+    "sharedWithAnyone": "Condiviso con chiunque",
+    "sharedWithUsers": "{count} utente | {count} utenti"
+  }
+}
+

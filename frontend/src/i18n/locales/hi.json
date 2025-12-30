@@ -162,7 +162,9 @@
     "chinese": "चीनी",
     "hindi": "हिन्दी",
     "polish": "पोलिश",
-    "swedish": "स्वीडिश"
+    "swedish": "स्वीडिश",
+    "italian": "इतालवी",
+    "romanian": "रोमानियाई"
   },
   "search": {
     "openShortcutTitle": "खोज खोलें (⌘/Ctrl + K)",
@@ -260,6 +262,11 @@
   },
   "download": {
     "preparing": "डाउनलोड तैयार किया जा रहा है..."
+  },
+  "clipboard": {
+    "copying": "{count} {items} कॉपी किए जा रहे हैं…",
+    "moving": "{count} {items} स्थानांतरित किए जा रहे हैं…",
+    "working": "प्रक्रिया जारी है…"
   },
   "upload": {
     "toggleDetailsShow": "विवरण दिखाएँ",

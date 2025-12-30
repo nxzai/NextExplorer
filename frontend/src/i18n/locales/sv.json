@@ -162,7 +162,9 @@
     "chinese": "Kinesiska",
     "hindi": "Hindi",
     "polish": "Polska",
-    "swedish": "Svenska"
+    "swedish": "Svenska",
+    "italian": "Italienska",
+    "romanian": "Rumänska"
   },
   "search": {
     "openShortcutTitle": "Öppna sökning (⌘/Ctrl + K)",
@@ -260,6 +262,11 @@
   },
   "download": {
     "preparing": "Förbereder nerladdning..."
+  },
+  "clipboard": {
+    "copying": "Kopierar {count} {items}…",
+    "moving": "Flyttar {count} {items}…",
+    "working": "Arbetar…"
   },
   "upload": {
     "toggleDetailsShow": "Visa detaljer",

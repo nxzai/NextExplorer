@@ -23,6 +23,8 @@ export const useFileStore = defineStore('fileStore', () => {
   const selectedItems = ref([]);
   const renameState = ref(null);
 
+  const clipboardOperation = ref(null);
+
   const copiedItems = ref([]);
   const cutItems = ref([]);
   const thumbnailRequests = new Map();
@@ -84,23 +86,38 @@ export const useFileStore = defineStore('fileStore', () => {
     const destination = normalizePath(hasTarget ? targetPath : currentPath.value || '');
     const refreshTarget = normalizePath(currentPath.value || '');
 
-    if (copiedItems.value.length > 0) {
-      const payload = serializeItems(copiedItems.value);
-      if (payload.length > 0) {
-        await copyItems(payload, destination);
-      }
-      copiedItems.value = [];
+    const copyPayload = serializeItems(copiedItems.value);
+    const movePayload = serializeItems(cutItems.value);
+    const totalCount = copyPayload.length + movePayload.length;
+
+    if (totalCount > 0) {
+      clipboardOperation.value = {
+        type: movePayload.length > 0 && copyPayload.length === 0 ? 'move' : 'copy',
+        destination,
+        itemCount: totalCount,
+        startedAt: Date.now(),
+      };
     }
 
-    if (cutItems.value.length > 0) {
-      const payload = serializeItems(cutItems.value);
-      if (payload.length > 0) {
-        await moveItems(payload, destination);
+    try {
+      if (copiedItems.value.length > 0) {
+        if (copyPayload.length > 0) {
+          await copyItems(copyPayload, destination);
+        }
+        copiedItems.value = [];
       }
-      cutItems.value = [];
-    }
 
-    await fetchPathItems(refreshTarget);
+      if (cutItems.value.length > 0) {
+        if (movePayload.length > 0) {
+          await moveItems(movePayload, destination);
+        }
+        cutItems.value = [];
+      }
+
+      await fetchPathItems(refreshTarget);
+    } finally {
+      clipboardOperation.value = null;
+    }
   };
 
   const del = async () => {
@@ -426,6 +443,7 @@ export const useFileStore = defineStore('fileStore', () => {
     getCurrentPathItems,
     fetchPathItems,
     selectedItems,
+    clipboardOperation,
     copiedItems,
     cutItems,
     hasSelection,

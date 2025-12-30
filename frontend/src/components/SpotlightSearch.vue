@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, shallowRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useDebounceFn, useMagicKeys, whenever, onKeyStroke } from '@vueuse/core';
+import { useDebounceFn, onKeyStroke } from '@vueuse/core';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { search as searchApi, normalizePath } from '@/api';
 import { useSpotlightStore } from '@/stores/spotlight';
@@ -116,17 +116,6 @@ function openResult(item) {
   spotlight.close();
 }
 
-function isEditableElement(el) {
-  if (!el) return false;
-  const tag = (el.tagName || '').toLowerCase();
-  if (['input', 'textarea', 'select'].includes(tag)) return true;
-  return el.isContentEditable;
-}
-
-function shouldIgnoreKeyboard() {
-  return isEditableElement(document.activeElement);
-}
-
 function resetSpotlight() {
   query.value = '';
   // Clear results immediately to prevent rendering issues
@@ -170,20 +159,6 @@ watch(
   },
   { flush: 'post' }
 );
-
-const keys = useMagicKeys();
-const openCombo = computed(() => keys['Meta+K']?.value || keys['Ctrl+K']?.value);
-const closeCombo = computed(() => keys.escape?.value && spotlight.isOpen);
-
-whenever(openCombo, () => {
-  if (!spotlight.isOpen && !shouldIgnoreKeyboard()) {
-    spotlight.open();
-  }
-});
-
-whenever(closeCombo, () => {
-  spotlight.close();
-});
 
 onKeyStroke(
   'ArrowDown',

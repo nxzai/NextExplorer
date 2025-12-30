@@ -19,7 +19,7 @@ import TerminalPanel from '@/components/TerminalPanel.vue';
 import { useAuthStore } from '@/stores/auth';
 import InfoPanel from '@/components/InfoPanel.vue';
 import { useFileUploader } from '@/composables/fileUploader';
-import { useClipboardShortcuts } from '@/composables/clipboardShortcuts';
+import { useKeyboardShortcuts } from '@/composables/keyboardShortcuts';
 import SpotlightSearch from '@/components/SpotlightSearch.vue';
 import FavoriteEditDialog from '@/components/FavoriteEditDialog.vue';
 import {
@@ -111,8 +111,8 @@ const showBrowseToolbar = computed(() => String(route.path || '').startsWith('/b
 // Ensure Uppy is initialized app-wide and bound to current path
 useFileUploader();
 
-// Global clipboard keyboard shortcuts for the browser layout
-useClipboardShortcuts();
+// Global keyboard shortcuts for the browser layout
+useKeyboardShortcuts();
 
 const handleGuestLogin = () => {
   // Redirect to login with current path as redirect

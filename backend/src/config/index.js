@@ -71,6 +71,12 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 };
 
+// --- HTTP server timeouts ---
+const requestTimeoutMs = (() => {
+  const value = env.HTTP_TIMEOUT;
+  return Number.isFinite(value) && value >= 0 ? value : 0;
+})();
+
 // --- Auth ---
 // Determine auth mode: 'local', 'oidc', 'both', or 'disabled'
 // If AUTH_MODE is not set, fall back to legacy behavior based on OIDC_ENABLED
@@ -158,6 +164,9 @@ const shares = {
 // --- Main Export ---
 module.exports = {
   port: env.PORT,
+  http: {
+    requestTimeoutMs,
+  },
   directories,
 
   files: {

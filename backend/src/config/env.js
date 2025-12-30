@@ -7,6 +7,9 @@ const { normalizeBoolean, parseByteSize } = require('../utils/env');
 module.exports = {
   // Server
   PORT: Number(process.env.PORT) || 3000,
+  // Node.js HTTP server request timeout (ms). Set to 0 to disable.
+  // Node defaults to 300000ms (5 minutes) on modern versions, which can abort large uploads.
+  HTTP_TIMEOUT: process.env.HTTP_TIMEOUT != null ? Number(process.env.HTTP_TIMEOUT) : 0,
 
   // Paths
   VOLUME_ROOT: process.env.VOLUME_ROOT || '/mnt',

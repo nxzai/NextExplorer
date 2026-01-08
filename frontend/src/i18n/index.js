@@ -3,6 +3,8 @@ import en from './locales/en.json';
 import es from './locales/es.json';
 import fr from './locales/fr.json';
 import de from './locales/de.json';
+import it from './locales/it.json';
+import ro from './locales/ro.json';
 import zh from './locales/zh.json';
 import hi from './locales/hi.json';
 import pl from './locales/pl.json';
@@ -13,6 +15,8 @@ export const supportedLocaleOptions = [
   { code: 'es', labelKey: 'i18n.spanish' },
   { code: 'fr', labelKey: 'i18n.french' },
   { code: 'de', labelKey: 'i18n.german' },
+  { code: 'it', labelKey: 'i18n.italian' },
+  { code: 'ro', labelKey: 'i18n.romanian' },
   { code: 'zh', labelKey: 'i18n.chinese' },
   { code: 'hi', labelKey: 'i18n.hindi' },
   { code: 'pl', labelKey: 'i18n.polish' },
@@ -38,7 +42,7 @@ const i18n = createI18n({
   globalInjection: true,
   locale: detectLocale(),
   fallbackLocale: 'en',
-  messages: { en, es, fr, de, zh, hi, pl, sv },
+  messages: { en, es, fr, de, it, ro, zh, hi, pl, sv },
 });
 
 export default i18n;

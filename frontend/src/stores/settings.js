@@ -20,6 +20,10 @@ export const useSettingsStore = defineStore('settings', () => {
   // Photos mode item size (in px)
   const photoSize = useStorage('settings:photos:size', 160);
 
+  // Office editor preference when multiple office integrations are enabled.
+  // Values: 'onlyoffice' | 'collabora'
+  const officeEditorPreference = useStorage('settings:officeEditor', 'onlyoffice');
+
   const terminalHeight = ref(10);
 
   const themeMode = useColorMode({
@@ -125,6 +129,7 @@ export const useSettingsStore = defineStore('settings', () => {
     tabView,
     photosView,
     photoSize,
+    officeEditorPreference,
     themeMode,
     isDark,
     cycleTheme,

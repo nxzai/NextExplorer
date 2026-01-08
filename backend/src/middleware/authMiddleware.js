@@ -62,6 +62,23 @@ const authMiddleware = async (req, res, next) => {
     return;
   }
 
+  // Allow Collabora WOPI endpoints (token-guarded in route)
+  // Only when Collabora integration is enabled
+  let isCollaboraGuest = false;
+  try {
+    const { collabora } = require('../config/index');
+    if (collabora && collabora.url && collabora.secret) {
+      isCollaboraGuest = requestPath.startsWith('/api/collabora/wopi/');
+    }
+  } catch (_) {
+    /* ignore */
+  }
+
+  if (isCollaboraGuest) {
+    next();
+    return;
+  }
+
   // Check for guest session (on all routes)
   const guestSessionId = req.headers['x-guest-session'] || req.cookies?.guestSession;
   if (guestSessionId) {

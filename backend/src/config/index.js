@@ -71,6 +71,12 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 };
 
+// --- HTTP server timeouts ---
+const requestTimeoutMs = (() => {
+  const value = env.HTTP_TIMEOUT;
+  return Number.isFinite(value) && value >= 0 ? value : 0;
+})();
+
 // --- Auth ---
 // Determine auth mode: 'local', 'oidc', 'both', or 'disabled'
 // If AUTH_MODE is not set, fall back to legacy behavior based on OIDC_ENABLED
@@ -125,6 +131,22 @@ const onlyoffice = {
     .filter(Boolean),
 };
 
+// --- Collabora (WOPI) ---
+const collaboraBaseUrl = env.COLLABORA_URL?.replace(/\/$/, '') || null;
+const collaboraDiscoveryUrl =
+  env.COLLABORA_DISCOVERY_URL?.replace(/\/$/, '') ||
+  (collaboraBaseUrl ? `${collaboraBaseUrl}/hosting/discovery` : null);
+
+const collabora = {
+  url: collaboraBaseUrl,
+  discoveryUrl: collaboraDiscoveryUrl,
+  secret: env.COLLABORA_SECRET || null,
+  lang: env.COLLABORA_LANG,
+  extensions: env.COLLABORA_FILE_EXTENSIONS.split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean),
+};
+
 // --- Editor ---
 const editorMaxFileSizeBytes = (() => {
   const parsed = parseByteSize(env.EDITOR_MAX_FILESIZE);
@@ -158,6 +180,9 @@ const shares = {
 // --- Main Export ---
 module.exports = {
   port: env.PORT,
+  http: {
+    requestTimeoutMs,
+  },
   directories,
 
   files: {
@@ -190,6 +215,7 @@ module.exports = {
 
   thumbnails: { size: 200, quality: 70 },
   onlyoffice,
+  collabora,
   editor,
   favorites,
   shares,

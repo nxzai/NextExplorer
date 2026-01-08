@@ -1,0 +1,501 @@
+{
+  "common": {
+    "or": "SAU",
+    "in": "în",
+    "to": "către",
+    "all": "Toate",
+    "and": "și",
+    "cancel": "Anulează",
+    "close": "Închide",
+    "open": "Deschide",
+    "edit": "Editează",
+    "save": "Salvează",
+    "discard": "Renunță",
+    "delete": "Șterge",
+    "deleting": "Se șterge...",
+    "remove": "Elimină",
+    "create": "Creează",
+    "creating": "Se creează…",
+    "saving": "Se salvează...",
+    "loading": "Se încarcă",
+    "loadingEllipsis": "Se încarcă…",
+    "verifying": "Se verifică…",
+    "updating": "Se actualizează…",
+    "preparing": "Se pregătește",
+    "dismiss": "Respinge",
+    "disabled": "Dezactivat",
+    "enabled": "Activat",
+    "refresh": "Reîmprospătează",
+    "tryAgain": "Încearcă din nou",
+    "done": "Gata",
+    "remaining": "rămase",
+    "unknown": "necunoscut",
+    "optional": "Opțional",
+    "name": "Nume",
+    "size": "Dimensiune",
+    "type": "Tip",
+    "path": "Cale",
+    "email": "Email",
+    "username": "Nume de utilizator",
+    "password": "Parolă",
+    "label": "Etichetă",
+    "actions": "Acțiuni",
+    "permissions": "Permisiuni",
+    "details": "Detalii",
+    "location": "Locație",
+    "modified": "Modificat",
+    "expires": "Expiră",
+    "expired": "Expirat",
+    "active": "Activ",
+    "protected": "Protejat",
+    "passwordProtected": "Protejat cu parolă",
+    "noExpiration": "Fără expirare",
+    "recent": "Recente",
+    "item": "element",
+    "items": "elemente",
+    "files": "fișiere",
+    "folders": "dosare",
+    "file": "Fișier",
+    "folder": "Dosar",
+    "image": "Imagine",
+    "video": "Video",
+    "user": "Utilizator",
+    "admin": "Administrator",
+    "roles": "Roluri",
+    "settings": "Setări",
+    "share": "Partajează",
+    "shares": "Partajări",
+    "unsavedChanges": "Ai modificări nesalvate",
+    "readonly": "Doar citire",
+    "readwrite": "Citire/Scriere"
+  },
+  "editor": {
+    "confirmCloseWithoutSaving": "Ai modificări nesalvate. Închide fără să salvezi?"
+  },
+  "status": {
+    "updated": "Actualizat cu succes",
+    "failed": "Eșuat",
+    "passwordUpdated": "Parola a fost actualizată",
+    "completePercent": "{percent}% finalizat"
+  },
+  "actions": {
+    "newFolder": "Dosar nou",
+    "newFile": "Fișier nou",
+    "fileUpload": "Încarcă fișier",
+    "folderUpload": "Încarcă dosar",
+    "copy": "Copiază",
+    "cut": "Taie",
+    "paste": "Lipește",
+    "rename": "Redenumește",
+    "download": "Descarcă",
+    "search": "Caută",
+    "sortBy": "Sortează după",
+    "addRule": "Adaugă regulă",
+    "clearAll": "Șterge tot",
+    "cancelAll": "Anulează tot"
+  },
+  "placeholders": {
+    "email": "utilizator{'@'}exemplu.com",
+    "emailCompany": "nume{'@'}companie.com",
+    "username": "Implicit: prefixul emailului",
+    "password": "Alege o parolă puternică",
+    "confirmPassword": "Reintrodu parola",
+    "label": "Fișierele mele partajate",
+    "path": "ex. Imagini/Vacanțe",
+    "search": "Caută fișiere și dosare…",
+    "volumeLabel": "ex. Documente, Proiecte, Media"
+  },
+  "loading": {
+    "default": "Se încarcă…",
+    "users": "Se încarcă utilizatorii...",
+    "metadata": "Se încarcă metadatele…",
+    "share": "Se încarcă partajarea...",
+    "shares": "Se încarcă partajările…",
+    "volumes": "Se încarcă volumele…"
+  },
+  "errors": {
+    "failed": "Eșuat",
+    "searchFailed": "Căutarea a eșuat",
+    "loadMetadata": "Nu s-au putut încărca metadatele",
+    "loadUsers": "Nu s-au putut încărca utilizatorii",
+    "loadShares": "Nu s-au putut încărca elementele partajate",
+    "updateRoles": "Nu s-au putut actualiza rolurile",
+    "createUser": "Nu s-a putut crea utilizatorul",
+    "updateUser": "Nu s-a putut actualiza utilizatorul",
+    "removeUser": "Nu s-a putut elimina utilizatorul",
+    "resetPassword": "Nu s-a putut reseta parola",
+    "changePassword": "Nu s-a putut schimba parola",
+    "createShare": "Nu s-a putut crea partajarea",
+    "signIn": "Nu s-a putut realiza conectarea",
+    "createAccount": "Nu s-a putut crea contul",
+    "invalidSourcePath": "Cale sursă nevalidă",
+    "invalidPassword": "Parolă nevalidă",
+    "selectAtLeastOneUser": "Selectează cel puțin un utilizator",
+    "pleaseEnterPassword": "Introdu o parolă",
+    "emailRequired": "Emailul este obligatoriu",
+    "passwordRequired": "Parola este obligatorie",
+    "passwordLength": "Parola trebuie să aibă cel puțin 6 caractere",
+    "passwordMin": "Parola trebuie să aibă cel puțin 6 caractere",
+    "passwordMismatch": "Parolele nu se potrivesc",
+    "localSignInDisabled": "Conectarea locală este dezactivată",
+    "deleteShare": "Nu s-a putut șterge partajarea",
+    "browseDirectories": "Nu s-au putut parcurge directoarele",
+    "labelRequired": "Eticheta este obligatorie",
+    "pathRequired": "Calea este obligatorie",
+    "saveVolume": "Nu s-a putut salva volumul",
+    "removeVolume": "Nu s-a putut elimina volumul"
+  },
+  "titles": {
+    "volumes": "Volume",
+    "favorites": "Favorite",
+    "notifications": "Notificări",
+    "terminal": "Terminal",
+    "settings": "Setări",
+    "about": "Despre",
+    "thumbnails": "Miniaturi",
+    "authentication": "Autentificare",
+    "folderRules": "Reguli dosare",
+    "comingSoon": "În curând",
+    "changePassword": "Schimbă parola",
+    "userManagement": "Gestionare utilizatori",
+    "share": "Partajează",
+    "sortOptions": "Opțiuni de sortare",
+    "locations": "Locații"
+  },
+  "i18n": {
+    "language": "Limbă",
+    "english": "Engleză",
+    "spanish": "Spaniolă",
+    "french": "Franceză",
+    "german": "Germană",
+    "chinese": "Chineză",
+    "hindi": "Hindi",
+    "polish": "Poloneză",
+    "swedish": "Suedeză",
+    "italian": "Italiană",
+    "romanian": "Română"
+  },
+  "search": {
+    "openShortcutTitle": "Deschide căutarea (⌘/Ctrl + K)",
+    "resultsFor": "Rezultate pentru \"{q}\"",
+    "searching": "Se caută…",
+    "noMatches": "Nu a fost găsit niciun rezultat",
+    "openFolder": "Deschide dosarul",
+    "line": "linie"
+  },
+  "user": {
+    "account": "Cont",
+    "signOut": "Deconectare",
+    "useSystemTheme": "Folosește tema sistemului",
+    "useLightTheme": "Folosește tema deschisă",
+    "useDarkTheme": "Folosește tema închisă",
+    "systemTheme": "Tema sistemului",
+    "lightTheme": "Temă deschisă",
+    "darkTheme": "Temă închisă"
+  },
+  "create": {
+    "createNew": "Nou"
+  },
+  "context": {
+    "getInfo": "Obține informații",
+    "openWithEditor": "Deschide cu editor",
+    "addToFavorites": "Adaugă la favorite",
+    "removeFromFavorites": "Elimină din favorite",
+    "deleteTitle": {
+      "single": "Ștergi \"{name}\"?",
+      "multiple": "Ștergi {count} elemente?",
+      "generic": "Șterge elemente"
+    },
+    "deleteMessage": {
+      "single": "Sigur vrei să ștergi \"{name}\"? Această acțiune nu poate fi anulată.",
+      "multiple": "Sigur vrei să ștergi aceste {count} elemente? Această acțiune nu poate fi anulată.",
+      "generic": "Niciun element selectat."
+    }
+  },
+  "folder": {
+    "kind": "Tip",
+    "dateModified": "Data modificării",
+    "noPhotos": "Nu există fotografii în acest dosar",
+    "noPhotosHint": "Schimbă modul de vizualizare pentru a vedea toate fișierele",
+    "empty": "Acest dosar este gol",
+    "emptyHint": "Încarcă sau creează fișiere pentru a începe."
+  },
+  "volumes": {
+    "quickAccess": "Acces rapid",
+    "quickAccessEmpty": "Fixează dosare ca favorite pentru a le accesa rapid aici."
+  },
+  "drives": {
+    "personal": "Fișierele mele"
+  },
+  "browser": {
+    "resizeSidebar": "Redimensionează bara laterală",
+    "openSidebar": "Deschide bara laterală",
+    "closeSidebar": "Închide bara laterală"
+  },
+  "nav": {
+    "home": "Acasă",
+    "back": "Înapoi",
+    "forward": "Înainte",
+    "upOneFolder": "Sus un nivel"
+  },
+  "view": {
+    "list": "Vizualizare listă",
+    "column": "Vizualizare coloane",
+    "grid": "Vizualizare grilă",
+    "photos": "Vizualizare fotografii"
+  },
+  "photos": {
+    "menuTitle": "Dimensiune fotografie",
+    "menuAria": "Deschide controalele pentru dimensiunea fotografiei",
+    "thumbnailSize": "Dimensiune miniatură"
+  },
+  "favorites": {
+    "emptyTitle": "Niciun favorit încă",
+    "emptyDescription": "Selectează un director și apasă pe stea în bara principală pentru a-l fixa aici.",
+    "editTitle": "Editează favorit",
+    "icon": "Pictogramă"
+  },
+  "notifications": {
+    "open": "Deschide notificările",
+    "closePanel": "Închide panoul de notificări",
+    "empty": "Nicio notificare",
+    "filters": {
+      "error": "Erori",
+      "warning": "Avertismente",
+      "success": "Succes",
+      "info": "Info"
+    }
+  },
+  "spotlight": {
+    "hintWithin": "Tastează pentru a căuta în interior"
+  },
+  "download": {
+    "preparing": "Se pregătește descărcarea..."
+  },
+  "clipboard": {
+    "copying": "Se copiază {count} {items}…",
+    "moving": "Se mută {count} {items}…",
+    "working": "În lucru…"
+  },
+  "upload": {
+    "toggleDetailsShow": "Afișează detalii",
+    "toggleDetailsHide": "Ascunde detalii",
+    "pauseUploads": "Pune pe pauză încărcările",
+    "resumeUploads": "Reia încărcările",
+    "uploads": "Se încarcă {count} {items}"
+  },
+  "info": {
+    "aria": "Panou informații",
+    "fileName": "Nume fișier",
+    "folderSize": "Dimensiune: {size}",
+    "itemsCount": "Elemente: {files} fișiere, {folders} dosare",
+    "dimensions": "Dimensiuni: {w} × {h}",
+    "dateTaken": "Data realizării: {date}",
+    "camera": "Cameră: {makeModel}",
+    "lens": "Obiectiv: {lens}",
+    "duration": "Durată: {seconds}s"
+  },
+  "auth": {
+    "preparing": "Se pregătește explorerul…",
+    "marketing": {
+      "headline": "Viitorul gestionării fișierelor este aici",
+      "subtitle": "Accesează în siguranță, organizează și colaborează la toate fișierele tale, de oriunde",
+      "bullets": {
+        "keyboard": "Navigare orientată pe tastatură și căutare rapidă.",
+        "access": "Control granular al accesului cu acțiuni prietenoase pentru audit.",
+        "sso": "Single Sign-On fără întreruperi cu IdP-ul tău."
+      }
+    },
+    "login": {
+      "welcome": "Bine ai revenit",
+      "subtitle": "Conectează-te pentru a accesa NextExplorer.",
+      "announcementConfirm": "Marchează ca citit",
+      "submit": "Conectare",
+      "announcementMigration": {
+        "title": "Am actualizat modul de conectare",
+        "intro": "Acum trebuie să folosești noul nume de utilizator în format email.",
+        "bulletAddSuffix": "Adaugă {suffix} la numele tău de utilizator",
+        "bulletPasswordSame": "Parola rămâne aceeași.",
+        "bulletUpdateUsers": "Poți actualiza utilizatorii existenți din meniul Admin"
+      }
+    },
+    "setup": {
+      "headline": "Să configurăm totul",
+      "subtitle": "Creează contul tău de administrator pentru a-ți securiza și gestiona fișierele.",
+      "formTitle": "Creează-ți contul",
+      "formSubtitle": "Furnizează un email și o parolă sigură pentru a finaliza configurarea.",
+      "submit": "Finalizează configurarea",
+      "bullets": {
+        "encryption": "Criptare puternică și acțiuni prietenoase pentru audit.",
+        "permissions": "Permisiuni granulare și gestionare utilizatori.",
+        "sso": "Suport Single Sign-On fără întreruperi."
+      }
+    },
+    "emailAddress": "Adresă de email",
+    "usernameOptional": "Nume de utilizator (opțional)",
+    "confirmPassword": "Confirmă parola",
+    "sso": {
+      "continue": "Continuă cu Single Sign-On"
+    }
+  },
+  "breadcrumb": {
+    "volumes": "Volume",
+    "share": "Partajează"
+  },
+  "sort": {
+    "nameAToZ": "Nume A–Z",
+    "nameZToA": "Nume Z–A",
+    "smallToLarge": "De la mic la mare",
+    "largeToSmall": "De la mare la mic",
+    "kindAToZ": "Tip A–Z",
+    "kindZToA": "Tip Z–A",
+    "oldToNew": "De la vechi la nou",
+    "newToOld": "De la nou la vechi"
+  },
+  "terminal": {
+    "menuHeading": "Instrumente",
+    "menuOpen": "Terminal"
+  },
+  "settings": {
+    "categories": {
+      "accountPassword": "Schimbă parola",
+      "about": "Despre",
+      "filesThumbnails": "Fișiere și miniaturi",
+      "security": "Securitate",
+      "accessControl": "Control acces",
+      "adminUsers": "Gestionare utilizatori"
+    },
+    "about": {
+      "subtitle": "Vezi informațiile de build pentru această aplicație.",
+      "appVersion": "Versiunea aplicației",
+      "appVersionHelp": "Versiunea de build care rulează în prezent.",
+      "gitCommit": "Commit git",
+      "gitCommitHelp": "Revizia sursei integrată la momentul build-ului.",
+      "branch": "Branch",
+      "branchHelp": "Branch-ul git la momentul build-ului."
+    },
+    "thumbs": {
+      "subtitle": "Personalizează miniaturile de previzualizare pentru imagini și video.",
+      "enable": "Activează miniaturile",
+      "enableHelp": "Dezactivează pentru a accelera navigarea fără a genera previzualizări.",
+      "quality": "Calitate miniatură",
+      "qualityHelp": "Controlează calitatea rezultatului (1–100). Implicit este 70.",
+      "maxDim": "Dimensiune maximă",
+      "maxDimHelp": "Latura cea mai lungă în pixeli. Implicit este 200.",
+      "concurrency": "Generare paralelă",
+      "concurrencyHelp": "Numărul de miniaturi generate simultan (1–50). Implicit este 10."
+    },
+    "security": {
+      "subtitle": "Controlează accesul la aplicație.",
+      "enable": "Activează autentificarea",
+      "enableHelp": "Când este dezactivată, oricine poate accesa fișierele tale.",
+      "confirmDisable": "Dezactivarea autentificării va face fișierele tale accesibile public. Continui?"
+    },
+    "access": {
+      "subtitle": "Setează permisiuni pe dosare: citire-scriere, doar citire sau ascuns.",
+      "recursive": "Recursiv",
+      "readWrite": "Citire și scriere",
+      "readOnly": "Doar citire",
+      "hidden": "Ascuns"
+    },
+    "comingSoon": {
+      "subtitle": "Această secțiune de setări este în lucru. Revino în curând!"
+    },
+    "password": {
+      "notLocalUser": "Parola poate fi schimbată doar pentru utilizatori locali. Contul tău este gestionat de furnizorul de identitate.",
+      "current": "Parola curentă",
+      "new": "Parolă nouă",
+      "confirm": "Confirmă parola nouă",
+      "update": "Actualizează parola",
+      "success": "Parola a fost actualizată cu succes.",
+      "validation": "Completează toate câmpurile; parola nouă trebuie să aibă cel puțin 6 caractere și să se potrivească cu confirmarea."
+    },
+    "users": {
+      "cannotDeleteSelf": "Nu îți poți șterge propriul cont.",
+      "confirmRemove": "Elimini utilizatorul {user}? Această acțiune nu poate fi anulată.",
+      "createUser": "Creează utilizator",
+      "grantAdmin": "Acordă admin",
+      "displayName": "Nume afișat",
+      "makeAdmin": "Fă admin",
+      "resetPassword": "Setează/Resetează parola",
+      "removeUser": "Elimină utilizator",
+      "promptNewPassword": "Introdu o parolă nouă pentru {user} (minim 6 caractere):",
+      "editUser": "Editează utilizator",
+      "volumes": "Volume",
+      "assignedVolumes": "Volume atribuite",
+      "addVolume": "Adaugă volum",
+      "editVolume": "Editează volumul",
+      "noVolumes": "Nu există volume atribuite",
+      "noVolumesHint": "Adaugă volume pentru a oferi acestui utilizator acces la directoare specifice.",
+      "volumesInfo": "Volumele atribuite aici vor fi singurele directoare la care acest utilizator poate avea acces. Administratorii au întotdeauna acces complet la toate volumele.",
+      "confirmRemoveVolume": "Elimini volumul \"{label}\"? Utilizatorul va pierde accesul la acest director.",
+      "volumeLabel": "Etichetă volum",
+      "volumeLabelHint": "Un nume prietenos pentru acest volum pe care utilizatorul îl va vedea.",
+      "selectDirectory": "Selectează director",
+      "currentPath": "Calea curentă",
+      "selectThis": "Selectează acest",
+      "parentDirectory": "Director părinte",
+      "noSubdirectories": "Nu au fost găsite subdirectoare",
+      "enterDirectory": "Intră în director",
+      "selectedPath": "Selectat",
+      "volumePath": "Calea volumului",
+      "pathCannotChange": "Calea nu poate fi schimbată după creare. Elimină acest volum și creează unul nou dacă este nevoie.",
+      "accessMode": "Mod de acces"
+    }
+  },
+  "share": {
+    "sharedWithMe": "Partajate cu mine",
+    "sharedWithMeDescription": "Fișiere și dosare pe care alți oameni le-au partajat cu contul tău.",
+    "sharedByMe": "Partajate de mine",
+    "sharedByMeDescription": "Linkuri și dosare pe care le-ai partajat cu alți oameni.",
+    "shareCreated": "Partajare creată",
+    "createShareLink": "Creează link de partajare",
+    "shareLink": "Link de partajare",
+    "shareLinkCreatedSuccess": "Linkul de partajare a fost creat cu succes!",
+    "shareSelectedItem": "Partajează elementul selectat",
+    "selectItemToShare": "Selectează un element de partajat",
+    "sharing": "Partajare:",
+    "sharedItem": "Element partajat",
+    "sharedFolder": "Dosar partajat",
+    "sharedFile": "Fișier partajat",
+    "accessMode": "Mod de acces",
+    "whoCanAccess": "Cine poate accesa",
+    "anyoneWithLink": "Oricine are linkul",
+    "specificUsers": "Utilizatori specifici",
+    "selectUsers": "Selectează utilizatori",
+    "noUsersAvailable": "Nu există utilizatori disponibili",
+    "passwordProtect": "Protejează cu parolă",
+    "enterPassword": "Introdu parola",
+    "setExpirationDate": "Setează data de expirare",
+    "expirationPlaceholder": "YYYY-MM-DD HH:MM",
+    "expiresAt": "Expiră",
+    "errors": {
+      "invalidSourcePath": "Nu s-a putut determina calea elementului de partajat.",
+      "selectAtLeastOneUser": "Selectează cel puțin un utilizator.",
+      "failedToCreateShare": "Nu s-a putut crea linkul de partajare.",
+      "expirationRequired": "Alege o dată de expirare validă.",
+      "expirationMustBeFuture": "Expirarea trebuie să fie în viitor."
+    },
+    "shareExpired": "Partajare expirată",
+    "shareNotFound": "Partajare negăsită",
+    "shareExpiredMessage": "Acest link de partajare a expirat și nu mai este accesibil.",
+    "goToHome": "Mergi la Acasă",
+    "accessShare": "Accesează partajarea",
+    "signInToAccess": "Conectează-te pentru a accesa",
+    "requiresAuthentication": "Această partajare necesită autentificare.",
+    "noSharedItemsToShow": "Nu există elemente partajate de afișat",
+    "noSharedItemsYet": "Când cineva îți partajează fișiere sau dosare, acestea vor apărea aici.",
+    "adjustFilters": "Ajustează filtrele sau șterge căutarea pentru a vedea mai multe elemente.",
+    "filterByNameOrPath": "Filtrează după nume sau cale",
+    "sharedBy": "Partajat de proprietar",
+    "lastAccessed": "Ultima accesare",
+    "created": "Creat",
+    "noMyShares": "Încă nu ai creat nicio partajare.",
+    "noMySharesDescription": "Creează o partajare din orice fișier sau dosar pentru a o vedea listată aici.",
+    "mySharesCount": "{count} linkuri de partajare active",
+    "confirmDeleteShare": "Elimini această partajare? Persoanele cu linkul nu vor mai avea acces.",
+    "removeShare": "Elimină partajarea",
+    "sharedWithAnyone": "Partajat cu oricine",
+    "sharedWithUsers": "{count} utilizator | {count} utilizatori"
+  }
+}

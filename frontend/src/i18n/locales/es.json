@@ -163,7 +163,9 @@
     "chinese": "Chino",
     "hindi": "Hindi",
     "polish": "Polaco",
-    "swedish": "Sueco"
+    "swedish": "Sueco",
+    "italian": "Italiano",
+    "romanian": "Rumano"
   },
   "search": {
     "openShortcutTitle": "Abrir búsqueda (⌘/Ctrl + K)",
@@ -261,6 +263,11 @@
   },
   "download": {
     "preparing": "Preparando descarga..."
+  },
+  "clipboard": {
+    "copying": "Copiando {count} {items}…",
+    "moving": "Moviendo {count} {items}…",
+    "working": "Procesando…"
   },
   "upload": {
     "toggleDetailsShow": "Mostrar detalles",

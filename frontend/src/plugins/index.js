@@ -5,6 +5,7 @@ import { audioPreviewPlugin } from '@/plugins/audio/audioPreview';
 import { markdownPreviewPlugin } from '@/plugins/markdown/markdownPreview';
 import { pdfPreviewPlugin } from '@/plugins/pdf/pdfPreview';
 import { onlyofficePreviewPlugin } from '@/plugins/onlyoffice/onlyofficePreview';
+import { collaboraPreviewPlugin } from '@/plugins/collabora/collaboraPreview';
 import { useFeaturesStore } from '@/stores/features';
 
 /**
@@ -34,6 +35,9 @@ export const installPreviewPlugins = (pinia, options = {}) => {
   if (!skipOnlyOffice) {
     loadOnlyOfficePlugin(manager);
   }
+
+  // Load Collabora asynchronously (doesn't block startup)
+  loadCollaboraPlugin(manager);
 };
 
 /**
@@ -74,6 +78,26 @@ async function loadOnlyOfficePlugin(manager) {
 }
 
 /**
+ * Load Collabora plugin conditionally based on server features
+ * Runs async to avoid blocking app startup
+ */
+async function loadCollaboraPlugin(manager) {
+  try {
+    const featuresStore = useFeaturesStore();
+    await featuresStore.ensureLoaded();
+
+    if (!featuresStore.collaboraEnabled) return;
+
+    const extensions = normalizeExtensions(featuresStore.collaboraExtensions);
+    manager.register(collaboraPreviewPlugin(extensions));
+
+    console.info(`Collabora plugin loaded (${extensions.length} extensions)`);
+  } catch (error) {
+    console.debug('Collabora plugin unavailable:', error.message);
+  }
+}
+
+/**
  * Normalize extension list from server
  */
 function normalizeExtensions(extensions) {
@@ -84,5 +108,6 @@ function normalizeExtensions(extensions) {
   return extensions
     .filter((ext) => ext && typeof ext === 'string')
     .map((ext) => ext.toLowerCase().trim())
+    .map((ext) => (ext.startsWith('.') ? ext.slice(1) : ext))
     .filter((ext) => ext.length > 0);
 }

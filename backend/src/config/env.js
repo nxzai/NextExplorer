@@ -7,6 +7,9 @@ const { normalizeBoolean, parseByteSize } = require('../utils/env');
 module.exports = {
   // Server
   PORT: Number(process.env.PORT) || 3000,
+  // Node.js HTTP server request timeout (ms). Set to 0 to disable.
+  // Node defaults to 300000ms (5 minutes) on modern versions, which can abort large uploads.
+  HTTP_TIMEOUT: process.env.HTTP_TIMEOUT != null ? Number(process.env.HTTP_TIMEOUT) : 0,
 
   // Paths
   VOLUME_ROOT: process.env.VOLUME_ROOT || '/mnt',
@@ -62,6 +65,13 @@ module.exports = {
   ONLYOFFICE_LANG: process.env.ONLYOFFICE_LANG?.trim() || 'en',
   ONLYOFFICE_FORCE_SAVE: normalizeBoolean(process.env.ONLYOFFICE_FORCE_SAVE) || false,
   ONLYOFFICE_FILE_EXTENSIONS: process.env.ONLYOFFICE_FILE_EXTENSIONS || '',
+
+  // Collabora (WOPI)
+  COLLABORA_URL: process.env.COLLABORA_URL?.trim() || null,
+  COLLABORA_DISCOVERY_URL: process.env.COLLABORA_DISCOVERY_URL?.trim() || null,
+  COLLABORA_SECRET: process.env.COLLABORA_SECRET || null,
+  COLLABORA_LANG: process.env.COLLABORA_LANG?.trim() || 'en',
+  COLLABORA_FILE_EXTENSIONS: process.env.COLLABORA_FILE_EXTENSIONS || '',
 
   // Features
   SHOW_VOLUME_USAGE: normalizeBoolean(process.env.SHOW_VOLUME_USAGE) || false,

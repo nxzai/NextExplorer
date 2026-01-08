@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
-const { port } = require('./config/index');
+const { port, http } = require('./config/index');
 const { configureTrustProxy } = require('./middleware/trustProxy');
 const { configureHttpLogging } = require('./middleware/logging');
 const { configureCors } = require('./middleware/cors');
@@ -54,6 +54,14 @@ const initializeApp = async () => {
     logger.info({ port }, 'Server is running');
     logger.debug('HTTP server listen callback executed');
   });
+
+  if (server && typeof server.requestTimeout === 'number') {
+    server.requestTimeout = http?.requestTimeoutMs ?? server.requestTimeout;
+    logger.info(
+      { requestTimeoutMs: server.requestTimeout },
+      'HTTP server request timeout configured'
+    );
+  }
 
   // Initialize WebSocket server for terminal
   terminalService.createWebSocketServer(server);

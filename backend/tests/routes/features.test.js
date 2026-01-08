@@ -21,6 +21,9 @@ test('features route exposes default feature flags and version metadata', async 
   const restoreEnv = overrideEnv({
     ONLYOFFICE_URL: undefined,
     ONLYOFFICE_FILE_EXTENSIONS: undefined,
+    COLLABORA_URL: undefined,
+    COLLABORA_SECRET: undefined,
+    COLLABORA_FILE_EXTENSIONS: undefined,
     EDITOR_EXTENSIONS: undefined,
     SHOW_VOLUME_USAGE: undefined,
     SKIP_HOME: undefined,
@@ -35,6 +38,8 @@ test('features route exposes default feature flags and version metadata', async 
 
     assert.strictEqual(response.body.onlyoffice.enabled, false);
     assert.deepEqual(response.body.onlyoffice.extensions, []);
+    assert.strictEqual(response.body.collabora.enabled, false);
+    assert.deepEqual(response.body.collabora.extensions, []);
     assert.deepEqual(response.body.editor.extensions, []);
     assert.strictEqual(response.body.volumeUsage.enabled, false);
     assert.strictEqual(response.body.navigation.skipHome, false);
@@ -51,6 +56,9 @@ test('features route reflects enabled editors, onlyoffice, and volume usage', as
   const restoreEnv = overrideEnv({
     ONLYOFFICE_URL: 'https://desk.example.com',
     ONLYOFFICE_FILE_EXTENSIONS: '.docx, .XLSX',
+    COLLABORA_URL: 'https://collabora.example.com',
+    COLLABORA_SECRET: 'collabora-secret',
+    COLLABORA_FILE_EXTENSIONS: '.odt, .ODS',
     EDITOR_EXTENSIONS: '.MD,.txt',
     SHOW_VOLUME_USAGE: 'true',
     SKIP_HOME: 'true',
@@ -65,6 +73,8 @@ test('features route reflects enabled editors, onlyoffice, and volume usage', as
 
     assert.strictEqual(response.body.onlyoffice.enabled, true);
     assert.deepEqual(response.body.onlyoffice.extensions, ['.docx', '.xlsx']);
+    assert.strictEqual(response.body.collabora.enabled, true);
+    assert.deepEqual(response.body.collabora.extensions, ['.odt', '.ods']);
     assert.deepEqual(response.body.editor.extensions, ['.md', '.txt']);
     assert.strictEqual(response.body.volumeUsage.enabled, true);
     assert.strictEqual(response.body.navigation.skipHome, true);

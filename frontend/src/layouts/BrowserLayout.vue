@@ -6,6 +6,7 @@ import VolMenu from '@/components/VolMenu.vue';
 import TerminalMenu from '@/components/TerminalMenu.vue';
 import SharesMenu from '@/components/SharesMenu.vue';
 import UploadProgress from '@/components/UploadProgress.vue';
+import ClipboardProgress from '@/components/ClipboardProgress.vue';
 import UserMenu from '@/components/UserMenu.vue';
 import NotificationToastContainer from '@/components/NotificationToastContainer.vue';
 import NotificationPanel from '@/components/NotificationPanel.vue';
@@ -18,7 +19,7 @@ import TerminalPanel from '@/components/TerminalPanel.vue';
 import { useAuthStore } from '@/stores/auth';
 import InfoPanel from '@/components/InfoPanel.vue';
 import { useFileUploader } from '@/composables/fileUploader';
-import { useClipboardShortcuts } from '@/composables/clipboardShortcuts';
+import { useKeyboardShortcuts } from '@/composables/keyboardShortcuts';
 import SpotlightSearch from '@/components/SpotlightSearch.vue';
 import FavoriteEditDialog from '@/components/FavoriteEditDialog.vue';
 import {
@@ -110,8 +111,8 @@ const showBrowseToolbar = computed(() => String(route.path || '').startsWith('/b
 // Ensure Uppy is initialized app-wide and bound to current path
 useFileUploader();
 
-// Global clipboard keyboard shortcuts for the browser layout
-useClipboardShortcuts();
+// Global keyboard shortcuts for the browser layout
+useKeyboardShortcuts();
 
 const handleGuestLogin = () => {
   // Redirect to login with current path as redirect
@@ -207,6 +208,7 @@ const handleGuestLogin = () => {
       @click="closeSidebar"
     ></button>
     <UploadProgress class="z-550" />
+    <ClipboardProgress class="z-560" />
     <PreviewHost />
     <InfoPanel />
     <SpotlightSearch />

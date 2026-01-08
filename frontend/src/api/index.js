@@ -11,5 +11,6 @@ export * from './users.api';
 export * from './favorites.api';
 export * from './settings.api';
 export * from './onlyoffice.api';
+export * from './collabora.api';
 export * from './features.api';
 export * from './terminal.api';

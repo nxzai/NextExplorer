@@ -162,7 +162,9 @@
     "chinese": "中文",
     "hindi": "印地语",
     "polish": "波兰语",
-    "swedish": "瑞典"
+    "swedish": "瑞典",
+    "italian": "意大利语",
+    "romanian": "罗马尼亚语"
   },
   "search": {
     "openShortcutTitle": "打开搜索 (⌘/Ctrl + K)",
@@ -260,6 +262,11 @@
   },
   "download": {
     "preparing": "正在准备下载..."
+  },
+  "clipboard": {
+    "copying": "正在复制 {count} 个{items}…",
+    "moving": "正在移动 {count} 个{items}…",
+    "working": "处理中…"
   },
   "upload": {
     "toggleDetailsShow": "显示详细信息",

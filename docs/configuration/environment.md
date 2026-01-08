@@ -4,12 +4,13 @@ nextExplorer is configured almost entirely through environment variables. The ba
 
 ## Server & networking
 
-| Variable                                         | Default                                         | Description                                                                                                           |
-| ------------------------------------------------ | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `PORT`                                           | `3000`                                          | Port the Express API and frontend listen on inside the container.                                                     |
-| `PUBLIC_URL`                                     | _none_                                          | External URL (no trailing slash). Drives cookie settings, CORS defaults, and derived callback URLs (OIDC/OnlyOffice). |
-| `TRUST_PROXY`                                    | `loopback,uniquelocal` when `PUBLIC_URL` is set | Express trust proxy configuration. Accepts `false`, numbers, CIDRs, or lists.                                         |
-| `CORS_ORIGIN`, `CORS_ORIGINS`, `ALLOWED_ORIGINS` | _empty_                                         | Comma-separated list of allowed CORS origins. Defaults to `PUBLIC_URL` origin when set.                               |
+| Variable                                         | Default                                         | Description                                                                                                             |
+| ------------------------------------------------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `PORT`                                           | `3000`                                          | Port the Express API and frontend listen on inside the container.                                                       |
+| `HTTP_TIMEOUT`                                   | `0`                                             | Node.js HTTP `requestTimeout` (ms). Use `0` to disable (avoids the Node 5-minute default that can abort large uploads). |
+| `PUBLIC_URL`                                     | _none_                                          | External URL (no trailing slash). Drives cookie settings, CORS defaults, and derived callback URLs (OIDC/OnlyOffice).   |
+| `TRUST_PROXY`                                    | `loopback,uniquelocal` when `PUBLIC_URL` is set | Express trust proxy configuration. Accepts `false`, numbers, CIDRs, or lists.                                           |
+| `CORS_ORIGIN`, `CORS_ORIGINS`, `ALLOWED_ORIGINS` | _empty_                                         | Comma-separated list of allowed CORS origins. Defaults to `PUBLIC_URL` origin when set.                                 |
 
 ## Logging & debugging
 
@@ -84,6 +85,16 @@ The sharing system (toolbar **Share** button, guest links such as `/share/:token
 | `ONLYOFFICE_FORCE_SAVE`       | `false`            | When true, OnlyOffice forces users to save via the editor UI.                  |
 | `ONLYOFFICE_FILE_EXTENSIONS`  | _default list_     | Extra file extensions to surface to the Document Server.                       |
 | `FFMPEG_PATH`, `FFPROBE_PATH` | _bundled binaries_ | Point to custom ffmpeg/ffprobe if the bundle doesn't suit your needs.          |
+
+## Collabora (WOPI)
+
+| Variable                     | Default        | Description |
+| ---------------------------- | -------------- | ----------- |
+| `COLLABORA_URL`              | _none_         | Public base URL of your Collabora CODE server (used to build the iframe URL). |
+| `COLLABORA_DISCOVERY_URL`    | _derived_      | Override for discovery. Defaults to `${COLLABORA_URL}/hosting/discovery`. |
+| `COLLABORA_SECRET`           | _none_         | JWT secret used to sign WOPI `access_token` values for `/api/collabora/wopi/*`. |
+| `COLLABORA_LANG`             | `en`           | Language code for the Collabora UI. |
+| `COLLABORA_FILE_EXTENSIONS`  | _empty_        | Comma-separated list of extensions to expose (e.g. `doc,docx,xls,xlsx,ppt,pptx`). |
 
 <!--
 ## Sharing (advanced)

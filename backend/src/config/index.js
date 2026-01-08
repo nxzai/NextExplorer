@@ -131,6 +131,22 @@ const onlyoffice = {
     .filter(Boolean),
 };
 
+// --- Collabora (WOPI) ---
+const collaboraBaseUrl = env.COLLABORA_URL?.replace(/\/$/, '') || null;
+const collaboraDiscoveryUrl =
+  env.COLLABORA_DISCOVERY_URL?.replace(/\/$/, '') ||
+  (collaboraBaseUrl ? `${collaboraBaseUrl}/hosting/discovery` : null);
+
+const collabora = {
+  url: collaboraBaseUrl,
+  discoveryUrl: collaboraDiscoveryUrl,
+  secret: env.COLLABORA_SECRET || null,
+  lang: env.COLLABORA_LANG,
+  extensions: env.COLLABORA_FILE_EXTENSIONS.split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean),
+};
+
 // --- Editor ---
 const editorMaxFileSizeBytes = (() => {
   const parsed = parseByteSize(env.EDITOR_MAX_FILESIZE);
@@ -199,6 +215,7 @@ module.exports = {
 
   thumbnails: { size: 200, quality: 70 },
   onlyoffice,
+  collabora,
   editor,
   favorites,
   shares,

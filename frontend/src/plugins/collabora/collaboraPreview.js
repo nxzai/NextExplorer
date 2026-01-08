@@ -6,6 +6,7 @@ const DEFAULT_EXTS = [
   'doc',
   'odt',
   'rtf',
+  'txt',
   'xlsx',
   'xls',
   'ods',
@@ -15,18 +16,15 @@ const DEFAULT_EXTS = [
   'odp',
 ];
 
-export const onlyofficePreviewPlugin = (extensions) => ({
-  id: 'onlyoffice-editor',
-  label: 'ONLYOFFICE',
+export const collaboraPreviewPlugin = (extensions) => ({
+  id: 'collabora-editor',
+  label: 'Collabora',
   priority: 50,
-  // Render with minimal chrome in the overlay host
   minimalHeader: true,
 
   match: (context) => {
     const ext = String(context.extension || '').toLowerCase();
     const list = Array.isArray(extensions) && extensions.length > 0 ? extensions : DEFAULT_EXTS;
-
-    //console.log('ONLYOFFICE checking extension:', ext, list);
     if (!list.includes(ext)) return false;
 
     const featuresStore = useFeaturesStore();
@@ -34,10 +32,10 @@ export const onlyofficePreviewPlugin = (extensions) => ({
     if (!hasBothEditors) return true;
 
     const settingsStore = useSettingsStore();
-    return settingsStore.officeEditorPreference !== 'collabora';
+    return settingsStore.officeEditorPreference === 'collabora';
   },
 
-  component: () => import('./OnlyOfficePreview.vue'),
+  component: () => import('./CollaboraPreview.vue'),
 
   actions: (context) => [
     {
@@ -47,3 +45,4 @@ export const onlyofficePreviewPlugin = (extensions) => ({
     },
   ],
 });
+

@@ -86,6 +86,16 @@ The sharing system (toolbar **Share** button, guest links such as `/share/:token
 | `ONLYOFFICE_FILE_EXTENSIONS`  | _default list_     | Extra file extensions to surface to the Document Server.                       |
 | `FFMPEG_PATH`, `FFPROBE_PATH` | _bundled binaries_ | Point to custom ffmpeg/ffprobe if the bundle doesn't suit your needs.          |
 
+## Collabora (WOPI)
+
+| Variable                     | Default        | Description |
+| ---------------------------- | -------------- | ----------- |
+| `COLLABORA_URL`              | _none_         | Public base URL of your Collabora CODE server (used to build the iframe URL). |
+| `COLLABORA_DISCOVERY_URL`    | _derived_      | Override for discovery. Defaults to `${COLLABORA_URL}/hosting/discovery`. |
+| `COLLABORA_SECRET`           | _none_         | JWT secret used to sign WOPI `access_token` values for `/api/collabora/wopi/*`. |
+| `COLLABORA_LANG`             | `en`           | Language code for the Collabora UI. |
+| `COLLABORA_FILE_EXTENSIONS`  | _empty_        | Comma-separated list of extensions to expose (e.g. `doc,docx,xls,xlsx,ppt,pptx`). |
+
 <!--
 ## Sharing (advanced)
 

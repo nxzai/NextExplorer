@@ -6,6 +6,8 @@ export const useFeaturesStore = defineStore('features', () => {
   const editorExtensions = ref([]);
   const onlyofficeEnabled = ref(false);
   const onlyofficeExtensions = ref([]);
+  const collaboraEnabled = ref(false);
+  const collaboraExtensions = ref([]);
   const volumeUsageEnabled = ref(false);
   const personalEnabled = ref(false);
   const userVolumesEnabled = ref(false);
@@ -44,6 +46,12 @@ export const useFeaturesStore = defineStore('features', () => {
           ? features.onlyoffice.extensions
           : [];
 
+        // Collabora
+        collaboraEnabled.value = Boolean(features?.collabora?.enabled);
+        collaboraExtensions.value = Array.isArray(features?.collabora?.extensions)
+          ? features.collabora.extensions
+          : [];
+
         // Volume usage
         volumeUsageEnabled.value = Boolean(features?.volumeUsage?.enabled);
 
@@ -69,6 +77,8 @@ export const useFeaturesStore = defineStore('features', () => {
         editorExtensions.value = [];
         onlyofficeEnabled.value = false;
         onlyofficeExtensions.value = [];
+        collaboraEnabled.value = false;
+        collaboraExtensions.value = [];
         volumeUsageEnabled.value = false;
         personalEnabled.value = false;
         userVolumesEnabled.value = false;
@@ -94,6 +104,8 @@ export const useFeaturesStore = defineStore('features', () => {
     editorExtensions,
     onlyofficeEnabled,
     onlyofficeExtensions,
+    collaboraEnabled,
+    collaboraExtensions,
     volumeUsageEnabled,
     personalEnabled,
     userVolumesEnabled,

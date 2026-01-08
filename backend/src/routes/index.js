@@ -12,13 +12,14 @@ const searchRoutes = require('./search');
 const usersRoutes = require('./users');
 const metadataRoutes = require('./metadata');
 const onlyofficeRoutes = require('./onlyoffice');
+const collaboraRoutes = require('./collabora');
 const featuresRoutes = require('./features');
 const terminalRoutes = require('./terminal');
 const permissionsRoutes = require('./permissions');
 const sharesRoutes = require('./shares');
 const healthRoutes = require('./health');
 const userVolumesRoutes = require('./userVolumes');
-const { onlyoffice } = require('../config/index');
+const { onlyoffice, collabora } = require('../config/index');
 
 const registerRoutes = (app) => {
   // Health endpoints (no /api prefix, unauthenticated)
@@ -50,6 +51,11 @@ const registerRoutes = (app) => {
   // Mount ONLYOFFICE routes only when configured
   if (onlyoffice && onlyoffice.serverUrl) {
     app.use('/api', onlyofficeRoutes);
+  }
+
+  // Mount Collabora routes only when configured
+  if (collabora && collabora.url && collabora.secret) {
+    app.use('/api', collaboraRoutes);
   }
 };
 

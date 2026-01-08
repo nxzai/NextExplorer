@@ -1,5 +1,5 @@
 const express = require('express');
-const { onlyoffice, editor, features } = require('../config/index');
+const { onlyoffice, collabora, editor, features } = require('../config/index');
 const packageJson = require('../../package.json');
 
 const router = express.Router();
@@ -10,6 +10,10 @@ router.get('/features', (_req, res) => {
     onlyoffice: {
       enabled: Boolean(onlyoffice && onlyoffice.serverUrl),
       extensions: Array.isArray(onlyoffice?.extensions) ? onlyoffice.extensions : [],
+    },
+    collabora: {
+      enabled: Boolean(collabora && collabora.url && collabora.secret),
+      extensions: Array.isArray(collabora?.extensions) ? collabora.extensions : [],
     },
     editor: {
       extensions: Array.isArray(editor?.extensions) ? editor.extensions : [],

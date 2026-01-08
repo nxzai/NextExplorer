@@ -37,6 +37,7 @@ export default defineConfig({
           { text: 'OIDC', link: '/integrations/oidc' },
           { text: 'Authelia', link: '/integrations/authelia' },
           { text: 'ONLYOFFICE', link: '/integrations/onlyoffice' },
+          { text: 'Collabora', link: '/integrations/collabora' },
         ],
       },
       {
@@ -105,6 +106,7 @@ export default defineConfig({
           { text: 'OIDC', link: '/integrations/oidc' },
           { text: 'Authelia', link: '/integrations/authelia' },
           { text: 'ONLYOFFICE', link: '/integrations/onlyoffice' },
+          { text: 'Collabora', link: '/integrations/collabora' },
         ],
       },
       {

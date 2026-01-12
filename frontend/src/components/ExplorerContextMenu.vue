@@ -406,6 +406,7 @@ const menuSections = computed(() => {
     sections.push([
       mk('rename', t('actions.rename'), DriveFileRenameOutlineRound, runRename, {
         disabled: !canRename.value,
+        shortcut: 'F2',
       }),
     ]);
   }

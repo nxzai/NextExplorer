@@ -6,7 +6,9 @@ nextExplorer mixes a modern browser experience with secure access controls and f
 
 - **Dual views:** Switch between responsive grid, list, and column modes while keeping breadcrumbs, toolbar, and search accessible.
 - **Inline previews:** Images, videos, PDFs, and text files preview instantly without downloads. Image/video thumbnails are generated automatically using FFmpeg (`FFMPEG_PATH`/`FFPROBE_PATH` can override binaries).
-- **Drag-and-drop:** Move files or folders directly inside the UI and upload from your desktop via drag-and-drop.
+- **Drag-to-move (desktop):** Select one or more items, then drag them onto a destination folder to move them.
+- **Drag-to-upload:** Drop files or folders from your device onto the main pane to upload them.
+- **Mobile selection mode:** On touch devices, use **Select** to enable checkbox selection for batch actions.
 - **Context menus:** Right-click the background or individual items for quick shortcuts (New Folder/File, Paste, Rename, Get Info, download, delete).
 
 ## Editing, sharing & document workflows

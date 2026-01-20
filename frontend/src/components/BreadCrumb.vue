@@ -6,11 +6,17 @@ import { useRoute } from 'vue-router';
 import { useNavigation } from '@/composables/navigation';
 import { useFileStore } from '@/stores/fileStore';
 import { ellipses } from '@/utils/ellipses';
+import { normalizePath } from '@/api';
+import { useFileDragDrop } from '@/composables/useFileDragDrop';
 
 const { openBreadcrumb } = useNavigation();
 const { t, te } = useI18n();
 const route = useRoute();
 const fileStore = useFileStore();
+const { handleDragOverPath, handleDragLeavePath, handleDropPath, isDragTargetKey } =
+  useFileDragDrop();
+
+const breadcrumbDropKey = (path) => `breadcrumb:${normalizePath(path || '')}`;
 
 const paths = computed(() => {
   if (route.params.path) {
@@ -70,8 +76,16 @@ const paths = computed(() => {
       </div>
       <button
         class="cursor-pointer line-clamp-1 text-ellipsis"
-        :class="[index == paths.length - 1 ? '' : 'max-lg:hidden']"
+        :class="[
+          index == paths.length - 1 ? '' : 'max-lg:hidden',
+          path.path && isDragTargetKey(breadcrumbDropKey(path.path))
+            ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-zinc-900 rounded-md'
+            : '',
+        ]"
         @click="openBreadcrumb(path.path)"
+        @dragover="(e) => path.path && handleDragOverPath(e, path.path, breadcrumbDropKey(path.path))"
+        @dragleave="(e) => path.path && handleDragLeavePath(e, breadcrumbDropKey(path.path))"
+        @drop="(e) => path.path && handleDropPath(e, path.path)"
       >
         {{ path.name || $t('breadcrumb.volumes') }}
       </button>

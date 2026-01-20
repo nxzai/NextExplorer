@@ -10,6 +10,7 @@ import { useNavigation } from '@/composables/navigation';
 import { normalizePath } from '@/api';
 import { useI18n } from 'vue-i18n';
 import { useFavoriteEditor } from '@/composables/useFavoriteEditor';
+import { useFileDragDrop } from '@/composables/useFileDragDrop';
 
 const {
   ChevronDownIcon,
@@ -27,6 +28,8 @@ const { favorites } = storeToRefs(favoritesStore);
 const route = useRoute();
 const { openBreadcrumb } = useNavigation();
 const { openEditorForFavorite } = useFavoriteEditor();
+const { handleDragOverPath, handleDragLeavePath, handleDropPath, isDragTargetKey } =
+  useFileDragDrop();
 
 const ICON_VARIANTS = {
   outline: OutlineIcons,
@@ -79,6 +82,8 @@ const isActiveFav = (favoritePath = '') => {
   const normalizedFavorite = normalizePath(favoritePath || '');
   return normalizedFavorite === currentPath.value;
 };
+
+const favoriteDropKey = (favorite) => `favorite:${normalizePath(favorite?.path || '')}`;
 
 const handleOpenFavorite = (favorite) => {
   if (!favorite?.path) {
@@ -192,7 +197,17 @@ onBeforeUnmount(() => {
               @end="handleReorderEnd"
             >
               <template #item="{ element: favorite }">
-                <div class="group/item mb-3 flex items-center gap-2 favorite-drag-handle">
+                <div
+                  :class="[
+                    'group/item mb-3 flex items-center gap-2 favorite-drag-handle rounded-lg',
+                    isDragTargetKey(favoriteDropKey(favorite))
+                      ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-zinc-900'
+                      : '',
+                  ]"
+                  @dragover="(e) => favorite?.path && handleDragOverPath(e, favorite.path, favoriteDropKey(favorite))"
+                  @dragleave="(e) => handleDragLeavePath(e, favoriteDropKey(favorite))"
+                  @drop="(e) => favorite?.path && handleDropPath(e, favorite.path)"
+                >
                   <Bars3Icon
                     v-if="isEditMode"
                     class="h-4 w-4 shrink-0 cursor-grab text-neutral-400 group-hover/item:text-white dark:text-neutral-500 dark:group-hover/item:text-neutral-100 transition-colors duration-150"

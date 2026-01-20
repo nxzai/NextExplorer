@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { useFileStore } from '@/stores/fileStore';
 import { moveItems, normalizePath } from '@/api';
 import { useInputMode } from '@/composables/useInputMode';
+import { setMoveDragImage } from '@/utils/dragImage';
 
 /**
  * Composable for handling file and folder drag and drop operations.
@@ -11,7 +12,37 @@ export function useFileDragDrop() {
   const fileStore = useFileStore();
   const { isTouchDevice } = useInputMode();
   const isDraggingOver = ref(false);
-  const dragOverTarget = ref(null);
+  const dragOverTargetKey = ref('');
+
+  const DRAG_TYPE = 'application/json';
+
+  const setDragOverKey = (key) => {
+    const normalizedKey = key || '';
+    dragOverTargetKey.value = normalizedKey;
+    isDraggingOver.value = Boolean(normalizedKey);
+  };
+
+  const clearDragOverKey = () => setDragOverKey('');
+
+  const isMoveItemsDrag = (event) => {
+    if (!canDragDrop()) return false;
+    const types = event?.dataTransfer?.types;
+    return Boolean(types) && Array.from(types).includes(DRAG_TYPE);
+  };
+
+  const readDraggedItems = (event) => {
+    const raw = event?.dataTransfer?.getData(DRAG_TYPE);
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const getFolderKey = (folder) =>
+    folder?.name ? `${normalizePath(folder.path || '')}::${folder.name}` : '';
 
   const serializeItems = (items) =>
     (Array.isArray(items) ? items : [])
@@ -39,6 +70,85 @@ export function useFileDragDrop() {
     return !isTouchDevice.value;
   };
 
+  const isPointerOutsideCurrentTarget = (event) => {
+    const rect = event?.currentTarget?.getBoundingClientRect?.();
+    if (!rect) return true;
+    const x = event.clientX;
+    const y = event.clientY;
+    return x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom;
+  };
+
+  const getItemFullPath = (item) =>
+    normalizePath(item?.path ? `${item.path}/${item.name}` : item?.name || '');
+
+  const canMoveIntoDestination = (draggedItems, destination) => {
+    const normalizedDestination = normalizePath(destination || '');
+    if (!normalizedDestination) return false;
+
+    // No-op moves: everything already in destination directory.
+    const isNoop = draggedItems.every(
+      (item) => normalizePath(item?.path || '') === normalizedDestination
+    );
+    if (isNoop) return false;
+
+    // Prevent dropping a folder into itself or its descendants.
+    for (const item of draggedItems) {
+      if (item?.kind !== 'directory') continue;
+      const itemPath = getItemFullPath(item);
+      if (!itemPath) continue;
+      if (itemPath === normalizedDestination) return false;
+      if (normalizedDestination.startsWith(`${itemPath}/`)) return false;
+    }
+
+    return true;
+  };
+
+  const moveDraggedItems = async (draggedItems, destination) => {
+    const normalizedDestination = normalizePath(destination || '');
+    if (!normalizedDestination) return;
+
+    const movePayload = serializeItems(draggedItems);
+    if (movePayload.length === 0) return;
+
+    await moveItems(movePayload, normalizedDestination);
+    await fileStore.fetchPathItems(fileStore.currentPath);
+  };
+
+  const handleDragOverKey = (event, targetKey) => {
+    if (!isMoveItemsDrag(event)) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    setDragOverKey(targetKey);
+  };
+
+  const handleDragLeaveKey = (event, targetKey) => {
+    if (!canDragDrop()) return;
+    if (!targetKey || dragOverTargetKey.value !== targetKey) return;
+    if (isPointerOutsideCurrentTarget(event)) {
+      clearDragOverKey();
+    }
+  };
+
+  const handleDropToDestination = async (event, destinationPath) => {
+    if (!isMoveItemsDrag(event)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    clearDragOverKey();
+
+    const draggedItems = readDraggedItems(event);
+    if (!draggedItems || draggedItems.length === 0) return;
+
+    const destination = normalizePath(destinationPath || '');
+    if (!canMoveIntoDestination(draggedItems, destination)) return;
+
+    try {
+      await moveDraggedItems(draggedItems, destination);
+    } catch (error) {
+      console.error('Failed to move items:', error);
+    }
+  };
+
   /**
    * Handle drag start on a file/folder item
    * @param {DragEvent} event - The drag event
@@ -62,87 +172,11 @@ export function useFileDragDrop() {
 
     // Store the items being dragged in dataTransfer
     const dragData = JSON.stringify(itemsToDrag);
-    event.dataTransfer.setData('application/json', dragData);
+    event.dataTransfer.setData(DRAG_TYPE, dragData);
     event.dataTransfer.effectAllowed = 'move';
 
     // Create custom drag image with badge
-    createDragImage(event, itemsToDrag, item);
-  };
-
-  /**
-  /**
-   * Create a custom drag image with a badge showing the number of items
-   * @param {DragEvent} event - The drag event
-   * @param {Array} items - Items being dragged
-   * @param {Object} primaryItem - The main item being dragged (under cursor)
-   */
-  const createDragImage = (event, items, primaryItem) => {
-    const count = items.length;
-    const dragImage = document.createElement('div');
-    dragImage.className = 'file-drag-image';
-
-    const stack = document.createElement('div');
-    stack.className = 'file-drag-stack';
-    const stackDepth = Math.min(count, 3);
-
-    let iconNode = null;
-    const sourceEl = event.currentTarget;
-    if (sourceEl) {
-      const foundIcon = sourceEl.querySelector('svg') || sourceEl.querySelector('.bg-contain');
-      if (foundIcon) {
-        iconNode = foundIcon.cloneNode(true);
-        iconNode.style.width = '24px';
-        iconNode.style.height = '24px';
-        iconNode.classList.remove('w-full', 'h-full', 'w-16', 'h-16', 'w-6', 'h-6');
-      }
-    }
-
-    for (let i = 0; i < stackDepth; i++) {
-      const card = document.createElement('div');
-      card.className = 'file-drag-card';
-
-      const offset = (stackDepth - 1 - i) * 8;
-      card.style.marginLeft = `${offset}px`;
-      card.style.marginTop = `${offset}px`;
-      card.style.zIndex = i + 1;
-
-      const iconContainer = document.createElement('div');
-      iconContainer.className = 'flex shrink-0 items-center justify-center w-6 h-6';
-      if (iconNode) {
-        iconContainer.appendChild(iconNode.cloneNode(true));
-      } else {
-        // Fallback placeholder
-        iconContainer.innerHTML = '<div class="w-4 h-4 bg-gray-400 rounded"></div>';
-      }
-      card.appendChild(iconContainer);
-      const label = document.createElement('span');
-      label.className = 'truncate text-sm font-medium';
-      if (i === stackDepth - 1) {
-        label.textContent = primaryItem.name;
-      } else {
-        label.textContent = items[i] && items[i].name ? items[i].name : primaryItem.name;
-      }
-      card.appendChild(label);
-
-      stack.appendChild(card);
-    }
-
-    dragImage.appendChild(stack);
-    const badge = document.createElement('div');
-    badge.className = 'file-drag-badge';
-    badge.textContent = count.toString();
-
-    dragImage.appendChild(badge);
-    document.body.appendChild(dragImage);
-
-    const xOffset = -10;
-    const yOffset = 10;
-
-    event.dataTransfer.setDragImage(dragImage, xOffset, yOffset);
-
-    setTimeout(() => {
-      document.body.removeChild(dragImage);
-    }, 100);
+    setMoveDragImage(event, itemsToDrag, item);
   };
 
   /**
@@ -151,14 +185,7 @@ export function useFileDragDrop() {
    * @param {Object} targetFolder - The folder being hovered over
    */
   const handleDragOver = (event, targetFolder) => {
-    if (!canDragDrop()) return;
-
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-
-    // Store the target folder for drag leave/drop handling
-    dragOverTarget.value = targetFolder;
-    isDraggingOver.value = true;
+    handleDragOverKey(event, getFolderKey(targetFolder));
   };
 
   /**
@@ -167,20 +194,7 @@ export function useFileDragDrop() {
    * @param {Object} targetFolder - The folder being left
    */
   const handleDragLeave = (event, targetFolder) => {
-    if (!canDragDrop()) return;
-
-    // Only clear if we're actually leaving the folder (not just entering a child)
-    // Check if the related target is still within the folder
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX;
-    const y = event.clientY;
-
-    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-      if (dragOverTarget.value === targetFolder) {
-        dragOverTarget.value = null;
-        isDraggingOver.value = false;
-      }
-    }
+    handleDragLeaveKey(event, getFolderKey(targetFolder));
   };
 
   /**
@@ -189,60 +203,27 @@ export function useFileDragDrop() {
    * @param {Object} targetFolder - The folder to drop into
    */
   const handleDrop = async (event, targetFolder) => {
-    if (!canDragDrop()) return;
+    return handleDropToDestination(event, resolveFolderDestination(targetFolder));
+  };
 
-    event.preventDefault();
-    event.stopPropagation();
+  /**
+   * Handle drag over a generic destination path (e.g. favorites, breadcrumb, volumes)
+   * @param {DragEvent} event - The drag event
+   * @param {string} destinationPath - Destination directory path
+   * @param {string} targetKey - Unique key for hover state
+   */
+  const handleDragOverPath = (event, destinationPath, targetKey) => {
+    const destination = normalizePath(destinationPath || '');
+    if (!destination) return;
+    handleDragOverKey(event, targetKey || destination);
+  };
 
-    isDraggingOver.value = false;
-    dragOverTarget.value = null;
+  const handleDragLeavePath = (event, targetKey) => {
+    handleDragLeaveKey(event, targetKey || '');
+  };
 
-    // Get the dragged items from dataTransfer
-    const dragData = event.dataTransfer.getData('application/json');
-    if (!dragData) return;
-
-    const draggedItems = JSON.parse(dragData);
-    if (!Array.isArray(draggedItems) || draggedItems.length === 0) return;
-
-    // Get the destination path (target folder's full relative path)
-    const destination = resolveFolderDestination(targetFolder);
-
-    // Validate: prevent dropping a folder into itself
-    const isSelfDrop = draggedItems.some(
-      (item) => item.name === targetFolder.name && item.path === targetFolder.path
-    );
-
-    if (isSelfDrop) {
-      console.warn('Cannot drop a folder into itself');
-      return;
-    }
-
-    // Validate: prevent dropping a folder into its own descendants
-    const isDescendantDrop = draggedItems.some((item) => {
-      if (item.kind !== 'directory') return false;
-
-      const itemPath = normalizePath(item.path ? `${item.path}/${item.name}` : item.name);
-      return Boolean(itemPath) && destination.startsWith(`${itemPath}/`);
-    });
-
-    if (isDescendantDrop) {
-      console.warn('Cannot drop a folder into its own descendant');
-      return;
-    }
-
-    try {
-      // Prepare payload for moveItems API
-      const movePayload = serializeItems(draggedItems);
-      if (movePayload.length === 0) return;
-
-      // Call the moveItems API
-      await moveItems(movePayload, destination);
-
-      // Refresh the current path to show the changes
-      await fileStore.fetchPathItems(fileStore.currentPath);
-    } catch (error) {
-      console.error('Failed to move items:', error);
-    }
+  const handleDropPath = async (event, destinationPath) => {
+    return handleDropToDestination(event, destinationPath);
   };
 
   /**
@@ -251,8 +232,14 @@ export function useFileDragDrop() {
    * @returns {boolean} True if this folder is the drag target
    */
   const isDragTarget = (folder) => {
-    if (!dragOverTarget.value) return false;
-    return dragOverTarget.value.name === folder.name && dragOverTarget.value.path === folder.path;
+    const key = getFolderKey(folder);
+    if (!key) return false;
+    return dragOverTargetKey.value === key;
+  };
+
+  const isDragTargetKey = (targetKey) => {
+    if (!targetKey) return false;
+    return dragOverTargetKey.value === targetKey;
   };
 
   return {
@@ -262,6 +249,10 @@ export function useFileDragDrop() {
     handleDragOver,
     handleDragLeave,
     handleDrop,
+    handleDragOverPath,
+    handleDragLeavePath,
+    handleDropPath,
     isDragTarget,
+    isDragTargetKey,
   };
 }

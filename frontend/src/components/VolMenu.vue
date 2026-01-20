@@ -5,10 +5,13 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useNavigation } from '@/composables/navigation';
 import { useFeaturesStore } from '@/stores/features';
+import { useFileDragDrop } from '@/composables/useFileDragDrop';
 
 const { openItem, openBreadcrumb } = useNavigation();
 const route = useRoute();
 const featuresStore = useFeaturesStore();
+const { handleDragOverPath, handleDragLeavePath, handleDropPath, isDragTargetKey } =
+  useFileDragDrop();
 
 const volumes = ref([]);
 
@@ -48,6 +51,8 @@ const isActiveVolume = (volumeName = '') => {
 const openPersonal = () => {
   openBreadcrumb('personal');
 };
+
+const volumeDropKey = (volumeName) => `volume:${volumeName}`;
 </script>
 
 <template>
@@ -75,14 +80,20 @@ const openPersonal = () => {
         leave-from-class="mt-0"
         leave-to-class="-mt-[100%]"
       >
-        <div v-if="open" class="overflow-hidden">
+        <div v-if="open" class="overflow-hidden flex flex-col gap-1">
           <button
             v-if="featuresStore.personalEnabled"
             @click="openPersonal"
             :class="[
-              'cursor-pointer flex w-full items-center gap-3 my-3 rounded-lg transition-colors duration-200 text-sm',
+              'cursor-pointer flex w-full items-center gap-3 py-1 rounded-lg transition-colors duration-200 text-sm',
               isActiveVolume('personal') ? 'dark:text-white' : 'dark:text-neutral-300/90',
+              isDragTargetKey(volumeDropKey('personal'))
+                ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-1 dark:ring-offset-zinc-900'
+                : '',
             ]"
+            @dragover="(e) => handleDragOverPath(e, 'personal', volumeDropKey('personal'))"
+            @dragleave="(e) => handleDragLeavePath(e, volumeDropKey('personal'))"
+            @drop="(e) => handleDropPath(e, 'personal')"
           >
             <ServerIcon class="h-[1.38rem]" /> {{ $t('drives.personal') }}
           </button>
@@ -92,9 +103,15 @@ const openPersonal = () => {
             :key="volume.name"
             @click="openItem(volume)"
             :class="[
-              'cursor-pointer flex w-full items-center gap-3 my-3 rounded-lg transition-colors duration-200 text-sm',
+              'cursor-pointer flex w-full items-center gap-3 py-1 rounded-lg transition-colors duration-200 text-sm',
               isActiveVolume(volume.name) ? 'dark:text-white' : 'dark:text-neutral-300/90',
+              isDragTargetKey(volumeDropKey(volume.name))
+                ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-zinc-900'
+                : '',
             ]"
+            @dragover="(e) => handleDragOverPath(e, volume.name, volumeDropKey(volume.name))"
+            @dragleave="(e) => handleDragLeavePath(e, volumeDropKey(volume.name))"
+            @drop="(e) => handleDropPath(e, volume.name)"
           >
             <ServerIcon class="h-[1.38rem]" /> {{ volume.name }}
           </button>

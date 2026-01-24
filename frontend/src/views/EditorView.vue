@@ -79,6 +79,38 @@
           <ArrowPathIcon v-if="isSaving" class="h-6 w-6 animate-spin shrink-0" />
           <Save20Regular v-else class="h-6 w-6 shrink-0" />
         </button>
+
+        <div ref="settingsMenuRef" class="relative">
+          <button
+            type="button"
+            class="rounded-full p-1 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
+            aria-haspopup="true"
+            :aria-expanded="isSettingsMenuOpen"
+            aria-label="Editor settings"
+            title="Editor settings"
+            @click="isSettingsMenuOpen = !isSettingsMenuOpen"
+          >
+            <EllipsisVerticalIcon class="h-5 w-5" />
+          </button>
+          <div
+            v-if="isSettingsMenuOpen"
+            class="absolute right-0 z-50 mt-2 w-32 overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg dark:border-neutral-800 dark:bg-neutral-800"
+            role="menu"
+          >
+            <div class="py-1">
+              <button
+                type="button"
+                role="menuitem"
+                class="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-white/10"
+                @click="toggleLineWrapping"
+              >
+                <span>Wrap lines</span>
+                <CheckIcon v-if="isLineWrapping" class="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
         <button
           type="button"
           @click="requestClose"
@@ -89,6 +121,7 @@
         >
           <XMarkIcon class="h-5 w-5" />
         </button>
+
       </div>
     </header>
 
@@ -123,8 +156,9 @@ import { useI18n } from 'vue-i18n';
 import { Codemirror } from 'vue-codemirror';
 import { Compartment } from '@codemirror/state';
 import { fetchFileContent, saveFileContent, getRawFileUrl, normalizePath } from '@/api';
+import { EditorView, keymap } from '@codemirror/view';
 import * as themeBundle from '@fsegurai/codemirror-theme-bundle';
-import { XMarkIcon, ArrowPathIcon, PaintBrushIcon } from '@heroicons/vue/24/outline';
+import { XMarkIcon, ArrowPathIcon, PaintBrushIcon, EllipsisVerticalIcon, CheckIcon } from '@heroicons/vue/24/outline';
 import { Save20Regular, Color20Regular } from '@vicons/fluent';
 import { onClickOutside, onKeyStroke, useLocalStorage } from '@vueuse/core';
 
@@ -142,8 +176,14 @@ const saveError = ref('');
 const view = shallowRef(null);
 const isThemeMenuOpen = ref(false);
 const themeMenuRef = ref(null);
+const isSettingsMenuOpen = ref(false);
+const settingsMenuRef = ref(null);
+const isLineWrapping = ref(true); // Default to true
 onClickOutside(themeMenuRef, () => {
   isThemeMenuOpen.value = false;
+});
+onClickOutside(settingsMenuRef, () => {
+  isSettingsMenuOpen.value = false;
 });
 
 // Theme
@@ -163,9 +203,22 @@ const currentThemeLabel = computed(
 // Editor Setup
 const languageComp = new Compartment();
 const themeComp = new Compartment();
+const lineWrappingComp = new Compartment();
+const customKeymap = keymap.of([
+  {
+    key: 'Alt-z',
+    run: () => {
+      toggleLineWrapping();
+      return true;
+    },
+  },
+]);
+
 const extensions = [
   languageComp.of([]),
   themeComp.of(themeBundle[themeId.value] ?? themeBundle.githubDark),
+  lineWrappingComp.of([]),
+  customKeymap,
 ];
 
 const handleReady = ({ view: v }) => {
@@ -262,6 +315,13 @@ const applyLanguage = async (path) => {
 };
 
 // Interaction
+const toggleLineWrapping = () => {
+  isLineWrapping.value = !isLineWrapping.value;
+  view.value?.dispatch({
+    effects: lineWrappingComp.reconfigure(isLineWrapping.value ? EditorView.lineWrapping : []),
+  });
+};
+
 onKeyStroke('Escape', () =>
   isThemeMenuOpen.value ? (isThemeMenuOpen.value = false) : requestClose()
 );

@@ -66,7 +66,9 @@
     "settings": "Paramètres",
     "share": "Partager",
     "shares": "Partages",
-    "unsavedChanges": "Vous avez des modifications non enregistrées"
+    "unsavedChanges": "Vous avez des modifications non enregistrées",
+    "readonly": "Lecture seule",
+    "readwrite": "Lecture/Écriture"
   },
   "editor": {
     "confirmCloseWithoutSaving": "Vous avez des modifications non enregistrées. Fermer sans enregistrer ?"
@@ -103,7 +105,8 @@
     "confirmPassword": "Retapez votre mot de passe",
     "label": "Mes fichiers partagés",
     "path": "ex. Images/Vacances",
-    "search": "Rechercher des fichiers et des dossiers…"
+    "search": "Rechercher des fichiers et des dossiers…",
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "Chargement…",
@@ -137,7 +140,13 @@
     "passwordLength": "Le mot de passe doit comporter au moins 6 caractères",
     "passwordMin": "Le mot de passe doit comporter au moins 6 caractères",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
-    "localSignInDisabled": "La connexion locale est désactivée"
+    "localSignInDisabled": "La connexion locale est désactivée",
+    "deleteShare": "Failed to delete share",
+    "browseDirectories": "Failed to browse directories",
+    "labelRequired": "Label is required",
+    "pathRequired": "Path is required",
+    "saveVolume": "Failed to save volume",
+    "removeVolume": "Failed to remove volume"
   },
   "titles": {
     "volumes": "Volumes",
@@ -146,6 +155,7 @@
     "terminal": "Terminal",
     "settings": "Paramètres",
     "about": "À propos",
+    "branding": "Identité visuelle",
     "thumbnails": "Vignettes",
     "authentication": "Authentification",
     "folderRules": "Règles de dossier",
@@ -219,7 +229,8 @@
     "quickAccessEmpty": "Épinglez des dossiers en favoris pour y accéder rapidement ici."
   },
   "drives": {
-    "personal": "Mes fichiers"
+    "personal": "Personnel",
+    "myfiles": "Mes fichiers"
   },
   "browser": {
     "resizeSidebar": "Redimensionner la barre latérale",
@@ -302,7 +313,7 @@
     },
     "login": {
       "welcome": "Bon retour",
-      "subtitle": "Connectez-vous pour accéder à NextExplorer.",
+      "subtitle": "Connectez-vous pour accéder à {appName}.",
       "announcementConfirm": "Marquer comme lu",
       "submit": "Se connecter",
       "announcementMigration": {
@@ -354,6 +365,7 @@
     "categories": {
       "accountPassword": "Changer le mot de passe",
       "about": "À propos",
+      "branding": "Identité visuelle",
       "filesThumbnails": "Fichiers et vignettes",
       "security": "Sécurité",
       "accessControl": "Contrôle d'accès",
@@ -367,6 +379,24 @@
       "gitCommitHelp": "Révision du code source intégrée au moment de la build.",
       "branch": "Branche",
       "branchHelp": "Branche Git au moment de la build."
+    },
+    "branding": {
+      "subtitle": "Personnalisez le nom de l’application et le logo affichés dans toute l’interface.",
+      "appName": "Nom de l’application",
+      "appNameHelp": "Le nom affiché dans les en-têtes, la page de connexion et le pied de page (max. 100 caractères).",
+      "appLogoUrl": "Image du logo",
+      "appLogoUrlHelp": "Téléversez un fichier SVG, PNG ou JPG pour votre logo personnalisé (max. 2 Mo).",
+      "logo": "Image du logo",
+      "logoHelp": "Téléversez un fichier SVG, PNG ou JPG pour votre logo personnalisé (max. 2 Mo).",
+      "uploading": "Téléversement...",
+      "uploadSuccess": "Logo téléversé avec succès",
+      "uploadError": "Échec du téléversement du logo",
+      "invalidFileType": "Veuillez téléverser un fichier SVG, PNG ou JPG",
+      "logoError": "Le fichier doit faire moins de 2 Mo",
+      "fileTooLargeForDataUri": "Le fichier est trop volumineux. Veuillez utiliser une image plus petite (moins de 500 Ko pour de meilleurs résultats)",
+      "preview": "Aperçu",
+      "showPoweredBy": "Afficher le lien d’attribution",
+      "showPoweredByHelp": "Afficher un lien « Powered by nextExplorer » dans le pied de page pour aider à soutenir le projet"
     },
     "thumbs": {
       "subtitle": "Personnalisez les vignettes d'aperçu pour les images et les vidéos.",
@@ -414,7 +444,27 @@
       "resetPassword": "Définir/réinitialiser le mot de passe",
       "removeUser": "Supprimer l'utilisateur",
       "promptNewPassword": "Saisissez un nouveau mot de passe pour {user} (min. 6 caractères) :",
-      "editUser": "Modifier l'utilisateur"
+      "editUser": "Modifier l'utilisateur",
+      "volumes": "Volumes",
+      "assignedVolumes": "Volumes attribués",
+      "addVolume": "Ajouter un volume",
+      "editVolume": "Modifier le volume",
+      "noVolumes": "Aucun volume attribué",
+      "noVolumesHint": "Ajoutez des volumes pour donner à cet utilisateur l'accès à des répertoires spécifiques.",
+      "volumesInfo": "Les volumes attribués ici seront les seuls répertoires auxquels cet utilisateur pourra accéder. Les administrateurs ont toujours un accès complet à tous les volumes.",
+      "confirmRemoveVolume": "Supprimer le volume \"{label}\" ? L'utilisateur perdra l'accès à ce répertoire.",
+      "volumeLabel": "Étiquette du volume",
+      "volumeLabelHint": "Un nom convivial pour ce volume que l'utilisateur verra.",
+      "selectDirectory": "Sélectionner un répertoire",
+      "currentPath": "Chemin actuel",
+      "selectThis": "Sélectionner ceci",
+      "parentDirectory": "Répertoire parent",
+      "noSubdirectories": "Aucun sous-répertoire trouvé",
+      "enterDirectory": "Entrer dans le répertoire",
+      "selectedPath": "Sélectionné",
+      "volumePath": "Chemin du volume",
+      "pathCannotChange": "Le chemin ne peut pas être modifié après la création. Supprimez ce volume et créez-en un nouveau si nécessaire.",
+      "accessMode": "Mode d'accès"
     }
   },
   "share": {

@@ -66,7 +66,9 @@
     "settings": "Inställningar",
     "share": "Utdelning",
     "shares": "Utdelningar",
-    "unsavedChanges": "Du har osparade ändringar"
+    "unsavedChanges": "Du har osparade ändringar",
+    "readonly": "Skrivskyddad",
+    "readwrite": "Läs/Skriv"
   },
   "editor": {
     "confirmCloseWithoutSaving": "Du har osparade ändringar. Stäng utan att spara?"
@@ -103,7 +105,8 @@
     "confirmPassword": "Skriv ditt lösenord igen",
     "label": "Mina utdelade filer",
     "path": "t.ex. Bilder/Semestrar",
-    "search": "Sök efter filer och mappar…"
+    "search": "Sök efter filer och mappar…",
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "Läser in…",
@@ -138,7 +141,12 @@
     "passwordMin": "Lösenordet måste bestå av minst 6 tecken",
     "passwordMismatch": "Lösenorden stämmer inte överens",
     "localSignInDisabled": "Lokal inlogging är inaktiverad",
-    "deleteShare": "Misslyckades med att ta bort utdelning"
+    "deleteShare": "Misslyckades med att ta bort utdelning",
+    "browseDirectories": "Failed to browse directories",
+    "labelRequired": "Label is required",
+    "pathRequired": "Path is required",
+    "saveVolume": "Failed to save volume",
+    "removeVolume": "Failed to remove volume"
   },
   "titles": {
     "volumes": "Volymer",
@@ -147,6 +155,7 @@
     "terminal": "Terminal",
     "settings": "Inställningar",
     "about": "Om",
+    "branding": "Profilering",
     "thumbnails": "Miniatyrbilder",
     "authentication": "Autentisering",
     "folderRules": "Mappregler",
@@ -154,7 +163,8 @@
     "changePassword": "Ändra lösenord",
     "userManagement": "Användarhantering",
     "share": "Utdelning",
-    "sortOptions": "Sorteringsalternativ"
+    "sortOptions": "Sorteringsalternativ",
+    "locations": "Locations"
   },
   "i18n": {
     "language": "Språk",
@@ -219,7 +229,8 @@
     "quickAccessEmpty": "Fäst mappar som favoriter för att snabbt komma åt dem här."
   },
   "drives": {
-    "personal": "Mina filer"
+    "personal": "Personligt",
+    "myfiles": "Mina filer"
   },
   "browser": {
     "resizeSidebar": "Storleksändra sidofält",
@@ -302,7 +313,7 @@
     },
     "login": {
       "welcome": "Välkommen tillbaka",
-      "subtitle": "Logga in för att komma åt NextExplorer.",
+      "subtitle": "Logga in för att komma åt {appName}.",
       "announcementConfirm": "Markera som läst",
       "submit": "Logga in",
       "announcementMigration": {
@@ -354,6 +365,7 @@
     "categories": {
       "accountPassword": "Ändra lösenord",
       "about": "Om",
+      "branding": "Profilering",
       "filesThumbnails": "Filer och miniatyrbilder",
       "security": "Säkerhet",
       "accessControl": "Åtkomstkontroll",
@@ -367,6 +379,24 @@
       "gitCommitHelp": "Källkodsrevision inbäddad vid byggtid.",
       "branch": "Gren",
       "branchHelp": "Git-gren vid byggtid."
+    },
+    "branding": {
+      "subtitle": "Anpassa appens namn och logotyp som visas i hela gränssnittet.",
+      "appName": "Applikationsnamn",
+      "appNameHelp": "Namnet som visas i sidhuvuden, inloggningssidan och sidfoten (max 100 tecken).",
+      "appLogoUrl": "Logotypbild",
+      "appLogoUrlHelp": "Ladda upp en SVG-, PNG- eller JPG-fil för din egna logotyp (max 2 MB).",
+      "logo": "Logotypbild",
+      "logoHelp": "Ladda upp en SVG-, PNG- eller JPG-fil för din egna logotyp (max 2 MB).",
+      "uploading": "Laddar upp...",
+      "uploadSuccess": "Logotypen laddades upp",
+      "uploadError": "Det gick inte att ladda upp logotypen",
+      "invalidFileType": "Ladda upp SVG, PNG eller JPG",
+      "logoError": "Filen måste vara mindre än 2 MB",
+      "fileTooLargeForDataUri": "Filen är för stor. Använd en mindre bild (under 500 KB för bästa resultat)",
+      "preview": "Förhandsgranskning",
+      "showPoweredBy": "Visa attribueringslänk",
+      "showPoweredByHelp": "Visa en \"Powered by nextExplorer\"-länk i sidfoten för att stödja projektet"
     },
     "thumbs": {
       "subtitle": "Anpassa förhandsvisningsminiatyrer för bilder och videor.",
@@ -414,7 +444,27 @@
       "resetPassword": "Ställ in/återställ lösenord",
       "removeUser": "Ta bort användare",
       "promptNewPassword": "Ange ett nytt lösenord för {user} (min 6 tecken):",
-      "editUser": "Redigera användare"
+      "editUser": "Redigera användare",
+      "volumes": "Volymer",
+      "assignedVolumes": "Tilldelade volymer",
+      "addVolume": "Lägg till volym",
+      "editVolume": "Redigera volym",
+      "noVolumes": "Inga volymer tilldelade",
+      "noVolumesHint": "Lägg till volymer för att ge åtkomst till specifika kataloger.",
+      "volumesInfo": "Volymer som tilldelas här är de enda kataloger användaren kan komma åt. Administratörer har alltid full åtkomst.",
+      "confirmRemoveVolume": "Ta bort volym \"{label}\"? Användaren förlorar åtkomst till katalogen.",
+      "volumeLabel": "Volymetikett",
+      "volumeLabelHint": "Ett namn för volymen som användaren ser.",
+      "selectDirectory": "Välj katalog",
+      "currentPath": "Aktuell sökväg",
+      "selectThis": "Välj denna",
+      "parentDirectory": "Huvudkatalog",
+      "noSubdirectories": "Inga underkataloger",
+      "enterDirectory": "Öppna katalog",
+      "selectedPath": "Vald",
+      "volumePath": "Volymsökväg",
+      "pathCannotChange": "Sökvägen kan inte ändras i efterhand. Ta bort och skapa ny vid behov.",
+      "accessMode": "Åtkomstläge"
     }
   },
   "share": {

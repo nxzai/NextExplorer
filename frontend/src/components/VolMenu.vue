@@ -5,7 +5,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useNavigation } from '@/composables/navigation';
 import { useFeaturesStore } from '@/stores/features';
-import { FolderIcon } from '@heroicons/vue/24/solid';
+import { FolderIcon } from '@heroicons/vue/24/outline';
 
 const { openItem, openBreadcrumb } = useNavigation();
 const route = useRoute();

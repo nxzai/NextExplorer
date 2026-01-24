@@ -66,7 +66,9 @@
     "settings": "设置",
     "share": "共享",
     "shares": "共享",
-    "unsavedChanges": "您有未保存的更改"
+    "unsavedChanges": "您有未保存的更改",
+    "readonly": "只读",
+    "readwrite": "读/写"
   },
   "editor": {
     "confirmCloseWithoutSaving": "您有未保存的更改。要在不保存的情况下关闭吗？"
@@ -103,7 +105,8 @@
     "confirmPassword": "再次输入密码",
     "label": "我的共享文件",
     "path": "例如：Pictures/Holidays",
-    "search": "搜索文件和文件夹…"
+    "search": "搜索文件和文件夹…",
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "加载中…",
@@ -137,7 +140,13 @@
     "passwordLength": "密码至少需要 6 个字符",
     "passwordMin": "密码至少需要 6 个字符",
     "passwordMismatch": "两次输入的密码不一致",
-    "localSignInDisabled": "本地登录已禁用"
+    "localSignInDisabled": "本地登录已禁用",
+    "deleteShare": "Failed to delete share",
+    "browseDirectories": "Failed to browse directories",
+    "labelRequired": "Label is required",
+    "pathRequired": "Path is required",
+    "saveVolume": "Failed to save volume",
+    "removeVolume": "Failed to remove volume"
   },
   "titles": {
     "volumes": "卷",
@@ -146,6 +155,7 @@
     "terminal": "终端",
     "settings": "设置",
     "about": "关于",
+    "branding": "品牌",
     "thumbnails": "缩略图",
     "authentication": "身份验证",
     "folderRules": "文件夹规则",
@@ -219,7 +229,8 @@
     "quickAccessEmpty": "将文件夹固定为收藏夹，以便在此快速访问。"
   },
   "drives": {
-    "personal": "我的文件"
+    "personal": "个人",
+    "myfiles": "我的文件"
   },
   "browser": {
     "resizeSidebar": "调整侧边栏大小",
@@ -302,7 +313,7 @@
     },
     "login": {
       "welcome": "欢迎回来",
-      "subtitle": "登录以访问 NextExplorer。",
+      "subtitle": "登录以访问 {appName}。",
       "announcementConfirm": "标记为已读",
       "submit": "登录",
       "announcementMigration": {
@@ -354,6 +365,7 @@
     "categories": {
       "accountPassword": "修改密码",
       "about": "关于",
+      "branding": "品牌",
       "filesThumbnails": "文件和缩略图",
       "security": "安全",
       "accessControl": "访问控制",
@@ -367,6 +379,24 @@
       "gitCommitHelp": "构建时嵌入的源代码修订版本。",
       "branch": "分支",
       "branchHelp": "构建时的 Git 分支。"
+    },
+    "branding": {
+      "subtitle": "自定义在界面中显示的应用名称和标志。",
+      "appName": "应用名称",
+      "appNameHelp": "在页眉、登录页和页脚中显示的名称（最多 100 个字符）。",
+      "appLogoUrl": "标志图片",
+      "appLogoUrlHelp": "上传 SVG、PNG 或 JPG 文件作为自定义标志（最大 2MB）。",
+      "logo": "标志图片",
+      "logoHelp": "上传 SVG、PNG 或 JPG 文件作为自定义标志（最大 2MB）。",
+      "uploading": "正在上传...",
+      "uploadSuccess": "标志上传成功",
+      "uploadError": "标志上传失败",
+      "invalidFileType": "请上传 SVG、PNG 或 JPG",
+      "logoError": "文件必须小于 2MB",
+      "fileTooLargeForDataUri": "文件过大。请使用更小的图片（建议小于 500KB 以获得最佳效果）",
+      "preview": "预览",
+      "showPoweredBy": "显示署名链接",
+      "showPoweredByHelp": "在页脚显示 “Powered by nextExplorer” 链接以支持项目"
     },
     "thumbs": {
       "subtitle": "自定义图片和视频的预览缩略图。",
@@ -414,7 +444,27 @@
       "resetPassword": "设置/重置密码",
       "removeUser": "删除用户",
       "promptNewPassword": "为 {user} 输入新密码（至少 6 个字符）：",
-      "editUser": "编辑用户"
+      "editUser": "编辑用户",
+      "volumes": "卷",
+      "assignedVolumes": "已分配卷",
+      "addVolume": "添加卷",
+      "editVolume": "编辑卷",
+      "noVolumes": "无分配卷",
+      "noVolumesHint": "添加卷以允许此用户访问特定目录。",
+      "volumesInfo": "在此分配的卷将是此用户唯一可访问的目录。管理员始终对所有卷拥有完全访问权限。",
+      "confirmRemoveVolume": "删除卷 \"{label}\"？用户将失去对此目录的访问权限。",
+      "volumeLabel": "卷标签",
+      "volumeLabelHint": "用户将看到的此卷的友好名称。",
+      "selectDirectory": "选择目录",
+      "currentPath": "当前路径",
+      "selectThis": "选择此项",
+      "parentDirectory": "父目录",
+      "noSubdirectories": "未找到子目录",
+      "enterDirectory": "进入目录",
+      "selectedPath": "已选择",
+      "volumePath": "卷路径",
+      "pathCannotChange": "创建后无法更改路径。如需更改，请删除此卷并重新创建。",
+      "accessMode": "访问模式"
     }
   },
   "share": {

@@ -155,6 +155,7 @@
     "terminal": "Terminale",
     "settings": "Impostazioni",
     "about": "Informazioni",
+    "branding": "Branding",
     "thumbnails": "Miniature",
     "authentication": "Autenticazione",
     "folderRules": "Regole cartelle",
@@ -228,7 +229,8 @@
     "quickAccessEmpty": "Aggiungi cartelle ai preferiti per accedervi rapidamente qui."
   },
   "drives": {
-    "personal": "I miei file"
+    "personal": "Personale",
+    "myfiles": "I miei file"
   },
   "browser": {
     "resizeSidebar": "Ridimensiona barra laterale",
@@ -311,7 +313,7 @@
     },
     "login": {
       "welcome": "Bentornato",
-      "subtitle": "Accedi per usare NextExplorer.",
+      "subtitle": "Accedi per utilizzare {appName}.",
       "announcementConfirm": "Segna come letto",
       "submit": "Accedi",
       "announcementMigration": {
@@ -363,6 +365,7 @@
     "categories": {
       "accountPassword": "Cambia password",
       "about": "Informazioni",
+      "branding": "Branding",
       "filesThumbnails": "File e miniature",
       "security": "Sicurezza",
       "accessControl": "Controllo accessi",
@@ -376,6 +379,24 @@
       "gitCommitHelp": "Revisione sorgente incorporata al momento della build.",
       "branch": "Branch",
       "branchHelp": "Branch git al momento della build."
+    },
+    "branding": {
+      "subtitle": "Personalizza il nome dell’applicazione e il logo visualizzati in tutta l’interfaccia.",
+      "appName": "Nome dell’applicazione",
+      "appNameHelp": "Il nome visualizzato in intestazioni, pagina di accesso e piè di pagina (max 100 caratteri).",
+      "appLogoUrl": "Immagine del logo",
+      "appLogoUrlHelp": "Carica un file SVG, PNG o JPG per il tuo logo personalizzato (max 2 MB).",
+      "logo": "Immagine del logo",
+      "logoHelp": "Carica un file SVG, PNG o JPG per il tuo logo personalizzato (max 2 MB).",
+      "uploading": "Caricamento...",
+      "uploadSuccess": "Logo caricato con successo",
+      "uploadError": "Impossibile caricare il logo",
+      "invalidFileType": "Carica un file SVG, PNG o JPG",
+      "logoError": "Il file deve essere più piccolo di 2 MB",
+      "fileTooLargeForDataUri": "Il file è troppo grande. Usa un’immagine più piccola (sotto i 500 KB per risultati migliori)",
+      "preview": "Anteprima",
+      "showPoweredBy": "Mostra link di attribuzione",
+      "showPoweredByHelp": "Mostra nel piè di pagina un link 'Powered by nextExplorer' per supportare il progetto"
     },
     "thumbs": {
       "subtitle": "Personalizza le miniature di anteprima per immagini e video.",

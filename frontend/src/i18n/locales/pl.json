@@ -66,7 +66,9 @@
     "settings": "Ustawienia",
     "share": "Udostępnij",
     "shares": "Udostępnienia",
-    "unsavedChanges": "Masz niezapisane zmiany"
+    "unsavedChanges": "Masz niezapisane zmiany",
+    "readonly": "Tylko do odczytu",
+    "readwrite": "Odczyt/Zapis"
   },
   "editor": {
     "confirmCloseWithoutSaving": "Masz niezapisane zmiany. Zamknąć bez zapisywania?"
@@ -103,7 +105,8 @@
     "confirmPassword": "Wpisz hasło ponownie",
     "label": "Moje udostępnione pliki",
     "path": "np. Obrazy/Wakacje",
-    "search": "Szukaj plików i folderów…"
+    "search": "Szukaj plików i folderów…",
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "Ładowanie…",
@@ -137,7 +140,13 @@
     "passwordLength": "Hasło musi mieć co najmniej 6 znaków",
     "passwordMin": "Hasło musi mieć co najmniej 6 znaków",
     "passwordMismatch": "Hasła nie są zgodne",
-    "localSignInDisabled": "Logowanie lokalne jest wyłączone"
+    "localSignInDisabled": "Logowanie lokalne jest wyłączone",
+    "deleteShare": "Failed to delete share",
+    "browseDirectories": "Failed to browse directories",
+    "labelRequired": "Label is required",
+    "pathRequired": "Path is required",
+    "saveVolume": "Failed to save volume",
+    "removeVolume": "Failed to remove volume"
   },
   "titles": {
     "volumes": "Woluminy",
@@ -146,6 +155,7 @@
     "terminal": "Terminal",
     "settings": "Ustawienia",
     "about": "Informacje",
+    "branding": "Branding",
     "thumbnails": "Miniatury",
     "authentication": "Uwierzytelnianie",
     "folderRules": "Reguły folderów",
@@ -219,7 +229,8 @@
     "quickAccessEmpty": "Przypnij foldery jako ulubione, aby szybko uzyskać do nich dostęp tutaj."
   },
   "drives": {
-    "personal": "Moje pliki"
+    "personal": "Osobiste",
+    "myfiles": "Moje pliki"
   },
   "browser": {
     "resizeSidebar": "Zmień rozmiar paska bocznego",
@@ -302,7 +313,7 @@
     },
     "login": {
       "welcome": "Witaj ponownie",
-      "subtitle": "Zaloguj się, aby uzyskać dostęp do NextExplorer.",
+      "subtitle": "Zaloguj się, aby uzyskać dostęp do {appName}.",
       "announcementConfirm": "Oznacz jako przeczytane",
       "submit": "Zaloguj się",
       "announcementMigration": {
@@ -354,6 +365,7 @@
     "categories": {
       "accountPassword": "Zmień hasło",
       "about": "Informacje",
+      "branding": "Branding",
       "filesThumbnails": "Pliki i miniatury",
       "security": "Bezpieczeństwo",
       "accessControl": "Kontrola dostępu",
@@ -367,6 +379,24 @@
       "gitCommitHelp": "Rewizja źródła osadzona w czasie kompilacji.",
       "branch": "Gałąź",
       "branchHelp": "Gałąź Git w czasie kompilacji."
+    },
+    "branding": {
+      "subtitle": "Dostosuj nazwę aplikacji i logo wyświetlane w całym interfejsie.",
+      "appName": "Nazwa aplikacji",
+      "appNameHelp": "Nazwa wyświetlana w nagłówkach, na stronie logowania i w stopce (maks. 100 znaków).",
+      "appLogoUrl": "Obraz logo",
+      "appLogoUrlHelp": "Prześlij plik SVG, PNG lub JPG dla niestandardowego logo (maks. 2 MB).",
+      "logo": "Obraz logo",
+      "logoHelp": "Prześlij plik SVG, PNG lub JPG dla niestandardowego logo (maks. 2 MB).",
+      "uploading": "Przesyłanie...",
+      "uploadSuccess": "Logo przesłano pomyślnie",
+      "uploadError": "Nie udało się przesłać logo",
+      "invalidFileType": "Prześlij plik SVG, PNG lub JPG",
+      "logoError": "Plik musi mieć mniej niż 2 MB",
+      "fileTooLargeForDataUri": "Plik jest za duży. Użyj mniejszego obrazu (poniżej 500 KB dla najlepszych efektów)",
+      "preview": "Podgląd",
+      "showPoweredBy": "Wyświetl link z atrybucją",
+      "showPoweredByHelp": "Pokaż w stopce link „Powered by nextExplorer”, aby wesprzeć projekt"
     },
     "thumbs": {
       "subtitle": "Dostosuj miniatury podglądu dla obrazów i filmów.",
@@ -414,7 +444,27 @@
       "resetPassword": "Ustaw/Resetuj hasło",
       "removeUser": "Usuń użytkownika",
       "promptNewPassword": "Wprowadź nowe hasło dla {user} (minimum 6 znaków):",
-      "editUser": "Edytuj użytkownika"
+      "editUser": "Edytuj użytkownika",
+      "volumes": "Woluminy",
+      "assignedVolumes": "Przypisane woluminy",
+      "addVolume": "Dodaj wolumin",
+      "editVolume": "Edytuj wolumin",
+      "noVolumes": "Brak przypisanych woluminów",
+      "noVolumesHint": "Dodaj woluminy, aby dać użytkownikowi dostęp do określonych katalogów.",
+      "volumesInfo": "Woluminy przypisane tutaj będą jedynymi katalogami dostępnymi dla tego użytkownika. Administratorzy mają zawsze pełny dostęp.",
+      "confirmRemoveVolume": "Usunąć wolumin \"{label}\"? Użytkownik straci dostęp do tego katalogu.",
+      "volumeLabel": "Etykieta woluminu",
+      "volumeLabelHint": "Przyjazna nazwa woluminu widoczna dla użytkownika.",
+      "selectDirectory": "Wybierz katalog",
+      "currentPath": "Bieżąca ścieżka",
+      "selectThis": "Wybierz to",
+      "parentDirectory": "Katalog nadrzędny",
+      "noSubdirectories": "Brak podkatalogów",
+      "enterDirectory": "Wejdź do katalogu",
+      "selectedPath": "Wybrano",
+      "volumePath": "Ścieżka woluminu",
+      "pathCannotChange": "Ścieżki nie można zmienić po utworzeniu. Usuń ten wolumin i utwórz nowy w razie potrzeby.",
+      "accessMode": "Tryb dostępu"
     }
   },
   "share": {

@@ -79,7 +79,7 @@ const handleOpenFavorite = (favorite) => {
   openBreadcrumb(favorite.path);
 };
 
-const PersonalIcon = SolidIcons.FolderIcon || OutlineIcons.FolderIcon;
+const PersonalIcon = OutlineIcons.FolderIcon || SolidIcons.FolderIcon;
 
 const openPersonal = () => {
   openBreadcrumb('personal');

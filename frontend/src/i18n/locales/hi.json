@@ -66,7 +66,9 @@
     "settings": "सेटिंग्स",
     "share": "साझा करें",
     "shares": "शेयर",
-    "unsavedChanges": "आपके पास बिना सहेजे परिवर्तन हैं"
+    "unsavedChanges": "आपके पास बिना सहेजे परिवर्तन हैं",
+    "readonly": "केवल पढ़ने के लिए",
+    "readwrite": "पढ़ना/लिखना"
   },
   "editor": {
     "confirmCloseWithoutSaving": "आपके पास बिना सहेजे परिवर्तन हैं। बिना सहेजे बंद करें?"
@@ -103,7 +105,8 @@
     "confirmPassword": "अपना पासवर्ड दोबारा लिखें",
     "label": "मेरी साझा की गई फ़ाइलें",
     "path": "उदाहरण: Pictures/Holidays",
-    "search": "फ़ाइलें और फ़ोल्डर खोजें…"
+    "search": "फ़ाइलें और फ़ोल्डर खोजें…",
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "लोड हो रहा है…",
@@ -137,7 +140,13 @@
     "passwordLength": "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए",
     "passwordMin": "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए",
     "passwordMismatch": "पासवर्ड मेल नहीं खाते",
-    "localSignInDisabled": "लोकल साइन-इन निष्क्रिय है"
+    "localSignInDisabled": "लोकल साइन-इन निष्क्रिय है",
+    "deleteShare": "Failed to delete share",
+    "browseDirectories": "Failed to browse directories",
+    "labelRequired": "Label is required",
+    "pathRequired": "Path is required",
+    "saveVolume": "Failed to save volume",
+    "removeVolume": "Failed to remove volume"
   },
   "titles": {
     "volumes": "वॉल्यूम",
@@ -146,6 +155,7 @@
     "terminal": "टर्मिनल",
     "settings": "सेटिंग्स",
     "about": "के बारे में",
+    "branding": "ब्रांडिंग",
     "thumbnails": "थंबनेल",
     "authentication": "प्रमाणीकरण",
     "folderRules": "फ़ोल्डर नियम",
@@ -219,7 +229,8 @@
     "quickAccessEmpty": "यहाँ तेज़ पहुँच के लिए फ़ोल्डर को पसंदीदा के रूप में पिन करें।"
   },
   "drives": {
-    "personal": "मेरी फ़ाइलें"
+    "personal": "व्यक्तिगत",
+    "myfiles": "मेरी फ़ाइलें"
   },
   "browser": {
     "resizeSidebar": "साइडबार का आकार बदलें",
@@ -302,7 +313,7 @@
     },
     "login": {
       "welcome": "वापसी पर स्वागत है",
-      "subtitle": "NextExplorer तक पहुँचने के लिए साइन इन करें।",
+      "subtitle": "{appName} तक पहुँचने के लिए साइन इन करें।",
       "announcementConfirm": "पढ़ा हुआ चिह्नित करें",
       "submit": "साइन इन",
       "announcementMigration": {
@@ -354,6 +365,7 @@
     "categories": {
       "accountPassword": "पासवर्ड बदलें",
       "about": "के बारे में",
+      "branding": "ब्रांडिंग",
       "filesThumbnails": "फ़ाइलें और थंबनेल",
       "security": "सुरक्षा",
       "accessControl": "एक्सेस कंट्रोल",
@@ -367,6 +379,24 @@
       "gitCommitHelp": "बिल्ड समय पर जोड़ी गई स्रोत संशोधन।",
       "branch": "ब्रांच",
       "branchHelp": "बिल्ड समय पर Git ब्रांच।"
+    },
+    "branding": {
+      "subtitle": "इंटरफ़ेस में दिखने वाले एप्लिकेशन नाम और लोगो को अनुकूलित करें।",
+      "appName": "एप्लिकेशन का नाम",
+      "appNameHelp": "हेडर, लॉगिन पेज और फ़ुटर में दिखने वाला नाम (अधिकतम 100 अक्षर)।",
+      "appLogoUrl": "लोगो छवि",
+      "appLogoUrlHelp": "अपने कस्टम लोगो के लिए SVG, PNG या JPG फ़ाइल अपलोड करें (अधिकतम 2MB)।",
+      "logo": "लोगो छवि",
+      "logoHelp": "अपने कस्टम लोगो के लिए SVG, PNG या JPG फ़ाइल अपलोड करें (अधिकतम 2MB)।",
+      "uploading": "अपलोड हो रहा है...",
+      "uploadSuccess": "लोगो सफलतापूर्वक अपलोड हुआ",
+      "uploadError": "लोगो अपलोड नहीं हो सका",
+      "invalidFileType": "कृपया SVG, PNG या JPG अपलोड करें",
+      "logoError": "फ़ाइल 2MB से छोटी होनी चाहिए",
+      "fileTooLargeForDataUri": "फ़ाइल बहुत बड़ी है। कृपया एक छोटी छवि उपयोग करें (बेहतर परिणामों के लिए 500KB से कम)",
+      "preview": "पूर्वावलोकन",
+      "showPoweredBy": "अट्रिब्यूशन लिंक दिखाएँ",
+      "showPoweredByHelp": "प्रोजेक्ट को सपोर्ट करने के लिए फ़ुटर में 'Powered by nextExplorer' लिंक दिखाएँ"
     },
     "thumbs": {
       "subtitle": "छवियों और वीडियो के लिए पूर्वावलोकन थंबनेल अनुकूलित करें।",
@@ -414,7 +444,27 @@
       "resetPassword": "पासवर्ड सेट/रीसेट करें",
       "removeUser": "उपयोगकर्ता हटाएँ",
       "promptNewPassword": "{user} के लिए नया पासवर्ड दर्ज करें (न्यूनतम 6 अक्षर):",
-      "editUser": "उपयोगकर्ता संपादित करें"
+      "editUser": "उपयोगकर्ता संपादित करें",
+      "volumes": "वॉल्यूम",
+      "assignedVolumes": "आवंटित वॉल्यूम",
+      "addVolume": "वॉल्यूम जोड़ें",
+      "editVolume": "वॉल्यूम संपादित करें",
+      "noVolumes": "कोई वॉल्यूम आवंटित नहीं",
+      "noVolumesHint": "इस उपयोगकर्ता को विशिष्ट निर्देशिकाओं तक पहुँच देने के लिए वॉल्यूम जोड़ें।",
+      "volumesInfo": "यहाँ आवंटित वॉल्यूम केवल वे निर्देशिकाएँ होंगी जिन तक यह उपयोगकर्ता पहुँच सकता है। एडमिन के पास हमेशा सभी वॉल्यूम तक पूरी पहुँच होती है।",
+      "confirmRemoveVolume": "वॉल्यूम \"{label}\" हटाएँ? उपयोगकर्ता इस निर्देशिका तक पहुँच खो देगा।",
+      "volumeLabel": "वॉल्यूम लेबल",
+      "volumeLabelHint": "इस वॉल्यूम के लिए एक अनुकूल नाम जिसे उपयोगकर्ता देखेगा।",
+      "selectDirectory": "निर्देशिका चुनें",
+      "currentPath": "वर्तमान पथ",
+      "selectThis": "इसे चुनें",
+      "parentDirectory": "मूल निर्देशिका",
+      "noSubdirectories": "कोई उप-निर्देशिका नहीं मिली",
+      "enterDirectory": "निर्देशिका में प्रवेश करें",
+      "selectedPath": "चयनित",
+      "volumePath": "वॉल्यूम पथ",
+      "pathCannotChange": "निर्माण के बाद पथ बदला नहीं जा सकता। यदि आवश्यक हो तो इसे हटा दें और नया बनाएँ।",
+      "accessMode": "पहुँच मोड"
     }
   },
   "share": {

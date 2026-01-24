@@ -66,7 +66,9 @@
     "settings": "Configuración",
     "share": "Compartir",
     "shares": "Compartidos",
-    "unsavedChanges": "Tienes cambios sin guardar"
+    "unsavedChanges": "Tienes cambios sin guardar",
+    "readonly": "Solo lectura",
+    "readwrite": "Lectura/Escritura"
   },
   "editor": {
     "confirmCloseWithoutSaving": "Tienes cambios sin guardar. ¿Cerrar sin guardar?"
@@ -103,7 +105,8 @@
     "confirmPassword": "Vuelve a escribir tu contraseña",
     "label": "Mis archivos compartidos",
     "path": "p. ej. Imágenes/Vacaciones",
-    "search": "Buscar archivos y carpetas…"
+    "search": "Buscar archivos y carpetas…",
+    "volumeLabel": ""
   },
   "loading": {
     "default": "Cargando…",
@@ -138,7 +141,12 @@
     "passwordMin": "La contraseña debe tener al menos 6 caracteres",
     "passwordMismatch": "Las contraseñas no coinciden",
     "localSignInDisabled": "El inicio de sesión local está desactivado",
-    "deleteShare": "Error al eliminar la compartición"
+    "deleteShare": "Error al eliminar la compartición",
+    "browseDirectories": "",
+    "labelRequired": "",
+    "pathRequired": "",
+    "saveVolume": "",
+    "removeVolume": ""
   },
   "titles": {
     "volumes": "Volúmenes",
@@ -147,6 +155,7 @@
     "terminal": "Terminal",
     "settings": "Configuración",
     "about": "Acerca de",
+    "branding": "Marca",
     "thumbnails": "Miniaturas",
     "authentication": "Autenticación",
     "folderRules": "Reglas de carpeta",
@@ -220,7 +229,8 @@
     "quickAccessEmpty": "Ancla carpetas como favoritas para acceder rápidamente aquí."
   },
   "drives": {
-    "personal": "Mis archivos"
+    "personal": "Personal",
+    "myfiles": "Mis archivos"
   },
   "browser": {
     "resizeSidebar": "Redimensionar barra lateral",
@@ -303,7 +313,7 @@
     },
     "login": {
       "welcome": "Bienvenido de nuevo",
-      "subtitle": "Inicia sesión para acceder a NextExplorer.",
+      "subtitle": "Inicia sesión para acceder a {appName}.",
       "announcementConfirm": "Marcar como leído",
       "submit": "Iniciar sesión",
       "announcementMigration": {
@@ -355,6 +365,7 @@
     "categories": {
       "accountPassword": "Cambiar contraseña",
       "about": "Acerca de",
+      "branding": "Marca",
       "filesThumbnails": "Archivos y miniaturas",
       "security": "Seguridad",
       "accessControl": "Control de acceso",
@@ -368,6 +379,24 @@
       "gitCommitHelp": "Revisión de código fuente incrustada en el momento de la compilación.",
       "branch": "Rama",
       "branchHelp": "Rama de Git en el momento de la compilación."
+    },
+    "branding": {
+      "subtitle": "Personaliza el nombre de la aplicación y el logotipo que se muestran en toda la interfaz.",
+      "appName": "Nombre de la aplicación",
+      "appNameHelp": "El nombre que se muestra en encabezados, página de inicio de sesión y pie de página (máx. 100 caracteres).",
+      "appLogoUrl": "Imagen del logotipo",
+      "appLogoUrlHelp": "Sube un archivo SVG, PNG o JPG para tu logotipo personalizado (máx. 2 MB).",
+      "logo": "Imagen del logotipo",
+      "logoHelp": "Sube un archivo SVG, PNG o JPG para tu logotipo personalizado (máx. 2 MB).",
+      "uploading": "Subiendo...",
+      "uploadSuccess": "Logotipo subido correctamente",
+      "uploadError": "No se pudo subir el logotipo",
+      "invalidFileType": "Sube un archivo SVG, PNG o JPG",
+      "logoError": "El archivo debe ser menor de 2 MB",
+      "fileTooLargeForDataUri": "El archivo es demasiado grande. Usa una imagen más pequeña (menos de 500 KB para obtener mejores resultados)",
+      "preview": "Vista previa",
+      "showPoweredBy": "Mostrar enlace de atribución",
+      "showPoweredByHelp": "Muestra un enlace 'Powered by nextExplorer' en el pie de página para ayudar a apoyar el proyecto"
     },
     "thumbs": {
       "subtitle": "Personaliza las miniaturas de vista previa para imágenes y vídeos.",
@@ -415,7 +444,27 @@
       "resetPassword": "Establecer/restablecer contraseña",
       "removeUser": "Eliminar usuario",
       "promptNewPassword": "Introduce una nueva contraseña para {user} (mínimo 6 caracteres):",
-      "editUser": "Editar usuario"
+      "editUser": "Editar usuario",
+      "volumes": "Volúmenes",
+      "assignedVolumes": "Volúmenes asignados",
+      "addVolume": "Añadir volumen",
+      "editVolume": "Editar volumen",
+      "noVolumes": "No hay volúmenes asignados",
+      "noVolumesHint": "Añada volúmenes para dar a este usuario acceso a directorios específicos.",
+      "volumesInfo": "Los volúmenes asignados aquí serán los únicos directorios a los que este usuario podrá acceder. Los administradores siempre tienen acceso completo a todos los volúmenes.",
+      "confirmRemoveVolume": "¿Eliminar volumen \"{label}\"? El usuario perderá el acceso a este directorio.",
+      "volumeLabel": "Etiqueta del volumen",
+      "volumeLabelHint": "Un nombre amigable para este volumen que el usuario verá.",
+      "selectDirectory": "Seleccionar directorio",
+      "currentPath": "Ruta actual",
+      "selectThis": "Seleccionar esto",
+      "parentDirectory": "Directorio principal",
+      "noSubdirectories": "No se encontraron subdirectorios",
+      "enterDirectory": "Entrar en directorio",
+      "selectedPath": "Seleccionado",
+      "volumePath": "Ruta del volumen",
+      "pathCannotChange": "La ruta no se puede cambiar después de la creación. Elimine este volumen y cree uno nuevo si es necesario.",
+      "accessMode": "Modo de acceso"
     }
   },
   "share": {

@@ -155,6 +155,7 @@
     "terminal": "Terminal",
     "settings": "Setări",
     "about": "Despre",
+    "branding": "Branding",
     "thumbnails": "Miniaturi",
     "authentication": "Autentificare",
     "folderRules": "Reguli dosare",
@@ -228,7 +229,8 @@
     "quickAccessEmpty": "Fixează dosare ca favorite pentru a le accesa rapid aici."
   },
   "drives": {
-    "personal": "Fișierele mele"
+    "personal": "Personal",
+    "myfiles": "Fișierele mele"
   },
   "browser": {
     "resizeSidebar": "Redimensionează bara laterală",
@@ -311,7 +313,7 @@
     },
     "login": {
       "welcome": "Bine ai revenit",
-      "subtitle": "Conectează-te pentru a accesa NextExplorer.",
+      "subtitle": "Conectează-te pentru a accesa {appName}.",
       "announcementConfirm": "Marchează ca citit",
       "submit": "Conectare",
       "announcementMigration": {
@@ -363,6 +365,7 @@
     "categories": {
       "accountPassword": "Schimbă parola",
       "about": "Despre",
+      "branding": "Branding",
       "filesThumbnails": "Fișiere și miniaturi",
       "security": "Securitate",
       "accessControl": "Control acces",
@@ -376,6 +379,24 @@
       "gitCommitHelp": "Revizia sursei integrată la momentul build-ului.",
       "branch": "Branch",
       "branchHelp": "Branch-ul git la momentul build-ului."
+    },
+    "branding": {
+      "subtitle": "Personalizează numele aplicației și sigla afișate în întreaga interfață.",
+      "appName": "Numele aplicației",
+      "appNameHelp": "Numele afișat în antete, pe pagina de autentificare și în subsol (max. 100 de caractere).",
+      "appLogoUrl": "Imagine siglă",
+      "appLogoUrlHelp": "Încarcă un fișier SVG, PNG sau JPG pentru sigla ta personalizată (max. 2 MB).",
+      "logo": "Imagine siglă",
+      "logoHelp": "Încarcă un fișier SVG, PNG sau JPG pentru sigla ta personalizată (max. 2 MB).",
+      "uploading": "Se încarcă...",
+      "uploadSuccess": "Sigla a fost încărcată cu succes",
+      "uploadError": "Încărcarea siglei a eșuat",
+      "invalidFileType": "Te rugăm să încarci un fișier SVG, PNG sau JPG",
+      "logoError": "Fișierul trebuie să fie mai mic de 2 MB",
+      "fileTooLargeForDataUri": "Fișierul este prea mare. Folosește o imagine mai mică (sub 500 KB pentru cele mai bune rezultate)",
+      "preview": "Previzualizare",
+      "showPoweredBy": "Afișează linkul de atribuire",
+      "showPoweredByHelp": "Afișează în subsol un link „Powered by nextExplorer” pentru a ajuta la susținerea proiectului"
     },
     "thumbs": {
       "subtitle": "Personalizează miniaturile de previzualizare pentru imagini și video.",
@@ -428,22 +449,22 @@
       "assignedVolumes": "Volume atribuite",
       "addVolume": "Adaugă volum",
       "editVolume": "Editează volumul",
-      "noVolumes": "Nu există volume atribuite",
-      "noVolumesHint": "Adaugă volume pentru a oferi acestui utilizator acces la directoare specifice.",
-      "volumesInfo": "Volumele atribuite aici vor fi singurele directoare la care acest utilizator poate avea acces. Administratorii au întotdeauna acces complet la toate volumele.",
-      "confirmRemoveVolume": "Elimini volumul \"{label}\"? Utilizatorul va pierde accesul la acest director.",
+      "noVolumes": "Niciun volum atribuit",
+      "noVolumesHint": "Adaugă volume pentru a oferi acces la directoare specifice.",
+      "volumesInfo": "Volumele atribuite aici vor fi singurele directoare accesibile acestui utilizator. Administratorii au întotdeauna acces complet.",
+      "confirmRemoveVolume": "Elimini volumul \"{label}\"? Utilizatorul va pierde accesul.",
       "volumeLabel": "Etichetă volum",
-      "volumeLabelHint": "Un nume prietenos pentru acest volum pe care utilizatorul îl va vedea.",
+      "volumeLabelHint": "Un nume prietenos pentru acest volum.",
       "selectDirectory": "Selectează director",
       "currentPath": "Calea curentă",
-      "selectThis": "Selectează acest",
+      "selectThis": "Selectează asta",
       "parentDirectory": "Director părinte",
-      "noSubdirectories": "Nu au fost găsite subdirectoare",
+      "noSubdirectories": "Fără subdirectoare",
       "enterDirectory": "Intră în director",
       "selectedPath": "Selectat",
-      "volumePath": "Calea volumului",
-      "pathCannotChange": "Calea nu poate fi schimbată după creare. Elimină acest volum și creează unul nou dacă este nevoie.",
-      "accessMode": "Mod de acces"
+      "volumePath": "Cale volum",
+      "pathCannotChange": "Calea nu poate fi schimbată după creare. Șterge și creează unul nou dacă e necesar.",
+      "accessMode": "Mod acces"
     }
   },
   "share": {

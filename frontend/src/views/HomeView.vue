@@ -31,7 +31,9 @@ onMounted(async () => {
       volumes.value.forEach(async (v) => {
         try {
           usage.value[v.path] = await getUsage(v.path);
-        } catch (_) {}
+        } catch (_) {
+          // Ignore per-volume usage failures
+        }
       });
     }
   } finally {
@@ -77,7 +79,7 @@ const handleOpenFavorite = (favorite) => {
   openBreadcrumb(favorite.path);
 };
 
-const PersonalIcon = SolidIcons.FolderIcon || OutlineIcons.FolderIcon;
+const PersonalIcon = OutlineIcons.FolderIcon || SolidIcons.FolderIcon;
 
 const openPersonal = () => {
   openBreadcrumb('personal');
@@ -197,7 +199,7 @@ const openPersonal = () => {
           <component :is="PersonalIcon" class="h-14 w-16 shrink-0" />
           <div>
             <div class="mb-1 truncate text-sm font-medium text-neutral-900 dark:text-white">
-              {{ $t('drives.personal') }}
+              {{ $t('drives.myfiles') }}
             </div>
           </div>
         </button>

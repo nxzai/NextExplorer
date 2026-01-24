@@ -66,7 +66,9 @@
     "settings": "Einstellungen",
     "share": "Freigeben",
     "shares": "Freigaben",
-    "unsavedChanges": "Sie haben ungespeicherte Änderungen"
+    "unsavedChanges": "Sie haben ungespeicherte Änderungen",
+    "readonly": "Schreibgeschützt",
+    "readwrite": "Lesen/Schreiben"
   },
   "editor": {
     "confirmCloseWithoutSaving": "Sie haben ungespeicherte Änderungen. Ohne Speichern schließen?"
@@ -103,7 +105,8 @@
     "confirmPassword": "Passwort erneut eingeben",
     "label": "Meine freigegebenen Dateien",
     "path": "z. B. Bilder/Urlaub",
-    "search": "Dateien und Ordner durchsuchen…"
+    "search": "Dateien und Ordner durchsuchen…",
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "Wird geladen…",
@@ -137,7 +140,13 @@
     "passwordLength": "Das Passwort muss mindestens 6 Zeichen lang sein",
     "passwordMin": "Das Passwort muss mindestens 6 Zeichen haben",
     "passwordMismatch": "Passwörter stimmen nicht überein",
-    "localSignInDisabled": "Lokale Anmeldung ist deaktiviert"
+    "localSignInDisabled": "Lokale Anmeldung ist deaktiviert",
+    "deleteShare": "Failed to delete share",
+    "browseDirectories": "Failed to browse directories",
+    "labelRequired": "Label is required",
+    "pathRequired": "Path is required",
+    "saveVolume": "Failed to save volume",
+    "removeVolume": "Failed to remove volume"
   },
   "titles": {
     "volumes": "Volumes",
@@ -146,6 +155,7 @@
     "terminal": "Terminal",
     "settings": "Einstellungen",
     "about": "Info",
+    "branding": "Branding",
     "thumbnails": "Miniaturansichten",
     "authentication": "Authentifizierung",
     "folderRules": "Ordnerregeln",
@@ -219,7 +229,8 @@
     "quickAccessEmpty": "Pinnen Sie Ordner als Favoriten an, um hier schnell darauf zuzugreifen."
   },
   "drives": {
-    "personal": "Meine Dateien"
+    "personal": "Persönlich",
+    "myfiles": "Meine Dateien"
   },
   "browser": {
     "resizeSidebar": "Seitenleiste anpassen",
@@ -302,7 +313,7 @@
     },
     "login": {
       "welcome": "Willkommen zurück",
-      "subtitle": "Melden Sie sich an, um auf NextExplorer zuzugreifen.",
+      "subtitle": "Melden Sie sich an, um auf {appName} zuzugreifen.",
       "announcementConfirm": "Als gelesen markieren",
       "submit": "Anmelden",
       "announcementMigration": {
@@ -354,6 +365,7 @@
     "categories": {
       "accountPassword": "Passwort ändern",
       "about": "Info",
+      "branding": "Branding",
       "filesThumbnails": "Dateien & Miniaturansichten",
       "security": "Sicherheit",
       "accessControl": "Zugriffskontrolle",
@@ -367,6 +379,24 @@
       "gitCommitHelp": "Quell-Revision, die zur Build-Zeit eingebettet wurde.",
       "branch": "Branch",
       "branchHelp": "Git-Branch zur Build-Zeit."
+    },
+    "branding": {
+      "subtitle": "Passen Sie den in der Oberfläche angezeigten Anwendungsnamen und das Logo an.",
+      "appName": "Anwendungsname",
+      "appNameHelp": "Der Name, der in Kopfzeilen, auf der Anmeldeseite und in der Fußzeile angezeigt wird (max. 100 Zeichen).",
+      "appLogoUrl": "Logo-Bild",
+      "appLogoUrlHelp": "Laden Sie eine SVG-, PNG- oder JPG-Datei für Ihr benutzerdefiniertes Logo hoch (max. 2 MB).",
+      "logo": "Logo-Bild",
+      "logoHelp": "Laden Sie eine SVG-, PNG- oder JPG-Datei für Ihr benutzerdefiniertes Logo hoch (max. 2 MB).",
+      "uploading": "Wird hochgeladen...",
+      "uploadSuccess": "Logo erfolgreich hochgeladen",
+      "uploadError": "Logo konnte nicht hochgeladen werden",
+      "invalidFileType": "Bitte SVG, PNG oder JPG hochladen",
+      "logoError": "Datei muss kleiner als 2 MB sein",
+      "fileTooLargeForDataUri": "Datei ist zu groß. Bitte verwenden Sie ein kleineres Bild (unter 500 KB für beste Ergebnisse)",
+      "preview": "Vorschau",
+      "showPoweredBy": "Attributionslink anzeigen",
+      "showPoweredByHelp": "Zeigt in der Fußzeile einen Link 'Powered by nextExplorer', um das Projekt zu unterstützen"
     },
     "thumbs": {
       "subtitle": "Vorschau-Miniaturen für Bilder und Videos anpassen.",
@@ -414,7 +444,27 @@
       "resetPassword": "Passwort setzen/zurücksetzen",
       "removeUser": "Benutzer entfernen",
       "promptNewPassword": "Geben Sie ein neues Passwort für {user} ein (mindestens 6 Zeichen):",
-      "editUser": "Benutzer bearbeiten"
+      "editUser": "Benutzer bearbeiten",
+      "volumes": "Volumes",
+      "assignedVolumes": "Zugewiesene Volumes",
+      "addVolume": "Volume hinzufügen",
+      "editVolume": "Volume bearbeiten",
+      "noVolumes": "Keine Volumes zugewiesen",
+      "noVolumesHint": "Fügen Sie Volumes hinzu, um diesem Benutzer Zugriff auf bestimmte Verzeichnisse zu geben.",
+      "volumesInfo": "Hier zugewiesene Volumes sind die einzigen Verzeichnisse, auf die dieser Benutzer zugreifen kann. Admins haben immer vollen Zugriff auf alle Volumes.",
+      "confirmRemoveVolume": "Volume \"{label}\" entfernen? Der Benutzer verliert den Zugriff auf dieses Verzeichnis.",
+      "volumeLabel": "Volumenbezeichnung",
+      "volumeLabelHint": "Ein freundlicher Name für dieses Volume, den der Benutzer sehen wird.",
+      "selectDirectory": "Verzeichnis auswählen",
+      "currentPath": "Aktueller Pfad",
+      "selectThis": "Dies auswählen",
+      "parentDirectory": "Übergeordnetes Verzeichnis",
+      "noSubdirectories": "Keine Unterverzeichnisse gefunden",
+      "enterDirectory": "Verzeichnis betreten",
+      "selectedPath": "Ausgewählt",
+      "volumePath": "Volumenpfad",
+      "pathCannotChange": "Der Pfad kann nach der Erstellung nicht mehr geändert werden. Entfernen Sie dieses Volume und erstellen Sie bei Bedarf ein neues.",
+      "accessMode": "Zugriffsmodus"
     }
   },
   "share": {

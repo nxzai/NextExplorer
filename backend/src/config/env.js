@@ -46,6 +46,7 @@ module.exports = {
   OIDC_AUTHORIZATION_URL: process.env.OIDC_AUTHORIZATION_URL || null,
   OIDC_TOKEN_URL: process.env.OIDC_TOKEN_URL || null,
   OIDC_USERINFO_URL: process.env.OIDC_USERINFO_URL || null,
+  OIDC_LOGOUT_URL: process.env.OIDC_LOGOUT_URL || null,
   OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID || null,
   OIDC_CLIENT_SECRET: process.env.OIDC_CLIENT_SECRET || null,
   OIDC_CALLBACK_URL: process.env.OIDC_CALLBACK_URL || process.env.OIDC_REDIRECT_URI || null,

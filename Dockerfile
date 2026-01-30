@@ -28,7 +28,18 @@ RUN groupadd --system appuser && \
 
 # Install runtime tooling (ffmpeg, gosu for UID remapping, ripgrep for searches, imagemagick for HEIC thumbnails).
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ffmpeg gosu ripgrep imagemagick curl unzip \
+  && apt-get install -y --no-install-recommends \
+  ffmpeg \
+  gosu \
+  ripgrep \
+  imagemagick \
+  curl \
+  unzip \
+  openssh-client \
+  libva-drm2 \
+  libva2 \
+  mesa-va-drivers \
+  vainfo \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

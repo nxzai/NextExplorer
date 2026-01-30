@@ -38,7 +38,7 @@ npm start
     - `OIDC_CLIENT_ID` / `OIDC_CLIENT_SECRET`
     - `OIDC_SCOPES` – e.g. `openid profile email` (add `groups` if your provider supports it)
     - `SESSION_SECRET` – optional; if omitted the backend generates a strong secret at startup (used for sessions and EOC cookies)
-    - Optional overrides: `OIDC_AUTHORIZATION_URL`, `OIDC_TOKEN_URL`, `OIDC_USERINFO_URL`, `OIDC_CALLBACK_URL`
+    - Optional overrides: `OIDC_AUTHORIZATION_URL`, `OIDC_TOKEN_URL`, `OIDC_USERINFO_URL`, `OIDC_LOGOUT_URL`, `OIDC_CALLBACK_URL`
   - Runtime features (loaded via centralized features store):
     - `EDITOR_EXTENSIONS` – comma-separated list of additional file extensions to support in the inline editor (e.g. `toml,proto,graphql`). These are added to the default list of supported extensions.
     - `SHOW_VOLUME_USAGE` – `true` to enable volume usage progress bar and used/total labels on the Volumes page. Defaults to `false`.

@@ -125,6 +125,7 @@ const auth = {
     authorizationURL: env.OIDC_AUTHORIZATION_URL,
     tokenURL: env.OIDC_TOKEN_URL,
     userInfoURL: env.OIDC_USERINFO_URL,
+    logoutURL: env.OIDC_LOGOUT_URL,
     clientId: env.OIDC_CLIENT_ID,
     clientSecret: env.OIDC_CLIENT_SECRET,
     callbackUrl: env.OIDC_CALLBACK_URL || (publicUrl ? `${publicUrl}/callback` : null),

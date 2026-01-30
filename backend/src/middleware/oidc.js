@@ -319,6 +319,7 @@ const configureOidc = async (app) => {
             sameSite: 'Lax',
             secure: eocCookieSecure,
             httpOnly: true,
+            maxAge: (envAuthConfig && envAuthConfig.sessionMaxAgeMs) || 30 * 24 * 60 * 60 * 1000, // Default: 30 days
           },
         },
         afterCallback: createAfterCallbackHandler(oidc, envAuthConfig),

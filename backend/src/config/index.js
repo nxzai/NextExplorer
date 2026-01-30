@@ -118,6 +118,7 @@ const authMode = determineAuthMode();
 const auth = {
   enabled: authMode === 'disabled' ? false : env.AUTH_ENABLED !== false,
   sessionSecret: env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
+  sessionMaxAgeMs: env.SESSION_MAX_AGE_DAYS * 24 * 60 * 60 * 1000, // Convert days to milliseconds
   mode: authMode,
   oidc: {
     enabled: env.OIDC_ENABLED ?? null,

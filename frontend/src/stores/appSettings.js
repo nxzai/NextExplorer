@@ -115,6 +115,14 @@ export const useAppSettings = defineStore('appSettings', () => {
     }
   };
 
+  const ensureLoaded = async () => {
+    if (loaded.value || loading.value) {
+      return state.value;
+    }
+    await load();
+    return state.value;
+  };
+
   const save = async (partial) => {
     lastError.value = null;
     try {
@@ -169,6 +177,7 @@ export const useAppSettings = defineStore('appSettings', () => {
     loading, 
     lastError, 
     load, 
+    ensureLoaded,
     loadBranding, 
     save 
   };

@@ -139,4 +139,4 @@ docs/.vitepress/dist
 .DS_Store
 
 docker-compose.yml
-docker-compose-dev.yml
+docker-compose.dev.yml

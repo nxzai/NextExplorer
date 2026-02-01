@@ -333,19 +333,9 @@ export const useFileStore = defineStore('fileStore', () => {
       return null;
     }
 
-    // Respect app settings: if thumbnails disabled, skip
-    // Note: For non-admin users, system settings (thumbnails) may not be available
-    // In that case, we default to showing thumbnails (fail open)
     try {
       const appSettings = useAppSettings();
-      // Check system settings first (if available - admin users only)
-      // If system thumbnails are disabled, don't show thumbnails regardless of user preference
-      if (appSettings.systemSettings?.thumbnails?.enabled === false) {
-        return null;
-      }
-      // Check user preference for showing thumbnails
-      // For non-admin users, this is the only check (systemSettings won't exist)
-      if (appSettings.userSettings?.showThumbnails === false) {
+      if (appSettings.thumbnailsEnabledForSession === false) {
         return null;
       }
     } catch (e) {
@@ -470,6 +460,9 @@ export const useFileStore = defineStore('fileStore', () => {
           if (!incoming.thumbnail && prevThumbnail) {
             existing.thumbnail = prevThumbnail;
           }
+          // `supportsThumbnail` can be toggled by system settings; if the backend does not
+          // include it for an item, treat it as false so we don't keep stale truthy values.
+          existing.supportsThumbnail = Boolean(incoming.supportsThumbnail);
           merged.push(existing);
         } else {
           merged.push(incoming);

@@ -7,6 +7,7 @@ export const useAppSettings = defineStore('appSettings', () => {
   const loaded = ref(false);
   const loading = ref(false);
   const lastError = ref(null);
+  const authStore = useAuthStore();
   
   // Three-tier settings structure
   const publicSettings = ref({
@@ -32,6 +33,24 @@ export const useAppSettings = defineStore('appSettings', () => {
     thumbnails: systemSettings.value.thumbnails,
     access: systemSettings.value.access,
   }));
+
+  // Whether thumbnails should be shown/requested for the current session.
+  // - System toggle (admin) applies globally when known.
+  // - User preference applies only when a user is authenticated.
+  // - When settings aren't loaded (e.g. guest/share sessions), fail open and rely on
+  //   backend-provided `supportsThumbnail` + thumbnail endpoint behavior.
+  const thumbnailsEnabledForSession = computed(() => {
+    if (loaded.value && systemSettings.value?.thumbnails?.enabled === false) {
+      return false;
+    }
+
+    const hasUser = Boolean(authStore.currentUser);
+    if (loaded.value && hasUser && userSettings.value?.showThumbnails === false) {
+      return false;
+    }
+
+    return true;
+  });
 
   // Load public branding (no auth required) - can be called on login page
   const loadBranding = async () => {
@@ -176,6 +195,7 @@ export const useAppSettings = defineStore('appSettings', () => {
     loaded, 
     loading, 
     lastError, 
+    thumbnailsEnabledForSession,
     load, 
     ensureLoaded,
     loadBranding, 

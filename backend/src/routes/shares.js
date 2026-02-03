@@ -21,9 +21,7 @@ const {
   trackShareAccess,
   getShareStats,
 } = require('../services/sharesService');
-const {
-  createGuestSession,
-} = require('../services/guestSessionService');
+const { createGuestSession } = require('../services/guestSessionService');
 const { parsePathSpace } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
 const { resolvePathWithAccess } = require('../services/accessManager');

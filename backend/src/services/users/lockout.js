@@ -1,5 +1,4 @@
 const { getDb } = require('../db');
-const { normalizeEmail } = require('./utils');
 
 // Lockout policy
 const MAX_FAILED_ATTEMPTS = Number(process.env.AUTH_MAX_FAILED || 5);

@@ -116,6 +116,7 @@ const getVolumeAccess = async (context, relativePath, options = {}) => {
 /**
  * Get access info for personal paths
  */
+// eslint-disable-next-line no-unused-vars
 const getPersonalAccess = async (context, relativePath) => {
   const { user, guestSession } = context;
 

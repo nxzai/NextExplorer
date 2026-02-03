@@ -26,7 +26,7 @@ const buildApp = (envContext) => {
   });
 
   app.use('/api/auth', authRoutes);
-  app.use((err, _req, res, _next) => {
+  app.use((err, _req, res) => {
     res.status(err.status || 500).json({ error: err.message });
   });
   return app;

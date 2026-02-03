@@ -114,28 +114,6 @@ const getUserAuthMethods = async (userId) => {
   return db.prepare('SELECT * FROM auth_methods WHERE user_id = ? AND enabled = 1').all(userId);
 };
 
-// Verify local password for a user
-const verifyLocalPassword = async ({ userId, password }) => {
-  const db = await getDb();
-  const method = db
-    .prepare(
-      `
-    SELECT * FROM auth_methods
-    WHERE user_id = ? AND method_type = 'local_password' AND enabled = 1
-  `
-    )
-    .get(userId);
-
-  if (!method || !method.password_hash) return false;
-
-  const ok = bcrypt.compareSync(password || '', method.password_hash);
-  if (ok) {
-    // Update last_used_at
-    db.prepare('UPDATE auth_methods SET last_used_at = ? WHERE id = ?').run(nowIso(), method.id);
-  }
-  return ok;
-};
-
 // Attempt local login with email + password
 const attemptLocalLogin = async ({ email, password }) => {
   const normEmail = normalizeEmail(email);

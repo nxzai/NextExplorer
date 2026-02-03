@@ -1,3 +1,4 @@
+/* eslint-env node */
 const http = require('http');
 
 const options = {

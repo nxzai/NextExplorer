@@ -4,7 +4,6 @@ import XHRUpload from '@uppy/xhr-upload';
 import { useUppyStore } from '@/stores/uppyStore';
 import { useFileStore } from '@/stores/fileStore';
 import { apiBase, normalizePath } from '@/api';
-import { useAuthStore } from '@/stores/auth';
 import { isDisallowedUpload } from '@/utils/uploads';
 import DropTarget from '@uppy/drop-target';
 
@@ -12,7 +11,6 @@ export function useFileUploader() {
   // Filtering is centralized in utils/uploads
   const uppyStore = useUppyStore();
   const fileStore = useFileStore();
-  const authStore = useAuthStore();
   const inputRef = ref(null);
   const files = ref([]);
 

@@ -1,6 +1,5 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const path = require('node:path');
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');

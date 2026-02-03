@@ -8,7 +8,6 @@ const { normalizeRelativePath } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
 const { excludedFiles, search: searchConfig } = require('../config/index');
 const { resolvePathWithAccess, getAccessInfo } = require('../services/accessManager');
-const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const { ValidationError, NotFoundError, ForbiddenError } = require('../errors/AppError');
 const { createPermissionResolver } = require('../services/accessControlService');

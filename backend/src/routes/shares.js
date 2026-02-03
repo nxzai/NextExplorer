@@ -23,10 +23,8 @@ const {
 } = require('../services/sharesService');
 const {
   createGuestSession,
-  getGuestSession,
-  isGuestSessionValid,
 } = require('../services/guestSessionService');
-const { resolveLogicalPath, parsePathSpace } = require('../utils/pathUtils');
+const { parsePathSpace } = require('../utils/pathUtils');
 const { pathExists } = require('../utils/fsUtils');
 const { resolvePathWithAccess } = require('../services/accessManager');
 const { extensions } = require('../config/index');

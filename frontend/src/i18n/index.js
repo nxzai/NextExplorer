@@ -25,7 +25,9 @@ function detectLocale(supportedLocales) {
   try {
     const saved = localStorage.getItem('locale');
     if (saved && supportedLocales.includes(saved)) return saved;
-  } catch (_) {}
+  } catch (_) {
+    // Ignore localStorage errors (e.g., in private browsing mode)
+  }
 
   const prefs =
     typeof navigator !== 'undefined' &&

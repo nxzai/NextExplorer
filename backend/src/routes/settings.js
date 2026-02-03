@@ -5,14 +5,12 @@ const {
   setUserSetting,
   setSystemSetting,
   getSettings,
-  setSettings,
 } = require('../services/settingsService');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const path = require('path');
 const fs = require('fs').promises;
 const multer = require('multer');
-const { ForbiddenError } = require('../errors/AppError');
 
 const router = express.Router();
 

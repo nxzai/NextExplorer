@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs/promises');
-const fss = require('fs');
 const archiver = require('archiver');
 const { normalizeRelativePath } = require('../../utils/pathUtils');
 const { resolvePathWithAccess } = require('../../services/accessManager');

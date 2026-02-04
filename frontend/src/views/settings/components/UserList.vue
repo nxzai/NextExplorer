@@ -32,9 +32,9 @@ const getAuthLabel = (auth) => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
+  <div class="space-y-6">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between">
       <div>
         <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
           {{ t('titles.userManagement') }}
@@ -52,14 +52,14 @@ const getAuthLabel = (auth) => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex-1 flex items-center justify-center">
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="animate-pulse text-zinc-400">{{ t('common.loading') }}...</div>
     </div>
 
     <!-- Empty State -->
     <div
       v-else-if="users.length === 0"
-      class="flex-1 flex flex-col items-center justify-center text-zinc-500"
+      class="flex flex-col items-center justify-center py-12 text-zinc-500"
     >
       <UserCircleIcon class="w-12 h-12 mb-2 opacity-50" />
       <p>{{ t('settings.users.noUsers') }}</p>

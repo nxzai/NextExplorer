@@ -104,11 +104,11 @@
     "username": "Defaults to email prefix",
     "password": "Choose a strong password",
     "confirmPassword": "Re-type your password",
+    "currentPassword": "Enter your current password",
     "label": "My Shared Files",
     "path": "e.g. Pictures/Holidays",
     "search": "Search files and folders…",
-    "volumeLabel": "e.g. Documents, Projects, Media",
-    "currentPassword": "Enter your current password"
+    "volumeLabel": "e.g. Documents, Projects, Media"
   },
   "loading": {
     "default": "Loading…",

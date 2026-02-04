@@ -50,50 +50,85 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="space-y-4">
-    <h2 class="text-lg font-semibold">{{ t('titles.changePassword') }}</h2>
-    <p v-if="auth.currentUser?.provider !== 'local'" class="text-sm opacity-75">
-      {{ t('settings.password.notLocalUser') }}
-    </p>
-    <form v-else class="space-y-3 max-w-md" @submit.prevent="submit">
-      <div>
-        <label class="block text-sm mb-1">{{ t('settings.password.current') }}</label>
-        <input
-          v-model="currentPassword"
-          type="password"
-          class="w-full rounded-sm border border-white/10 bg-transparent px-3 py-2"
-          autocomplete="current-password"
-        />
-      </div>
-      <div>
-        <label class="block text-sm mb-1">{{ t('settings.password.new') }}</label>
-        <input
-          v-model="newPassword"
-          type="password"
-          class="w-full rounded-sm border border-white/10 bg-transparent px-3 py-2"
-          autocomplete="new-password"
-        />
-      </div>
-      <div>
-        <label class="block text-sm mb-1">{{ t('settings.password.confirm') }}</label>
-        <input
-          v-model="confirmPassword"
-          type="password"
-          class="w-full rounded-sm border border-white/10 bg-transparent px-3 py-2"
-          autocomplete="new-password"
-        />
-      </div>
-      <div class="flex gap-3 items-center">
-        <button
-          type="submit"
-          class="rounded-sm bg-accent text-black px-4 py-2 disabled:opacity-50"
-          :disabled="busy || !canSubmit()"
+  <div class="space-y-6">
+    <!-- Header -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+        {{ t('titles.changePassword') }}
+      </h2>
+      <p
+        v-if="auth.currentUser?.provider !== 'local'"
+        class="text-sm text-zinc-500 dark:text-zinc-400 mt-1"
+      >
+        {{ t('settings.password.notLocalUser') }}
+      </p>
+    </div>
+
+    <!-- Content -->
+    <div
+      v-if="auth.currentUser?.provider === 'local'"
+      class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6"
+    >
+      <form class="space-y-6 max-w-md" @submit.prevent="submit">
+        <div
+          v-if="errorMsg"
+          class="p-4 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md text-sm"
         >
-          {{ busy ? t('common.updating') : t('settings.password.update') }}
-        </button>
-        <span v-if="successMsg" class="text-green-500 text-sm">{{ successMsg }}</span>
-        <span v-else-if="errorMsg" class="text-red-500 text-sm">{{ errorMsg }}</span>
-      </div>
-    </form>
+          {{ errorMsg }}
+        </div>
+        <div
+          v-if="successMsg"
+          class="p-4 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-md text-sm"
+        >
+          {{ successMsg }}
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{
+            t('settings.password.current')
+          }}</label>
+          <input
+            v-model="currentPassword"
+            type="password"
+            class="block w-full rounded-md border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm p-2 border"
+            autocomplete="current-password"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{
+            t('settings.password.new')
+          }}</label>
+          <input
+            v-model="newPassword"
+            type="password"
+            class="block w-full rounded-md border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm p-2 border"
+            autocomplete="new-password"
+          />
+          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            {{ t('errors.passwordMin') }}
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{
+            t('settings.password.confirm')
+          }}</label>
+          <input
+            v-model="confirmPassword"
+            type="password"
+            class="block w-full rounded-md border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm p-2 border"
+            autocomplete="new-password"
+          />
+        </div>
+        <div class="flex gap-3 items-center pt-2">
+          <button
+            type="submit"
+            class="inline-flex justify-center rounded-md border border-transparent bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50"
+            :disabled="busy || !canSubmit()"
+          >
+            {{ busy ? t('common.updating') : t('settings.password.update') }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>

@@ -75,7 +75,7 @@ const getAuthLabel = (auth) => {
           v-for="user in users"
           :key="user.id"
           @click="$emit('select', user)"
-          class="group relative flex items-center justify-between px-6 py-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer transition-colors duration-150 ease-in-out"
+          class="group relative flex items-center justify-between px-6 py-4 hover:bg-zinc-50 dark:hover:bg-zinc-950/30 cursor-pointer transition-colors duration-150 ease-in-out"
         >
           <div class="flex items-center gap-4 min-w-0">
             <!-- Avatar -->

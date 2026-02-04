@@ -198,7 +198,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="space-y-6 p-4">
+  <div class="space-y-6">
     <div
       v-if="errorMsg"
       class="p-4 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md"

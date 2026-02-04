@@ -82,92 +82,127 @@ const save = async () => {
       </div>
     </div>
 
-    <section class="rounded-lg p-4">
-      <h2 class="mb-2 text-base font-semibold">{{ t('titles.thumbnails') }}</h2>
-      <p class="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
+    <!-- Header -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+        {{ t('titles.thumbnails') }}
+      </h2>
+      <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
         {{ t('settings.thumbs.subtitle') }}
       </p>
+    </div>
 
-      <div class="flex items-center justify-between py-2">
-        <div>
-          <div class="font-medium">{{ t('settings.thumbs.enable') }}</div>
-          <div class="text-sm text-neutral-500 dark:text-neutral-400">
-            {{ t('settings.thumbs.enableHelp') }}
+    <!-- Content -->
+    <div
+      class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6"
+    >
+      <div class="space-y-6">
+        <div class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+          <div>
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.thumbs.enable') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.thumbs.enableHelp') }}
+            </div>
+          </div>
+          <label class="inline-flex cursor-pointer items-center">
+            <input type="checkbox" v-model="local.enabled" class="peer sr-only" />
+            <div
+              class="peer relative h-6 w-11 rounded-full bg-zinc-200 transition-colors peer-checked:bg-zinc-900 dark:bg-zinc-700 dark:peer-checked:bg-zinc-100"
+            >
+              <div
+                class="absolute left-[2px] top-[2px] h-5 w-5 rounded-full bg-white transition-transform peer-checked:translate-x-5"
+              ></div>
+            </div>
+          </label>
+        </div>
+
+        <div
+          class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+          :class="{ 'opacity-60 pointer-events-none': !local.enabled }"
+        >
+          <div>
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.thumbs.quality') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.thumbs.qualityHelp') }}
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <input
+              type="range"
+              min="1"
+              max="100"
+              v-model.number="local.quality"
+              class="w-64 h-2 rounded-lg appearance-none bg-zinc-200 dark:bg-zinc-700 accent-zinc-900 dark:accent-zinc-100"
+            />
+            <input
+              type="number"
+              min="1"
+              max="100"
+              v-model.number="local.quality"
+              class="w-20 rounded-md border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm p-2 border text-center"
+            />
           </div>
         </div>
-        <label class="inline-flex cursor-pointer items-center">
-          <input type="checkbox" v-model="local.enabled" class="peer sr-only" />
-          <div
-            class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:mt-[2px] after:ml-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:bg-blue-600 peer-checked:after:translate-x-full"
-          ></div>
-        </label>
-      </div>
 
-      <div
-        class="flex items-center justify-between py-2"
-        :class="{ 'opacity-60 pointer-events-none': !local.enabled }"
-      >
-        <div>
-          <div class="font-medium">{{ t('settings.thumbs.quality') }}</div>
-          <div class="text-sm text-neutral-500 dark:text-neutral-400">
-            {{ t('settings.thumbs.qualityHelp') }}
+        <div
+          class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+          :class="{ 'opacity-60 pointer-events-none': !local.enabled }"
+        >
+          <div>
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.thumbs.maxDim') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.thumbs.maxDimHelp') }}
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <input
+              type="number"
+              min="64"
+              max="1024"
+              step="1"
+              v-model.number="local.size"
+              class="w-24 rounded-md border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm p-2 border text-center"
+            />
+            <span class="text-sm text-zinc-500 dark:text-zinc-400">px</span>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <input type="range" min="1" max="100" v-model.number="local.quality" class="w-64" />
-          <input
-            type="number"
-            min="1"
-            max="100"
-            v-model.number="local.quality"
-            class="w-16 rounded-md border border-white/10 bg-transparent px-2 py-1"
-          />
-        </div>
-      </div>
 
-      <div
-        class="flex items-center justify-between py-2"
-        :class="{ 'opacity-60 pointer-events-none': !local.enabled }"
-      >
-        <div>
-          <div class="font-medium">{{ t('settings.thumbs.maxDim') }}</div>
-          <div class="text-sm text-neutral-500 dark:text-neutral-400">
-            {{ t('settings.thumbs.maxDimHelp') }}
+        <div
+          class="flex items-center justify-between py-3"
+          :class="{ 'opacity-60 pointer-events-none': !local.enabled }"
+        >
+          <div>
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.thumbs.concurrency') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.thumbs.concurrencyHelp') }}
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <input
+              type="range"
+              min="1"
+              max="50"
+              v-model.number="local.concurrency"
+              class="w-64 h-2 rounded-lg appearance-none bg-zinc-200 dark:bg-zinc-700 accent-zinc-900 dark:accent-zinc-100"
+            />
+            <input
+              type="number"
+              min="1"
+              max="50"
+              v-model.number="local.concurrency"
+              class="w-20 rounded-md border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm p-2 border text-center"
+            />
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <input
-            type="number"
-            min="64"
-            max="1024"
-            step="1"
-            v-model.number="local.size"
-            class="w-24 rounded-md border border-white/10 bg-transparent px-2 py-1"
-          />
-        </div>
       </div>
-
-      <div
-        class="flex items-center justify-between py-2"
-        :class="{ 'opacity-60 pointer-events-none': !local.enabled }"
-      >
-        <div>
-          <div class="font-medium">{{ t('settings.thumbs.concurrency') }}</div>
-          <div class="text-sm text-neutral-500 dark:text-neutral-400">
-            {{ t('settings.thumbs.concurrencyHelp') }}
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <input type="range" min="1" max="50" v-model.number="local.concurrency" class="w-64" />
-          <input
-            type="number"
-            min="1"
-            max="50"
-            v-model.number="local.concurrency"
-            class="w-16 rounded-md border border-white/10 bg-transparent px-2 py-1"
-          />
-        </div>
-      </div>
-    </section>
+    </div>
   </div>
 </template>

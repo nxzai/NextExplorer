@@ -29,4 +29,3 @@ COPY frontend/package.json ./frontend/package.json
 RUN npm install --include=optional
 
 EXPOSE 3000 3001
-

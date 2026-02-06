@@ -1,9 +1,7 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const express = require('express');
-const request = require('supertest');
-
-const { clearModuleCache } = require('../helpers/env-test-utils');
+import { describe, it, expect } from 'vitest';
+import express from 'express';
+import request from 'supertest';
+import { clearModuleCache } from '../helpers/env-test-utils.js';
 
 const buildApp = () => {
   clearModuleCache('src/routes/health');
@@ -14,16 +12,24 @@ const buildApp = () => {
   return app;
 };
 
-test('GET /healthz returns ok', async () => {
-  const app = buildApp();
-  const response = await request(app).get('/healthz').expect(200);
+describe('Health Routes', () => {
+  describe('GET /healthz', () => {
+    it('should return ok status', async () => {
+      const app = buildApp();
+      const response = await request(app).get('/healthz');
 
-  assert.deepEqual(response.body, { status: 'ok' });
-});
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
 
-test('GET /readyz returns ready', async () => {
-  const app = buildApp();
-  const response = await request(app).get('/readyz').expect(200);
+  describe('GET /readyz', () => {
+    it('should return ready status', async () => {
+      const app = buildApp();
+      const response = await request(app).get('/readyz');
 
-  assert.deepEqual(response.body, { status: 'ready' });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ status: 'ready' });
+    });
+  });
 });

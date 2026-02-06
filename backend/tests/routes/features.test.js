@@ -1,10 +1,9 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const express = require('express');
-const request = require('supertest');
+import { describe, it, expect, afterEach } from 'vitest';
+import express from 'express';
+import request from 'supertest';
+import { clearModuleCache, overrideEnv } from '../helpers/env-test-utils.js';
 
 const backendPackage = require('../../package.json');
-const { clearModuleCache, overrideEnv } = require('../helpers/env-test-utils');
 
 const buildApp = () => {
   clearModuleCache('src/config/env');
@@ -17,71 +16,78 @@ const buildApp = () => {
   return app;
 };
 
-test('features route exposes default feature flags and version metadata', async () => {
-  const restoreEnv = overrideEnv({
-    ONLYOFFICE_URL: undefined,
-    ONLYOFFICE_FILE_EXTENSIONS: undefined,
-    COLLABORA_URL: undefined,
-    COLLABORA_SECRET: undefined,
-    COLLABORA_FILE_EXTENSIONS: undefined,
-    EDITOR_EXTENSIONS: undefined,
-    SHOW_VOLUME_USAGE: undefined,
-    SKIP_HOME: undefined,
-    GIT_COMMIT: undefined,
-    GIT_BRANCH: undefined,
-    REPO_URL: undefined,
+describe('Features Routes', () => {
+  let restoreEnv;
+
+  afterEach(() => {
+    if (restoreEnv) {
+      restoreEnv();
+      restoreEnv = null;
+    }
   });
 
-  try {
-    const app = buildApp();
-    const response = await request(app).get('/api/features').expect(200);
+  describe('GET /api/features', () => {
+    it('should expose default feature flags and version metadata', async () => {
+      restoreEnv = overrideEnv({
+        ONLYOFFICE_URL: undefined,
+        ONLYOFFICE_FILE_EXTENSIONS: undefined,
+        COLLABORA_URL: undefined,
+        COLLABORA_SECRET: undefined,
+        COLLABORA_FILE_EXTENSIONS: undefined,
+        EDITOR_EXTENSIONS: undefined,
+        SHOW_VOLUME_USAGE: undefined,
+        SKIP_HOME: undefined,
+        GIT_COMMIT: undefined,
+        GIT_BRANCH: undefined,
+        REPO_URL: undefined,
+      });
 
-    assert.strictEqual(response.body.onlyoffice.enabled, false);
-    assert.deepEqual(response.body.onlyoffice.extensions, []);
-    assert.strictEqual(response.body.collabora.enabled, false);
-    assert.deepEqual(response.body.collabora.extensions, []);
-    assert.deepEqual(response.body.editor.extensions, []);
-    assert.strictEqual(response.body.volumeUsage.enabled, false);
-    assert.strictEqual(response.body.navigation.skipHome, false);
-    assert.strictEqual(response.body.version.app, backendPackage.version);
-    assert.strictEqual(response.body.version.gitCommit, '');
-    assert.strictEqual(response.body.version.gitBranch, '');
-    assert.strictEqual(response.body.version.repoUrl, '');
-  } finally {
-    restoreEnv();
-  }
-});
+      const app = buildApp();
+      const response = await request(app).get('/api/features');
 
-test('features route reflects enabled editors, onlyoffice, and volume usage', async () => {
-  const restoreEnv = overrideEnv({
-    ONLYOFFICE_URL: 'https://desk.example.com',
-    ONLYOFFICE_FILE_EXTENSIONS: '.docx, .XLSX',
-    COLLABORA_URL: 'https://collabora.example.com',
-    COLLABORA_SECRET: 'collabora-secret',
-    COLLABORA_FILE_EXTENSIONS: '.odt, .ODS',
-    EDITOR_EXTENSIONS: '.MD,.txt',
-    SHOW_VOLUME_USAGE: 'true',
-    SKIP_HOME: 'true',
-    GIT_COMMIT: 'abc123',
-    GIT_BRANCH: 'main',
-    REPO_URL: 'https://example.com/repo',
+      expect(response.status).toBe(200);
+      expect(response.body.onlyoffice.enabled).toBe(false);
+      expect(response.body.onlyoffice.extensions).toEqual([]);
+      expect(response.body.collabora.enabled).toBe(false);
+      expect(response.body.collabora.extensions).toEqual([]);
+      expect(response.body.editor.extensions).toEqual([]);
+      expect(response.body.volumeUsage.enabled).toBe(false);
+      expect(response.body.navigation.skipHome).toBe(false);
+      expect(response.body.version.app).toBe(backendPackage.version);
+      expect(response.body.version.gitCommit).toBe('');
+      expect(response.body.version.gitBranch).toBe('');
+      expect(response.body.version.repoUrl).toBe('');
+    });
+
+    it('should reflect enabled editors, onlyoffice, and volume usage', async () => {
+      restoreEnv = overrideEnv({
+        ONLYOFFICE_URL: 'https://desk.example.com',
+        ONLYOFFICE_FILE_EXTENSIONS: '.docx, .XLSX',
+        COLLABORA_URL: 'https://collabora.example.com',
+        COLLABORA_SECRET: 'collabora-secret',
+        COLLABORA_FILE_EXTENSIONS: '.odt, .ODS',
+        EDITOR_EXTENSIONS: '.MD,.txt',
+        SHOW_VOLUME_USAGE: 'true',
+        SKIP_HOME: 'true',
+        GIT_COMMIT: 'abc123',
+        GIT_BRANCH: 'main',
+        REPO_URL: 'https://example.com/repo',
+      });
+
+      const app = buildApp();
+      const response = await request(app).get('/api/features');
+
+      expect(response.status).toBe(200);
+      expect(response.body.onlyoffice.enabled).toBe(true);
+      expect(response.body.onlyoffice.extensions).toEqual(['.docx', '.xlsx']);
+      expect(response.body.collabora.enabled).toBe(true);
+      expect(response.body.collabora.extensions).toEqual(['.odt', '.ods']);
+      expect(response.body.editor.extensions).toEqual(['.md', '.txt']);
+      expect(response.body.volumeUsage.enabled).toBe(true);
+      expect(response.body.navigation.skipHome).toBe(true);
+      expect(response.body.version.gitCommit).toBe('abc123');
+      expect(response.body.version.gitBranch).toBe('main');
+      expect(response.body.version.repoUrl).toBe('https://example.com/repo');
+    });
   });
-
-  try {
-    const app = buildApp();
-    const response = await request(app).get('/api/features').expect(200);
-
-    assert.strictEqual(response.body.onlyoffice.enabled, true);
-    assert.deepEqual(response.body.onlyoffice.extensions, ['.docx', '.xlsx']);
-    assert.strictEqual(response.body.collabora.enabled, true);
-    assert.deepEqual(response.body.collabora.extensions, ['.odt', '.ods']);
-    assert.deepEqual(response.body.editor.extensions, ['.md', '.txt']);
-    assert.strictEqual(response.body.volumeUsage.enabled, true);
-    assert.strictEqual(response.body.navigation.skipHome, true);
-    assert.strictEqual(response.body.version.gitCommit, 'abc123');
-    assert.strictEqual(response.body.version.gitBranch, 'main');
-    assert.strictEqual(response.body.version.repoUrl, 'https://example.com/repo');
-  } finally {
-    restoreEnv();
-  }
 });

@@ -76,7 +76,8 @@ The sharing system (toolbar **Share** button, guest links such as `/share/:token
 
 | Variable            | Default | Description                                                                                                                                                                                                                                                                                                  |
 | ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `EDITOR_EXTENSIONS` | _empty_ | Comma-separated list of additional file extensions to support in the inline text editor (e.g., `toml,proto,graphql`). These are **added to** the built-in defaults (txt, md, json, js, ts, py, etc.), not replacing them. Changes take effect immediately on container restart—no frontend rebuild required. |
+| `EDITOR_EXTENSIONS` | _empty_ | Comma-separated list of additional file extensions to support in the inline text editor (e.g., `toml,proto,graphql` or `.toml,.proto`). These are **added to** the built-in defaults (txt, md, json, js, ts, py, etc.), not replacing them. Changes take effect on container restart—no frontend rebuild required. |
+| `EDITOR_MAX_FILESIZE` | `2M` | Maximum file size allowed to open in the inline text editor. Accepts a byte count or a size with `K`, `M`, `G`, `T` suffix (base 1024), e.g. `512K`, `2M`, `1G`. Files larger than this will show “This file is too large to open in the text editor.” |
 
 ## OnlyOffice & thumbnails
 

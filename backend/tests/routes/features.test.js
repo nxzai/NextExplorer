@@ -82,7 +82,7 @@ describe('Features Routes', () => {
       expect(response.body.onlyoffice.extensions).toEqual(['.docx', '.xlsx']);
       expect(response.body.collabora.enabled).toBe(true);
       expect(response.body.collabora.extensions).toEqual(['.odt', '.ods']);
-      expect(response.body.editor.extensions).toEqual(['.md', '.txt']);
+      expect(response.body.editor.extensions).toEqual(['md', 'txt']);
       expect(response.body.volumeUsage.enabled).toBe(true);
       expect(response.body.navigation.skipHome).toBe(true);
       expect(response.body.version.gitCommit).toBe('abc123');

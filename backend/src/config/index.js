@@ -179,13 +179,14 @@ const collabora = {
 // --- Editor ---
 const editorMaxFileSizeBytes = (() => {
   const parsed = parseByteSize(env.EDITOR_MAX_FILESIZE);
-  // Default: 1 MiB if not configured or invalid
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1 * 1024 * 1024;
+  // Default: 2 MiB if not configured or invalid
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 2 * 1024 * 1024;
 })();
 
 const editor = {
   extensions: env.EDITOR_EXTENSIONS.split(',')
     .map((s) => s.trim().toLowerCase())
+    .map((s) => (s.startsWith('.') ? s.slice(1) : s))
     .filter(Boolean),
   maxFileSizeBytes: editorMaxFileSizeBytes,
 };

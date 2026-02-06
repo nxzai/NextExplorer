@@ -2,7 +2,6 @@
   "name": "finder",
   "version": "2.1.2",
   "description": "explorer",
-  "type": "module",
   "main": "src/server.js",
   "scripts": {
     "download_samples": "node src/scripts/downloadSamples.js",

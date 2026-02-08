@@ -83,4 +83,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 EXPOSE 3000
 ENTRYPOINT ["entrypoint.sh"]
-CMD ["node", "src/app.js"]
+CMD ["node", "src/server.js"]

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { getDb } = require('../db');
+const logger = require('../../utils/logger');
 const { nowIso, toClientUser, generateId, normalizeEmail } = require('./utils');
 const { isLocked, incrementFailedAttempts, clearLock, getLock } = require('./lockout');
 
@@ -93,7 +94,7 @@ const createLocalUser = async ({ email, password, username, displayName, roles =
     }
 
     // Auto-link: Add password auth to existing user
-    console.log(`[Auth] Adding password auth to existing user: ${user.email}`);
+    logger.info({ email: user.email }, '[Auth] Adding password auth to existing user');
 
     const hash = bcrypt.hashSync(password, 12);
     const authId = generateId();

@@ -1,4 +1,5 @@
 import { isPreviewableVideo } from '@/config/media';
+import logger from '@/utils/logger';
 
 /**
  * Video preview plugin - simplified structure
@@ -29,10 +30,10 @@ export const videoPreviewPlugin = () => ({
 
   // Optional lifecycle hooks
   onOpen: (context) => {
-    console.log('Opening video:', context.item.name);
+    logger.debug('Opening video', context.item.name);
   },
 
   onClose: (context) => {
-    console.log('Closing video:', context.item.name);
+    logger.debug('Closing video', context.item.name);
   },
 });

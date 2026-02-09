@@ -5,6 +5,7 @@ import { ShareIcon } from '@heroicons/vue/24/outline';
 import { useFileStore } from '@/stores/fileStore';
 import { normalizePath } from '@/api';
 import ShareDialog from '@/components/ShareDialog.vue';
+import logger from '@/utils/logger';
 
 const { t } = useI18n();
 const fileStore = useFileStore();
@@ -40,7 +41,7 @@ function openShareDialog() {
 
 function handleShareCreated(share) {
   // Optionally handle the created share (e.g., show notification)
-  console.log('Share created:', share);
+  logger.info('Share created', share);
 }
 </script>
 

@@ -13,6 +13,7 @@ import {
   ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline';
 import LoadingIcon from '@/icons/LoadingIcon.vue';
+import logger from '@/utils/logger';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -47,16 +48,16 @@ async function loadShareInfo() {
   loading.value = true;
   error.value = '';
 
-  console.log('[DEBUG] Loading share info for token:', shareToken.value);
+  logger.debug('Loading share info for token', shareToken.value);
 
   try {
     const info = await getShareInfo(shareToken.value);
-    console.log('[DEBUG] Share info loaded:', info);
+    logger.debug('Share info loaded', info);
     shareInfo.value = info;
 
     // If share doesn't require password and is public, auto-access
     if (!info.hasPassword && info.sharingType === 'anyone' && !info.isExpired) {
-      console.log('[DEBUG] Auto-accessing share (no password required)');
+      logger.debug('Auto-accessing share (no password required)');
       await handleAutoAccess();
     }
 
@@ -74,7 +75,7 @@ async function loadShareInfo() {
       }
     }
   } catch (err) {
-    console.error('[DEBUG] Failed to load share info:', err);
+    logger.error({ err }, 'Failed to load share info');
     error.value = err.message || 'Failed to load share information';
   } finally {
     loading.value = false;
@@ -89,25 +90,25 @@ async function handleUserAccess() {
       params: { path: `share/${shareToken.value}` },
     });
   } catch (err) {
-    console.error('[DEBUG] User access failed:', err);
+    logger.error({ err }, 'User access failed');
     error.value = err.message || 'Failed to access share';
   }
 }
 
 async function handleAutoAccess() {
-  console.log('[DEBUG] handleAutoAccess called');
+  logger.debug('handleAutoAccess called');
 
   try {
     const result = await accessShare(shareToken.value);
-    console.log('[DEBUG] Access result:', result);
+    logger.debug('Access result', result);
 
     if (result.guestSessionId) {
-      console.log('[DEBUG] Setting guest session:', result.guestSessionId);
+      logger.debug('Setting guest session', result.guestSessionId);
       setGuestSession(result.guestSessionId);
     }
 
     const targetPath = `share/${shareToken.value}`;
-    console.log('[DEBUG] Redirecting to FolderView with path:', targetPath);
+    logger.debug('Redirecting to FolderView with path', targetPath);
 
     // Redirect to browse the share
     router.push({
@@ -115,7 +116,7 @@ async function handleAutoAccess() {
       params: { path: targetPath },
     });
   } catch (err) {
-    console.error('[DEBUG] Auto-access failed:', err);
+    logger.error({ err }, 'Auto-access failed');
     error.value = err.message || 'Failed to access share';
   }
 }
@@ -129,20 +130,20 @@ async function handlePasswordSubmit() {
   isVerifying.value = true;
   verificationError.value = '';
 
-  console.log('[DEBUG] Verifying password for share:', shareToken.value);
+  logger.debug('Verifying password for share', shareToken.value);
 
   try {
     const result = await verifySharePassword(shareToken.value, password.value);
-    console.log('[DEBUG] Password verification result:', result);
+    logger.debug('Password verification result', result);
 
     if (result.success) {
       if (result.guestSessionId) {
-        console.log('[DEBUG] Setting guest session:', result.guestSessionId);
+        logger.debug('Setting guest session', result.guestSessionId);
         setGuestSession(result.guestSessionId);
       }
 
       const targetPath = `share/${shareToken.value}`;
-      console.log('[DEBUG] Redirecting to FolderView with path:', targetPath);
+      logger.debug('Redirecting to FolderView with path', targetPath);
 
       // Redirect to browse the share
       router.push({
@@ -151,14 +152,14 @@ async function handlePasswordSubmit() {
       });
     } else if (result.requiresAuth) {
       // User-specific share with password - redirect to login
-      console.log('[DEBUG] Redirecting to login (requires auth)');
+      logger.debug('Redirecting to login (requires auth)');
       router.push({
         name: 'auth-login',
         query: { redirect: `/share/${shareToken.value}` },
       });
     }
   } catch (err) {
-    console.error('[DEBUG] Password verification failed:', err);
+    logger.error({ err }, 'Password verification failed');
     verificationError.value = err.message || t('errors.invalidPassword');
   } finally {
     isVerifying.value = false;

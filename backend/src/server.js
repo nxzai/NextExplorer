@@ -6,6 +6,7 @@
 const { createApp } = require('./app');
 const { port, http } = require('./config/index');
 const logger = require('./utils/logger');
+const { printStartupBanner } = require('./utils/startupBanner');
 const terminalService = require('./services/terminalService');
 
 let server = null;
@@ -16,6 +17,11 @@ const startServer = async () => {
   const app = await createApp();
 
   server = app.listen(port, '0.0.0.0', () => {
+    const addr = server?.address?.();
+    printStartupBanner({
+      listenHost: typeof addr === 'object' && addr ? addr.address : '0.0.0.0',
+      listenPort: typeof addr === 'object' && addr ? addr.port : port,
+    });
     logger.info({ port }, 'Server is running');
     logger.debug('HTTP server listen callback executed');
   });

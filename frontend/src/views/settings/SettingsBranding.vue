@@ -3,6 +3,7 @@ import { computed, reactive, watch, ref } from 'vue';
 import { useAppSettings } from '@/stores/appSettings';
 import { useI18n } from 'vue-i18n';
 import { XMarkIcon } from '@heroicons/vue/24/solid';
+import logger from '@/utils/logger';
 
 const appSettings = useAppSettings();
 const { t } = useI18n();
@@ -91,7 +92,7 @@ const handleLogoSelect = async (event) => {
   uploadMessageType.value = '';
 
   try {
-    console.log('Starting file upload:', {
+    logger.debug('Starting file upload', {
       filename: file.name,
       size: file.size,
       type: file.type,
@@ -106,10 +107,10 @@ const handleLogoSelect = async (event) => {
       body: formData,
     });
 
-    console.log('Upload response status:', response.status);
+    logger.debug('Upload response status', response.status);
 
     const data = await response.json();
-    console.log('Upload response data:', data);
+    logger.debug('Upload response data', data);
 
     if (!response.ok) {
       throw new Error(data.error || `Upload failed: ${response.statusText}`);
@@ -120,7 +121,7 @@ const handleLogoSelect = async (event) => {
       uploadMessage.value = t('settings.branding.uploadSuccess') || 'Logo uploaded successfully!';
       uploadMessageType.value = 'success';
 
-      console.log('Logo uploaded successfully:', data.logoUrl);
+      logger.info('Logo uploaded successfully', data.logoUrl);
 
       // Auto clear message after 3 seconds
       setTimeout(() => {

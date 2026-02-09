@@ -4,6 +4,7 @@ const Database = require('better-sqlite3');
 
 const { directories, files, favorites } = require('../config');
 const { ensureDir } = require('../utils/fsUtils');
+const logger = require('../utils/logger');
 
 let dbInstance = null;
 
@@ -74,7 +75,7 @@ const migrate = (db) => {
       version = 2;
     }
     if (version < 3) {
-      console.log('[DB Migration] Migrating to v3: Email-centric authentication...');
+      logger.info('[DB Migration] Migrating to v3: Email-centric authentication...');
 
       // Create new tables
       db.exec(`
@@ -118,7 +119,7 @@ const migrate = (db) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
-      console.log(`[DB Migration] Migrating ${existingUsers.length} users...`);
+      logger.info({ userCount: existingUsers.length }, '[DB Migration] Migrating users...');
 
       for (const user of existingUsers) {
         // Generate email if missing (for old local users without email)
@@ -175,7 +176,7 @@ const migrate = (db) => {
         CREATE INDEX idx_auth_methods_type ON auth_methods(method_type);
       `);
 
-      console.log('[DB Migration] Migration to v3 completed successfully!');
+      logger.info('[DB Migration] Migration to v3 completed successfully!');
       db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run(
         'schema_version',
         String(3)
@@ -199,7 +200,7 @@ const migrate = (db) => {
       version = 3;
     }
     if (version < 4) {
-      console.log('[DB Migration] Migrating to v4: Adding favorites table...');
+      logger.info('[DB Migration] Migrating to v4: Adding favorites table...');
 
       db.exec(`
         CREATE TABLE favorites (
@@ -221,7 +222,7 @@ const migrate = (db) => {
       // Migrate existing favorites from app-config.json to SQLite
       migrateFavoritesFromJson(db);
 
-      console.log('[DB Migration] Migration to v4 completed successfully!');
+      logger.info('[DB Migration] Migration to v4 completed successfully!');
       db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run(
         'schema_version',
         String(4)
@@ -229,7 +230,7 @@ const migrate = (db) => {
       version = 4;
     }
     if (version < 5) {
-      console.log('[DB Migration] Migrating to v5: Adding shares functionality...');
+      logger.info('[DB Migration] Migrating to v5: Adding shares functionality...');
 
       db.exec(`
         CREATE TABLE shares (
@@ -282,7 +283,7 @@ const migrate = (db) => {
         CREATE INDEX idx_guest_sessions_expires ON guest_sessions(expires_at);
       `);
 
-      console.log('[DB Migration] Migration to v5 completed successfully!');
+      logger.info('[DB Migration] Migration to v5 completed successfully!');
       db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run(
         'schema_version',
         String(5)
@@ -290,7 +291,7 @@ const migrate = (db) => {
       version = 5;
     }
     if (version < 6) {
-      console.log('[DB Migration] Migrating to v6: Adding user volumes functionality...');
+      logger.info('[DB Migration] Migrating to v6: Adding user volumes functionality...');
 
       db.exec(`
         CREATE TABLE user_volumes (
@@ -308,7 +309,7 @@ const migrate = (db) => {
         CREATE UNIQUE INDEX idx_user_volumes_user_path ON user_volumes(user_id, path);
       `);
 
-      console.log('[DB Migration] Migration to v6 completed successfully!');
+      logger.info('[DB Migration] Migration to v6 completed successfully!');
       db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run(
         'schema_version',
         String(6)
@@ -316,7 +317,7 @@ const migrate = (db) => {
       version = 6;
     }
     if (version < 8) {
-      console.log('[DB Migration] Migrating to v7: Adding settings tables...');
+      logger.info('[DB Migration] Migrating to v7: Adding settings tables...');
 
       db.exec(`
         CREATE TABLE system_settings (
@@ -345,7 +346,7 @@ const migrate = (db) => {
       // Migrate existing settings from JSON to database
       migrateSettingsFromJson(db);
 
-      console.log('[DB Migration] Migration to v7 completed successfully!');
+      logger.info('[DB Migration] Migration to v7 completed successfully!');
       db.prepare('INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)').run(
         'schema_version',
         String(8)
@@ -364,7 +365,7 @@ const migrateSettingsFromJson = (db) => {
 
     // Check if app-config.json exists
     if (!fs.existsSync(jsonStoragePath)) {
-      console.log('[DB Migration] No app-config.json found, skipping settings migration');
+      logger.debug('[DB Migration] No app-config.json found, skipping settings migration');
       return;
     }
 
@@ -372,7 +373,7 @@ const migrateSettingsFromJson = (db) => {
     const oldSettings = configData.settings || {};
 
     if (!oldSettings || Object.keys(oldSettings).length === 0) {
-      console.log('[DB Migration] No settings to migrate');
+      logger.debug('[DB Migration] No settings to migrate');
       return;
     }
 
@@ -396,7 +397,7 @@ const migrateSettingsFromJson = (db) => {
         );
         migratedCount++;
       } catch (err) {
-        console.log(`[DB Migration] Error migrating branding: ${err.message}`);
+        logger.warning({ err }, '[DB Migration] Error migrating branding');
       }
     }
 
@@ -412,7 +413,7 @@ const migrateSettingsFromJson = (db) => {
         );
         migratedCount++;
       } catch (err) {
-        console.log(`[DB Migration] Error migrating thumbnails: ${err.message}`);
+        logger.warning({ err }, '[DB Migration] Error migrating thumbnails');
       }
     }
 
@@ -428,11 +429,11 @@ const migrateSettingsFromJson = (db) => {
         );
         migratedCount++;
       } catch (err) {
-        console.log(`[DB Migration] Error migrating access rules: ${err.message}`);
+        logger.warning({ err }, '[DB Migration] Error migrating access rules');
       }
     }
 
-    console.log(`[DB Migration] Migrated ${migratedCount} settings to database`);
+    logger.info({ migratedCount }, '[DB Migration] Migrated settings to database');
   } catch (err) {
     console.error('[DB Migration] Error migrating settings:', err);
     // Non-fatal, continue
@@ -448,7 +449,7 @@ const migrateFavoritesFromJson = (db) => {
 
     // Check if app-config.json exists
     if (!fs.existsSync(jsonStoragePath)) {
-      console.log('[DB Migration] No app-config.json found, skipping favorites migration');
+      logger.debug('[DB Migration] No app-config.json found, skipping favorites migration');
       return;
     }
 
@@ -456,7 +457,7 @@ const migrateFavoritesFromJson = (db) => {
     const oldFavorites = configData.favorites || [];
 
     if (oldFavorites.length === 0) {
-      console.log('[DB Migration] No favorites to migrate');
+      logger.debug('[DB Migration] No favorites to migrate');
       return;
     }
 
@@ -464,7 +465,7 @@ const migrateFavoritesFromJson = (db) => {
     const users = db.prepare('SELECT id FROM users').all();
 
     if (users.length === 0) {
-      console.log('[DB Migration] No users found, skipping favorites migration');
+      logger.debug('[DB Migration] No users found, skipping favorites migration');
       return;
     }
 
@@ -497,16 +498,19 @@ const migrateFavoritesFromJson = (db) => {
         migratedCount++;
       } catch (err) {
         // Skip duplicates or invalid entries
-        console.log(`[DB Migration] Skipping favorite ${fav.path}: ${err.message}`);
+        logger.debug({ err, favoritePath: fav.path }, '[DB Migration] Skipping favorite');
       }
     }
 
-    console.log(`[DB Migration] Migrated ${migratedCount} favorites to user ${targetUserId}`);
+    logger.info(
+      { migratedCount, targetUserId },
+      '[DB Migration] Migrated favorites to user'
+    );
 
     // Clear favorites from app-config.json
     configData.favorites = [];
     fs.writeFileSync(jsonStoragePath, JSON.stringify(configData, null, 2) + '\n', 'utf8');
-    console.log('[DB Migration] Cleared favorites from app-config.json');
+    logger.info('[DB Migration] Cleared favorites from app-config.json');
   } catch (err) {
     console.error('[DB Migration] Error migrating favorites:', err);
     // Non-fatal, continue
@@ -545,7 +549,7 @@ const ensureAnonymousUser = (db) => {
         now,
         now
       );
-      console.log('[DB] Created anonymous user for AUTH_ENABLED=false mode');
+      logger.info('[DB] Created anonymous user for AUTH_ENABLED=false mode');
     }
   } catch (err) {
     console.error('[DB] Error ensuring anonymous user:', err);

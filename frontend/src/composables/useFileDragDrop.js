@@ -211,18 +211,19 @@ export function useFileDragDrop() {
   const handleDrop = async (event, targetFolder) => {
     if (!canDragDrop()) return;
 
-    // Get the dragged items from dataTransfer
     // If this is an external file drop, let Uppy handle it.
     if (isExternalFileDrag(event)) return;
-
-    const dragData = event.dataTransfer.getData('application/json');
-    if (!dragData) return;
+    if (!isInternalMoveDrag(event)) return;
 
     event.preventDefault();
     event.stopPropagation();
 
     isDraggingOver.value = false;
     dragOverTarget.value = null;
+
+    // Get the dragged items from dataTransfer
+    const dragData = event.dataTransfer.getData('application/json');
+    if (!dragData) return;
 
     const draggedItems = JSON.parse(dragData);
     if (!Array.isArray(draggedItems) || draggedItems.length === 0) return;

@@ -7,6 +7,7 @@ const { ensureDir, pathExists } = require('../utils/fsUtils');
 const { normalizeRelativePath, findAvailableName } = require('../utils/pathUtils');
 const { readMetaField } = require('../utils/requestUtils');
 const { ACTIONS, authorizeAndResolve } = require('./authorizationService');
+const { ForbiddenError, ValidationError } = require('../errors/AppError');
 const logger = require('../utils/logger');
 
 const resolveUploadPaths = async (req, file) => {
@@ -23,7 +24,7 @@ const resolveUploadPaths = async (req, file) => {
     ACTIONS.upload
   );
   if (!allowed || !resolved) {
-    throw new Error(accessInfo?.denialReason || 'Cannot upload files to this path.');
+    throw new ForbiddenError(accessInfo?.denialReason || 'Cannot upload files to this path.');
   }
 
   const { absolutePath: destinationRoot, relativePath: logicalBase } = resolved;
@@ -59,7 +60,7 @@ CustomStorage.prototype._handleFile = function handleFile(req, file, cb) {
 
       // Prevent uploading directly to the root path (no space / volume selected)
       if (!relDestDir || relDestDir.trim() === '') {
-        throw new Error(
+        throw new ValidationError(
           'Cannot upload files to the root path. Please select a specific volume or folder first.'
         );
       }

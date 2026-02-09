@@ -5,7 +5,7 @@ import { defineStore } from 'pinia';
 // - setState(patch): shallow-merges into state and notifies subscribers
 // - subscribe(listener): returns unsubscribe function
 //
-// Pinia's $subscribe payload shape is not compatible with Uppy store listeners,
+// Pinia's $subscribe callback signature/state shape isn't compatible with Uppy store listeners,
 // so we implement Uppy-style subscriptions ourselves.
 const listeners = new Set();
 

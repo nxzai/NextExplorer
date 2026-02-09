@@ -19,7 +19,13 @@ const parseScopes = (raw) => {
 
 // --- Personal folder naming ---
 const DEFAULT_USER_FOLDER_NAME_ORDER = ['id', 'username', 'email_local'];
-const VALID_USER_FOLDER_NAME_TOKENS = new Set(['id', 'username', 'email', 'email_local', 'displayname']);
+const VALID_USER_FOLDER_NAME_TOKENS = new Set([
+  'id',
+  'username',
+  'email',
+  'email_local',
+  'displayname',
+]);
 
 const parseUserFolderNameOrder = (raw) => {
   const requested = parseCommaOrSpaceList(raw).map((token) => token.toLowerCase());
@@ -84,7 +90,12 @@ const corsOptions = {
     if (corsConfig.allowAll || !origin || corsConfig.origins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // Important: do not throw here.
+      // - Same-origin requests may still send an Origin header; if PUBLIC_URL is misconfigured,
+      //   throwing breaks the whole app for users who access the instance via a different URL.
+      // - Returning `false` disables CORS headers for this request (browser will block cross-origin),
+      //   while still allowing non-CORS/same-origin clients to function.
+      callback(null, false);
     }
   },
   credentials: true,
@@ -173,13 +184,14 @@ const collabora = {
 // --- Editor ---
 const editorMaxFileSizeBytes = (() => {
   const parsed = parseByteSize(env.EDITOR_MAX_FILESIZE);
-  // Default: 1 MiB if not configured or invalid
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1 * 1024 * 1024;
+  // Default: 2 MiB if not configured or invalid
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 2 * 1024 * 1024;
 })();
 
 const editor = {
   extensions: env.EDITOR_EXTENSIONS.split(',')
     .map((s) => s.trim().toLowerCase())
+    .map((s) => (s.startsWith('.') ? s.slice(1) : s))
     .filter(Boolean),
   maxFileSizeBytes: editorMaxFileSizeBytes,
 };

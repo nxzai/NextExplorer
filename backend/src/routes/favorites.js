@@ -6,7 +6,6 @@ const {
   updateFavorite,
   reorderFavorites,
 } = require('../services/favoritesService');
-const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const { UnauthorizedError } = require('../errors/AppError');
 

@@ -37,18 +37,23 @@ const thumbnailUrl = computed(() => {
     return null;
   }
 
+  // the thumbnaiil is enabled for system and user
+  if (appSettings.thumbnailsEnabledForSession === false) {
+    return null;
+  }
+
   const kind = (props.item?.kind || '').toLowerCase();
   if (kind === 'pdf') {
     return null;
   }
 
-  const thumbnailPath = props.item?.thumbnail;
-  if (!thumbnailPath) {
+  // the file supports thumbnail
+  if (!props.item?.supportsThumbnail) {
     return null;
   }
 
-  // If settings are loaded and thumbnails are disabled, do not show
-  if (appSettings.loaded && appSettings.state.thumbnails?.enabled === false) {
+  const thumbnailPath = props.item?.thumbnail;
+  if (!thumbnailPath) {
     return null;
   }
 
@@ -86,8 +91,7 @@ watchEffect(() => {
   if (props.disableThumbnails) return;
   if (!props.item || props.item.kind === 'directory') return;
   if (!isPreviewable.value) return;
-  if (!appSettings.loaded) return;
-  if (appSettings.state.thumbnails?.enabled === false) return;
+  if (appSettings.thumbnailsEnabledForSession === false) return;
   if (props.item.thumbnail) return;
   if (!props.item.supportsThumbnail) return;
 

@@ -1,5 +1,5 @@
 const express = require('express');
-const { onlyoffice, collabora, editor, features } = require('../config/index');
+const { onlyoffice, collabora, editor, features, public: publicConfig } = require('../config/index');
 const packageJson = require('../../package.json');
 
 const router = express.Router();
@@ -7,6 +7,10 @@ const router = express.Router();
 // GET /api/features -> returns enabled/disabled feature flags derived from env
 router.get('/features', (_req, res) => {
   const payload = {
+    public: {
+      url: publicConfig?.url || null,
+      origin: publicConfig?.origin || null,
+    },
     onlyoffice: {
       enabled: Boolean(onlyoffice && onlyoffice.serverUrl),
       extensions: Array.isArray(onlyoffice?.extensions) ? onlyoffice.extensions : [],

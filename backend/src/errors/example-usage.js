@@ -94,6 +94,7 @@ router.get(
 router.post(
   '/example/register',
   asyncHandler(async (req, res) => {
+    // eslint-disable-next-line no-unused-vars
     const { email } = req.body;
 
     // Simulate checking for existing user
@@ -167,7 +168,7 @@ router.post(
 // Example 9: Catching specific errors and re-throwing as custom errors
 router.post(
   '/example/database-operation',
-  asyncHandler(async (req, res) => {
+  asyncHandler(async () => {
     try {
       // Simulate database operation
       // await db.query('INSERT INTO users...');
@@ -188,6 +189,7 @@ router.post(
 // Example 10: Manual error handling (when you need more control)
 router.post('/example/manual', async (req, res, next) => {
   try {
+    // eslint-disable-next-line no-undef
     const result = await someComplexOperation();
 
     // Custom response format

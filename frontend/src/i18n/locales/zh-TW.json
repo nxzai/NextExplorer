@@ -1,0 +1,534 @@
+{
+  "common": {
+    "or": "或",
+    "in": "在",
+    "to": "到",
+    "all": "全部",
+    "and": "和",
+    "cancel": "取消",
+    "close": "關閉",
+    "open": "打開",
+    "edit": "編輯",
+    "save": "儲存",
+    "discard": "放棄",
+    "delete": "刪除",
+    "deleting": "正在刪除...",
+    "remove": "移除",
+    "create": "建立",
+    "creating": "正在建立…",
+    "saving": "正在儲存...",
+    "loading": "載入中",
+    "loadingEllipsis": "載入中…",
+    "verifying": "正在驗證…",
+    "updating": "正在更新…",
+    "preparing": "正在準備",
+    "dismiss": "關閉",
+    "disabled": "已停用",
+    "enabled": "已啓用",
+    "refresh": "重新整理",
+    "tryAgain": "重試",
+    "done": "完成",
+    "select": "選擇",
+    "remaining": "剩餘",
+    "unknown": "未知",
+    "optional": "可選",
+    "clear": "清除",
+    "name": "名稱",
+    "size": "大小",
+    "type": "類型",
+    "path": "路徑",
+    "email": "電子郵件",
+    "username": "帳號",
+    "password": "密碼",
+    "label": "標籤",
+    "actions": "動作",
+    "permissions": "權限",
+    "details": "詳細資訊",
+    "location": "位置",
+    "modified": "修改時間",
+    "expires": "到期時間",
+    "expired": "已到期",
+    "active": "活動",
+    "protected": "已保護",
+    "passwordProtected": "密碼保護",
+    "noExpiration": "無到期時間",
+    "recent": "最近",
+    "item": "項目",
+    "items": "項目",
+    "files": "檔案",
+    "folders": "檔案夾",
+    "file": "檔案",
+    "folder": "檔案夾",
+    "image": "圖片",
+    "video": "影片",
+    "user": "使用者",
+    "admin": "管理員",
+    "roles": "角色",
+    "settings": "設定",
+    "share": "分享",
+    "shares": "分享",
+    "unsavedChanges": "您有未儲存的變更",
+    "readonly": "讀取",
+    "readwrite": "讀寫"
+  },
+  "editor": {
+    "confirmCloseWithoutSaving": "您有未儲存的變更。要在不儲存的情況下關閉嗎？"
+  },
+  "status": {
+    "updated": "更新成功",
+    "failed": "失敗",
+    "passwordUpdated": "密碼已更新",
+    "completePercent": "已完成 {percent}%"
+  },
+  "actions": {
+    "newFolder": "新增檔案夾",
+    "newFile": "新增檔案",
+    "fileUpload": "上傳檔案",
+    "folderUpload": "上傳檔案夾",
+    "copy": "複製",
+    "cut": "剪下",
+    "paste": "貼上",
+    "rename": "重新命名",
+    "download": "下載",
+    "extractZip": "解壓縮 ZIP",
+    "compressToZip": "壓縮為 ZIP",
+    "search": "搜尋",
+    "sortBy": "排序方式",
+    "addRule": "新增規則",
+    "clearAll": "清除全部",
+    "cancelAll": "全部取消"
+  },
+  "placeholders": {
+    "email": "user{'@'}example.com",
+    "emailCompany": "name{'@'}company.com",
+    "username": "預設為郵箱帳號",
+    "password": "選擇一個強密碼",
+    "confirmPassword": "再次輸入密碼",
+    "label": "我的分享檔案",
+    "path": "例如：Pictures/Holidays",
+    "search": "搜尋檔案和檔案夾…",
+    "volumeLabel": "例如：Documents, Projects, Media"
+  },
+  "loading": {
+    "default": "載入中…",
+    "users": "正在載入使用者...",
+    "metadata": "正在載入詮釋資料…",
+    "share": "正在載入分享...",
+    "shares": "正在載入分享…",
+    "volumes": "正在載入儲存卷…"
+  },
+  "errors": {
+    "failed": "失敗",
+    "searchFailed": "搜尋失敗",
+    "loadMetadata": "載入詮釋資料失敗",
+    "loadUsers": "載入使用者失敗",
+    "loadShares": "載入分享項目失敗",
+    "updateRoles": "更新角色失敗",
+    "createUser": "建立使用者失敗",
+    "updateUser": "更新使用者失敗",
+    "removeUser": "移除使用者失敗",
+    "resetPassword": "重設密碼失敗",
+    "changePassword": "修改密碼失敗",
+    "createShare": "建立分享失敗",
+    "signIn": "登入失敗",
+    "createAccount": "建立帳號失敗",
+    "invalidSourcePath": "無效的原始路徑",
+    "invalidPassword": "無效的密碼",
+    "selectAtLeastOneUser": "請至少選擇一位使用者",
+    "pleaseEnterPassword": "請輸入密碼",
+    "emailRequired": "電子郵件為必填項目",
+    "passwordRequired": "密碼為必填項目",
+    "passwordLength": "密碼至少需要 6 個字符",
+    "passwordMin": "密碼至少需要 6 個字符",
+    "passwordMismatch": "兩次輸入的密碼不一致",
+    "localSignInDisabled": "本地登入已停用",
+    "deleteShare": "刪除分享失敗",
+    "browseDirectories": "瀏覽檔案局失敗",
+    "labelRequired": "需要標籤",
+    "pathRequired": "需要路徑",
+    "saveVolume": "儲存儲存卷失敗",
+    "removeVolume": "移除儲存卷失敗"
+  },
+  "titles": {
+    "volumes": "儲存卷",
+    "favorites": "最愛",
+    "notifications": "通知",
+    "terminal": "終端機",
+    "settings": "設定",
+    "about": "關於",
+    "branding": "品牌",
+    "thumbnails": "縮圖",
+    "authentication": "身份驗證",
+    "folderRules": "檔案夾規則",
+    "comingSoon": "即將推出",
+    "changePassword": "修改密碼",
+    "userManagement": "使用者管理",
+    "share": "分享",
+    "sortOptions": "排序選項",
+    "locations": "位置"
+  },
+  "i18n": {
+    "language": "語言"
+  },
+  "search": {
+    "openShortcutTitle": "打開搜尋 (⌘/Ctrl + K)",
+    "resultsFor": "“{q}” 的搜尋結果",
+    "searching": "正在搜尋…",
+    "noMatches": "未找到吻合的結果",
+    "openFolder": "打開檔案夾",
+    "line": "行"
+  },
+  "user": {
+    "account": "帳號",
+    "signOut": "登出",
+    "useSystemTheme": "使用系統主題",
+    "useLightTheme": "使用淺色主題",
+    "useDarkTheme": "使用深色主題",
+    "systemTheme": "系統主題",
+    "lightTheme": "淺色主題",
+    "darkTheme": "深色主題"
+  },
+  "create": {
+    "createNew": "建立"
+  },
+  "context": {
+    "getInfo": "詳細資訊",
+    "openWithEditor": "使用編輯器打開",
+    "addToFavorites": "新增到最愛",
+    "removeFromFavorites": "從最愛移除",
+    "deleteTitle": {
+      "single": "刪除 \"{name}\"？",
+      "multiple": "刪除 {count} 個項目？",
+      "generic": "刪除項目"
+    },
+    "deleteMessage": {
+      "single": "確定要刪除 \"{name}\" 嗎？此動作無法還原。",
+      "multiple": "確定要刪除這 {count} 個項目嗎？此動作無法還原。",
+      "generic": "未選擇任何項目。"
+    }
+  },
+  "folder": {
+    "kind": "類型",
+    "dateModified": "修改日期",
+    "noPhotos": "此檔案夾中沒有照片",
+    "noPhotosHint": "切換到其他檢視模式以查看所有檔案",
+    "empty": "此檔案夾為空",
+    "emptyHint": "上傳或建立檔案以開始。"
+  },
+  "volumes": {
+    "quickAccess": "快速訪問",
+    "quickAccessEmpty": "將檔案夾固定為最愛，以便在此快速訪問。"
+  },
+  "drives": {
+    "personal": "個人",
+    "myfiles": "我的檔案"
+  },
+  "browser": {
+    "resizeSidebar": "調整側邊欄大小",
+    "openSidebar": "打開側邊欄",
+    "closeSidebar": "關閉側邊欄"
+  },
+  "nav": {
+    "home": "首頁",
+    "back": "後退",
+    "forward": "前進",
+    "upOneFolder": "上層檔案夾"
+  },
+  "view": {
+    "list": "列表檢視",
+    "column": "分欄檢視",
+    "grid": "網格檢視",
+    "photos": "照片檢視"
+  },
+  "photos": {
+    "menuTitle": "照片大小",
+    "menuAria": "打開照片大小控制",
+    "thumbnailSize": "縮圖大小"
+  },
+  "favorites": {
+    "emptyTitle": "尚無最愛",
+    "emptyDescription": "選擇一個目錄並點擊主工具欄中的星星，將其固定在此處。",
+    "editTitle": "編輯最愛",
+    "icon": "圖標"
+  },
+  "notifications": {
+    "open": "打開通知",
+    "closePanel": "關閉通知面板",
+    "empty": "暫無通知",
+    "filters": {
+      "error": "錯誤",
+      "warning": "警告",
+      "success": "成功",
+      "info": "資訊"
+    }
+  },
+  "spotlight": {
+    "hintWithin": "輸入關鍵字來搜尋"
+  },
+  "download": {
+    "preparing": "正在準備下載..."
+  },
+  "clipboard": {
+    "copying": "正在複製 {count} 個{items}…",
+    "moving": "正在移動 {count} 個{items}…",
+    "working": "處理中…"
+  },
+  "upload": {
+    "toggleDetailsShow": "顯示詳細資訊",
+    "toggleDetailsHide": "隱藏詳細資訊",
+    "pauseUploads": "暫停上傳",
+    "resumeUploads": "繼續上傳",
+    "uploads": "正在上傳 {count} 個{items}"
+  },
+  "info": {
+    "aria": "資訊面板",
+    "fileName": "檔案名",
+    "folderSize": "大小：{size}",
+    "itemsCount": "項目：{files} 個檔案，{folders} 個檔案夾",
+    "dimensions": "尺寸：{w} × {h}",
+    "dateTaken": "拍攝日期：{date}",
+    "camera": "相機：{makeModel}",
+    "lens": "鏡頭：{lens}",
+    "duration": "長度：{seconds}s"
+  },
+  "auth": {
+    "preparing": "正在為您準備 Explorer…",
+    "marketing": {
+      "headline": "文件管理的未來已到來",
+      "subtitle": "隨時隨地安全訪問、整理並協作處理所有文件",
+      "bullets": {
+        "keyboard": "鍵盤優先導航和極速搜尋。",
+        "access": "精細的權限控制與完整的日誌記錄。",
+        "sso": "與您的 IdP 無縫單一登入。"
+      }
+    },
+    "login": {
+      "welcome": "歡迎回來",
+      "subtitle": "登入來存取 {appName}。",
+      "announcementConfirm": "標記為已讀",
+      "submit": "登入",
+      "announcementMigration": {
+        "title": "我們更新了登入方式",
+        "intro": "您現在需要使用新的電子郵件格式使用者名稱。",
+        "bulletAddSuffix": "在使用者名稱後新增 {suffix}",
+        "bulletPasswordSame": "您的密碼保持不變。",
+        "bulletUpdateUsers": "您可以在管理選單中更新現有使用者"
+      }
+    },
+    "setup": {
+      "headline": "開始設定",
+      "subtitle": "建立管理員帳戶以保護並管理您的文件。",
+      "formTitle": "建立帳戶",
+      "formSubtitle": "提供電子郵件和安全密碼以完成設定。",
+      "submit": "完成設定",
+      "bullets": {
+        "encryption": "強加密和審計友好操作。",
+        "permissions": "精細的權限控制與使用者管理。",
+        "sso": "無縫支持單一登入。"
+      }
+    },
+    "emailAddress": "電子郵件位址",
+    "usernameOptional": "使用者名稱（可選）",
+    "confirmPassword": "確認密碼",
+    "sso": {
+      "continue": "使用單一登入繼續"
+    }
+  },
+  "breadcrumb": {
+    "volumes": "儲存卷",
+    "share": "分享"
+  },
+  "sort": {
+    "nameAToZ": "名稱從 A 到 Z",
+    "nameZToA": "名稱從 Z 到 A",
+    "smallToLarge": "從小到大",
+    "largeToSmall": "從大到小",
+    "kindAToZ": "類型從 A 到 Z",
+    "kindZToA": "類型從 Z 到 A",
+    "oldToNew": "從舊到新",
+    "newToOld": "從新到舊"
+  },
+  "terminal": {
+    "menuHeading": "工具",
+    "menuOpen": "終端機"
+  },
+  "settings": {
+    "categories": {
+      "accountPassword": "修改密碼",
+      "about": "關於",
+      "userPreferences": "偏好設定",
+      "branding": "品牌",
+      "filesThumbnails": "文件縮圖",
+      "security": "安全",
+      "accessControl": "權限控制",
+      "adminUsers": "使用者管理"
+    },
+    "about": {
+      "subtitle": "查看此應用的構建資訊。",
+      "appVersion": "應用程式版本",
+      "appVersionHelp": "當前運行的構建版本。",
+      "gitCommit": "Git 提交",
+      "gitCommitHelp": "構建時提交的原始碼修訂版本。",
+      "branch": "分支",
+      "branchHelp": "構建時的 Git 分支。"
+    },
+    "branding": {
+      "subtitle": "自訂在使用者界面中顯示的應用名稱和圖示。",
+      "appName": "應用名稱",
+      "appNameHelp": "在頁首、登入頁和頁尾中顯示的名稱（最多 100 個字符）。",
+      "appLogoUrl": "標誌圖片",
+      "appLogoUrlHelp": "上傳 SVG、PNG 或 JPG 文件作為自定義圖示（最大 2MB）。",
+      "logo": "標誌圖片",
+      "logoHelp": "上傳 SVG、PNG 或 JPG 文件作為自定義圖示（最大 2MB）。",
+      "uploading": "正在上傳...",
+      "uploadSuccess": "標誌上傳成功",
+      "uploadError": "標誌上傳失敗",
+      "invalidFileType": "請上傳 SVG、PNG 或 JPG",
+      "logoError": "文件必須小於 2MB",
+      "fileTooLargeForDataUri": "文件過大。請使用更小的圖片（建議小於 500KB 以獲得最佳效果）",
+      "preview": "預覽",
+      "showPoweredBy": "顯示簽名連結",
+      "showPoweredByHelp": "在頁尾顯示 “Powered by nextExplorer” 連結來支持專案"
+    },
+    "userPreferences": {
+      "title": "使用者偏好設定",
+      "subtitle": "自訂你的個人設定。",
+      "showHiddenFiles": "顯示隱藏檔案",
+      "showHiddenFilesHelp": "在檔案瀏覽器中顯示以點 (.) 開頭的檔案和檔案夾。",
+      "showThumbnails": "顯示縮圖",
+      "showThumbnailsHelp": "在瀏覽器中顯示圖片和影片的縮圖預覽。",
+      "defaultShareExpiration": "分享預設過期時間",
+      "defaultShareExpirationHelp": "為新的分享設置預設期限。建立分享時將自動填入到期日期。",
+      "expirationValue": "值",
+      "days": "天",
+      "weeks": "週",
+      "months": "月",
+      "skipHome": "跳過首頁",
+      "skipHomeHelp": "進入首頁時自動導向到第一個儲存卷。未設定時會使用伺服器預設。",
+      "useEnvSetting": "使用伺服器預設"
+    },
+    "thumbs": {
+      "subtitle": "自訂圖片和影片的預覽縮圖。",
+      "enable": "啓用縮圖",
+      "enableHelp": "關閉以在不產生預覽的情況下加快瀏覽速度。",
+      "quality": "縮圖品質",
+      "qualityHelp": "控制輸出品質 (1–100)。預設值為 70。",
+      "maxDim": "最大尺寸",
+      "maxDimHelp": "最長邊的畫素。預設值為 200。",
+      "concurrency": "平行產生",
+      "concurrencyHelp": "同時產生的縮圖數量 (1–50)。預設值為 10。"
+    },
+    "security": {
+      "subtitle": "控制對應用產生的存取。",
+      "enable": "啓用身份驗證",
+      "enableHelp": "停用時，任何人都可以訪問您的檔案。",
+      "confirmDisable": "停用身份驗證將使您的檔案可被公開存取。繼續？"
+    },
+    "access": {
+      "subtitle": "為每個檔案夾設置權限：讀寫、只讀或隱藏。",
+      "recursive": "遞迴套用",
+      "readWrite": "讀寫",
+      "readOnly": "只讀",
+      "hidden": "隱藏"
+    },
+    "comingSoon": {
+      "subtitle": "此設置部分正在建置中，敬請期待！"
+    },
+    "password": {
+      "notLocalUser": "只能為本地使用者修改密碼。您的帳號由身份提供商管理。",
+      "current": "新增密碼",
+      "new": "新密碼",
+      "confirm": "確認新密碼",
+      "update": "更新密碼",
+      "success": "密碼更新成功。",
+      "validation": "請填寫所有字段；新密碼至少 6 個字符，並且需要與確認密碼一致。"
+    },
+    "users": {
+      "cannotDeleteSelf": "無法刪除您自己的帳戶。",
+      "confirmRemove": "刪除使用者 {user}? 此操作無法復原。",
+      "createUser": "建立使用者",
+      "grantAdmin": "授予管理員權限",
+      "displayName": "顯示名稱",
+      "makeAdmin": "設為管理員",
+      "resetPassword": "設定/重設密碼",
+      "removeUser": "刪除使用者",
+      "promptNewPassword": "為 {user} 輸入新密碼（至少 6 個字符）：",
+      "editUser": "編輯使用者",
+      "volumes": "儲存卷",
+      "assignedVolumes": "已分配儲存卷",
+      "addVolume": "新增儲存卷",
+      "editVolume": "編輯儲存卷",
+      "noVolumes": "沒有分配儲存卷",
+      "noVolumesHint": "新增儲存卷來允許此使用者存取特定目錄。",
+      "volumesInfo": "在此分配的儲存卷將是此使用者唯一可存取的目錄。管理員始終對所有儲存卷擁有完全存取權限。",
+      "confirmRemoveVolume": "刪除儲存卷 \"{label}\"？使用者將失去對此目錄的訪問權限。",
+      "volumeLabel": "儲存卷標籤",
+      "volumeLabelHint": "使用者將看到的此儲存卷的友好名稱。",
+      "selectDirectory": "選擇目錄",
+      "currentPath": "新增路徑",
+      "selectThis": "選擇此項",
+      "parentDirectory": "上層目錄",
+      "noSubdirectories": "未找到子目錄",
+      "enterDirectory": "進入目錄",
+      "selectedPath": "已選擇",
+      "volumePath": "儲存卷路徑",
+      "pathCannotChange": "建立後無法更改路徑。如需更改，請刪除此卷並重新建立。",
+      "accessMode": "存取模式"
+    }
+  },
+  "share": {
+    "sharedWithMe": "與我分享",
+    "sharedWithMeDescription": "其他人與你的帳戶分享的檔案和檔案夾。",
+    "sharedByMe": "我分享的內容",
+    "sharedByMeDescription": "你與其他人分享的連結和檔案夾。",
+    "shareCreated": "分享已建立",
+    "createShareLink": "建立分享連結",
+    "shareLink": "分享連結",
+    "shareLinkCreatedSuccess": "分享連結建立成功！",
+    "shareSelectedItem": "分享所選項目",
+    "selectItemToShare": "選擇要分享的項目",
+    "sharing": "正在分享：",
+    "sharedItem": "已分享項目",
+    "sharedFolder": "已分享檔案夾",
+    "sharedFile": "已分享檔案",
+    "accessMode": "存取模式",
+    "whoCanAccess": "可存取的使用者",
+    "anyoneWithLink": "擁有連結的任何人",
+    "specificUsers": "特定使用者",
+    "selectUsers": "選擇使用者",
+    "noUsersAvailable": "沒有可用使用者",
+    "passwordProtect": "密碼保護",
+    "enterPassword": "輸入密碼",
+    "setExpirationDate": "設定到期日期",
+    "expirationPlaceholder": "YYYY-MM-DD HH:MM",
+    "expiresAt": "到期",
+    "errors": {
+      "invalidSourcePath": "無法確定要分享的項目路徑。",
+      "selectAtLeastOneUser": "請至少選擇一位使用者。",
+      "failedToCreateShare": "建立分享連結失敗。",
+      "expirationRequired": "請選擇有效的過期日期。",
+      "expirationMustBeFuture": "過期時間必須晚於新增時間。"
+    },
+    "shareExpired": "分享已過期",
+    "shareNotFound": "未找到共享",
+    "shareExpiredMessage": "此分享連結已過期，不再可存取。",
+    "goToHome": "返回首頁",
+    "accessShare": "存取分享",
+    "signInToAccess": "登入以存取",
+    "requiresAuthentication": "此分享需要身份驗證。",
+    "noSharedItemsToShow": "沒有可顯示的分享項目",
+    "noSharedItemsYet": "當有人與您分享檔案或檔案夾時，它們會顯示在此處。",
+    "adjustFilters": "調整篩選條件或清除搜尋以查看更多項目。",
+    "filterByNameOrPath": "按名稱或路徑篩選",
+    "sharedBy": "由所有者分享",
+    "lastAccessed": "上次存取",
+    "created": "建立時間",
+    "noMyShares": "你還沒有建立任何分享。",
+    "noMySharesDescription": "從任意文件或檔案夾建立分享連結後，會在此處顯示。",
+    "mySharesCount": "{count} 個有效分享連結",
+    "confirmDeleteShare": "確定要移除此分享嗎？擁有該連結的人將不再能夠存取。",
+    "removeShare": "移除分享",
+    "sharedWithAnyone": "與所有人分享",
+    "sharedWithUsers": "{count} 位使用者"
+  }
+}

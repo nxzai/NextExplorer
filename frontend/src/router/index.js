@@ -22,6 +22,7 @@ import SharedWithMeView from '@/views/SharedWithMeView.vue';
 import SharedByMeView from '@/views/SharedByMeView.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useFeaturesStore } from '@/stores/features';
+import { useAppSettings } from '@/stores/appSettings';
 import { getVolumes } from '@/api';
 
 const router = createRouter({
@@ -39,18 +40,18 @@ const router = createRouter({
         {
           path: '',
           component: SettingsView,
-           children: [
-             { path: '', redirect: '/settings/about' },
-             {
-               path: 'branding',
-               component: SettingsBranding,
-               meta: { requiresAdmin: true },
-             },
-             {
-               path: 'files-thumbnails',
-               component: SettingsFilesThumbnails,
-               meta: { requiresAdmin: true },
-             },
+          children: [
+            { path: '', redirect: '/settings/about' },
+            {
+              path: 'branding',
+              component: SettingsBranding,
+              meta: { requiresAdmin: true },
+            },
+            {
+              path: 'files-thumbnails',
+              component: SettingsFilesThumbnails,
+              meta: { requiresAdmin: true },
+            },
             { path: 'account-password', component: SettingsPassword },
             { path: 'user-preferences', component: SettingsUserPreferences },
             {
@@ -171,6 +172,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const auth = useAuthStore();
+  const appSettings = useAppSettings();
 
   // Allow public routes (like share links) without auth
   const isPublicRoute = Boolean(to.meta?.public);
@@ -253,28 +255,32 @@ router.beforeEach(async (to) => {
     return { path: redirect };
   }
 
+  // Ensure app settings are loaded for authenticated sessions.
+  // This prevents deep-link refreshes (e.g. /browse/some/path) from leaving `appSettings.loaded`
+  // false forever, which blocks thumbnail requests and other settings-gated UI.
+  if (!isAuthRoute && auth.isAuthenticated) {
+    try {
+      await appSettings.ensureLoaded();
+    } catch (_) {
+      // Non-fatal; the UI will behave conservatively if settings aren't available.
+    }
+  }
+
   // Optional UX: when configured, skip the home dashboard and
   // jump straight into the only available volume (single-volume setups).
   if (to.name === 'HomeView') {
     const featuresStore = useFeaturesStore();
-    const { useAppSettings } = await import('@/stores/appSettings');
-    const appSettings = useAppSettings();
-    
+
     try {
       await featuresStore.ensureLoaded();
-      // Ensure user settings are loaded
-      if (!appSettings.loaded && !appSettings.loading) {
-        await appSettings.load();
-      }
     } catch (_) {
       // Ignore feature loading errors; fall back to normal home view.
     }
 
     // Check user preference first, then fall back to env var
     const userSkipHome = appSettings.userSettings?.skipHome;
-    const shouldSkipHome = userSkipHome !== null && userSkipHome !== undefined
-      ? userSkipHome
-      : featuresStore.skipHome;
+    const shouldSkipHome =
+      userSkipHome !== null && userSkipHome !== undefined ? userSkipHome : featuresStore.skipHome;
 
     if (shouldSkipHome) {
       try {

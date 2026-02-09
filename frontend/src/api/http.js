@@ -44,7 +44,6 @@ const requestRaw = async (endpoint, options = {}) => {
 
     if (!response.ok) {
       let errorMessage = `Request failed with status ${response.status}`;
-      let errorDetails = null;
 
       try {
         // Try to parse backend error response
@@ -54,17 +53,17 @@ const requestRaw = async (endpoint, options = {}) => {
         if (errorData?.error) {
           if (typeof errorData.error === 'object') {
             // New format: { success: false, error: { message, statusCode, requestId, timestamp } }
-            errorDetails = errorData.error;
-            errorMessage = errorDetails.message || errorMessage;
+            const errorDetails = errorData.error;
+            errorMessage = errorDetails?.message || errorMessage;
 
             // Create notification for the error
             const notificationsStore = useNotificationsStore();
             notificationsStore.addNotification({
               type: 'error',
               heading: errorMessage,
-              body: errorDetails.details ? JSON.stringify(errorDetails.details) : '',
-              requestId: errorDetails.requestId,
-              statusCode: errorDetails.statusCode || response.status,
+              body: errorDetails?.details ? JSON.stringify(errorDetails.details) : '',
+              requestId: errorDetails?.requestId,
+              statusCode: errorDetails?.statusCode || response.status,
             });
           } else {
             // Old format: { error: "string" }
@@ -95,12 +94,12 @@ const requestRaw = async (endpoint, options = {}) => {
     return response;
   } catch (error) {
     // Handle network errors (fetch failures)
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+    if (error instanceof TypeError) {
       const notificationsStore = useNotificationsStore();
       notificationsStore.addNotification({
         type: 'error',
         heading: 'Network Error',
-        body: 'Failed to connect to server. Please check your internet connection.',
+        body: 'Failed to connect to server. This is often caused by a PUBLIC_URL/CORS mismatch or a reverse proxy configuration issue.',
       });
     }
 

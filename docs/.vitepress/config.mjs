@@ -58,6 +58,8 @@ export default defineConfig({
         text: 'Help & FAQ',
         items: [
           { text: 'Troubleshooting', link: '/reference/troubleshooting' },
+          { text: 'CORS errors', link: '/reference/cors' },
+          { text: 'Contributing', link: '/reference/contributing' },
           { text: 'FAQ', link: '/reference/faq' },
         ],
       },
@@ -120,6 +122,8 @@ export default defineConfig({
         text: 'Help & FAQ',
         items: [
           { text: 'Troubleshooting', link: '/reference/troubleshooting' },
+          { text: 'CORS errors', link: '/reference/cors' },
+          { text: 'Contributing', link: '/reference/contributing' },
           { text: 'FAQ', link: '/reference/faq' },
         ],
       },

@@ -1,30 +1,38 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
+import { describe, it, expect, beforeEach } from 'vitest';
+import lockService from '../../src/services/wopiLockService.js';
 
-const lockService = require('../../src/services/wopiLockService');
-
-test('wopiLockService supports lock/unlock flow', () => {
-  lockService.resetAllLocks();
-
-  const fileId = 'file-1';
-  const now = Date.now();
-
-  assert.equal(lockService.getLock(fileId, now), null);
-
-  assert.deepEqual(lockService.tryLock(fileId, 'lock-a', now), { ok: true });
-  assert.equal(lockService.getLock(fileId, now + 1), 'lock-a');
-
-  assert.deepEqual(lockService.tryLock(fileId, 'lock-b', now + 2), {
-    ok: false,
-    currentLockId: 'lock-a',
+describe('WOPI Lock Service', () => {
+  beforeEach(() => {
+    lockService.resetAllLocks();
   });
 
-  assert.deepEqual(lockService.tryUnlock(fileId, 'lock-b', now + 3), {
-    ok: false,
-    currentLockId: 'lock-a',
-  });
+  describe('Lock/Unlock Flow', () => {
+    it('should support complete lock/unlock lifecycle', () => {
+      const fileId = 'file-1';
+      const now = Date.now();
 
-  assert.deepEqual(lockService.tryUnlock(fileId, 'lock-a', now + 4), { ok: true });
-  assert.equal(lockService.getLock(fileId, now + 5), null);
+      // Initially no lock
+      expect(lockService.getLock(fileId, now)).toBeNull();
+
+      // Acquire lock
+      expect(lockService.tryLock(fileId, 'lock-a', now)).toEqual({ ok: true });
+      expect(lockService.getLock(fileId, now + 1)).toBe('lock-a');
+
+      // Different lock ID should fail
+      expect(lockService.tryLock(fileId, 'lock-b', now + 2)).toEqual({
+        ok: false,
+        currentLockId: 'lock-a',
+      });
+
+      // Unlock with wrong ID should fail
+      expect(lockService.tryUnlock(fileId, 'lock-b', now + 3)).toEqual({
+        ok: false,
+        currentLockId: 'lock-a',
+      });
+
+      // Unlock with correct ID should succeed
+      expect(lockService.tryUnlock(fileId, 'lock-a', now + 4)).toEqual({ ok: true });
+      expect(lockService.getLock(fileId, now + 5)).toBeNull();
+    });
+  });
 });
-

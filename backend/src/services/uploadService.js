@@ -6,8 +6,8 @@ const multer = require('multer');
 const { ensureDir, pathExists } = require('../utils/fsUtils');
 const { normalizeRelativePath, findAvailableName } = require('../utils/pathUtils');
 const { readMetaField } = require('../utils/requestUtils');
-const { getPermissionForPath } = require('./accessControlService');
-const { resolvePathWithAccess } = require('./accessManager');
+const { ACTIONS, authorizeAndResolve } = require('./authorizationService');
+const { ForbiddenError, ValidationError } = require('../errors/AppError');
 const logger = require('../utils/logger');
 
 const resolveUploadPaths = async (req, file) => {
@@ -18,10 +18,13 @@ const resolveUploadPaths = async (req, file) => {
   const relativePath = normalizeRelativePath(relativePathMeta) || path.basename(file.originalname);
 
   const context = { user: req.user, guestSession: req.guestSession };
-  const { accessInfo, resolved } = await resolvePathWithAccess(context, uploadTo);
-
-  if (!accessInfo || !accessInfo.canAccess || !accessInfo.canUpload) {
-    throw new Error(accessInfo?.denialReason || 'Cannot upload files to this path.');
+  const { allowed, accessInfo, resolved } = await authorizeAndResolve(
+    context,
+    uploadTo,
+    ACTIONS.upload
+  );
+  if (!allowed || !resolved) {
+    throw new ForbiddenError(accessInfo?.denialReason || 'Cannot upload files to this path.');
   }
 
   const { absolutePath: destinationRoot, relativePath: logicalBase } = resolved;
@@ -57,17 +60,12 @@ CustomStorage.prototype._handleFile = function handleFile(req, file, cb) {
 
       // Prevent uploading directly to the root path (no space / volume selected)
       if (!relDestDir || relDestDir.trim() === '') {
-        throw new Error(
+        throw new ValidationError(
           'Cannot upload files to the root path. Please select a specific volume or folder first.'
         );
       }
 
       await ensureDir(destinationDir);
-
-      const perm = await getPermissionForPath(relDestDir);
-      if (perm !== 'rw') {
-        throw new Error('Destination path is read-only.');
-      }
 
       let finalPath = destinationPath;
       if (await pathExists(finalPath)) {

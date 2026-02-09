@@ -38,13 +38,20 @@ const canCreate = computed(() => {
   // Always hide on volumes view
   if (isVolumesView.value) return false;
 
-  // For authenticated users, show unless explicitly denied
+  const currentPathData = fileStore.currentPathData;
+
+  // If access metadata is available, honor it for everyone (including authenticated users on shares).
+  if (currentPathData && typeof currentPathData === 'object') {
+    const canWrite = currentPathData?.canWrite ?? true;
+    const canUpload = currentPathData?.canUpload ?? true;
+    return Boolean(canWrite || canUpload);
+  }
+
+  // Backward compat: if backend doesn't send access metadata, fail open for authenticated users.
   if (auth.isAuthenticated && !auth.isGuest) return true;
 
-  // For guests, check if current path has upload permission
-  // This allows guests on readwrite shares to upload
-  const currentPathData = fileStore.currentPathData;
-  return currentPathData?.canUpload === true;
+  // Guests should only see create/upload actions when explicitly allowed.
+  return false;
 });
 
 const goHome = async () => {

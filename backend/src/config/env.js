@@ -1,4 +1,4 @@
-const { normalizeBoolean, parseByteSize } = require('../utils/env');
+const { normalizeBoolean } = require('../utils/env');
 
 /**
  * Single source of truth for ALL environment variables.
@@ -84,6 +84,7 @@ module.exports = {
 
   // Editor
   EDITOR_EXTENSIONS: process.env.EDITOR_EXTENSIONS || '',
+  EDITOR_MAX_FILESIZE: process.env.EDITOR_MAX_FILESIZE?.trim() || null,
 
   // FFmpeg
   FFMPEG_PATH: process.env.FFMPEG_PATH || null,

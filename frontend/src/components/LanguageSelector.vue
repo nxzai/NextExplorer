@@ -73,7 +73,7 @@ onClickOutside(languageSwitcherRef, () => {
 
     <div
       v-if="languageMenuOpen"
-      class="absolute right-0 top-full mt-2 z-20 max-w-44 rounded-lg border border-white/10 bg-neutral-900/95 py-1 text-xs shadow-lg backdrop-blur-sm"
+      class="absolute right-0 top-full mt-2 z-20 rounded-lg border border-white/10 bg-neutral-900/95 py-1 text-xs shadow-lg backdrop-blur-sm"
     >
       <button
         v-for="lang in languages"
@@ -86,8 +86,8 @@ onClickOutside(languageSwitcherRef, () => {
           languageMenuOpen = false;
         "
       >
-        <span>{{ lang.label }}</span>
-        <span>{{ lang.code.toUpperCase() }}</span>
+        <span class="whitespace-nowrap">{{ lang.label }}</span>
+        <span class="whitespace-nowrap">{{ lang.code.toUpperCase() }}</span>
       </button>
     </div>
   </div>

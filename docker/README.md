@@ -4,11 +4,6 @@ This directory contains all Docker-related configuration files for nextExplorer.
 
 ## Files
 
-### Production Docker Compose Files
-
-- **`docker-compose.yml`** - Production docker-compose configuration (single container) - _customize this for your deployment_
-- **`docker-compose.dev.yml`** - Development docker-compose configuration (separate backend/frontend services with hot-reload) - _customize this for your development setup_
-
 ### Ready-to-Use Configuration Files
 
 Choose the file that matches your needs and use it directly with the `-f` flag:
@@ -22,7 +17,7 @@ Choose the file that matches your needs and use it directly with the `-f` flag:
 
 ### Development Files
 
-- **`docker-compose.dev.yml.example`** - Development example with all environment variables documented
+- **`docker-compose.development.yml`** - Dev setup (backend + frontend) with hot-reload enabled
 
 ### Supporting Files
 
@@ -44,40 +39,33 @@ Choose the file that matches your needs and use it directly with the `-f` flag:
 
    ```bash
    # For minimal setup:
-   docker-compose -f docker/docker-compose.minimal.yml up -d
+   docker compose -f docker/docker-compose.minimal.yml up -d
 
    # For OIDC/SSO:
-   docker-compose -f docker/docker-compose.oidc.yml up -d
+   docker compose -f docker/docker-compose.oidc.yml up -d
 
    # For OnlyOffice:
-   docker-compose -f docker/docker-compose.onlyoffice.yml up -d
+   docker compose -f docker/docker-compose.onlyoffice.yml up -d
 
    # For Collabora:
-   docker-compose -f docker/docker-compose.collabora.yml up -d
+   docker compose -f docker/docker-compose.collabora.yml up -d
 
    # For user directories:
-   docker-compose -f docker/docker-compose.user-dirs.yml up -d
+   docker compose -f docker/docker-compose.user-dirs.yml up -d
 
    # For no authentication:
-   docker-compose -f docker/docker-compose.no-auth.yml up -d
+   docker compose -f docker/docker-compose.no-auth.yml up -d
    ```
-
-**Tip:** You can also copy your chosen file to `docker-compose.yml` for convenience:
-
-```bash
-cp docker/docker-compose.minimal.yml docker/docker-compose.yml
-docker-compose -f docker/docker-compose.yml up -d
-```
 
 ### Development Setup
 
-1. Edit `docker/docker-compose.dev.yml.example` (or copy to `docker-compose.dev.yml`)
+1. Edit `docker/docker-compose.development.yml`
 
 2. Configure environment variables and volume mounts
 
 3. Run from the repository root:
    ```bash
-   docker-compose -f docker/docker-compose.dev.yml.example up --build
+   docker compose -f docker/docker-compose.development.yml up --build
    ```
 
 ## Configuration File Descriptions

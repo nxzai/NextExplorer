@@ -34,7 +34,7 @@ Thanks for helping improve nextExplorer! This guide keeps contributions smooth, 
 Option A — single-port dev via Compose (recommended):
 
 ```
-docker compose -f docker/docker-compose.dev.yml up --build
+docker compose -f docker/docker-compose.development.yml up --build
 ```
 
 - Frontend served at `http://localhost:3000`.
@@ -44,15 +44,12 @@ Option B — run services locally in two terminals:
 
 ```
 # Terminal 1: backend
-cd backend
 npm install
 PORT=3001 CONFIG_DIR=$PWD/.config CACHE_DIR=$PWD/.cache
-npm start
+npm run dev -w backend
 
 # Terminal 2: frontend
-cd frontend
-npm install
-VITE_BACKEND_ORIGIN=http://localhost:3001 npm run dev
+VITE_BACKEND_ORIGIN=http://localhost:3001 npm run dev -w frontend
 ```
 
 Environment tips:

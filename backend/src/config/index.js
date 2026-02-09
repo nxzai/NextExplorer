@@ -90,7 +90,12 @@ const corsOptions = {
     if (corsConfig.allowAll || !origin || corsConfig.origins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // Important: do not throw here.
+      // - Same-origin requests may still send an Origin header; if PUBLIC_URL is misconfigured,
+      //   throwing breaks the whole app for users who access the instance via a different URL.
+      // - Returning `false` disables CORS headers for this request (browser will block cross-origin),
+      //   while still allowing non-CORS/same-origin clients to function.
+      callback(null, false);
     }
   },
   credentials: true,

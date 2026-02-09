@@ -69,7 +69,7 @@
     "@vicons/material": "^0.12.0",
     "@vicons/tabler": "^0.12.0",
     "@vicons/utils": "^0.1.4",
-    "@vitejs/plugin-vue": "^5.0.0",
+    "@vitejs/plugin-vue": "^6.0.4",
     "@vue/test-utils": "^2.4.5",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.2",
@@ -81,7 +81,7 @@
     "storybook": "^8.4.7",
     "tailwindcss": "^4.1.18",
     "vite": "^5.2.8",
-    "vite-plugin-vue-devtools": "^7.0.0",
+    "vite-plugin-vue-devtools": "^7.0.25",
     "vitest": "^4.0.18"
   }
 }

@@ -24,7 +24,8 @@ Keep this page handy when deployment, authentication, or UI behaviors need quick
 
 ## Reverse proxy issues
 
-- **CORS errors:** Set `PUBLIC_URL`, `CORS_ORIGINS`, or `ALLOWED_ORIGINS` to include the domain you access from.
+- **CORS errors:** See [Fixing CORS errors](/reference/cors) for `PUBLIC_URL` and `CORS_ORIGINS` guidance.
+- **Public URL mismatch warning in UI:** If you see a `PUBLIC_URL` mismatch dialog, you’re visiting the app from a different URL than the server is configured for. Either access the app via the configured `PUBLIC_URL` domain or update `PUBLIC_URL` to match the URL you’re using and restart.
 - **Websocket or upload failures:** Ensure the proxy forwards WebSocket upgrades and `X-Forwarded-*` headers.
 - **Trust proxy misconfiguration:** Set `TRUST_PROXY` to `loopback,uniquelocal`, a number of hops, or explicit CIDRs depending on your topology.
 

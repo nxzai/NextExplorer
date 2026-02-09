@@ -71,7 +71,7 @@ services:
       # Required basics
       NODE_ENV: production # Set to `production` for the Docker image defaults.
       PORT: '3000' # Port the Express API + frontend listen on *inside* the container.
-      PUBLIC_URL: 'http://localhost:3000' # External URL (no trailing slash); drives cookies, CORS defaults, and derived callback URLs.
+      PUBLIC_URL: 'http://localhost:3000' # External URL (no trailing slash); drives cookies, CORS defaults, and derived callback URLs. Accessing the app via a different URL may cause CORS/cookie/OIDC issues.
 
 
       # Reverse proxy / networking (optional)

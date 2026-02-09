@@ -28,6 +28,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { DocumentEditor } from '@onlyoffice/document-editor-vue';
 import { fetchOnlyOfficeConfig } from '@/api';
+import logger from '@/utils/logger';
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -61,7 +62,7 @@ const load = async () => {
     if (!path) throw new Error('Missing file path.');
     const { documentServerUrl, config: cfg } = await fetchOnlyOfficeConfig(path, 'edit');
     serverUrl.value = documentServerUrl;
-    console.log('ONLYOFFICE config:', cfg);
+    logger.debug('ONLYOFFICE config', cfg);
     config.value = cfg;
   } catch (e) {
     error.value = e?.message || 'Failed to initialize ONLYOFFICE.';

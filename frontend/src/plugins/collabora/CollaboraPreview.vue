@@ -28,6 +28,7 @@
 import { ref, watch, computed } from 'vue';
 import { useEventListener } from '@vueuse/core';
 import { fetchCollaboraConfig, searchUsersForMention } from '@/api';
+import logger from '@/utils/logger';
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -50,7 +51,7 @@ const title = computed(() => props?.item?.name || 'Collabora');
 const sendToCollabora = (messageId, values = {}) => {
   const iframe = iframeRef.value;
   if (!iframe?.contentWindow) {
-    console.error('[Collabora] No iframe contentWindow available');
+    logger.error('[Collabora] No iframe contentWindow available');
     return;
   }
 
@@ -60,7 +61,7 @@ const sendToCollabora = (messageId, values = {}) => {
     Values: values,
   };
 
-  console.log('[Collabora] Sending:', message);
+  logger.debug('[Collabora] Sending', message);
   iframe.contentWindow.postMessage(JSON.stringify(message), collaboraOrigin.value || '*');
 };
 
@@ -73,12 +74,12 @@ const handlePostMessage = async (event) => {
   // Store the Collabora origin for sending messages back
   if (!collaboraOrigin.value && event.origin) {
     collaboraOrigin.value = event.origin;
-    console.log('[Collabora] Origin set to:', collaboraOrigin.value);
+    logger.debug('[Collabora] Origin set to', collaboraOrigin.value);
   }
 
   let data = event.data;
 
-  console.log('[Collabora] Raw PostMessage:', data);
+  logger.debug('[Collabora] Raw PostMessage', data);
 
   if (typeof data === 'string') {
     try {
@@ -88,11 +89,11 @@ const handlePostMessage = async (event) => {
     }
   }
 
-  console.log('[Collabora] Parsed message:', data.MessageId, data.Values);
+  logger.debug('[Collabora] Parsed message', data.MessageId, data.Values);
 
   // When Collabora is ready, send Host_PostmessageReady
   if (data.MessageId === 'App_LoadingStatus' && data.Values?.Status === 'Frame_Ready') {
-    console.log('[Collabora] Frame ready, sending Host_PostmessageReady');
+    logger.debug('[Collabora] Frame ready, sending Host_PostmessageReady');
     sendToCollabora('Host_PostmessageReady');
   }
 
@@ -101,11 +102,11 @@ const handlePostMessage = async (event) => {
     const searchText = data.Values?.text || '';
     const query = searchText.startsWith('@') ? searchText.slice(1) : searchText;
 
-    console.log('[Collabora] Mention autocomplete request, searching for:', query);
+    logger.debug('[Collabora] Mention autocomplete request, searching for', query);
 
     try {
       const users = await searchUsersForMention(query);
-      console.log('[Collabora] Found users:', users);
+      logger.debug('[Collabora] Found users', users);
 
       const mentionList = users.map((user) => ({
         username: user.UserId || user.id,
@@ -113,16 +114,16 @@ const handlePostMessage = async (event) => {
         label: user.UserFriendlyName || user.displayName || user.username || user.email,
       }));
 
-      console.log('[Collabora] Sending Action_Mention with list:', mentionList);
+      logger.debug('[Collabora] Sending Action_Mention with list', mentionList);
       sendToCollabora('Action_Mention', { list: mentionList });
     } catch (err) {
-      console.error('[Collabora] Failed to search users:', err);
+      logger.error({ err }, '[Collabora] Failed to search users');
     }
   }
 
   // Log when a mention is selected
   if (data.MessageId === 'UI_Mention' && data.Values?.type === 'selected') {
-    console.log('[Collabora] User selected mention:', data.Values?.username);
+    logger.debug('[Collabora] User selected mention', data.Values?.username);
   }
 };
 
@@ -142,9 +143,9 @@ const load = async () => {
     try {
       const url = new URL(urlSrc.value);
       collaboraOrigin.value = url.origin;
-      console.log('[Collabora] Extracted origin from URL:', collaboraOrigin.value);
+      logger.debug('[Collabora] Extracted origin from URL', collaboraOrigin.value);
     } catch (e) {
-      console.warn('[Collabora] Could not extract origin from URL');
+      logger.warning('[Collabora] Could not extract origin from URL');
     }
   } catch (e) {
     error.value = e?.message || 'Failed to initialize Collabora.';

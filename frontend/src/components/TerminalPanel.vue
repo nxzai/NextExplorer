@@ -45,6 +45,7 @@ import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { apiBase, createTerminalSession } from '@/api';
 import { useTerminalStore } from '@/stores/terminal';
 import { onClickOutside } from '@vueuse/core';
+import logger from '@/utils/logger';
 
 const terminalStore = useTerminalStore();
 const { isOpen } = storeToRefs(terminalStore);
@@ -102,9 +103,9 @@ const buildTerminalUrl = (token) => {
   const base = `${apiBase}/api/terminal`;
   const withScheme = toWebSocketScheme(base);
   const url = `${withScheme}?token=${encodeURIComponent(token)}`;
-  console.log('Terminal WebSocket URL - apiBase:', apiBase);
-  console.log('Terminal WebSocket URL - base:', base);
-  console.log('Terminal WebSocket URL - final:', url);
+  logger.debug('Terminal WebSocket URL - apiBase', apiBase);
+  logger.debug('Terminal WebSocket URL - base', base);
+  logger.debug('Terminal WebSocket URL - final', url);
   return url;
 };
 
@@ -118,18 +119,18 @@ const connectToBackend = async () => {
     }
 
     const url = buildTerminalUrl(token);
-    console.log('Attempting to connect to terminal WebSocket:', url);
+    logger.debug('Attempting to connect to terminal WebSocket', url);
     socket = new WebSocket(url);
 
     socket.onopen = () => {
-      console.log('Terminal WebSocket connection opened');
+      logger.debug('Terminal WebSocket connection opened');
       if (pendingResize) {
         sendResize(pendingResize.cols, pendingResize.rows);
       }
     };
 
     socket.onmessage = (event) => {
-      console.log('Received data from terminal:', event.data.length, 'bytes');
+      logger.debug('Received data from terminal', event.data.length, 'bytes');
       term.write(event.data);
     };
 
@@ -138,7 +139,7 @@ const connectToBackend = async () => {
     };
 
     socket.onclose = (event) => {
-      console.log('WebSocket connection closed:', event.code, event.reason);
+      logger.debug('WebSocket connection closed', event.code, event.reason);
     };
   } catch (error) {
     console.error('Failed to connect to terminal:', error);

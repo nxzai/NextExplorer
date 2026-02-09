@@ -1,5 +1,6 @@
 const { getDb } = require('../db');
 const { ForbiddenError } = require('../../errors/AppError');
+const logger = require('../../utils/logger');
 const { nowIso, toClientUser, generateId, normalizeEmail } = require('./utils');
 
 // Map provider claims/groups to an app roles array
@@ -86,7 +87,7 @@ const getOrCreateOidcUser = async ({
 
   if (user) {
     // Auto-link: User exists, add OIDC as new auth method
-    console.log(`[Auth] Auto-linking OIDC to existing user: ${user.email}`);
+    logger.info({ email: user.email }, '[Auth] Auto-linking OIDC to existing user');
 
     const authId = generateId();
     db.prepare(
@@ -117,7 +118,7 @@ const getOrCreateOidcUser = async ({
     throw new ForbiddenError('Profile does not exist.');
   }
 
-  console.log(`[Auth] Creating new user from OIDC: ${normEmail}`);
+  logger.info({ email: normEmail }, '[Auth] Creating new user from OIDC');
 
   const userId = generateId();
   const now = nowIso();

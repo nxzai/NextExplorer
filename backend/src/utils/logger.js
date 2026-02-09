@@ -20,4 +20,7 @@ const logger = pino({
 
 logger.debug({ level: loggingConfig.level }, 'Logger initialized');
 
+// Alias used by some parts of the codebase (and for readability).
+logger.warning = logger.warn.bind(logger);
+
 module.exports = logger;

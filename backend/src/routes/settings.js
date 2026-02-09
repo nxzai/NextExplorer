@@ -5,14 +5,12 @@ const {
   setUserSetting,
   setSystemSetting,
   getSettings,
-  setSettings,
 } = require('../services/settingsService');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const path = require('path');
 const fs = require('fs').promises;
 const multer = require('multer');
-const { ForbiddenError } = require('../errors/AppError');
 
 const router = express.Router();
 
@@ -104,7 +102,7 @@ router.post(
     try {
       const configDir = process.env.CONFIG_DIR || '/config';
       const logoDir = path.join(configDir, 'logos');
-      
+
       // Create logos directory if it doesn't exist
       await fs.mkdir(logoDir, { recursive: true });
 
@@ -119,7 +117,7 @@ router.post(
       }
 
       const logoPath = path.join(logoDir, filename);
-      
+
       // Write file to disk
       await fs.writeFile(logoPath, req.file.buffer);
 

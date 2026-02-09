@@ -1,3 +1,4 @@
+/* eslint-env node */
 import { fileURLToPath, URL } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';

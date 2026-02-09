@@ -1,5 +1,4 @@
 const logger = require('../utils/logger');
-const { AppError } = require('../errors/AppError');
 const { v4: uuidv4 } = require('uuid');
 
 const isOidcDocumentRequest = (req) => {
@@ -43,7 +42,7 @@ const clearOidcSessionCookies = (res) => {
  *
  * Handles both operational errors (AppError instances) and unexpected errors
  */
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   // Generate unique request ID for tracking
   const requestId = uuidv4();
 

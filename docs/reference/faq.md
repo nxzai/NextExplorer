@@ -31,4 +31,13 @@ environment:
   - EDITOR_EXTENSIONS=toml,proto,graphql,dockerfile,makefile
 ```
 
-Custom extensions are **added to** the default list (they don't replace it), and changes take effect immediately on container restart—no frontend rebuild required. See the [Environment Reference](../configuration/environment#editor) for details.
+Custom extensions are **added to** the default list (they don't replace it), and changes take effect on container restart—no frontend rebuild required.
+
+If you need to edit larger files in the inline editor, set `EDITOR_MAX_FILESIZE` (defaults to `2M`):
+
+```yaml
+environment:
+  - EDITOR_MAX_FILESIZE=10M
+```
+
+See the [Environment Reference](../configuration/environment#editor) for details.

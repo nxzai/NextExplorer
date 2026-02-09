@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import { fetchFeatures } from '@/api';
 
 export const useFeaturesStore = defineStore('features', () => {
+  const publicUrl = ref('');
+  const publicOrigin = ref('');
   const editorExtensions = ref([]);
   const onlyofficeEnabled = ref(false);
   const onlyofficeExtensions = ref([]);
@@ -34,6 +36,11 @@ export const useFeaturesStore = defineStore('features', () => {
 
       try {
         const features = await fetchFeatures();
+
+        // Public URL / origin
+        publicUrl.value = typeof features?.public?.url === 'string' ? features.public.url : '';
+        publicOrigin.value =
+          typeof features?.public?.origin === 'string' ? features.public.origin : '';
 
         // Editor extensions
         editorExtensions.value = Array.isArray(features?.editor?.extensions)
@@ -74,6 +81,8 @@ export const useFeaturesStore = defineStore('features', () => {
       } catch (error) {
         console.error('Failed to load features:', error);
         // Set defaults on error
+        publicUrl.value = '';
+        publicOrigin.value = '';
         editorExtensions.value = [];
         onlyofficeEnabled.value = false;
         onlyofficeExtensions.value = [];
@@ -101,6 +110,8 @@ export const useFeaturesStore = defineStore('features', () => {
   };
 
   return {
+    publicUrl,
+    publicOrigin,
     editorExtensions,
     onlyofficeEnabled,
     onlyofficeExtensions,

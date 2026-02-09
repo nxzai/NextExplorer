@@ -67,15 +67,13 @@ const sanitizeAccessRules = (rules = []) => {
  */
 const sanitizeBranding = (branding = {}) => {
   return {
-    appName: typeof branding.appName === 'string' 
-      ? branding.appName.trim().slice(0, 100) 
-      : 'Explorer',
-    appLogoUrl: typeof branding.appLogoUrl === 'string' 
-      ? branding.appLogoUrl.trim().slice(0, 500) 
-      : '/logo.svg',
-    showPoweredBy: typeof branding.showPoweredBy === 'boolean' 
-      ? branding.showPoweredBy 
-      : false,
+    appName:
+      typeof branding.appName === 'string' ? branding.appName.trim().slice(0, 100) : 'Explorer',
+    appLogoUrl:
+      typeof branding.appLogoUrl === 'string'
+        ? branding.appLogoUrl.trim().slice(0, 500)
+        : '/logo.svg',
+    showPoweredBy: typeof branding.showPoweredBy === 'boolean' ? branding.showPoweredBy : false,
   };
 };
 
@@ -122,9 +120,7 @@ const getUserSettings = async (userId) => {
 
   try {
     const db = await getDb();
-    const rows = db
-      .prepare('SELECT key, value FROM user_settings WHERE user_id = ?')
-      .all(userId);
+    const rows = db.prepare('SELECT key, value FROM user_settings WHERE user_id = ?').all(userId);
 
     const settings = {};
     for (const row of rows) {
@@ -245,7 +241,8 @@ const setUserSetting = async (userId, key, value) => {
     } else if (typeof value === 'object' && value !== null) {
       const validUnits = ['days', 'weeks', 'months'];
       const unit = validUnits.includes(value.unit) ? value.unit : 'weeks';
-      const numValue = Number.isFinite(value.value) && value.value > 0 ? Math.floor(value.value) : null;
+      const numValue =
+        Number.isFinite(value.value) && value.value > 0 ? Math.floor(value.value) : null;
       sanitizedValue = numValue ? { value: numValue, unit } : null;
     } else {
       sanitizedValue = null;
@@ -354,13 +351,13 @@ const setSettings = async (partial) => {
 
   // Save to DB
   if (partial.thumbnails) {
-    await setSystemSetting('system', 'thumbnails', merged.thumbnails);
+    merged.thumbnails = await setSystemSetting('system', 'thumbnails', merged.thumbnails);
   }
   if (partial.access) {
-    await setSystemSetting('system', 'access', merged.access);
+    merged.access = await setSystemSetting('system', 'access', merged.access);
   }
   if (partial.branding) {
-    await setSystemSetting('branding', 'branding', merged.branding);
+    merged.branding = await setSystemSetting('branding', 'branding', merged.branding);
   }
 
   // Also update JSON for backward compatibility during transition

@@ -1,18 +1,6 @@
 const path = require('path');
 const fs = require('fs/promises');
-const { normalizeRelativePath, combineRelativePath } = require('../../utils/pathUtils');
-const { getPermissionForPath } = require('../../services/accessControlService');
-const {
-  ValidationError,
-  ForbiddenError,
-} = require('../../errors/AppError');
-
-const assertWritable = async (relativePath) => {
-  const perm = await getPermissionForPath(relativePath);
-  if (perm !== 'rw') {
-    throw new ForbiddenError('Path is read-only.');
-  }
-};
+const { combineRelativePath } = require('../../utils/pathUtils');
 
 const buildItemMetadata = async (absolutePath, relativeParent, name) => {
   const stats = await fs.stat(absolutePath);
@@ -79,6 +67,7 @@ const toPosix = (value = '') => value.replace(/\\/g, '/');
 
 const encodeContentDisposition = (filename) => {
   // Check if filename contains non-ASCII characters
+  // eslint-disable-next-line no-control-regex
   const hasNonAscii = /[^\x00-\x7F]/.test(filename);
 
   if (!hasNonAscii) {
@@ -88,6 +77,7 @@ const encodeContentDisposition = (filename) => {
 
   // For non-ASCII filenames, use RFC 5987 encoding
   // Create ASCII fallback (replace non-ASCII with underscores)
+  // eslint-disable-next-line no-control-regex
   const asciiFallback = filename.replace(/[^\x00-\x7F]/g, '_');
 
   // Encode filename for filename* parameter (RFC 5987)
@@ -119,7 +109,6 @@ const stripBasePath = (relativePath, basePath) => {
 };
 
 module.exports = {
-  assertWritable,
   buildItemMetadata,
   collectInputPaths,
   toPosix,

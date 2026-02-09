@@ -2,20 +2,24 @@
   "name": "finder",
   "version": "2.1.2",
   "description": "explorer",
-  "main": "src/app.js",
+  "main": "src/server.js",
   "scripts": {
     "download_samples": "node src/scripts/downloadSamples.js",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
-    "test": "node --test",
-    "start": "node --watch src/app.js"
+    "dev": "node --watch src/server.js",
+    "format": "prettier --config ../prettier.config.cjs --write .",
+    "format:check": "prettier --config ../prettier.config.cjs --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "start": "node --watch src/server.js"
   },
   "author": "Vikram Soni",
   "license": "ISC",
   "dependencies": {
     "@homebridge/node-pty-prebuilt-multiarch": "^0.13.1",
-    "archiver": "^6.0.2",
     "adm-zip": "^0.5.16",
+    "archiver": "^6.0.2",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^12.5.0",
@@ -43,7 +47,10 @@
     "yauzl": "^2.10.0"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/ui": "^4.0.18",
     "prettier": "^3.6.2",
-    "supertest": "^7.1.4"
+    "supertest": "^7.1.4",
+    "vitest": "^4.0.18"
   }
 }

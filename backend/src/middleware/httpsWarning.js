@@ -21,7 +21,9 @@ const configureHttpsWarning = (app) => {
       } else if (!isHttps) {
         logger.debug('Non-HTTPS request detected');
       }
-    } catch (_) {}
+    } catch (_) {
+      // Ignore errors in HTTPS detection
+    }
     next();
   });
 

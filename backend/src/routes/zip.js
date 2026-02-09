@@ -13,15 +13,15 @@ const {
   findAvailableFolderName,
   findAvailableName,
 } = require('../utils/pathUtils');
-const { resolvePathWithAccess } = require('../services/accessManager');
 const { ValidationError, ForbiddenError, NotFoundError } = require('../errors/AppError');
+const { ACTIONS, authorizeAndResolve } = require('../services/authorizationService');
 
 const router = express.Router();
 
 const buildItemMetadata = async (absolutePath, relativeParent, name) => {
   const stats = await fs.stat(absolutePath);
   const ext = path.extname(name).slice(1).toLowerCase();
-  const kind = stats.isDirectory() ? 'directory' : (ext.length > 10 ? 'unknown' : ext || 'unknown');
+  const kind = stats.isDirectory() ? 'directory' : ext.length > 10 ? 'unknown' : ext || 'unknown';
 
   return { name, path: relativeParent, kind, size: stats.size, dateModified: stats.mtime };
 };
@@ -50,11 +50,14 @@ router.post(
     const relativePath = normalizeRelativePath(inputPath);
     const context = { user: req.user, guestSession: req.guestSession };
 
-    const { accessInfo, resolved } = await resolvePathWithAccess(context, relativePath).catch(() => {
+    const { allowed, accessInfo, resolved } = await authorizeAndResolve(
+      context,
+      relativePath,
+      ACTIONS.read
+    ).catch(() => {
       throw new NotFoundError('File not found.');
     });
-
-    if (!accessInfo?.canAccess || !accessInfo.canRead) {
+    if (!allowed || !resolved) {
       throw new ForbiddenError(accessInfo?.denialReason || 'Access denied.');
     }
 
@@ -68,13 +71,15 @@ router.post(
       throw new ValidationError('Only .zip archives are supported.');
     }
 
-    const parentRelativePath = normalizeRelativePath(path.posix.dirname(resolved.relativePath || ''));
-    const { accessInfo: parentAccessInfo, resolved: parentResolved } = await resolvePathWithAccess(
-      context,
-      parentRelativePath
+    const parentRelativePath = normalizeRelativePath(
+      path.posix.dirname(resolved.relativePath || '')
     );
-
-    if (!parentAccessInfo?.canAccess || !parentAccessInfo.canCreateFolder) {
+    const {
+      allowed: parentAllowed,
+      accessInfo: parentAccessInfo,
+      resolved: parentResolved,
+    } = await authorizeAndResolve(context, parentRelativePath, ACTIONS.createFolder);
+    if (!parentAllowed || !parentResolved) {
       throw new ForbiddenError(parentAccessInfo?.denialReason || 'Destination is read-only.');
     }
 
@@ -87,8 +92,11 @@ router.post(
     const ext = path.extname(zipAbsolutePath);
     const zipBaseName = path.basename(zipAbsolutePath, ext);
     const baseFolderName = (() => {
-      try { return ensureValidName(zipBaseName || 'Archive'); }
-      catch (_) { return 'Archive'; }
+      try {
+        return ensureValidName(zipBaseName || 'Archive');
+      } catch (_) {
+        return 'Archive';
+      }
     })();
 
     const folderName = await findAvailableFolderName(parentAbsolutePath, baseFolderName);
@@ -104,7 +112,11 @@ router.post(
       throw error;
     }
 
-    const item = await buildItemMetadata(destinationFolderAbsolutePath, parentRelativePath, folderName);
+    const item = await buildItemMetadata(
+      destinationFolderAbsolutePath,
+      parentRelativePath,
+      folderName
+    );
     res.status(201).json({ success: true, item });
   })
 );
@@ -127,12 +139,12 @@ router.post(
     }
 
     const context = { user: req.user, guestSession: req.guestSession };
-    const { accessInfo: destAccess, resolved: destResolved } = await resolvePathWithAccess(
-      context,
-      normalizedDestination
-    );
-
-    if (!destAccess?.canAccess || !destAccess.canWrite) {
+    const {
+      allowed: destAllowed,
+      accessInfo: destAccess,
+      resolved: destResolved,
+    } = await authorizeAndResolve(context, normalizedDestination, ACTIONS.write);
+    if (!destAllowed || !destResolved) {
       throw new ForbiddenError(destAccess?.denialReason || 'Destination is read-only.');
     }
 
@@ -147,9 +159,12 @@ router.post(
         }
         const itemParent = normalizeRelativePath(item.path || '');
         const itemRelative = combineRelativePath(itemParent, item.name);
-        const { accessInfo, resolved } = await resolvePathWithAccess(context, itemRelative);
-
-        if (!accessInfo?.canAccess || !accessInfo.canRead) {
+        const { allowed, accessInfo, resolved } = await authorizeAndResolve(
+          context,
+          itemRelative,
+          ACTIONS.read
+        );
+        if (!allowed || !resolved) {
           throw new ForbiddenError(accessInfo?.denialReason || 'Source item is not accessible.');
         }
 

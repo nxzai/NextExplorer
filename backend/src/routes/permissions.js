@@ -1,11 +1,10 @@
 const express = require('express');
 const fs = require('fs/promises');
-const path = require('path');
 const { exec } = require('child_process');
 const { promisify } = require('util');
 
 const { normalizeRelativePath } = require('../utils/pathUtils');
-const { resolvePathWithAccess } = require('../services/accessManager');
+const { ACTIONS, authorizeAndResolve } = require('../services/authorizationService');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const {
@@ -31,11 +30,13 @@ router.get(
       throw new ValidationError('A file path is required.');
     }
 
-    const { accessInfo, resolved } = await resolvePathWithAccess(
-      { user: req.user, guestSession: req.guestSession },
-      relativePath
+    const context = { user: req.user, guestSession: req.guestSession };
+    const { allowed, accessInfo, resolved } = await authorizeAndResolve(
+      context,
+      relativePath,
+      ACTIONS.read
     );
-    if (!accessInfo?.canAccess || !resolved) {
+    if (!allowed || !resolved) {
       throw new ForbiddenError(accessInfo?.denialReason || 'Path is not accessible.');
     }
 
@@ -108,15 +109,14 @@ router.post(
     }
 
     const relativePath = normalizeRelativePath(rawPath);
-    const { accessInfo, resolved } = await resolvePathWithAccess(
-      { user: req.user, guestSession: req.guestSession },
-      relativePath
+    const context = { user: req.user, guestSession: req.guestSession };
+    const { allowed, accessInfo, resolved } = await authorizeAndResolve(
+      context,
+      relativePath,
+      ACTIONS.write
     );
-    if (!accessInfo?.canAccess || !resolved) {
+    if (!allowed || !resolved) {
       throw new ForbiddenError(accessInfo?.denialReason || 'Path is not accessible.');
-    }
-    if (!accessInfo.canWrite) {
-      throw new ForbiddenError('Path is read-only.');
     }
 
     try {
@@ -190,15 +190,14 @@ router.post(
     }
 
     const relativePath = normalizeRelativePath(rawPath);
-    const { accessInfo, resolved } = await resolvePathWithAccess(
-      { user: req.user, guestSession: req.guestSession },
-      relativePath
+    const context = { user: req.user, guestSession: req.guestSession };
+    const { allowed, accessInfo, resolved } = await authorizeAndResolve(
+      context,
+      relativePath,
+      ACTIONS.write
     );
-    if (!accessInfo?.canAccess || !resolved) {
+    if (!allowed || !resolved) {
       throw new ForbiddenError(accessInfo?.denialReason || 'Path is not accessible.');
-    }
-    if (!accessInfo.canWrite) {
-      throw new ForbiddenError('Path is read-only.');
     }
 
     try {

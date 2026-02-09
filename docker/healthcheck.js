@@ -1,10 +1,11 @@
+/* eslint-env node */
 const http = require('http');
 
 const options = {
   host: 'localhost',
   port: process.env.PORT || 3000,
   timeout: 2000,
-  path: '/healthz'
+  path: '/healthz',
 };
 
 const request = http.request(options, (res) => {
@@ -12,7 +13,7 @@ const request = http.request(options, (res) => {
   if (res.statusCode === 200) {
     process.exit(0);
   } else {
-    process.exit(1); 
+    process.exit(1);
   }
 });
 

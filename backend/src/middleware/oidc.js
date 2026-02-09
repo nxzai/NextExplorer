@@ -36,7 +36,9 @@ const shouldOidcCookieBeSecure = (baseURL) => {
       const u = new URL(baseURL);
       return u.protocol === 'https:';
     }
-  } catch (_) {}
+  } catch (_) {
+    // Ignore URL parsing errors
+  }
   return false;
 };
 

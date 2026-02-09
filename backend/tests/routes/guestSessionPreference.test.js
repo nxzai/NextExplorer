@@ -1,16 +1,15 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const path = require('node:path');
-const fs = require('node:fs/promises');
-const express = require('express');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const request = require('supertest');
-const { setupTestEnv, clearModuleCache } = require('../helpers/env-test-utils');
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import express from 'express';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import request from 'supertest';
+import { setupTestEnv, clearModuleCache } from '../helpers/env-test-utils.js';
 
 let envContext;
 
-test.before(async () => {
+beforeAll(async () => {
   envContext = await setupTestEnv({
     tag: 'guest-session-preference-test-',
     modules: [
@@ -27,7 +26,7 @@ test.before(async () => {
   });
 });
 
-test.after(async () => {
+afterAll(async () => {
   await envContext.cleanup();
 });
 
@@ -71,51 +70,52 @@ const buildApp = () => {
   return app;
 };
 
-test('authenticated user takes precedence over guest session when browsing volumes', async () => {
-  const app = buildApp();
+describe('Guest Session Preference', () => {
+  describe('Authentication Priority', () => {
+    it('should prioritize authenticated user over guest session when browsing volumes', async () => {
+      const app = buildApp();
 
-  // Create a folder in the test volume.
-  const projectsDir = path.join(envContext.volumeDir, 'Projects');
-  await fs.mkdir(projectsDir, { recursive: true });
-  await fs.writeFile(path.join(projectsDir, 'hello.txt'), 'hello');
+      // Create a folder in the test volume.
+      const projectsDir = path.join(envContext.volumeDir, 'Projects');
+      await fs.mkdir(projectsDir, { recursive: true });
+      await fs.writeFile(path.join(projectsDir, 'hello.txt'), 'hello');
 
-  // Setup and login as owner.
-  const ownerAgent = request.agent(app);
-  await ownerAgent
-    .post('/api/auth/setup')
-    .send({
-      email: 'owner@example.com',
-      username: 'owner',
-      password: 'secret123',
-    })
-    .expect(201);
+      // Setup and login as owner.
+      const ownerAgent = request.agent(app);
+      const setupResponse = await ownerAgent.post('/api/auth/setup').send({
+        email: 'owner@example.com',
+        username: 'owner',
+        password: 'secret123',
+      });
+      expect(setupResponse.status).toBe(201);
 
-  // Create an anyone share so a guest session can be created.
-  const createShare = await ownerAgent
-    .post('/api/shares')
-    .send({
-      sourcePath: 'Projects',
-      accessMode: 'readonly',
-      sharingType: 'anyone',
-    })
-    .expect(201);
+      // Create an anyone share so a guest session can be created.
+      const createShare = await ownerAgent.post('/api/shares').send({
+        sourcePath: 'Projects',
+        accessMode: 'readonly',
+        sharingType: 'anyone',
+      });
 
-  const token = createShare.body?.shareToken;
-  assert.ok(token);
+      expect(createShare.status).toBe(201);
+      const token = createShare.body?.shareToken;
+      expect(token).toBeDefined();
 
-  // Simulate a guest opening the share link to create a guest session.
-  const guestAccess = await request(app).get(`/api/share/${token}/access`).expect(200);
+      // Simulate a guest opening the share link to create a guest session.
+      const guestAccess = await request(app).get(`/api/share/${token}/access`);
 
-  const guestSessionId = guestAccess.body?.guestSessionId;
-  assert.ok(guestSessionId);
+      expect(guestAccess.status).toBe(200);
+      const guestSessionId = guestAccess.body?.guestSessionId;
+      expect(guestSessionId).toBeDefined();
 
-  // Now simulate the logged-in user making a request while a stale guest session is still present.
-  // (Matches the real-world case where a guest session cookie/header lingers after login.)
-  const browse = await ownerAgent
-    .get('/api/browse/Projects')
-    .set('X-Guest-Session', guestSessionId)
-    .expect(200);
+      // Now simulate the logged-in user making a request while a stale guest session is still present.
+      // (Matches the real-world case where a guest session cookie/header lingers after login.)
+      const browse = await ownerAgent
+        .get('/api/browse/Projects')
+        .set('X-Guest-Session', guestSessionId);
 
-  const names = (browse.body.items || []).map((item) => item.name);
-  assert.ok(names.includes('hello.txt'));
+      expect(browse.status).toBe(200);
+      const names = (browse.body.items || []).map((item) => item.name);
+      expect(names).toContain('hello.txt');
+    });
+  });
 });

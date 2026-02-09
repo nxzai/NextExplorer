@@ -32,9 +32,9 @@ const getAuthLabel = (auth) => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
+  <div class="space-y-6">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between">
       <div>
         <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
           {{ t('titles.userManagement') }}
@@ -52,14 +52,14 @@ const getAuthLabel = (auth) => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex-1 flex items-center justify-center">
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="animate-pulse text-zinc-400">{{ t('common.loading') }}...</div>
     </div>
 
     <!-- Empty State -->
     <div
       v-else-if="users.length === 0"
-      class="flex-1 flex flex-col items-center justify-center text-zinc-500"
+      class="flex flex-col items-center justify-center py-12 text-zinc-500"
     >
       <UserCircleIcon class="w-12 h-12 mb-2 opacity-50" />
       <p>{{ t('settings.users.noUsers') }}</p>
@@ -75,7 +75,7 @@ const getAuthLabel = (auth) => {
           v-for="user in users"
           :key="user.id"
           @click="$emit('select', user)"
-          class="group relative flex items-center justify-between px-6 py-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer transition-colors duration-150 ease-in-out"
+          class="group relative flex items-center justify-between px-6 py-4 hover:bg-zinc-50 dark:hover:bg-zinc-950/30 cursor-pointer transition-colors duration-150 ease-in-out"
         >
           <div class="flex items-center gap-4 min-w-0">
             <!-- Avatar -->

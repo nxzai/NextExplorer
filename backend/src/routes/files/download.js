@@ -1,20 +1,12 @@
 const path = require('path');
 const fs = require('fs/promises');
-const fss = require('fs');
 const archiver = require('archiver');
 const { normalizeRelativePath } = require('../../utils/pathUtils');
 const { resolvePathWithAccess } = require('../../services/accessManager');
 const asyncHandler = require('../../utils/asyncHandler');
-const {
-  ValidationError,
-  ForbiddenError,
-} = require('../../errors/AppError');
+const { ValidationError, ForbiddenError } = require('../../errors/AppError');
 const logger = require('../../utils/logger');
-const {
-  collectInputPaths,
-  encodeContentDisposition,
-  stripBasePath,
-} = require('./utils');
+const { collectInputPaths, encodeContentDisposition, stripBasePath } = require('./utils');
 
 const router = require('express').Router();
 

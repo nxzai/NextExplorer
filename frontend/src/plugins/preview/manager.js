@@ -28,9 +28,8 @@ export const usePreviewManager = defineStore('preview-manager', () => {
   };
 
   // Get siblings from the same directory
-  const getSiblings = (target) => {
+  const getSiblings = () => {
     const fileStore = useFileStore();
-    const base = target || {};
     const items = fileStore.getCurrentPathItems || [];
     return items;
   };

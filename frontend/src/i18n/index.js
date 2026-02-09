@@ -10,7 +10,20 @@ const messages = Object.fromEntries(
   })
 );
 
-const preferredLocaleOrder = ['en', 'es', 'fr', 'de', 'it', 'ro', 'zh', 'hi', 'pl', 'sv', 'ru'];
+const preferredLocaleOrder = [
+  'en',
+  'es',
+  'fr',
+  'de',
+  'it',
+  'ro',
+  'hi',
+  'pl',
+  'sv',
+  'ru',
+  'zh-CN',
+  'zh-TW',
+];
 
 export const supportedLocaleOptions = [
   ...preferredLocaleOrder.filter((code) => Object.prototype.hasOwnProperty.call(messages, code)),
@@ -25,7 +38,9 @@ function detectLocale(supportedLocales) {
   try {
     const saved = localStorage.getItem('locale');
     if (saved && supportedLocales.includes(saved)) return saved;
-  } catch (_) {}
+  } catch (_) {
+    // Ignore localStorage errors (e.g., in private browsing mode)
+  }
 
   const prefs =
     typeof navigator !== 'undefined' &&

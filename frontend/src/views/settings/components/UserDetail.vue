@@ -151,9 +151,9 @@ const getInitials = (name) => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full animate-fade-in">
+  <div class="space-y-6 animate-fade-in">
     <!-- Header -->
-    <div class="flex items-center gap-4 mb-6">
+    <div class="flex items-center gap-4">
       <button
         @click="$emit('back')"
         class="p-2 rounded-md text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 transition-colors"
@@ -185,7 +185,7 @@ const getInitials = (name) => {
     </div>
 
     <!-- Tabs -->
-    <div class="border-b border-zinc-200 dark:border-zinc-800 mb-6">
+    <div class="border-b border-zinc-200 dark:border-zinc-800">
       <nav class="-mb-px flex space-x-8" aria-label="Tabs">
         <button
           @click="activeTab = 'profile'"
@@ -225,13 +225,13 @@ const getInitials = (name) => {
     </div>
 
     <!-- Content -->
-    <div class="flex-1 overflow-y-auto pb-10">
+    <div>
       <!-- Profile Tab -->
-      <div v-if="activeTab === 'profile'" class="space-y-8 max-w-3xl">
+      <div v-if="activeTab === 'profile'" class="space-y-6 max-w-3xl">
         <div
-          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6"
+          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4"
         >
-          <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
             General Information
           </h3>
           <form @submit.prevent="handleSaveProfile" class="space-y-4">
@@ -281,9 +281,9 @@ const getInitials = (name) => {
 
         <!-- Roles -->
         <div
-          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6"
+          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4"
         >
-          <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
             Roles & Permissions
           </h3>
           <div class="flex items-center justify-between">
@@ -318,9 +318,9 @@ const getInitials = (name) => {
         <!-- Danger Zone -->
         <div
           v-if="!isCurrentUser"
-          class="bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-200 dark:border-red-900/30 p-6"
+          class="bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-200 dark:border-red-900/30 p-4"
         >
-          <h3 class="text-lg font-medium text-red-800 dark:text-red-300 mb-4">Danger Zone</h3>
+          <h3 class="text-base font-semibold text-red-800 dark:text-red-300 mb-4">Danger Zone</h3>
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-red-700 dark:text-red-400">
@@ -339,12 +339,12 @@ const getInitials = (name) => {
       </div>
 
       <!-- Security Tab -->
-      <div v-if="activeTab === 'security'" class="space-y-8 max-w-3xl">
+      <div v-if="activeTab === 'security'" class="space-y-6 max-w-3xl">
         <!-- Password -->
         <div
-          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6"
+          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4"
         >
-          <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">Password</h3>
+          <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Password</h3>
           <div class="flex items-center justify-between">
             <div>
               <div class="flex items-center gap-2">
@@ -370,9 +370,9 @@ const getInitials = (name) => {
 
         <!-- OIDC Profiles -->
         <div
-          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6"
+          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4"
         >
-          <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
             Single Sign-On (OIDC)
           </h3>
 
@@ -409,12 +409,12 @@ const getInitials = (name) => {
       </div>
 
       <!-- Volumes Tab -->
-      <div v-if="activeTab === 'volumes'" class="space-y-8 max-w-3xl">
+      <div v-if="activeTab === 'volumes'" class="space-y-6 max-w-3xl">
         <div
-          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6"
+          class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4"
         >
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100">
+            <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">
               {{ t('settings.users.assignedVolumes') }}
             </h3>
             <button

@@ -98,7 +98,9 @@ export const useAuthStore = defineStore('auth', () => {
     lastError.value = null;
     try {
       await logoutApi();
-    } catch (_) {}
+    } catch (_) {
+      // Ignore logout errors
+    }
     hasStatus.value = true;
     currentUser.value = null;
   };

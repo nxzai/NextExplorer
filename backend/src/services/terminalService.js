@@ -1,5 +1,4 @@
 const crypto = require('crypto');
-const pty = require('@homebridge/node-pty-prebuilt-multiarch');
 const WebSocket = require('ws');
 const logger = require('../utils/logger');
 
@@ -10,6 +9,39 @@ class TerminalService {
     this.terminals = new Map();
     this.sessionTokens = new Map();
     this.tokenTtlMs = 5 * 60 * 1000; // 5 minutes
+    this.pty = null;
+    this.enabled = true;
+    this.available = false;
+  }
+
+  initialize({ enabled = true } = {}) {
+    this.enabled = Boolean(enabled);
+
+    if (!this.enabled) {
+      this.available = false;
+      logger.info('Terminal feature disabled by TERMINAL_ENABLED=false');
+      return false;
+    }
+
+    if (this.pty) {
+      this.available = true;
+      return true;
+    }
+
+    try {
+      this.pty = require('@homebridge/node-pty-prebuilt-multiarch');
+      this.available = true;
+      logger.info('Terminal dependencies loaded successfully');
+      return true;
+    } catch (error) {
+      this.available = false;
+      logger.error({ err: error }, 'Terminal dependencies failed to load; terminal disabled');
+      return false;
+    }
+  }
+
+  isAvailable() {
+    return this.enabled && this.available;
   }
 
   createSessionToken(user) {
@@ -61,6 +93,11 @@ class TerminalService {
   }
 
   createWebSocketServer(server) {
+    if (!this.isAvailable()) {
+      logger.warn('Terminal WebSocket server not started because terminal is unavailable');
+      return null;
+    }
+
     logger.info('Creating WebSocket server for terminal on path: /terminal');
 
     const wss = new WebSocket.Server({
@@ -114,6 +151,11 @@ class TerminalService {
   }
 
   handleConnection(ws) {
+    if (!this.isAvailable() || !this.pty) {
+      ws.close(1011, 'Terminal unavailable');
+      return;
+    }
+
     const terminalId = Date.now().toString();
     const shell = process.env.SHELL || 'bash';
 
@@ -128,7 +170,7 @@ class TerminalService {
     );
 
     try {
-      const ptyProcess = pty.spawn(shell, [], {
+      const ptyProcess = this.pty.spawn(shell, [], {
         name: 'xterm-256color',
         cols: 80,
         rows: 30,

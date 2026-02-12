@@ -14,6 +14,7 @@ export const useFeaturesStore = defineStore('features', () => {
   const personalEnabled = ref(false);
   const userVolumesEnabled = ref(false);
   const skipHome = ref(false);
+  const terminalEnabled = ref(false);
   const version = ref('');
   const gitCommit = ref('');
   const gitBranch = ref('');
@@ -70,6 +71,7 @@ export const useFeaturesStore = defineStore('features', () => {
 
         // Navigation behavior
         skipHome.value = Boolean(features?.navigation?.skipHome);
+        terminalEnabled.value = Boolean(features?.terminal?.enabled);
 
         // Version information
         version.value = features?.version?.app || '';
@@ -92,6 +94,7 @@ export const useFeaturesStore = defineStore('features', () => {
         personalEnabled.value = false;
         userVolumesEnabled.value = false;
         skipHome.value = false;
+        terminalEnabled.value = false;
       } finally {
         isLoading.value = false;
       }
@@ -121,6 +124,7 @@ export const useFeaturesStore = defineStore('features', () => {
     personalEnabled,
     userVolumesEnabled,
     skipHome,
+    terminalEnabled,
     version,
     gitCommit,
     gitBranch,

@@ -4,7 +4,7 @@
  * Tests should import the app directly from ./app.js
  */
 const { createApp } = require('./app');
-const { port, http } = require('./config/index');
+const { port, http, features } = require('./config/index');
 const logger = require('./utils/logger');
 const { printStartupBanner } = require('./utils/startupBanner');
 const terminalService = require('./services/terminalService');
@@ -34,9 +34,16 @@ const startServer = async () => {
     );
   }
 
-  // Initialize WebSocket server for terminal
-  terminalService.createWebSocketServer(server);
-  logger.debug('Terminal WebSocket server initialized');
+  // Initialize terminal only when enabled and dependencies are available.
+  const terminalReady = terminalService.initialize({
+    enabled: Boolean(features?.terminal),
+  });
+  if (terminalReady) {
+    terminalService.createWebSocketServer(server);
+    logger.debug('Terminal WebSocket server initialized');
+  } else {
+    logger.warn('Terminal disabled at runtime');
+  }
 
   // Cleanup on process termination
   const cleanup = () => {

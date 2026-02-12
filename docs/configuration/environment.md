@@ -69,6 +69,7 @@ nextExplorer is configured almost entirely through environment variables. The ba
 | `USER_DIR_ENABLED`    | `false`     | When `true`, enables a **personal “My Files” space** for each authenticated user under `USER_ROOT`. The frontend shows a “My Files” entry when this flag is on. |
 | `USER_VOLUMES`        | `false`     | When `true`, non-admin users only see volumes assigned to them by an admin. See [User volumes](/admin/user-volumes).                                            |
 | `SKIP_HOME`           | `false`     | When `true`, visits to the home view (`/browse/`) automatically redirect into the first volume instead.                                                         |
+| `TERMINAL_ENABLED`    | `true`      | Controls the admin terminal feature. When `false`, terminal routes/UI are disabled. When `true`, nextExplorer attempts to load terminal dependencies and automatically hides/disables terminal if dependencies are unavailable (startup continues). |
 
 The sharing system (toolbar **Share** button, guest links such as `/share/:token`, and the **Shared with me** page) works out of the box with the feature flags above. Advanced share tuning knobs are documented under **Sharing (advanced)** below.
 

@@ -18,6 +18,7 @@ import ExplorerContextMenu from '@/components/ExplorerContextMenu.vue';
 import TerminalPanel from '@/components/TerminalPanel.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useAppSettings } from '@/stores/appSettings';
+import { useFeaturesStore } from '@/stores/features';
 import InfoPanel from '@/components/InfoPanel.vue';
 import { useFileUploader } from '@/composables/fileUploader';
 import { useKeyboardShortcuts } from '@/composables/keyboardShortcuts';
@@ -34,6 +35,7 @@ const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
 const appSettings = useAppSettings();
+const featuresStore = useFeaturesStore();
 
 // Resizable aside state
 const asideWidth = useStorage('browser-aside-width', 230);
@@ -164,7 +166,7 @@ const handleGuestLogin = () => {
         <FavMenu v-if="!auth.isGuest" />
         <SharesMenu v-if="!auth.isGuest" />
         <VolMenu v-if="!auth.isGuest" />
-        <TerminalMenu />
+        <TerminalMenu v-if="featuresStore.terminalEnabled" />
       </div>
       <UserMenu v-if="!auth.isGuest" class="mt-auto -mx-4" />
     </aside>
@@ -220,7 +222,7 @@ const handleGuestLogin = () => {
     <FavoriteEditDialog />
     <NotificationToastContainer />
     <NotificationPanel />
-    <TerminalPanel />
+    <TerminalPanel v-if="featuresStore.terminalEnabled" />
 
     <!-- Footer with powered by link -->
     <footer

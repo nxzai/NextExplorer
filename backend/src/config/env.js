@@ -81,6 +81,7 @@ module.exports = {
   USER_DIR_ENABLED: normalizeBoolean(process.env.USER_DIR_ENABLED) || false,
   USER_VOLUMES: normalizeBoolean(process.env.USER_VOLUMES) || false,
   SKIP_HOME: normalizeBoolean(process.env.SKIP_HOME) || false,
+  TERMINAL_ENABLED: normalizeBoolean(process.env.TERMINAL_ENABLED) ?? true,
 
   // Editor
   EDITOR_EXTENSIONS: process.env.EDITOR_EXTENSIONS || '',

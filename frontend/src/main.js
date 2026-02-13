@@ -8,12 +8,19 @@ import router from './router';
 import { installPreviewPlugins } from '@/plugins';
 import { useFeaturesStore } from '@/stores/features';
 import { useAppSettings } from '@/stores/appSettings';
+import { useNotificationsStore } from '@/stores/notifications';
 import i18n from './i18n';
+import { setErrorHandler } from '@/api/http';
+import { createErrorHandler } from '@/api/errorHandler';
 
 const pinia = createPinia();
 const app = createApp(App);
 
 app.use(pinia);
+
+// Initialize HTTP error handler
+const notificationsStore = useNotificationsStore(pinia);
+setErrorHandler(createErrorHandler(notificationsStore, i18n));
 
 const featuresStore = useFeaturesStore(pinia);
 featuresStore.initialize().catch((err) => {

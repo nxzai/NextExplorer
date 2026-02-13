@@ -32,6 +32,7 @@
     "remaining": "återstår",
     "unknown": "okänd",
     "optional": "Valfritt",
+    "clear": "Töm",
     "name": "Namn",
     "size": "Storlek",
     "type": "Typ",
@@ -147,6 +148,22 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Autentisering krävs",
+    "AUTH_INVALID_CREDENTIALS": "Ogiltig e-post eller lösenord",
+    "AUTH_ACCOUNT_LOCKED": "Kontot är tillfälligt låst på grund av misslyckade inloggningsförsök",
+    "AUTH_PASSWORD_INCORRECT": "Det nuvarande lösenordet är felaktigt",
+    "VALIDATION_EMAIL_REQUIRED": "E-post krävs",
+    "VALIDATION_PASSWORD_REQUIRED": "Lösenord krävs",
+    "VALIDATION_PASSWORD_TOO_SHORT": "Lösenordet måste vara minst 6 tecken långt",
+    "VALIDATION_PASSWORD_MISMATCH": "Lösenorden matchar inte",
+    "RATE_LIMIT_LOGIN": "För många inloggningsförsök. Vänta {minutes} minut innan du försöker igen | För många inloggningsförsök. Vänta {minutes} minuter innan du försöker igen",
+    "RATE_LIMIT_PASSWORD": "För många lösenordsförsök. Vänta {minutes} minut innan du försöker igen | För många lösenordsförsök. Vänta {minutes} minuter innan du försöker igen",
+    "NOT_FOUND_USER": "Användare hittades inte",
+    "CONFLICT_USER_EXISTS": "Användaren finns redan",
+    "CONFLICT_PASSWORD_EXISTS": "Du har redan lösenordsautentisering",
+    "CONFLICT_SETUP_COMPLETE": "Applikationen är redan konfigurerad"
   },
   "titles": {
     "volumes": "Volymer",

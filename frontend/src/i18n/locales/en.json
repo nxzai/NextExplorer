@@ -149,6 +149,22 @@
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume"
   },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Authentication required",
+    "AUTH_INVALID_CREDENTIALS": "Invalid email or password",
+    "AUTH_ACCOUNT_LOCKED": "Account is temporarily locked due to failed login attempts",
+    "AUTH_PASSWORD_INCORRECT": "Current password is incorrect",
+    "VALIDATION_EMAIL_REQUIRED": "Email is required",
+    "VALIDATION_PASSWORD_REQUIRED": "Password is required",
+    "VALIDATION_PASSWORD_TOO_SHORT": "Password must be at least 6 characters long",
+    "VALIDATION_PASSWORD_MISMATCH": "Passwords do not match",
+    "RATE_LIMIT_LOGIN": "Too many login attempts. Please wait {minutes} minute before trying again | Too many login attempts. Please wait {minutes} minutes before trying again",
+    "RATE_LIMIT_PASSWORD": "Too many password attempts. Please wait {minutes} minute before trying again | Too many password attempts. Please wait {minutes} minutes before trying again",
+    "NOT_FOUND_USER": "User not found",
+    "CONFLICT_USER_EXISTS": "User already exists",
+    "CONFLICT_PASSWORD_EXISTS": "You already have password authentication",
+    "CONFLICT_SETUP_COMPLETE": "Application already configured"
+  },
   "titles": {
     "volumes": "Volumes",
     "favorites": "Favorites",

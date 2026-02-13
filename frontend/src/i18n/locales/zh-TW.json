@@ -149,6 +149,22 @@
     "saveVolume": "儲存儲存卷失敗",
     "removeVolume": "移除儲存卷失敗"
   },
+  "serverErrors": {
+    "AUTH_REQUIRED": "需要身份驗證",
+    "AUTH_INVALID_CREDENTIALS": "電子郵件或密碼無效",
+    "AUTH_ACCOUNT_LOCKED": "由於登入嘗試失敗，帳戶已暫時鎖定",
+    "AUTH_PASSWORD_INCORRECT": "目前密碼不正確",
+    "VALIDATION_EMAIL_REQUIRED": "電子郵件為必填",
+    "VALIDATION_PASSWORD_REQUIRED": "密碼為必填",
+    "VALIDATION_PASSWORD_TOO_SHORT": "密碼長度至少為6個字元",
+    "VALIDATION_PASSWORD_MISMATCH": "密碼不相符",
+    "RATE_LIMIT_LOGIN": "登入嘗試次數過多。請在{minutes}分鐘後重試",
+    "RATE_LIMIT_PASSWORD": "密碼嘗試次數過多。請在{minutes}分鐘後重試",
+    "NOT_FOUND_USER": "找不到使用者",
+    "CONFLICT_USER_EXISTS": "使用者已存在",
+    "CONFLICT_PASSWORD_EXISTS": "您已有密碼驗證",
+    "CONFLICT_SETUP_COMPLETE": "應用程式已設定"
+  },
   "titles": {
     "volumes": "儲存卷",
     "favorites": "最愛",

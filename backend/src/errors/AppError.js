@@ -3,10 +3,11 @@
  * All custom errors should extend this class
  */
 class AppError extends Error {
-  constructor(message, statusCode = 500) {
+  constructor(message, statusCode = 500, code = null) {
     super(message);
 
     this.statusCode = statusCode;
+    this.code = code;
     this.isOperational = true; // Distinguishes operational errors from programmer errors
     this.timestamp = new Date().toISOString();
 
@@ -15,11 +16,13 @@ class AppError extends Error {
   }
 
   toJSON() {
-    return {
+    const json = {
       message: this.message,
       statusCode: this.statusCode,
       timestamp: this.timestamp,
     };
+    if (this.code) json.code = this.code;
+    return json;
   }
 }
 
@@ -27,10 +30,10 @@ class AppError extends Error {
  * 400 Bad Request - for validation errors
  */
 class ValidationError extends AppError {
-  constructor(message = 'Validation failed', details = null) {
-    super(message, 400);
+  constructor(message = 'Validation failed', details = null, code = null) {
+    super(message, 400, code);
     this.name = 'ValidationError';
-    this.details = details;
+    this.details = details || {};
   }
 
   toJSON() {
@@ -45,8 +48,8 @@ class ValidationError extends AppError {
  * 401 Unauthorized - for authentication errors
  */
 class UnauthorizedError extends AppError {
-  constructor(message = 'Authentication required') {
-    super(message, 401);
+  constructor(message = 'Authentication required', code = 'AUTH_REQUIRED') {
+    super(message, 401, code);
     this.name = 'UnauthorizedError';
   }
 }
@@ -55,8 +58,8 @@ class UnauthorizedError extends AppError {
  * 403 Forbidden - for authorization/permission errors
  */
 class ForbiddenError extends AppError {
-  constructor(message = 'Access denied') {
-    super(message, 403);
+  constructor(message = 'Access denied', code = 'FORBIDDEN') {
+    super(message, 403, code);
     this.name = 'ForbiddenError';
   }
 }
@@ -65,8 +68,8 @@ class ForbiddenError extends AppError {
  * 404 Not Found - for missing resources
  */
 class NotFoundError extends AppError {
-  constructor(message = 'Resource not found') {
-    super(message, 404);
+  constructor(message = 'Resource not found', code = 'NOT_FOUND') {
+    super(message, 404, code);
     this.name = 'NotFoundError';
   }
 }
@@ -75,8 +78,8 @@ class NotFoundError extends AppError {
  * 409 Conflict - for resource conflicts
  */
 class ConflictError extends AppError {
-  constructor(message = 'Resource conflict') {
-    super(message, 409);
+  constructor(message = 'Resource conflict', code = 'CONFLICT') {
+    super(message, 409, code);
     this.name = 'ConflictError';
   }
 }
@@ -85,18 +88,17 @@ class ConflictError extends AppError {
  * 429 Too Many Requests - for rate limiting
  */
 class RateLimitError extends AppError {
-  constructor(message = 'Too many requests', retryAfter = null) {
-    super(message, 429);
+  constructor(message = 'Too many requests', retryAfter = null, code = 'RATE_LIMIT_EXCEEDED') {
+    super(message, 429, code);
     this.name = 'RateLimitError';
-    this.retryAfter = retryAfter;
+    this.details = retryAfter ? { retryAfter } : {};
   }
 
   toJSON() {
-    const json = super.toJSON();
-    if (this.retryAfter) {
-      json.retryAfter = this.retryAfter;
-    }
-    return json;
+    return {
+      ...super.toJSON(),
+      details: this.details,
+    };
   }
 }
 

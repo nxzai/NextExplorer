@@ -32,6 +32,7 @@
     "remaining": "verbleibend",
     "unknown": "unbekannt",
     "optional": "Optional",
+    "clear": "Löschen",
     "name": "Name",
     "size": "Größe",
     "type": "Typ",
@@ -147,6 +148,22 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Authentifizierung erforderlich",
+    "AUTH_INVALID_CREDENTIALS": "Ungültige E-Mail oder Passwort",
+    "AUTH_ACCOUNT_LOCKED": "Das Konto ist aufgrund fehlgeschlagener Anmeldeversuche vorübergehend gesperrt",
+    "AUTH_PASSWORD_INCORRECT": "Das aktuelle Passwort ist falsch",
+    "VALIDATION_EMAIL_REQUIRED": "E-Mail ist erforderlich",
+    "VALIDATION_PASSWORD_REQUIRED": "Passwort ist erforderlich",
+    "VALIDATION_PASSWORD_TOO_SHORT": "Das Passwort muss mindestens 6 Zeichen lang sein",
+    "VALIDATION_PASSWORD_MISMATCH": "Passwörter stimmen nicht überein",
+    "RATE_LIMIT_LOGIN": "Zu viele Anmeldeversuche. Bitte warten Sie {minutes} Minute, bevor Sie es erneut versuchen | Zu viele Anmeldeversuche. Bitte warten Sie {minutes} Minuten, bevor Sie es erneut versuchen",
+    "RATE_LIMIT_PASSWORD": "Zu viele Passwortversuche. Bitte warten Sie {minutes} Minute, bevor Sie es erneut versuchen | Zu viele Passwortversuche. Bitte warten Sie {minutes} Minuten, bevor Sie es erneut versuchen",
+    "NOT_FOUND_USER": "Benutzer nicht gefunden",
+    "CONFLICT_USER_EXISTS": "Benutzer existiert bereits",
+    "CONFLICT_PASSWORD_EXISTS": "Sie haben bereits eine Passwort-Authentifizierung",
+    "CONFLICT_SETUP_COMPLETE": "Anwendung bereits konfiguriert"
   },
   "titles": {
     "volumes": "Volumes",

@@ -32,6 +32,7 @@
     "remaining": "restantes",
     "unknown": "desconocido",
     "optional": "Opcional",
+    "clear": "Borrar",
     "name": "Nombre",
     "size": "Tamaño",
     "type": "Tipo",
@@ -147,6 +148,22 @@
     "pathRequired": "",
     "saveVolume": "",
     "removeVolume": ""
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Se requiere autenticación",
+    "AUTH_INVALID_CREDENTIALS": "Correo electrónico o contraseña no válidos",
+    "AUTH_ACCOUNT_LOCKED": "La cuenta está bloqueada temporalmente debido a intentos fallidos de inicio de sesión",
+    "AUTH_PASSWORD_INCORRECT": "La contraseña actual es incorrecta",
+    "VALIDATION_EMAIL_REQUIRED": "El correo electrónico es obligatorio",
+    "VALIDATION_PASSWORD_REQUIRED": "La contraseña es obligatoria",
+    "VALIDATION_PASSWORD_TOO_SHORT": "La contraseña debe tener al menos 6 caracteres",
+    "VALIDATION_PASSWORD_MISMATCH": "Las contraseñas no coinciden",
+    "RATE_LIMIT_LOGIN": "Demasiados intentos de inicio de sesión. Espera {minutes} minuto antes de intentarlo de nuevo | Demasiados intentos de inicio de sesión. Espera {minutes} minutos antes de intentarlo de nuevo",
+    "RATE_LIMIT_PASSWORD": "Demasiados intentos de contraseña. Espera {minutes} minuto antes de intentarlo de nuevo | Demasiados intentos de contraseña. Espera {minutes} minutos antes de intentarlo de nuevo",
+    "NOT_FOUND_USER": "Usuario no encontrado",
+    "CONFLICT_USER_EXISTS": "El usuario ya existe",
+    "CONFLICT_PASSWORD_EXISTS": "Ya tienes autenticación por contraseña",
+    "CONFLICT_SETUP_COMPLETE": "La aplicación ya está configurada"
   },
   "titles": {
     "volumes": "Volúmenes",

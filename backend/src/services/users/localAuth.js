@@ -3,7 +3,13 @@ const { getDb } = require('../db');
 const logger = require('../../utils/logger');
 const { nowIso, toClientUser, generateId, normalizeEmail } = require('./utils');
 const { isLocked, incrementFailedAttempts, clearLock, getLock } = require('./lockout');
-const { NotFoundError, UnauthorizedError, ValidationError } = require('../../errors/AppError');
+const {
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+  ConflictError,
+} = require('../../errors/AppError');
+const { ErrorCodes } = require('../../errors/errorCodes');
 
 // Attempt local login with email + password
 const attemptLocalLogin = async ({ email, password }) => {
@@ -15,6 +21,7 @@ const attemptLocalLogin = async ({ email, password }) => {
     const until = lock.locked_until || null;
     const err = new Error('Account is temporarily locked due to failed login attempts.');
     err.status = 423;
+    err.code = ErrorCodes.AUTH_ACCOUNT_LOCKED;
     err.until = until;
     throw err;
   }
@@ -67,15 +74,15 @@ const createLocalUser = async ({ email, password, username, displayName, roles =
   const normEmail = normalizeEmail(email);
 
   if (!normEmail) {
-    const e = new Error('Email is required');
-    e.status = 400;
-    throw e;
+    throw new ValidationError('Email is required', null, ErrorCodes.VALIDATION_EMAIL_REQUIRED);
   }
 
   if (!password || password.length < 6) {
-    const e = new Error('Password must be at least 6 characters long');
-    e.status = 400;
-    throw e;
+    throw new ValidationError(
+      'Password must be at least 6 characters long',
+      null,
+      ErrorCodes.VALIDATION_PASSWORD_TOO_SHORT
+    );
   }
 
   // Check if user exists
@@ -93,9 +100,10 @@ const createLocalUser = async ({ email, password, username, displayName, roles =
       .get(user.id);
 
     if (existingAuth) {
-      const e = new Error('User already has local password authentication');
-      e.status = 409;
-      throw e;
+      throw new ConflictError(
+        'User already has local password authentication',
+        ErrorCodes.CONFLICT_PASSWORD_EXISTS
+      );
     }
 
     // Auto-link: Add password auth to existing user
@@ -147,7 +155,7 @@ const changeLocalPassword = async ({ userId, currentPassword, newPassword }) => 
   const db = await getDb();
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
   if (!user) {
-    throw new NotFoundError('User not found.');
+    throw new NotFoundError('User not found.', ErrorCodes.NOT_FOUND_USER);
   }
 
   // Check if user has local password auth
@@ -171,11 +179,15 @@ const changeLocalPassword = async ({ userId, currentPassword, newPassword }) => 
   }
 
   if (typeof newPassword !== 'string' || newPassword.length < 6) {
-    throw new ValidationError('Password must be at least 6 characters long.');
+    throw new ValidationError(
+      'Password must be at least 6 characters long.',
+      null,
+      ErrorCodes.VALIDATION_PASSWORD_TOO_SHORT
+    );
   }
 
   if (!bcrypt.compareSync(currentPassword, authMethod.password_hash)) {
-    throw new UnauthorizedError('Current password is incorrect.');
+    throw new UnauthorizedError('Current password is incorrect.', ErrorCodes.AUTH_PASSWORD_INCORRECT);
   }
 
   const hash = bcrypt.hashSync(newPassword, 12);
@@ -249,15 +261,15 @@ const addLocalPassword = async ({ userId, password }) => {
     .get(userId);
 
   if (existing) {
-    const e = new Error('You already have password authentication.');
-    e.status = 409;
-    throw e;
+    throw new ConflictError('You already have password authentication.', ErrorCodes.CONFLICT_PASSWORD_EXISTS);
   }
 
   if (!password || password.length < 6) {
-    const e = new Error('Password must be at least 6 characters long.');
-    e.status = 400;
-    throw e;
+    throw new ValidationError(
+      'Password must be at least 6 characters long.',
+      null,
+      ErrorCodes.VALIDATION_PASSWORD_TOO_SHORT
+    );
   }
 
   const hash = bcrypt.hashSync(password, 12);

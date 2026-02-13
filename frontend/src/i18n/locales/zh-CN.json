@@ -32,6 +32,7 @@
     "remaining": "剩余",
     "unknown": "未知",
     "optional": "可选",
+    "clear": "清除",
     "name": "名称",
     "size": "大小",
     "type": "类型",
@@ -147,6 +148,22 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "需要身份验证",
+    "AUTH_INVALID_CREDENTIALS": "电子邮件或密码无效",
+    "AUTH_ACCOUNT_LOCKED": "由于登录尝试失败，账户已被临时锁定",
+    "AUTH_PASSWORD_INCORRECT": "当前密码不正确",
+    "VALIDATION_EMAIL_REQUIRED": "电子邮件为必填项",
+    "VALIDATION_PASSWORD_REQUIRED": "密码为必填项",
+    "VALIDATION_PASSWORD_TOO_SHORT": "密码长度至少为6个字符",
+    "VALIDATION_PASSWORD_MISMATCH": "密码不匹配",
+    "RATE_LIMIT_LOGIN": "登录尝试次数过多。请在{minutes}分钟后重试",
+    "RATE_LIMIT_PASSWORD": "密码尝试次数过多。请在{minutes}分钟后重试",
+    "NOT_FOUND_USER": "未找到用户",
+    "CONFLICT_USER_EXISTS": "用户已存在",
+    "CONFLICT_PASSWORD_EXISTS": "您已有密码身份验证",
+    "CONFLICT_SETUP_COMPLETE": "应用程序已配置"
   },
   "titles": {
     "volumes": "卷",

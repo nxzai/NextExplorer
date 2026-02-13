@@ -32,6 +32,7 @@
     "remaining": "pozostało",
     "unknown": "nieznane",
     "optional": "Opcjonalne",
+    "clear": "Wyczyść",
     "name": "Nazwa",
     "size": "Rozmiar",
     "type": "Typ",
@@ -147,6 +148,22 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Wymagana autentykacja",
+    "AUTH_INVALID_CREDENTIALS": "Nieprawidłowy adres e-mail lub hasło",
+    "AUTH_ACCOUNT_LOCKED": "Konto jest tymczasowo zablokowane z powodu nieudanych prób logowania",
+    "AUTH_PASSWORD_INCORRECT": "Obecne hasło jest nieprawidłowe",
+    "VALIDATION_EMAIL_REQUIRED": "Adres e-mail jest wymagany",
+    "VALIDATION_PASSWORD_REQUIRED": "Hasło jest wymagane",
+    "VALIDATION_PASSWORD_TOO_SHORT": "Hasło musi mieć co najmniej 6 znaków",
+    "VALIDATION_PASSWORD_MISMATCH": "Hasła nie są zgodne",
+    "RATE_LIMIT_LOGIN": "Zbyt wiele prób logowania. Poczekaj {minutes} minutę przed ponowną próbą | Zbyt wiele prób logowania. Poczekaj {minutes} minuty przed ponowną próbą | Zbyt wiele prób logowania. Poczekaj {minutes} minut przed ponowną próbą",
+    "RATE_LIMIT_PASSWORD": "Zbyt wiele prób hasła. Poczekaj {minutes} minutę przed ponowną próbą | Zbyt wiele prób hasła. Poczekaj {minutes} minuty przed ponowną próbą | Zbyt wiele prób hasła. Poczekaj {minutes} minut przed ponowną próbą",
+    "NOT_FOUND_USER": "Nie znaleziono użytkownika",
+    "CONFLICT_USER_EXISTS": "Użytkownik już istnieje",
+    "CONFLICT_PASSWORD_EXISTS": "Masz już uwierzytelnianie hasłem",
+    "CONFLICT_SETUP_COMPLETE": "Aplikacja jest już skonfigurowana"
   },
   "titles": {
     "volumes": "Woluminy",

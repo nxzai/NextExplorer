@@ -22,6 +22,7 @@ If you must run backend-only outside Docker, keep mounts/paths consistent with c
 - VitePress reference: `docs/configuration/environment.md`
 
 Important operational notes:
+
 - `PUBLIC_URL` should match the browser URL (cookies/CORS/OIDC callback derivation).
 - `/config` must be persistent (SQLite `app.db`, branding assets, extensions).
 - `/cache` should be persistent for performance (thumbnails, search artifacts).
@@ -29,6 +30,7 @@ Important operational notes:
 ## Public Endpoints (Must Stay Non-Sensitive)
 
 These are intentionally reachable without auth (see `backend/src/middleware/authMiddleware.js`):
+
 - `GET /api/features` returns env-derived feature flags and build metadata: `backend/src/routes/features.js`
 - `GET /api/branding` returns branding for the login page: `backend/src/routes/settings.js`
 - `GET /healthz` and `GET /readyz`: `backend/src/routes/health.js`

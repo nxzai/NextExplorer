@@ -19,8 +19,11 @@ const {
   NotFoundError,
 } = require('../errors/AppError');
 
-const rateLimitHandler = (req, res, next) => {
-  next(new RateLimitError('Too many attempts. Please try again later.'));
+const rateLimitHandler = (req, res, next, options) => {
+  const retryAfterSeconds = Math.ceil(options.windowMs / 1000);
+  const retryAfterMinutes = Math.ceil(retryAfterSeconds / 60);
+  const message = `Too many login attempts. Please wait ${retryAfterMinutes} minute${retryAfterMinutes > 1 ? 's' : ''} before trying again.`;
+  next(new RateLimitError(message, retryAfterSeconds));
 };
 
 const loginLimiter = rateLimit({

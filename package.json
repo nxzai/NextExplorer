@@ -20,7 +20,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "download_samples": "npm run download_samples - backend"
   },
   "devDependencies": {
     "eslint": "^8.57.0",

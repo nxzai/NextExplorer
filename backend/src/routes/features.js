@@ -1,5 +1,6 @@
 const express = require('express');
 const { onlyoffice, collabora, editor, features, public: publicConfig } = require('../config/index');
+const terminalService = require('../services/terminalService');
 const packageJson = require('../../package.json');
 
 const router = express.Router();
@@ -33,6 +34,9 @@ router.get('/features', (_req, res) => {
     },
     navigation: {
       skipHome: Boolean(features?.skipHome),
+    },
+    terminal: {
+      enabled: Boolean(features?.terminal) && terminalService.isAvailable(),
     },
     version: {
       app: packageJson.version || '1.0.0',

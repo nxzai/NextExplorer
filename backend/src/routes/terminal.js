@@ -9,6 +9,10 @@ const router = express.Router();
 router.post(
   '/terminal/session',
   asyncHandler(async (req, res) => {
+    if (!terminalService.isAvailable()) {
+      return res.status(503).json({ error: 'Terminal feature is disabled or unavailable.' });
+    }
+
     const user = req.user;
 
     if (!user) {

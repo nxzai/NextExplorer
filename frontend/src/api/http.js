@@ -1,9 +1,12 @@
-import { useNotificationsStore } from '@/stores/notifications';
-
 const DEFAULT_API_BASE = '/';
 const apiBase = (import.meta.env.VITE_API_URL || DEFAULT_API_BASE).replace(/\/$/, '');
 
 const buildUrl = (endpoint) => `${apiBase}${endpoint}`;
+
+let errorHandler = null;
+export const setErrorHandler = (handler) => {
+  errorHandler = handler;
+};
 
 const encodePath = (relativePath = '') => {
   if (!relativePath) return '';
@@ -43,67 +46,27 @@ const requestRaw = async (endpoint, options = {}) => {
     });
 
     if (!response.ok) {
-      let errorMessage = `Request failed with status ${response.status}`;
+      const errorData = await response.json().catch(() => ({}));
+      const error = errorData?.error;
 
-      try {
-        // Try to parse backend error response
-        const errorData = await response.json();
+      const errorInfo = {
+        statusCode: response.status,
+        ...(typeof error === 'object' ? error : { message: error || `Request failed with status ${response.status}` }),
+      };
 
-        // Handle new standardized error format
-        if (errorData?.error) {
-          if (typeof errorData.error === 'object') {
-            // New format: { success: false, error: { message, statusCode, requestId, timestamp } }
-            const errorDetails = errorData.error;
-            errorMessage = errorDetails?.message || errorMessage;
-
-            // Create notification for the error
-            const notificationsStore = useNotificationsStore();
-            notificationsStore.addNotification({
-              type: 'error',
-              heading: errorMessage,
-              body: errorDetails?.details ? JSON.stringify(errorDetails.details) : '',
-              requestId: errorDetails?.requestId,
-              statusCode: errorDetails?.statusCode || response.status,
-            });
-          } else {
-            // Old format: { error: "string" }
-            errorMessage = errorData.error;
-
-            // Create notification for old format
-            const notificationsStore = useNotificationsStore();
-            notificationsStore.addNotification({
-              type: 'error',
-              heading: errorMessage,
-              statusCode: response.status,
-            });
-          }
-        }
-      } catch (parseError) {
-        // Ignore JSON parsing errors, create notification with basic info
-        const notificationsStore = useNotificationsStore();
-        notificationsStore.addNotification({
-          type: 'error',
-          heading: errorMessage,
-          statusCode: response.status,
-        });
-      }
-
-      throw new Error(errorMessage);
+      const translatedMessage = errorHandler?.(errorInfo) || errorInfo.message;
+      throw new Error(translatedMessage);
     }
 
     return response;
   } catch (error) {
-    // Handle network errors (fetch failures)
     if (error instanceof TypeError) {
-      const notificationsStore = useNotificationsStore();
-      notificationsStore.addNotification({
-        type: 'error',
-        heading: 'Network Error',
-        body: 'Failed to connect to server. This is often caused by a PUBLIC_URL/CORS mismatch or a reverse proxy configuration issue.',
-      });
+      const translatedMessage = errorHandler?.({
+        message: 'Network Error',
+        details: 'Failed to connect to server. This is often caused by a PUBLIC_URL/CORS mismatch or a reverse proxy configuration issue.',
+      }) || 'Network Error';
+      throw new Error(translatedMessage);
     }
-
-    // Re-throw the error so calling code can handle it
     throw error;
   }
 };

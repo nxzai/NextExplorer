@@ -32,6 +32,7 @@
     "remaining": "rimanenti",
     "unknown": "sconosciuto",
     "optional": "Facoltativo",
+    "clear": "Cancella",
     "name": "Nome",
     "size": "Dimensione",
     "type": "Tipo",
@@ -147,6 +148,22 @@
     "pathRequired": "Il percorso è obbligatorio",
     "saveVolume": "Impossibile salvare il volume",
     "removeVolume": "Impossibile rimuovere il volume"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Autenticazione richiesta",
+    "AUTH_INVALID_CREDENTIALS": "Email o password non validi",
+    "AUTH_ACCOUNT_LOCKED": "L'account è temporaneamente bloccato a causa di tentativi di accesso falliti",
+    "AUTH_PASSWORD_INCORRECT": "La password corrente è errata",
+    "VALIDATION_EMAIL_REQUIRED": "L'email è obbligatoria",
+    "VALIDATION_PASSWORD_REQUIRED": "La password è obbligatoria",
+    "VALIDATION_PASSWORD_TOO_SHORT": "La password deve contenere almeno 6 caratteri",
+    "VALIDATION_PASSWORD_MISMATCH": "Le password non corrispondono",
+    "RATE_LIMIT_LOGIN": "Troppi tentativi di accesso. Attendi {minutes} minuto prima di riprovare | Troppi tentativi di accesso. Attendi {minutes} minuti prima di riprovare",
+    "RATE_LIMIT_PASSWORD": "Troppi tentativi di password. Attendi {minutes} minuto prima di riprovare | Troppi tentativi di password. Attendi {minutes} minuti prima di riprovare",
+    "NOT_FOUND_USER": "Utente non trovato",
+    "CONFLICT_USER_EXISTS": "L'utente esiste già",
+    "CONFLICT_PASSWORD_EXISTS": "Hai già l'autenticazione tramite password",
+    "CONFLICT_SETUP_COMPLETE": "Applicazione già configurata"
   },
   "titles": {
     "volumes": "Volumi",

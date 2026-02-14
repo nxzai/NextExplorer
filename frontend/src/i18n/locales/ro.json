@@ -32,6 +32,7 @@
     "remaining": "rămase",
     "unknown": "necunoscut",
     "optional": "Opțional",
+    "clear": "Șterge",
     "name": "Nume",
     "size": "Dimensiune",
     "type": "Tip",
@@ -147,6 +148,22 @@
     "pathRequired": "Calea este obligatorie",
     "saveVolume": "Nu s-a putut salva volumul",
     "removeVolume": "Nu s-a putut elimina volumul"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Autentificare necesară",
+    "AUTH_INVALID_CREDENTIALS": "Email sau parolă invalidă",
+    "AUTH_ACCOUNT_LOCKED": "Contul este blocat temporar din cauza încercărilor eșuate de autentificare",
+    "AUTH_PASSWORD_INCORRECT": "Parola curentă este incorectă",
+    "VALIDATION_EMAIL_REQUIRED": "Email-ul este obligatoriu",
+    "VALIDATION_PASSWORD_REQUIRED": "Parola este obligatorie",
+    "VALIDATION_PASSWORD_TOO_SHORT": "Parola trebuie să aibă cel puțin 6 caractere",
+    "VALIDATION_PASSWORD_MISMATCH": "Parolele nu coincid",
+    "RATE_LIMIT_LOGIN": "Prea multe încercări de autentificare. Vă rugăm să așteptați {minutes} minut înainte de a încerca din nou | Prea multe încercări de autentificare. Vă rugăm să așteptați {minutes} minute înainte de a încerca din nou",
+    "RATE_LIMIT_PASSWORD": "Prea multe încercări de parolă. Vă rugăm să așteptați {minutes} minut înainte de a încerca din nou | Prea multe încercări de parolă. Vă rugăm să așteptați {minutes} minute înainte de a încerca din nou",
+    "NOT_FOUND_USER": "Utilizator negăsit",
+    "CONFLICT_USER_EXISTS": "Utilizatorul există deja",
+    "CONFLICT_PASSWORD_EXISTS": "Aveți deja autentificare prin parolă",
+    "CONFLICT_SETUP_COMPLETE": "Aplicația este deja configurată"
   },
   "titles": {
     "volumes": "Volume",

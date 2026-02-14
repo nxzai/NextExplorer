@@ -266,6 +266,7 @@ module.exports = {
     userVolumes: env.USER_VOLUMES,
     shares: env.SHARES_ENABLED,
     skipHome: env.SKIP_HOME,
+    terminal: env.TERMINAL_ENABLED,
   },
 
   logging: {

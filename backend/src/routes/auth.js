@@ -18,12 +18,21 @@ const {
   RateLimitError,
   NotFoundError,
 } = require('../errors/AppError');
+const { ErrorCodes } = require('../errors/errorCodes');
+
+const rateLimitHandler = (req, res, next, options) => {
+  const retryAfterSeconds = Math.ceil(options.windowMs / 1000);
+  const retryAfterMinutes = Math.ceil(retryAfterSeconds / 60);
+  const message = `Too many login attempts. Please wait ${retryAfterMinutes} minute${retryAfterMinutes > 1 ? 's' : ''} before trying again.`;
+  next(new RateLimitError(message, retryAfterSeconds, ErrorCodes.RATE_LIMIT_LOGIN));
+};
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  handler: rateLimitHandler,
 });
 
 const setupLimiter = rateLimit({
@@ -31,6 +40,7 @@ const setupLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  handler: rateLimitHandler,
 });
 
 const passwordLimiter = rateLimit({
@@ -38,6 +48,7 @@ const passwordLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  handler: rateLimitHandler,
 });
 
 const router = express.Router();
@@ -123,7 +134,7 @@ router.post(
       throw e;
     }
     if (!user) {
-      throw new UnauthorizedError('Invalid credentials.');
+      throw new UnauthorizedError('Invalid credentials.', ErrorCodes.AUTH_INVALID_CREDENTIALS);
     }
     if (req.session) req.session.localUserId = user.id;
 

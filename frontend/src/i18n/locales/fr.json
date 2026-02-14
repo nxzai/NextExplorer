@@ -32,6 +32,7 @@
     "remaining": "restant",
     "unknown": "inconnu",
     "optional": "Optionnel",
+    "clear": "Effacer",
     "name": "Nom",
     "size": "Taille",
     "type": "Type",
@@ -147,6 +148,22 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "Authentification requise",
+    "AUTH_INVALID_CREDENTIALS": "E-mail ou mot de passe invalide",
+    "AUTH_ACCOUNT_LOCKED": "Le compte est temporairement verrouillé en raison de tentatives de connexion échouées",
+    "AUTH_PASSWORD_INCORRECT": "Le mot de passe actuel est incorrect",
+    "VALIDATION_EMAIL_REQUIRED": "L'e-mail est obligatoire",
+    "VALIDATION_PASSWORD_REQUIRED": "Le mot de passe est obligatoire",
+    "VALIDATION_PASSWORD_TOO_SHORT": "Le mot de passe doit comporter au moins 6 caractères",
+    "VALIDATION_PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas",
+    "RATE_LIMIT_LOGIN": "Trop de tentatives de connexion. Veuillez attendre {minutes} minute avant de réessayer | Trop de tentatives de connexion. Veuillez attendre {minutes} minutes avant de réessayer",
+    "RATE_LIMIT_PASSWORD": "Trop de tentatives de mot de passe. Veuillez attendre {minutes} minute avant de réessayer | Trop de tentatives de mot de passe. Veuillez attendre {minutes} minutes avant de réessayer",
+    "NOT_FOUND_USER": "Utilisateur non trouvé",
+    "CONFLICT_USER_EXISTS": "L'utilisateur existe déjà",
+    "CONFLICT_PASSWORD_EXISTS": "Vous disposez déjà d'une authentification par mot de passe",
+    "CONFLICT_SETUP_COMPLETE": "L'application est déjà configurée"
   },
   "titles": {
     "volumes": "Volumes",

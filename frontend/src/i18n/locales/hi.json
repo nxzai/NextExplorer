@@ -32,6 +32,7 @@
     "remaining": "बाकी",
     "unknown": "अज्ञात",
     "optional": "वैकल्पिक",
+    "clear": "साफ़ करें",
     "name": "नाम",
     "size": "आकार",
     "type": "प्रकार",
@@ -147,6 +148,22 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume"
+  },
+  "serverErrors": {
+    "AUTH_REQUIRED": "प्रमाणीकरण आवश्यक है",
+    "AUTH_INVALID_CREDENTIALS": "अमान्य ईमेल या पासवर्ड",
+    "AUTH_ACCOUNT_LOCKED": "असफल लॉगिन प्रयासों के कारण खाता अस्थायी रूप से लॉक है",
+    "AUTH_PASSWORD_INCORRECT": "वर्तमान पासवर्ड गलत है",
+    "VALIDATION_EMAIL_REQUIRED": "ईमेल आवश्यक है",
+    "VALIDATION_PASSWORD_REQUIRED": "पासवर्ड आवश्यक है",
+    "VALIDATION_PASSWORD_TOO_SHORT": "पासवर्ड कम से कम 6 अक्षर का होना चाहिए",
+    "VALIDATION_PASSWORD_MISMATCH": "पासवर्ड मेल नहीं खाते",
+    "RATE_LIMIT_LOGIN": "बहुत अधिक लॉगिन प्रयास। कृपया पुनः प्रयास करने से पहले {minutes} मिनट प्रतीक्षा करें",
+    "RATE_LIMIT_PASSWORD": "बहुत अधिक पासवर्ड प्रयास। कृपया पुनः प्रयास करने से पहले {minutes} मिनट प्रतीक्षा करें",
+    "NOT_FOUND_USER": "उपयोगकर्ता नहीं मिला",
+    "CONFLICT_USER_EXISTS": "उपयोगकर्ता पहले से मौजूद है",
+    "CONFLICT_PASSWORD_EXISTS": "आपके पास पहले से ही पासवर्ड प्रमाणीकरण है",
+    "CONFLICT_SETUP_COMPLETE": "एप्लिकेशन पहले से कॉन्फ़िगर है"
   },
   "titles": {
     "volumes": "वॉल्यूम",

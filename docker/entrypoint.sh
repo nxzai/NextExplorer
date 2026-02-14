@@ -60,15 +60,10 @@ if is_true "$DEMO_MODE"; then
   echo "INFO: DEMO_MODE enabled; seeding demo samples into ${SAMPLES_DIR} (read-only)"
   mkdir -p "$SAMPLES_DIR"
 
-  if command -v npm >/dev/null 2>&1; then
-    if ! SAMPLE_URL="$SAMPLE_URL" SAMPLES_DIR="$SAMPLES_DIR" npm run --silent download_samples; then
-      echo "WARN: DEMO_MODE sample download failed; continuing without seeded samples"
-    fi
-  else
-    if ! SAMPLE_URL="$SAMPLE_URL" SAMPLES_DIR="$SAMPLES_DIR" node /app/src/scripts/downloadSamples.js; then
-      echo "WARN: DEMO_MODE sample download failed; continuing without seeded samples"
-    fi
+  if ! SAMPLE_URL="$SAMPLE_URL" SAMPLES_DIR="$SAMPLES_DIR" node /app/src/scripts/downloadSamples.js; then
+    echo "WARN: DEMO_MODE sample download failed; continuing without seeded samples"
   fi
+  
 fi
 
 echo "INFO: Launching process as appuser (${PUID}:${PGID})"

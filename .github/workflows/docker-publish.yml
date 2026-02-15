@@ -97,4 +97,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           short-description: ${{ github.event.release.name || github.event.repository.description }}
-          readme-file: README.md
+          readme-filepath: README.md

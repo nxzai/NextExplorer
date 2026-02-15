@@ -7,7 +7,7 @@ import { useFileStore } from '@/stores/fileStore';
 import LoadingIcon from '@/icons/LoadingIcon.vue';
 import { useSelection } from '@/composables/itemSelection';
 import { useExplorerContextMenu } from '@/composables/contextMenu';
-import { isPreviewableImage } from '@/config/media';
+import { isPreviewableImage, isPreviewableVideo } from '@/config/media';
 import { ImagesOutline } from '@vicons/ionicons5';
 import { useViewConfig } from '@/composables/useViewConfig';
 import { DragSelect } from '@coleqiu/vue-drag-select';
@@ -78,10 +78,10 @@ const showNoPhotosMessage = computed(() => {
   const items = fileStore.getCurrentPathItems;
   if (items.length === 0) return false;
 
-  // Check if any item is a photo
+  // Check if any item is an image or video
   const hasPhotos = items.some((item) => {
     const kind = (item?.kind || '').toLowerCase();
-    return isPreviewableImage(kind);
+    return isPreviewableImage(kind) || isPreviewableVideo(kind);
   });
 
   return !hasPhotos;

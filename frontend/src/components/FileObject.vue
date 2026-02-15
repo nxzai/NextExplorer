@@ -9,7 +9,7 @@ import { useNavigation } from '@/composables/navigation';
 import { useSelection } from '@/composables/itemSelection';
 import { useFileStore } from '@/stores/fileStore';
 import { useExplorerContextMenu } from '@/composables/contextMenu';
-import { isPreviewableImage } from '@/config/media';
+import { isPreviewableImage, isPreviewableVideo } from '@/config/media';
 import { useSettingsStore } from '@/stores/settings';
 import { DragSelectOption } from '@coleqiu/vue-drag-select';
 import MiddleEllipsis from '@/components/MiddleEllipsis.vue';
@@ -184,7 +184,7 @@ const handleRenameBlur = async () => {
 // Photos view helpers
 const isPhotoItem = computed(() => {
   const kind = (props.item?.kind || '').toLowerCase();
-  return isPreviewableImage(kind);
+  return isPreviewableImage(kind) || isPreviewableVideo(kind);
 });
 
 if (isTouchDevice.value) {

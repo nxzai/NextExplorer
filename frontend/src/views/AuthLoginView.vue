@@ -66,6 +66,10 @@ onMounted(async () => {
     return;
   }
 
+  if (!supportsLocal.value && supportsOidc.value) {
+    handleOidcLogin();
+  }
+
   try {
     await featuresStore.ensureLoaded();
   } catch (_) {

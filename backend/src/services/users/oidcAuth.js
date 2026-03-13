@@ -6,10 +6,12 @@ const { nowIso, toClientUser, generateId, normalizeEmail } = require('./utils');
 // Map provider claims/groups to an app roles array
 const deriveRolesFromClaims = (claims = {}, adminGroups = []) => {
   try {
+    const toArray = (v) => (Array.isArray(v) ? v : v != null ? [v] : []);
+
     const groups = []
-      .concat(Array.isArray(claims.groups) ? claims.groups : [])
-      .concat(Array.isArray(claims.roles) ? claims.roles : [])
-      .concat(Array.isArray(claims.entitlements) ? claims.entitlements : [])
+      .concat(toArray(claims.groups))
+      .concat(toArray(claims.roles))
+      .concat(toArray(claims.entitlements))
       .filter((g) => typeof g === 'string' && g.trim())
       .map((g) => g.trim().toLowerCase());
 

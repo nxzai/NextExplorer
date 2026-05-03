@@ -4,7 +4,7 @@
  * Tests should import the app directly from ./app.js
  */
 const { createApp } = require('./app');
-const { port, http, features } = require('./config/index');
+const { port, address, http, features } = require('./config/index');
 const logger = require('./utils/logger');
 const { printStartupBanner } = require('./utils/startupBanner');
 const terminalService = require('./services/terminalService');
@@ -16,10 +16,10 @@ const startServer = async () => {
 
   const app = await createApp();
 
-  server = app.listen(port, '0.0.0.0', () => {
+  server = app.listen(port, address, () => {
     const addr = server?.address?.();
     printStartupBanner({
-      listenHost: typeof addr === 'object' && addr ? addr.address : '0.0.0.0',
+      listenHost: typeof addr === 'object' && addr ? addr.address : address,
       listenPort: typeof addr === 'object' && addr ? addr.port : port,
     });
     logger.info({ port }, 'Server is running');

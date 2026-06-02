@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { getSharedWithMe } from '@/api/shares.api';
+import { toPathSegments } from '@/api/http';
 import {
   ShareIcon,
   ClockIcon,
@@ -132,10 +133,9 @@ const visibleShares = computed(() => {
 const handleOpenShare = (share) => {
   if (isExpired(share)) return;
 
-  // Using named route with params ensures proper URL encoding
   router.push({
     name: 'FolderView',
-    params: { path: `share/${share.shareToken}` },
+    params: { path: toPathSegments(`share/${share.shareToken}`) },
   });
 };
 

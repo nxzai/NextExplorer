@@ -30,6 +30,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/vue/24/outline';
 import FolderViewToolbar from '@/components/FolderViewToolbar.vue';
+import { pathParamToString } from '@/api/http';
 
 const route = useRoute();
 const router = useRouter();
@@ -104,8 +105,7 @@ useEventListener(window, 'keydown', (e) => {
 });
 
 const currentPathName = computed(() => {
-  const p = route.params.path;
-  const s = Array.isArray(p) ? p.join('/') : p || '';
+  const s = pathParamToString(route.params.path);
   return s.split('/').filter(Boolean).pop() || 'Volumes';
 });
 useTitle(currentPathName);

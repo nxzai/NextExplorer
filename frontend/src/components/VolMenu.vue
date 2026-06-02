@@ -3,6 +3,7 @@ import { ServerIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
 import { getVolumes } from '@/api';
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { pathParamToString } from '@/api/http';
 import { useNavigation } from '@/composables/navigation';
 import { useFeaturesStore } from '@/stores/features';
 import { FolderIcon } from '@heroicons/vue/24/outline';
@@ -22,13 +23,7 @@ onMounted(async () => {
 });
 
 const open = ref(true);
-const currentPath = computed(() => {
-  const path = route.params.path;
-  if (Array.isArray(path)) {
-    return path.join('/');
-  }
-  return typeof path === 'string' ? path : '';
-});
+const currentPath = computed(() => pathParamToString(route.params.path));
 
 const activeVolumeName = computed(() => {
   const path = currentPath.value.trim();

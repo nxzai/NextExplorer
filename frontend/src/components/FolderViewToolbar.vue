@@ -16,6 +16,7 @@ import { useFileStore } from '@/stores/fileStore';
 import { useRoute, useRouter } from 'vue-router';
 import { Bars3Icon, HomeIcon } from '@heroicons/vue/24/outline';
 import { useInputMode } from '@/composables/useInputMode';
+import { pathParamToString } from '@/api/http';
 
 const settings = useSettingsStore();
 const auth = useAuthStore();
@@ -28,8 +29,7 @@ defineEmits(['toggle-sidebar']);
 
 // Check if we're at the volumes home view (no path selected)
 const isVolumesView = computed(() => {
-  const p = route.params.path;
-  const s = Array.isArray(p) ? p.join('/') : p || '';
+  const s = pathParamToString(route.params.path);
   return !s || s.trim() === '';
 });
 

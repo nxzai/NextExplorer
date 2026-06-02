@@ -79,4 +79,23 @@ const requestJson = async (endpoint, options = {}) => {
   return response.json();
 };
 
-export { apiBase, buildUrl, encodePath, normalizePath, requestJson, requestRaw };
+const toPathSegments = (path) => {
+  if (Array.isArray(path)) return path.flatMap((s) => String(s).split('/')).filter(Boolean);
+  return typeof path === 'string' ? path.split('/').filter(Boolean) : [];
+};
+
+const pathParamToString = (param) => {
+  if (Array.isArray(param)) return param.join('/');
+  return typeof param === 'string' ? param : '';
+};
+
+export {
+  apiBase,
+  buildUrl,
+  encodePath,
+  normalizePath,
+  pathParamToString,
+  requestJson,
+  requestRaw,
+  toPathSegments,
+};

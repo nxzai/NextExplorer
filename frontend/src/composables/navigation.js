@@ -2,6 +2,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { withViewTransition } from '@/utils';
 import { isEditableExtension } from '@/config/editor';
 import { usePreviewManager } from '@/plugins/preview/manager';
+import { pathParamToString, toPathSegments } from '@/api/http';
 
 export function useNavigation() {
   const router = useRouter();
@@ -18,24 +19,20 @@ export function useNavigation() {
     const kind = typeof item.kind === 'string' ? item.kind : '';
     const name = typeof item.name === 'string' ? item.name : '';
     if (!name && kind !== 'personal') return;
-    const currentPath =
-      typeof route.params.path === 'string'
-        ? route.params.path
-        : Array.isArray(route.params.path)
-          ? route.params.path.join('/')
-          : '';
+    const currentPath = pathParamToString(route.params.path);
 
     if (kind === 'volume') {
-      navigate({ name: 'FolderView', params: { path: name } });
+      navigate({ name: 'FolderView', params: { path: [name] } });
       return;
     }
     if (kind === 'personal') {
-      navigate({ name: 'FolderView', params: { path: 'personal' } });
+      navigate({ name: 'FolderView', params: { path: ['personal'] } });
       return;
     }
     if (kind === 'directory') {
-      const newPath = currentPath ? `${currentPath}/${name}` : name;
-      navigate({ name: 'FolderView', params: { path: newPath } });
+      const segments = toPathSegments(currentPath);
+      segments.push(name);
+      navigate({ name: 'FolderView', params: { path: segments } });
       return;
     }
 
@@ -66,23 +63,16 @@ export function useNavigation() {
       navigate({ name: 'HomeView' });
       return;
     }
-    navigate({ name: 'FolderView', params: { path } });
+    navigate({ name: 'FolderView', params: { path: toPathSegments(path) } });
   };
 
   const goUp = () => {
-    const currentPath =
-      typeof route.params.path === 'string'
-        ? route.params.path
-        : Array.isArray(route.params.path)
-          ? route.params.path.join('/')
-          : '';
-    const segments = currentPath.split('/').filter(Boolean);
+    const segments = toPathSegments(route.params.path);
     if (segments.length === 0) return;
 
     segments.pop();
-    const newPath = segments.join('/');
-    if (newPath) {
-      navigate({ name: 'FolderView', params: { path: newPath } });
+    if (segments.length > 0) {
+      navigate({ name: 'FolderView', params: { path: segments } });
       return;
     }
     navigate({ name: 'HomeView' });

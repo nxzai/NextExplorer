@@ -155,6 +155,7 @@ import { useI18n } from 'vue-i18n';
 import { Codemirror } from 'vue-codemirror';
 import { Compartment } from '@codemirror/state';
 import { fetchFileContent, saveFileContent, getRawFileUrl, normalizePath } from '@/api';
+import { pathParamToString } from '@/api/http';
 import { EditorView, keymap } from '@codemirror/view';
 import * as themeBundle from '@fsegurai/codemirror-theme-bundle';
 import {
@@ -240,9 +241,7 @@ const updateTheme = (id) => {
 
 // File Info
 const normalizedPath = computed(() =>
-  normalizePath(
-    Array.isArray(route.params.path) ? route.params.path.join('/') : route.params.path || ''
-  )
+  normalizePath(pathParamToString(route.params.path))
 );
 const hasUnsavedChanges = computed(() => fileContent.value !== originalContent.value);
 const canSave = computed(

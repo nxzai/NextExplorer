@@ -24,6 +24,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useFeaturesStore } from '@/stores/features';
 import { useAppSettings } from '@/stores/appSettings';
 import { getVolumes } from '@/api';
+import { toPathSegments } from '@/api/http';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -104,7 +105,7 @@ const router = createRouter({
           component: HomeView,
         },
         {
-          path: ':path(.+)',
+          path: ':path+',
           name: 'FolderView',
           component: FolderView,
           meta: { allowGuest: true }, // Allow guest access for share paths
@@ -288,7 +289,7 @@ router.beforeEach(async (to) => {
         if (Array.isArray(volumes)) {
           const first = volumes[0];
           if (first && first.path) {
-            return { name: 'FolderView', params: { path: first.path } };
+            return { name: 'FolderView', params: { path: toPathSegments(first.path) } };
           }
         }
       } catch (_) {

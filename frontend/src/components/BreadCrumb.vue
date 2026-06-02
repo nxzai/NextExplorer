@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router';
 import { useNavigation } from '@/composables/navigation';
 import { useFileStore } from '@/stores/fileStore';
 import { ellipses } from '@/utils/ellipses';
+import { pathParamToString } from '@/api/http';
 
 const { openBreadcrumb } = useNavigation();
 const { t, te } = useI18n();
@@ -13,8 +14,9 @@ const route = useRoute();
 const fileStore = useFileStore();
 
 const paths = computed(() => {
-  if (route.params.path) {
-    const segments = String(route.params.path).split('/');
+  const pathStr = pathParamToString(route.params.path);
+  if (pathStr) {
+    const segments = pathStr.split('/');
 
     // Special handling for share paths
     if (segments[0] === 'share' && segments.length >= 2) {

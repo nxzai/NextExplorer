@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useDebounceFn, onKeyStroke } from '@vueuse/core';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { search as searchApi, normalizePath } from '@/api';
+import { pathParamToString, toPathSegments } from '@/api/http';
 import { useSpotlightStore } from '@/stores/spotlight';
 import FileIcon from '@/icons/FileIcon.vue';
 import { useI18n } from 'vue-i18n';
@@ -24,8 +25,8 @@ const activeIndex = ref(-1);
 
 const basePath = computed(() => {
   const fromBrowse =
-    route.path.startsWith('/browse') && typeof route.params.path === 'string'
-      ? route.params.path
+    route.path.startsWith('/browse')
+      ? pathParamToString(route.params.path)
       : '';
   const fromQuery = typeof route.query.path === 'string' ? route.query.path : '';
   return normalizePath(fromBrowse || fromQuery || '');
@@ -107,11 +108,11 @@ function openResult(item) {
   if (!isDirectory && item.name) {
     router.push({
       name: 'FolderView',
-      params: { path: normalizedPath },
+      params: { path: toPathSegments(normalizedPath) },
       query: { select: item.name },
     });
   } else {
-    router.push({ name: 'FolderView', params: { path: normalizedPath } });
+    router.push({ name: 'FolderView', params: { path: toPathSegments(normalizedPath) } });
   }
   spotlight.close();
 }

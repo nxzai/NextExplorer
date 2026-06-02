@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth';
 import { getShareInfo, verifySharePassword, accessShare, setGuestSession } from '@/api/shares.api';
+import { toPathSegments } from '@/api/http';
 import {
   ShareIcon,
   LockClosedIcon,
@@ -87,7 +88,7 @@ async function handleUserAccess() {
     await accessShare(shareToken.value);
     router.push({
       name: 'FolderView',
-      params: { path: `share/${shareToken.value}` },
+      params: { path: toPathSegments(`share/${shareToken.value}`) },
     });
   } catch (err) {
     logger.error({ err }, 'User access failed');
@@ -110,10 +111,9 @@ async function handleAutoAccess() {
     const targetPath = `share/${shareToken.value}`;
     logger.debug('Redirecting to FolderView with path', targetPath);
 
-    // Redirect to browse the share
     router.push({
       name: 'FolderView',
-      params: { path: targetPath },
+      params: { path: toPathSegments(targetPath) },
     });
   } catch (err) {
     logger.error({ err }, 'Auto-access failed');
@@ -145,10 +145,9 @@ async function handlePasswordSubmit() {
       const targetPath = `share/${shareToken.value}`;
       logger.debug('Redirecting to FolderView with path', targetPath);
 
-      // Redirect to browse the share
       router.push({
         name: 'FolderView',
-        params: { path: targetPath },
+        params: { path: toPathSegments(targetPath) },
       });
     } else if (result.requiresAuth) {
       // User-specific share with password - redirect to login

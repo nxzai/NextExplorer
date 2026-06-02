@@ -17,6 +17,7 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/20/solid';
 import { useEventListener } from '@vueuse/core';
 import { useInputMode } from '@/composables/useInputMode';
 import { useFileDragDrop } from '@/composables/useFileDragDrop';
+import { pathParamToString } from '@/api/http';
 
 const settings = useSettingsStore();
 const fileStore = useFileStore();
@@ -53,7 +54,7 @@ const selectionModel = computed({
 
 const loadFiles = async () => {
   loading.value = true;
-  const path = route.params.path || '';
+  const path = pathParamToString(route.params.path);
   try {
     await fileStore.fetchPathItems(path);
     applySelectionFromQuery();

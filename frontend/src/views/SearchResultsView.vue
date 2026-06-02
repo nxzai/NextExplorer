@@ -3,6 +3,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { search as searchApi, normalizePath } from '@/api';
+import { toPathSegments } from '@/api/http';
 import FileIcon from '@/icons/FileIcon.vue';
 
 const route = useRoute();
@@ -43,7 +44,7 @@ function openResult(it) {
   // Open the matched folder itself for directories; open parent for files
   const target = kind === 'dir' ? [it.path, it.name].filter(Boolean).join('/') : it.path || '';
   const normalized = normalizePath(target || '');
-  router.push({ name: 'FolderView', params: { path: normalized } });
+  router.push({ name: 'FolderView', params: { path: toPathSegments(normalized) } });
 }
 
 function toIconItem(it) {

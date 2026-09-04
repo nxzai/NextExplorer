@@ -19,6 +19,7 @@ const preferredLocaleOrder = [
   'it',
   'ko',
   'pl',
+  'pt-BR',
   'ro',
   'ru',
   'sv',
@@ -36,9 +37,15 @@ export const supportedLocaleOptions = [
 export const supportedLocales = supportedLocaleOptions.map(({ code }) => code);
 
 function detectLocale(supportedLocales) {
+  // Match a user preference to a supported locale code, ignoring case
+  // (e.g. `pt-br` from navigator.languages vs `pt-BR` in the bundle).
+  const matchLocale = (pref) =>
+    supportedLocales.find(
+      (code) => code.toLowerCase() === String(pref).toLowerCase()
+    );
   try {
     const saved = localStorage.getItem('locale');
-    if (saved && supportedLocales.includes(saved)) return saved;
+    if (saved && matchLocale(saved)) return matchLocale(saved);
   } catch (_) {
     // Ignore localStorage errors (e.g., in private browsing mode)
   }
@@ -57,8 +64,8 @@ function detectLocale(supportedLocales) {
 
   for (const p of normalized) {
     const base = p.split('-')[0];
-    if (supportedLocales.includes(p)) return p;
-    if (supportedLocales.includes(base)) return base;
+    const hit = matchLocale(p) || matchLocale(base);
+    if (hit) return hit;
   }
 
   return 'en';

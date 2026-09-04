@@ -10,6 +10,7 @@ const {
   getUserAuthMethods,
   getRequestUser,
 } = require('../services/users');
+const { issueCode, redeemCode, isValidChallenge } = require('../services/oidcMobileBridge');
 const rateLimit = require('express-rate-limit');
 const asyncHandler = require('../utils/asyncHandler');
 const {
@@ -255,6 +256,112 @@ router.get(
       // ignore
     }
     throw new NotFoundError('OIDC is not configured.');
+  })
+);
+
+// Allowlisted custom scheme URIs the native apps (iOS/Android) register. The code
+// is only ever delivered to one of these, never an arbitrary or http(s) URL.
+const mobileRedirectUris = (auth && auth.oidc && auth.oidc.mobileRedirectUris) || [
+  'nextexplorer://oidc-callback',
+];
+
+const resolveMobileRedirect = (requested) => {
+  if (requested === undefined) return mobileRedirectUris[0];
+  return mobileRedirectUris.includes(requested) ? requested : null;
+};
+
+const buildMobileRedirect = (redirectUri, params) => {
+  const url = new URL(redirectUri);
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, value);
+  }
+  return url.toString();
+};
+
+// Step 1 of native OIDC: the app opens this in ASWebAuthenticationSession (iOS) or
+// Custom Tabs (Android) with a PKCE code_challenge. It stashes the challenge and the
+// chosen redirect in the (throwaway) browser session and kicks off standard OIDC login.
+router.get(
+  '/oidc/mobile/login',
+  asyncHandler(async (req, res) => {
+    if (!(res.oidc && typeof res.oidc.login === 'function')) {
+      throw new NotFoundError('OIDC is not configured.');
+    }
+    const codeChallenge = req.query?.code_challenge;
+    const method = req.query?.code_challenge_method || 'S256';
+    if (!isValidChallenge(codeChallenge) || method !== 'S256') {
+      throw new ValidationError('A valid PKCE code_challenge (S256) is required.');
+    }
+    const redirectUri = resolveMobileRedirect(req.query?.redirect_uri);
+    if (!redirectUri) {
+      throw new ValidationError('Unrecognized redirect_uri.');
+    }
+    if (req.session) {
+      req.session.oidcMobile = { codeChallenge, method, redirectUri };
+    }
+    await res.oidc.login({ returnTo: '/api/auth/oidc/mobile/complete' });
+  })
+);
+
+// Step 2: OIDC login has completed inside the web session. Mint a single use code
+// bound to the authenticated user and the PKCE challenge, then hand it back to the
+// app via the custom scheme. Errors are reported the same way so the app can react.
+router.get(
+  '/oidc/mobile/complete',
+  asyncHandler(async (req, res) => {
+    const pending = req.session?.oidcMobile;
+    if (req.session) delete req.session.oidcMobile;
+
+    const redirectUri = resolveMobileRedirect(pending?.redirectUri);
+    if (!redirectUri) {
+      throw new ValidationError('Unrecognized redirect_uri.');
+    }
+
+    const isAuthed = Boolean(
+      req.oidc && typeof req.oidc.isAuthenticated === 'function' && req.oidc.isAuthenticated()
+    );
+    if (!isAuthed || !pending || !isValidChallenge(pending.codeChallenge)) {
+      return res.redirect(buildMobileRedirect(redirectUri, { error: 'auth_failed' }));
+    }
+
+    const user = await getRequestUser(req);
+    if (!user || !user.id || String(user.id).startsWith('oidc:')) {
+      return res.redirect(buildMobileRedirect(redirectUri, { error: 'no_profile' }));
+    }
+
+    const code = issueCode({
+      userId: user.id,
+      codeChallenge: pending.codeChallenge,
+      method: pending.method,
+    });
+    return res.redirect(buildMobileRedirect(redirectUri, { code }));
+  })
+);
+
+// Step 3: the app exchanges the one time code plus its PKCE verifier for a normal
+// local session cookie, reusing the same session plumbing as password login.
+router.post(
+  '/oidc/exchange',
+  loginLimiter,
+  asyncHandler(async (req, res) => {
+    const { code, code_verifier: codeVerifier } = req.body || {};
+    const result = redeemCode({ code, codeVerifier });
+    if (!result) {
+      throw new UnauthorizedError(
+        'Invalid or expired authorization code.',
+        ErrorCodes.AUTH_INVALID_CREDENTIALS
+      );
+    }
+
+    if (req.session) req.session.localUserId = result.userId;
+    const user = await getRequestUser(req);
+    if (!user) {
+      if (req.session) delete req.session.localUserId;
+      throw new UnauthorizedError('User no longer exists.', ErrorCodes.AUTH_INVALID_CREDENTIALS);
+    }
+
+    res.clearCookie('guestSession', { path: '/api' });
+    res.json({ user });
   })
 );
 

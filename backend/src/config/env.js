@@ -58,6 +58,8 @@ module.exports = {
   OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID || null,
   OIDC_CLIENT_SECRET: process.env.OIDC_CLIENT_SECRET || null,
   OIDC_CALLBACK_URL: process.env.OIDC_CALLBACK_URL || process.env.OIDC_REDIRECT_URI || null,
+  // Allowlisted native app redirect URIs for the mobile OIDC bridge (iOS/Android).
+  OIDC_MOBILE_REDIRECT_URIS: process.env.OIDC_MOBILE_REDIRECT_URIS || null,
   OIDC_SCOPES: process.env.OIDC_SCOPES || process.env.OIDC_SCOPE || null,
   OIDC_ADMIN_GROUPS: process.env.OIDC_ADMIN_GROUPS || process.env.OIDC_ADMIN_GROUP || null,
   OIDC_REQUIRE_EMAIL_VERIFIED: normalizeBoolean(process.env.OIDC_REQUIRE_EMAIL_VERIFIED) || false,

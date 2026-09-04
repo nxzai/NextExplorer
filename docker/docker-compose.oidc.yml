@@ -86,6 +86,13 @@ services:
       # When false, OIDC login is only allowed for users that already exist in the DB
       # - OIDC_AUTO_CREATE_USERS=true
 
+      # Native app (iOS/Android) OIDC redirect URIs for the mobile bridge, as a
+      # comma separated allowlist of custom scheme URIs. Passkey based IdPs work in
+      # the app via ASWebAuthenticationSession / Custom Tabs, which exchange a PKCE
+      # backed one time code (GET /api/auth/oidc/mobile/login -> POST
+      # /api/auth/oidc/exchange) for a normal session. Defaults to the value below.
+      # - OIDC_MOBILE_REDIRECT_URIS=nextexplorer://oidc-callback
+
       # ============================================
       # AUTHENTICATION MODE
       # ============================================

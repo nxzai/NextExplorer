@@ -94,6 +94,19 @@ const parseScopes = (raw) => {
   return list.length ? list : null;
 };
 
+// Native app redirect URIs for the mobile OIDC bridge. Case preserving (schemes
+// are case sensitive) and restricted to custom scheme URIs so the bridge can
+// never be pointed at an http(s) open redirect. Falls back to a shared default.
+const DEFAULT_MOBILE_REDIRECT_URIS = ['nextexplorer://oidc-callback'];
+const parseMobileRedirectUris = (raw) => {
+  const list = String(raw || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .filter((uri) => /^[a-z][a-z0-9+.-]*:\/\//i.test(uri) && !/^https?:\/\//i.test(uri));
+  return list.length ? list : DEFAULT_MOBILE_REDIRECT_URIS;
+};
+
 // --- Personal folder naming ---
 const DEFAULT_USER_FOLDER_NAME_ORDER = ['id', 'username', 'email_local'];
 const VALID_USER_FOLDER_NAME_TOKENS = new Set([
@@ -245,6 +258,7 @@ const auth = {
     adminGroups: parseScopes(env.OIDC_ADMIN_GROUPS) || null,
     requireEmailVerified: env.OIDC_REQUIRE_EMAIL_VERIFIED,
     autoCreateUsers: env.OIDC_AUTO_CREATE_USERS,
+    mobileRedirectUris: parseMobileRedirectUris(env.OIDC_MOBILE_REDIRECT_URIS),
   },
 };
 

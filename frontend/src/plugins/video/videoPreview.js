@@ -2,7 +2,7 @@ import { isPreviewableVideo } from '@/config/media';
 import logger from '@/utils/logger';
 
 /**
- * Video preview plugin - simplified structure
+ * Video preview plugin using the shared media gallery.
  */
 export const videoPreviewPlugin = () => ({
   // Required fields
@@ -11,6 +11,7 @@ export const videoPreviewPlugin = () => ({
 
   // Optional configuration
   priority: 10,
+  standalone: true,
 
   // Match function - receives simple context
   match: (context) => {
@@ -18,7 +19,7 @@ export const videoPreviewPlugin = () => ({
   },
 
   // Component loader - can be sync or async
-  component: () => import('./VideoPreview.vue'),
+  component: () => import('../preview/MediaPreview.vue'),
 
   actions: (context) => [
     {

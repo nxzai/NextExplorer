@@ -10,6 +10,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:unit": "vitest",
+    "pretest:e2e": "playwright install chromium",
+    "test:e2e": "playwright test --config playwright.config.js",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --config ../prettier.config.cjs --write .",
     "format:check": "prettier --config ../prettier.config.cjs --check ."
@@ -46,12 +48,12 @@
     "tippy.js": "^6.3.7",
     "vue": "^3.4.21",
     "vue-codemirror": "^6.1.1",
-    "vue-easy-lightbox": "^1.19.0",
     "vue-i18n": "^9.14.0",
     "vue-router": "^4.3.0",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/addon-interactions": "^8.4.7",
     "@storybook/addon-links": "^8.4.7",

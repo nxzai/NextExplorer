@@ -105,7 +105,14 @@
     "sortBy": "Сортировать по",
     "addRule": "Добавить правило",
     "clearAll": "Очистить все",
-    "cancelAll": "Отменить все"
+    "cancelAll": "Отменить все",
+    "newWordDocument": "Новый документ Word",
+    "newSpreadsheet": "Новая книга Excel",
+    "newPresentation": "Новая презентация PowerPoint",
+    "newTextFile": "Новый текстовый файл",
+    "newMarkdownFile": "Новый файл Markdown",
+    "newCsvFile": "Новый файл CSV",
+    "newDocument": "Новый документ"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -217,7 +224,13 @@
     "darkTheme": "Темная тема"
   },
   "create": {
-    "createNew": "Создать"
+    "createNew": "Создать",
+    "documentName": "Имя документа",
+    "createAndOpen": "Создать и открыть",
+    "defaultDocumentName": "Документ",
+    "defaultSpreadsheetName": "Книга",
+    "defaultPresentationName": "Презентация",
+    "defaultDataName": "Данные"
   },
   "context": {
     "getInfo": "Свойства",

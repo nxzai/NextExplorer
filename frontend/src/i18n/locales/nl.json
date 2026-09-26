@@ -105,7 +105,14 @@
     "addRule": "Regel toevoegen",
     "clearAll": "Alles wissen",
     "cancelAll": "Alles annuleren",
-    "extractZip": "ZIP uitpakken"
+    "extractZip": "ZIP uitpakken",
+    "newWordDocument": "Nieuw Word-document",
+    "newSpreadsheet": "Nieuwe Excel-werkmap",
+    "newPresentation": "Nieuwe PowerPoint-presentatie",
+    "newTextFile": "Nieuw tekstbestand",
+    "newMarkdownFile": "Nieuw Markdown-bestand",
+    "newCsvFile": "Nieuw CSV-bestand",
+    "newDocument": "Nieuw document"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -217,7 +224,13 @@
     "darkTheme": "Donker thema"
   },
   "create": {
-    "createNew": "Nieuw"
+    "createNew": "Nieuw",
+    "documentName": "Naam van het document",
+    "createAndOpen": "Maken en openen",
+    "defaultDocumentName": "Document",
+    "defaultSpreadsheetName": "Werkmap",
+    "defaultPresentationName": "Presentatie",
+    "defaultDataName": "Gegevens"
   },
   "context": {
     "getInfo": "Eigenschappen",

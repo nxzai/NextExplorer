@@ -105,7 +105,14 @@
     "sortBy": "Ordenar por",
     "addRule": "Añadir regla",
     "clearAll": "Borrar todo",
-    "cancelAll": "Cancelar todo"
+    "cancelAll": "Cancelar todo",
+    "newWordDocument": "Nuevo documento de Word",
+    "newSpreadsheet": "Nueva hoja de cálculo de Excel",
+    "newPresentation": "Nueva presentación de PowerPoint",
+    "newTextFile": "Nuevo archivo de texto",
+    "newMarkdownFile": "Nuevo archivo Markdown",
+    "newCsvFile": "Nuevo archivo CSV",
+    "newDocument": "Nuevo documento"
   },
   "placeholders": {
     "email": "usuario{'@'}ejemplo.com",
@@ -217,7 +224,13 @@
     "darkTheme": "Tema oscuro"
   },
   "create": {
-    "createNew": "Nuevo"
+    "createNew": "Nuevo",
+    "documentName": "Nombre del documento",
+    "createAndOpen": "Crear y abrir",
+    "defaultDocumentName": "Documento",
+    "defaultSpreadsheetName": "Hoja de cálculo",
+    "defaultPresentationName": "Presentación",
+    "defaultDataName": "Datos"
   },
   "context": {
     "getInfo": "Obtener información",

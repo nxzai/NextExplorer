@@ -105,7 +105,14 @@
     "sortBy": "Sortează după",
     "addRule": "Adaugă regulă",
     "clearAll": "Șterge tot",
-    "cancelAll": "Anulează tot"
+    "cancelAll": "Anulează tot",
+    "newWordDocument": "Document Word nou",
+    "newSpreadsheet": "Registru Excel nou",
+    "newPresentation": "Prezentare PowerPoint nouă",
+    "newTextFile": "Fișier text nou",
+    "newMarkdownFile": "Fișier Markdown nou",
+    "newCsvFile": "Fișier CSV nou",
+    "newDocument": "Document nou"
   },
   "placeholders": {
     "email": "utilizator{'@'}exemplu.com",
@@ -217,7 +224,13 @@
     "darkTheme": "Temă închisă"
   },
   "create": {
-    "createNew": "Nou"
+    "createNew": "Nou",
+    "documentName": "Numele documentului",
+    "createAndOpen": "Creează și deschide",
+    "defaultDocumentName": "Document",
+    "defaultSpreadsheetName": "Registru",
+    "defaultPresentationName": "Prezentare",
+    "defaultDataName": "Date"
   },
   "context": {
     "getInfo": "Obține informații",

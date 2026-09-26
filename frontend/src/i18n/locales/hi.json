@@ -105,7 +105,14 @@
     "sortBy": "क्रमबद्ध करें",
     "addRule": "नियम जोड़ें",
     "clearAll": "सभी साफ़ करें",
-    "cancelAll": "सभी रद्द करें"
+    "cancelAll": "सभी रद्द करें",
+    "newWordDocument": "नया Word दस्तावेज़",
+    "newSpreadsheet": "नई Excel स्प्रेडशीट",
+    "newPresentation": "नई PowerPoint प्रस्तुति",
+    "newTextFile": "नई टेक्स्ट फ़ाइल",
+    "newMarkdownFile": "नई Markdown फ़ाइल",
+    "newCsvFile": "नई CSV फ़ाइल",
+    "newDocument": "नया दस्तावेज़"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -217,7 +224,13 @@
     "darkTheme": "डार्क थीम"
   },
   "create": {
-    "createNew": "नया"
+    "createNew": "नया",
+    "documentName": "दस्तावेज़ का नाम",
+    "createAndOpen": "बनाएँ और खोलें",
+    "defaultDocumentName": "दस्तावेज़",
+    "defaultSpreadsheetName": "स्प्रेडशीट",
+    "defaultPresentationName": "प्रस्तुति",
+    "defaultDataName": "डेटा"
   },
   "context": {
     "getInfo": "जानकारी प्राप्त करें",

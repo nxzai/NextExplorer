@@ -105,7 +105,14 @@
     "sortBy": "Sortera efter",
     "addRule": "Lägg till regel",
     "clearAll": "Töm allt",
-    "cancelAll": "Avbryt allt"
+    "cancelAll": "Avbryt allt",
+    "newWordDocument": "Nytt Word-dokument",
+    "newSpreadsheet": "Ny Excel-arbetsbok",
+    "newPresentation": "Ny PowerPoint-presentation",
+    "newTextFile": "Ny textfil",
+    "newMarkdownFile": "Ny Markdown-fil",
+    "newCsvFile": "Ny CSV-fil",
+    "newDocument": "Nytt dokument"
   },
   "placeholders": {
     "email": "användare{'@'}exempel.se",
@@ -217,7 +224,13 @@
     "darkTheme": "Mörkt tema"
   },
   "create": {
-    "createNew": "Ny"
+    "createNew": "Ny",
+    "documentName": "Dokumentnamn",
+    "createAndOpen": "Skapa och öppna",
+    "defaultDocumentName": "Dokument",
+    "defaultSpreadsheetName": "Arbetsbok",
+    "defaultPresentationName": "Presentation",
+    "defaultDataName": "Data"
   },
   "context": {
     "getInfo": "Hämta info",

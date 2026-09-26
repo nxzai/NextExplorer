@@ -105,7 +105,14 @@
     "sortBy": "정렬 기준",
     "addRule": "규칙 추가",
     "clearAll": "전부 지우기",
-    "cancelAll": "전부 취소"
+    "cancelAll": "전부 취소",
+    "newWordDocument": "새 Word 문서",
+    "newSpreadsheet": "새 Excel 통합 문서",
+    "newPresentation": "새 PowerPoint 프레젠테이션",
+    "newTextFile": "새 텍스트 파일",
+    "newMarkdownFile": "새 Markdown 파일",
+    "newCsvFile": "새 CSV 파일",
+    "newDocument": "새 문서"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -217,7 +224,13 @@
     "darkTheme": "다크 테마"
   },
   "create": {
-    "createNew": "추가"
+    "createNew": "추가",
+    "documentName": "문서 이름",
+    "createAndOpen": "만들고 열기",
+    "defaultDocumentName": "문서",
+    "defaultSpreadsheetName": "통합 문서",
+    "defaultPresentationName": "프레젠테이션",
+    "defaultDataName": "데이터"
   },
   "context": {
     "getInfo": "속성",

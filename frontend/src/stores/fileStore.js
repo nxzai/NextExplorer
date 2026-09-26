@@ -8,6 +8,7 @@ import {
   deleteItems,
   normalizePath,
   createFile as createFileApi,
+  createOfficeDocument as createOfficeDocumentApi,
   createFolder as createFolderApi,
   renameItem as renameItemApi,
   fetchThumbnail as fetchThumbnailApi,
@@ -201,7 +202,12 @@ export const useFileStore = defineStore('fileStore', () => {
     // writing in — and writing the file through the editor's save meant an
     // empty file could land on top of one that arrived meanwhile.
     const created = await createFileApi(destination, defaultName);
-    const candidate = created?.name || defaultName;
+    // The route answers `{ success, item }`. Read from the root, this was always
+    // undefined and always fell back to the name that was asked for — so when
+    // that name was taken and the server picked the next free one, the rename box
+    // opened on whatever already held the asked-for name instead of on the new
+    // file.
+    const candidate = created?.item?.name || defaultName;
 
     // Refresh and start rename for the created item
     await fetchPathItems(destination);
@@ -214,6 +220,26 @@ export const useFileStore = defineStore('fileStore', () => {
     }
 
     return { success: true, name: candidate };
+  };
+
+  /**
+   * Create a blank office document in the current folder and return it.
+   *
+   * Unlike `createFile` this starts no inline rename: the name was settled before
+   * the document existed, and the caller opens it in an editor straight away — a
+   * rename box behind a full-window editor is a rename box nobody can see.
+   */
+  const createOfficeDocument = async ({ format, name } = {}) => {
+    const destination = normalizePath(currentPath.value || '');
+    const created = await createOfficeDocumentApi(destination, { format, name });
+
+    await fetchPathItems(destination);
+
+    // From the refreshed listing where it can be found, so what is handed to the
+    // editor carries everything the listing knows about it.
+    const createdName = created?.item?.name;
+    const fromListing = createdName ? findItemByKey(`${destination}::${createdName}`) : null;
+    return fromListing || created?.item || null;
   };
 
   const extractZipArchive = async (relativePath) => {
@@ -562,6 +588,7 @@ export const useFileStore = defineStore('fileStore', () => {
     resetClipboard,
     createFolder,
     createFile,
+    createOfficeDocument,
     extractZipArchive,
     compressSelectionToZip,
     renameState,

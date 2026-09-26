@@ -105,7 +105,14 @@
     "sortBy": "排序方式",
     "addRule": "添加规则",
     "clearAll": "清除全部",
-    "cancelAll": "全部取消"
+    "cancelAll": "全部取消",
+    "newWordDocument": "新建 Word 文档",
+    "newSpreadsheet": "新建 Excel 工作簿",
+    "newPresentation": "新建 PowerPoint 演示文稿",
+    "newTextFile": "新建文本文件",
+    "newMarkdownFile": "新建 Markdown 文件",
+    "newCsvFile": "新建 CSV 文件",
+    "newDocument": "新建文档"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -217,7 +224,13 @@
     "darkTheme": "深色主题"
   },
   "create": {
-    "createNew": "新建"
+    "createNew": "新建",
+    "documentName": "文档名称",
+    "createAndOpen": "创建并打开",
+    "defaultDocumentName": "文档",
+    "defaultSpreadsheetName": "工作簿",
+    "defaultPresentationName": "演示文稿",
+    "defaultDataName": "数据"
   },
   "context": {
     "getInfo": "获取信息",

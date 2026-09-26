@@ -105,7 +105,14 @@
     "sortBy": "排序方式",
     "addRule": "新增規則",
     "clearAll": "清除全部",
-    "cancelAll": "全部取消"
+    "cancelAll": "全部取消",
+    "newWordDocument": "新增 Word 文件",
+    "newSpreadsheet": "新增 Excel 活頁簿",
+    "newPresentation": "新增 PowerPoint 簡報",
+    "newTextFile": "新增文字檔",
+    "newMarkdownFile": "新增 Markdown 檔",
+    "newCsvFile": "新增 CSV 檔",
+    "newDocument": "新增文件"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -217,7 +224,13 @@
     "darkTheme": "深色主題"
   },
   "create": {
-    "createNew": "建立"
+    "createNew": "建立",
+    "documentName": "文件名稱",
+    "createAndOpen": "建立並開啟",
+    "defaultDocumentName": "文件",
+    "defaultSpreadsheetName": "活頁簿",
+    "defaultPresentationName": "簡報",
+    "defaultDataName": "資料"
   },
   "context": {
     "getInfo": "詳細資訊",

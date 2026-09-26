@@ -105,7 +105,14 @@
     "sortBy": "Sortieren nach",
     "addRule": "Regel hinzufügen",
     "clearAll": "Alles löschen",
-    "cancelAll": "Alle abbrechen"
+    "cancelAll": "Alle abbrechen",
+    "newWordDocument": "Neues Word-Dokument",
+    "newSpreadsheet": "Neue Excel-Arbeitsmappe",
+    "newPresentation": "Neue PowerPoint-Präsentation",
+    "newTextFile": "Neue Textdatei",
+    "newMarkdownFile": "Neue Markdown-Datei",
+    "newCsvFile": "Neue CSV-Datei",
+    "newDocument": "Neues Dokument"
   },
   "placeholders": {
     "email": "benutzer{'@'}beispiel.com",
@@ -217,7 +224,13 @@
     "darkTheme": "Dunkles Design"
   },
   "create": {
-    "createNew": "Neu"
+    "createNew": "Neu",
+    "documentName": "Dokumentname",
+    "createAndOpen": "Erstellen und öffnen",
+    "defaultDocumentName": "Dokument",
+    "defaultSpreadsheetName": "Arbeitsmappe",
+    "defaultPresentationName": "Präsentation",
+    "defaultDataName": "Daten"
   },
   "context": {
     "getInfo": "Informationen",

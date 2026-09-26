@@ -42,6 +42,8 @@ export default defineConfig({
           },
           { text: 'Admin & Access', link: '/admin/guide' },
           { text: 'User volumes', link: '/admin/user-volumes' },
+          { text: 'Trash', link: '/admin/trash' },
+          { text: 'File versions', link: '/admin/versions' },
           { text: 'OIDC', link: '/integrations/oidc' },
           { text: 'Authelia', link: '/integrations/authelia' },
           { text: 'ONLYOFFICE', link: '/integrations/onlyoffice' },
@@ -110,6 +112,8 @@ export default defineConfig({
         items: [
           { text: 'Administrator Guide', link: '/admin/guide' },
           { text: 'User volumes', link: '/admin/user-volumes' },
+          { text: 'Trash', link: '/admin/trash' },
+          { text: 'File versions', link: '/admin/versions' },
         ],
       },
       {

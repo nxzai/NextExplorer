@@ -7,7 +7,6 @@ This section explains how it works and how to enable it.
 ## How personal folders work
 
 - Each authenticated user gets a private directory under a common root (`USER_ROOT`).
-- The resolver confines every personal path to that user’s directory. It rejects attempts to traverse through symlinks, access another user’s folder, or exploit a colliding folder name.
 - Logical paths for personal items always start with `personal/`:
   - Example: `personal`, `personal/photos`, `personal/docs/report.docx`.
 - The backend maps those logical paths to the filesystem:
@@ -49,8 +48,34 @@ USER_FOLDER_NAME_ORDER=id,username,email_local
   - Default: `id,username,email_local`.
   - Controls how `<userFolder>` is chosen for personal folders. Valid values: `id`, `username`, `email`, `email_local`, `displayname`.
   - Example (reuse existing Linux home directories): set `USER_ROOT=/home` and `USER_FOLDER_NAME_ORDER=username,id`.
+  - The order is a preference, not a formula. The first account to be given a
+    name keeps it, and an account whose preferred name is already taken walks
+    down the rest of the order to the next free one — `id` is always last, and
+    ids are unique, so it always ends somewhere. Nothing about `username` or
+    `email_local` is unique on its own (`bob@a.com` and `bob@b.com` both yield
+    `bob`), and without this two accounts would share a folder and see each
+    other's files.
+  - Deleting an account does not free its name while its folder is still on
+    disk: the folder stays, with whatever was in it, and the next account whose
+    preferred name it is takes the next free one instead of opening the
+    deleted account's files. Once the folder is removed or renamed, the name
+    can be given again.
 
-> Note: Changing `USER_FOLDER_NAME_ORDER` after users already have personal folders will make nextExplorer look in a different location. Move/rename directories (or create symlinks) if you need to migrate existing data.
+> Note: the name an account is given is kept. Changing `USER_FOLDER_NAME_ORDER`
+> afterwards applies to accounts created from then on, and leaves the existing
+> ones where they are — so the change cannot silently take a folder away from
+> whoever is using it.
+>
+> To move existing accounts to a new order deliberately, move or rename their
+> directories on disk, then clear the assignment so it is worked out again at
+> their next sign-in:
+>
+> ```sql
+> UPDATE users SET personal_folder_name = NULL;
+> ```
+>
+> Where two accounts then prefer the same name, the first to sign in gets it.
+> Assign the names yourself in the same statement if that matters.
 
 > Note: The personal folder UI will not appear unless `USER_DIR_ENABLED=true`. The app also refuses to resolve `personal/...` when this flag is off.
 
@@ -94,7 +119,7 @@ To enable personal folders in a production deploy (see the full example in [Depl
 ```yaml
 services:
   nextexplorer:
-    image: nxzai/explorer:latest
+    image: ghcr.io/cerede2000/explorer:latest
     environment:
       - NODE_ENV=production
       - PUBLIC_URL=https://files.example.com
@@ -116,7 +141,6 @@ services:
 ## Permissions and access control
 
 - Personal folders are designed to be **per-user** homes.
-- Users cannot browse another user’s personal folder, even when directory names derived from usernames or email addresses are similar.
 - By default, access control rules (Settings → Access Control) apply to logical paths:
   - You can create rules targeting `personal` or `personal/<subpath>` if you want to further restrict access.
 - Favorites and quick access:

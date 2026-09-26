@@ -19,6 +19,7 @@ const { purgeExpiredDocumentKeys } = require('./services/onlyofficeDocumentKeySe
 const editorSessions = require('./services/onlyofficeEditorSessionService');
 const { sweepActivity } = require('./services/activityLog');
 const capabilities = require('./services/capabilities');
+const { installProcessFailureHandlers } = require('./utils/processFailures');
 
 let server = null;
 
@@ -123,6 +124,9 @@ const startServer = async () => {
 
   process.on('SIGTERM', cleanup);
   process.on('SIGINT', cleanup);
+
+  // Installed last, so the shutdown it may need already exists.
+  installProcessFailureHandlers({ onFatal: cleanup });
 
   return server;
 };

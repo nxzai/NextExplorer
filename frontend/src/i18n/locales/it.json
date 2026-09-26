@@ -70,7 +70,8 @@
     "unsavedChanges": "Hai modifiche non salvate",
     "readonly": "Sola lettura",
     "readwrite": "Lettura/Scrittura",
-    "add": "Aggiungi"
+    "add": "Aggiungi",
+    "back": "Indietro"
   },
   "editor": {
     "editing": "Editing",
@@ -105,7 +106,14 @@
     "sortBy": "Ordina per",
     "addRule": "Aggiungi regola",
     "clearAll": "Cancella tutto",
-    "cancelAll": "Annulla tutto"
+    "cancelAll": "Annulla tutto",
+    "newWordDocument": "Nuovo documento Word",
+    "newSpreadsheet": "Nuovo foglio di calcolo Excel",
+    "newPresentation": "Nuova presentazione PowerPoint",
+    "newTextFile": "Nuovo file di testo",
+    "newMarkdownFile": "Nuovo file Markdown",
+    "newCsvFile": "Nuovo file CSV",
+    "newDocument": "Nuovo documento"
   },
   "placeholders": {
     "email": "utente{'@'}esempio.com",
@@ -117,7 +125,8 @@
     "path": "es. Immagini/Vacanze",
     "search": "Cerca file e cartelle…",
     "volumeLabel": "es. Documenti, Progetti, Media",
-    "totpCode": "123456"
+    "totpCode": "123456",
+    "emailOrUsername": "nome{'@'}azienda.it o nome"
   },
   "loading": {
     "default": "Caricamento…",
@@ -158,7 +167,8 @@
     "pathRequired": "Il percorso è obbligatorio",
     "saveVolume": "Impossibile salvare il volume",
     "removeVolume": "Impossibile rimuovere il volume",
-    "totpCodeRequired": "Inserisci il codice."
+    "totpCodeRequired": "Inserisci il codice.",
+    "identifierRequired": "È richiesto un indirizzo email o un nome utente"
   },
   "serverErrors": {
     "AUTH_REQUIRED": "Autenticazione richiesta",
@@ -217,7 +227,13 @@
     "darkTheme": "Tema scuro"
   },
   "create": {
-    "createNew": "Nuovo"
+    "createNew": "Nuovo",
+    "documentName": "Nome del documento",
+    "createAndOpen": "Crea e apri",
+    "defaultDocumentName": "Documento",
+    "defaultSpreadsheetName": "Foglio di calcolo",
+    "defaultPresentationName": "Presentazione",
+    "defaultDataName": "Dati"
   },
   "context": {
     "getInfo": "Ottieni informazioni",
@@ -332,7 +348,9 @@
     "camera": "Fotocamera: {makeModel}",
     "lens": "Obiettivo: {lens}",
     "duration": "Durata: {seconds}s",
-    "versions": "Versioni"
+    "versions": "Versioni",
+    "folderSizeExcluded": "Escluso",
+    "folderSizeExcludedHelp": "Questo percorso è escluso dall'indicizzazione delle dimensioni delle cartelle."
   },
   "auth": {
     "preparing": "Preparazione del tuo explorer…",
@@ -359,7 +377,9 @@
       },
       "totpCode": "Codice",
       "totpExplain": "La password è stata accettata. Inserisci il codice della tua app di autenticazione, o uno dei codici di recupero.",
-      "totpSubmit": "Accedi"
+      "totpSubmit": "Accedi",
+      "sessionExpired": "La tua sessione è scaduta. Accedi di nuovo per riprendere da dove eri arrivato.",
+      "totpBack": "Ricomincia"
     },
     "setup": {
       "headline": "Configuriamo tutto",
@@ -381,7 +401,8 @@
     },
     "passkey": {
       "signIn": "Accedi con una passkey"
-    }
+    },
+    "emailOrUsername": "Indirizzo email o nome utente"
   },
   "breadcrumb": {
     "volumes": "Volumi",
@@ -428,7 +449,25 @@
       "gitCommit": "Commit git",
       "gitCommitHelp": "Revisione sorgente incorporata al momento della build.",
       "branch": "Branch",
-      "branchHelp": "Branch git al momento della build."
+      "branchHelp": "Branch git al momento della build.",
+      "tools": {
+        "title": "Strumenti opzionali",
+        "subtitle": "Cosa sa fare questa istanza e cosa aggiungerebbe uno strumento mancante. Il server dice lo stesso nel suo log all'avvio.",
+        "installed": "Installato",
+        "missing": "Non installato",
+        "unused": "Non usato qui",
+        "package": "Pacchetto",
+        "cannotOpen": "Non può aprire: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniature dei video e immagini delle foto HEIC",
+          "mediaDetails": "Durata e tracce di audio e video",
+          "fastSearch": "Ricerca rapida nel contenuto dei file",
+          "pdfSearch": "Il testo dei PDF nella ricerca",
+          "rawPreviews": "Anteprime delle foto RAW",
+          "copyProgress": "Avanzamento di copie e spostamenti di grandi dimensioni",
+          "archives": "Sfogliare ed estrarre archivi oltre .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Personalizza il nome dell’applicazione e il logo visualizzati in tutta l’interfaccia.",
@@ -446,7 +485,8 @@
       "fileTooLargeForDataUri": "Il file è troppo grande. Usa un’immagine più piccola (sotto i 500 KB per risultati migliori)",
       "preview": "Anteprima",
       "showPoweredBy": "Mostra link di attribuzione",
-      "showPoweredByHelp": "Mostra nel piè di pagina un link 'Powered by nextExplorer' per supportare il progetto"
+      "showPoweredByHelp": "Mostra nel piè di pagina un link 'Powered by nextExplorer' per supportare il progetto",
+      "defaultLogoSelected": "Logo predefinito selezionato. Fai clic su Salva per applicare."
     },
     "userPreferences": {
       "title": "Preferenze utente",
@@ -508,7 +548,8 @@
       "browse": "Scegli una cartella",
       "pathInvalid": "Questo percorso non è in nessun volume, quindi la regola non si applicherà mai.",
       "pathMissing": "Nessuna cartella a questo percorso. Una regola usa il percorso come lo mostra NextExplorer, a partire dal nome del volume.",
-      "useSuggestion": "Usa {path}"
+      "useSuggestion": "Usa {path}",
+      "title": "Accesso"
     },
     "comingSoon": {
       "subtitle": "Questa sezione delle impostazioni è in costruzione. Resta sintonizzato!"
@@ -520,7 +561,8 @@
       "confirm": "Conferma nuova password",
       "update": "Aggiorna password",
       "success": "Password aggiornata con successo.",
-      "validation": "Compila tutti i campi; la nuova password deve avere almeno 6 caratteri e corrispondere alla conferma."
+      "validation": "Compila tutti i campi; la nuova password deve avere almeno 6 caratteri e corrispondere alla conferma.",
+      "successOtherSessionsEnded": "Password aggiornata. Tutte le altre sessioni di questo account sono state disconnesse."
     },
     "users": {
       "subtitle": "Manage users, roles, and access credentials.",
@@ -554,7 +596,8 @@
       "selectedPath": "Selezionato",
       "volumePath": "Percorso volume",
       "pathCannotChange": "Il percorso non può essere cambiato dopo la creazione. Rimuovi questo volume e creane uno nuovo se necessario.",
-      "accessMode": "Modalità di accesso"
+      "accessMode": "Modalità di accesso",
+      "noUsers": "Nessun utente disponibile"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1019,13 @@
       "download": "Scarica"
     },
     "deleteShareTitle": "Rimuovere la condivisione?",
-    "deleteShareMessage": "Le persone con questo link non potranno più accedere all’elemento condiviso."
+    "deleteShareMessage": "Le persone con questo link non potranno più accedere all’elemento condiviso.",
+    "creating": "Creazione…",
+    "expires": "Scade",
+    "loadingUsers": "Caricamento utenti...",
+    "password": "Password",
+    "protected": "Protetto",
+    "sharedWith": "Condiviso con"
   },
   "trash": {
     "title": "Cestino",

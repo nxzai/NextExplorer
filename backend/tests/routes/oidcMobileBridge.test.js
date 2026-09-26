@@ -175,6 +175,26 @@ describe('OIDC mobile bridge routes', () => {
       expect(sessionId(after)).not.toBe(before);
     });
 
+    /**
+     * Signing in ends any guest session the same browser was carrying. The
+     * cookie was once set on /api and is now set on /, and a browser holding
+     * the older one keeps it unless both are cleared.
+     */
+    it('clears a guest session on both the paths it may have been set on', async () => {
+      const { verifier, challenge } = makePkce();
+      const code = bridge.issueCode({ userId: admin.id, codeChallenge: challenge });
+
+      const response = await request(app)
+        .post('/api/auth/oidc/exchange')
+        .send({ code, code_verifier: verifier });
+
+      const cleared = []
+        .concat(response.headers['set-cookie'] || [])
+        .filter((c) => c.startsWith('guestSession='));
+      expect(cleared.some((c) => /Path=\/(;|$)/.test(c))).toBe(true);
+      expect(cleared.some((c) => /Path=\/api/.test(c))).toBe(true);
+    });
+
     it('rejects an unknown code with 401', async () => {
       const res = await request(app)
         .post('/api/auth/oidc/exchange')

@@ -71,13 +71,21 @@ describe('oidcMobileBridge', () => {
       expect(bridge.redeemCode({ code, codeVerifier: verifier })).toBeNull();
     });
 
+    /**
+     * A wrong guess destroys the code, so there is no second guess against a
+     * live one — which is the whole of what stands between a sixty-second code
+     * and an online brute force. The retry below uses the *correct* verifier:
+     * retrying with another wrong one would fail whether the code had been
+     * burned or not, and prove nothing.
+     */
     it('rejects a wrong verifier and burns the code', () => {
-      const { challenge } = makePkce();
+      const { verifier, challenge } = makePkce();
       const wrong = makePkce().verifier;
       const code = bridge.issueCode({ userId: 'u1', codeChallenge: challenge });
+
       expect(bridge.redeemCode({ code, codeVerifier: wrong })).toBeNull();
-      // even the correct verifier now fails, the code is gone
-      expect(bridge.redeemCode({ code, codeVerifier: challenge })).toBeNull();
+
+      expect(bridge.redeemCode({ code, codeVerifier: verifier })).toBeNull();
     });
 
     it('rejects an unknown code', () => {

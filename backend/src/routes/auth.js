@@ -1,5 +1,15 @@
 const express = require('express');
 const { auth, public: publicConfig, webauthn: webauthnConfig } = require('../config/index');
+const {
+  uniqueOrigins,
+  sanitizeReturnTo,
+  getConfiguredRequestOrigin,
+  callbackUrlForOrigin,
+  sanitizeOidcPrompt,
+  markProviderSignIn,
+} = require('../utils/oidcRedirect');
+const { getOidcAvailability, oidcIsConfigured } = require('../utils/oidcAvailability');
+const logger = require('../utils/logger');
 
 const {
   countUsers,
@@ -19,7 +29,6 @@ const {
   verifySecondFactor,
 } = require('../services/users');
 const { incrementFailedAttempts, clearLock, isLocked } = require('../services/users/lockout');
-const logger = require('../utils/logger');
 const { issueCode, redeemCode, isValidChallenge } = require('../services/oidcMobileBridge');
 const rateLimit = require('express-rate-limit');
 const asyncHandler = require('../utils/asyncHandler');
@@ -34,13 +43,9 @@ const {
   RateLimitError,
   NotFoundError,
   ForbiddenError,
+  ServiceUnavailableError,
 } = require('../errors/AppError');
 const { ErrorCodes } = require('../errors/errorCodes');
-
-/** Every address this deployment answers on, without repeats or empties. */
-const uniqueOrigins = (values) => [
-  ...new Set((values || []).map((value) => String(value || '').trim()).filter(Boolean)),
-];
 
 /**
  * The relying party: who is asking for a passkey, and where from.
@@ -220,6 +225,11 @@ const respondWithUser = async (req, res) => {
 
 router.get('/status', async (req, res) => {
   const oidcEnv = (auth && auth.oidc) || {};
+  // What the configuration pass concluded, so the sign-in screen can say a
+  // provider is not on offer before somebody presses the button and travels
+  // there to find out. The status only: the reason names settings and library
+  // messages, and this answer is given to anybody who asks.
+  const { status: oidcStatus } = getOidcAvailability();
   const authMode = auth.mode || 'both';
   // Skip setup requirement if AUTH_MODE is 'oidc' only
   const requiresSetup = auth.enabled && authMode !== 'oidc' ? (await countUsers()) === 0 : false;
@@ -253,6 +263,7 @@ router.get('/status', async (req, res) => {
       enabled: Boolean(oidcEnv.enabled),
       issuer: oidcEnv.issuer || null,
       scopes: oidcEnv.scopes || [],
+      status: oidcStatus,
     },
   });
 });
@@ -279,6 +290,10 @@ router.post(
     await startAuthenticatedSession(req, user.id);
 
     // Clear guest session cookie when user sets up account
+    // Both paths: the cookie has been set on `/api` and on `/`, and a guest
+    // session left behind on the other one outlives the sign-in that should
+    // have ended it.
+    res.clearCookie('guestSession', { path: '/' });
     res.clearCookie('guestSession', { path: '/api' });
 
     res.status(201).json({ user });
@@ -330,6 +345,10 @@ router.post(
     await activityLog.record({ action: 'sign-in', user, detail: { method: 'password' }, req });
 
     // Clear guest session cookie when user logs in
+    // Both paths: the cookie has been set on `/api` and on `/`, and a guest
+    // session left behind on the other one outlives the sign-in that should
+    // have ended it.
+    res.clearCookie('guestSession', { path: '/' });
     res.clearCookie('guestSession', { path: '/api' });
 
     res.json({ user });
@@ -535,6 +554,10 @@ router.post(
     }
 
     await startAuthenticatedSession(req, outcome.userId);
+    // Both paths: the cookie has been set on `/api` and on `/`, and a guest
+    // session left behind on the other one outlives the sign-in that should
+    // have ended it.
+    res.clearCookie('guestSession', { path: '/' });
     res.clearCookie('guestSession', { path: '/api' });
 
     logger.info(
@@ -598,6 +621,10 @@ router.post(
     await clearLock(userId);
     forgetSecondStep(req);
     await startAuthenticatedSession(req, userId);
+    // Both paths: the cookie has been set on `/api` and on `/`, and a guest
+    // session left behind on the other one outlives the sign-in that should
+    // have ended it.
+    res.clearCookie('guestSession', { path: '/' });
     res.clearCookie('guestSession', { path: '/api' });
 
     const signedIn = await getRequestUser(req);
@@ -730,12 +757,9 @@ router.post(
     }
 
     const { currentPassword, newPassword } = req.body || {};
-    // Every other session of the account ends; this one stays signed in. The
-    // service takes the session to keep and says so, and nothing passed it, so
-    // the person changing their own password was signed out of their own
-    // browser along with everybody else. Only when this session is signed in
-    // here as this account: one the identity provider opened is not one a
-    // password could have opened, and is not this account's to keep.
+    // Every other session of the account ends; this one stays signed in, but
+    // only if it is signed in here as this account. A session the identity
+    // provider opened is not one a password could have opened.
     const signedInHere = Boolean(req.session) && req.session.localUserId === me.id;
     await changeLocalPassword({
       userId: me.id,
@@ -800,30 +824,26 @@ router.post('/logout', async (req, res) => {
       /* ignore */
     }
   }
-  // Clear the EOC appSession cookie (local OIDC session) without redirecting
-  try {
-    // Attempt to clear both secure and non-secure variants to be robust.
-    res.clearCookie('appSession', {
-      path: '/',
-      sameSite: 'Lax',
-      secure: true,
-      httpOnly: true,
-    });
-  } catch (_) {
-    /* ignore */
-  }
-  try {
-    res.clearCookie('appSession', {
-      path: '/',
-      sameSite: 'Lax',
-      secure: false,
-      httpOnly: true,
-    });
-  } catch (_) {
-    /* ignore */
+  // Clear the EOC session cookie selected for this browser origin. The
+  // legacy name is also cleared during the origin-scoped cookie migration.
+  const cookieNames = new Set([req.nextExplorerOidcSessionCookieName, 'appSession']);
+  for (const cookieName of cookieNames) {
+    if (!cookieName) continue;
+    try {
+      if (cookieName in req) req[cookieName] = undefined;
+      const cookieOptions = { path: '/', sameSite: 'Lax', httpOnly: true };
+      res.clearCookie(cookieName, { ...cookieOptions, secure: true });
+      res.clearCookie(cookieName, { ...cookieOptions, secure: false });
+    } catch (_) {
+      /* ignore */
+    }
   }
   // For IdP/federated logout, the UI navigates to GET /logout separately.
   res.status(204).end();
+});
+
+router.get('/me', async (req, res) => {
+  await respondWithUser(req, res);
 });
 
 /**
@@ -965,23 +985,81 @@ router.delete(
   })
 );
 
-router.get('/me', async (req, res) => {
-  await respondWithUser(req, res);
-});
+/**
+ * The provider was asked to take the sign-in, and did not.
+ *
+ * The real reason goes to the log and never into the response: it is the
+ * network's own words, and they name the provider's internal host.
+ */
+const providerDidNotAnswer = (reason) => {
+  logger.error(
+    { issuer: auth?.oidc?.issuer, reason },
+    'Could not start a sign-in at the identity provider'
+  );
+  return new ServiceUnavailableError(
+    'The identity provider could not be reached.',
+    ErrorCodes.AUTH_OIDC_PROVIDER_UNAVAILABLE
+  );
+};
+
+/**
+ * Nothing here can hand a sign-in over. Which of the two it is decides what an
+ * administrator should go and do.
+ *
+ * Answering 404 "OIDC is not configured" for both is the defect: it sends
+ * somebody whose provider is simply down to change a configuration that is
+ * already right. The configuration pass records which it was.
+ */
+const noProviderSignInAvailable = () => {
+  const { reason } = getOidcAvailability();
+
+  // Configured, and it could not be mounted: a bad issuer URL, a client secret
+  // the library insists on, a provider that did not answer discovery. Which of
+  // those it was is in the log; what matters here is that it is not the
+  // settings an administrator would be sent to fill in.
+  if (oidcIsConfigured()) {
+    logger.error(
+      { issuer: auth?.oidc?.issuer, reason },
+      'Single sign-on is configured and could not be started'
+    );
+    return new ServiceUnavailableError(
+      'Single sign-on could not be started.',
+      ErrorCodes.AUTH_OIDC_PROVIDER_UNAVAILABLE
+    );
+  }
+
+  logger.warn(
+    { missing: reason },
+    'A sign-in at the identity provider was asked for, and none is configured'
+  );
+  return new NotFoundError('OIDC is not configured.', ErrorCodes.AUTH_OIDC_NOT_CONFIGURED);
+};
 
 router.get(
   '/oidc/login',
   asyncHandler(async (req, res) => {
-    try {
-      if (res.oidc && typeof res.oidc.login === 'function') {
-        const redirect = typeof req.query?.redirect === 'string' ? req.query.redirect : '/';
-        await res.oidc.login({ returnTo: redirect });
-        return;
-      }
-    } catch (e) {
-      // ignore
+    if (!(res.oidc && typeof res.oidc.login === 'function')) {
+      throw noProviderSignInAvailable();
     }
-    throw new NotFoundError('OIDC is not configured.');
+
+    const redirect = sanitizeReturnTo(req.query?.redirect, '/browse/');
+    const origins = uniqueOrigins([auth?.oidc?.callbackUrl, ...(publicConfig?.origins || [])]);
+    const origin = getConfiguredRequestOrigin(req, origins) || origins[0];
+    const prompt = sanitizeOidcPrompt(req.query?.prompt);
+    const authorizationParams = {
+      ...(origin ? { redirect_uri: callbackUrlForOrigin(origin) } : {}),
+      ...(prompt ? { prompt } : {}),
+    };
+
+    try {
+      // Marked for the OIDC error middleware: the library usually reports a
+      // failure to a `next` of its own rather than throwing here.
+      markProviderSignIn(req);
+      await res.oidc.login({ returnTo: redirect, authorizationParams });
+    } catch (e) {
+      // It was asked and it failed, so this is never the configuration.
+      throw providerDidNotAnswer(e?.message || null);
+    }
   })
 );
 
@@ -1011,7 +1089,7 @@ router.get(
   '/oidc/mobile/login',
   asyncHandler(async (req, res) => {
     if (!(res.oidc && typeof res.oidc.login === 'function')) {
-      throw new NotFoundError('OIDC is not configured.');
+      throw noProviderSignInAvailable();
     }
     const codeChallenge = req.query?.code_challenge;
     const method = req.query?.code_challenge_method || 'S256';
@@ -1025,7 +1103,12 @@ router.get(
     if (req.session) {
       req.session.oidcMobile = { codeChallenge, method, redirectUri };
     }
-    await res.oidc.login({ returnTo: '/api/auth/oidc/mobile/complete' });
+    try {
+      markProviderSignIn(req);
+      await res.oidc.login({ returnTo: '/api/auth/oidc/mobile/complete' });
+    } catch (e) {
+      throw providerDidNotAnswer(e?.message || null);
+    }
   })
 );
 
@@ -1091,6 +1174,10 @@ router.post(
       throw new UnauthorizedError('User no longer exists.', ErrorCodes.AUTH_INVALID_CREDENTIALS);
     }
 
+    // Both paths: the cookie has been set on `/api` and on `/`, and a guest
+    // session left behind on the other one outlives the sign-in that should
+    // have ended it.
+    res.clearCookie('guestSession', { path: '/' });
     res.clearCookie('guestSession', { path: '/api' });
     res.json({ user });
   })

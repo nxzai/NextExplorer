@@ -122,3 +122,64 @@ describe('roles of a returning OIDC user', () => {
     expect(rolesOf(db)).toEqual(['admin']);
   });
 });
+
+/**
+ * The regression this fix must not cause.
+ *
+ * On an instance with OIDC but no OIDC_ADMIN_GROUPS, every login derives the
+ * plain `user` role. If that were applied, the administrator promoted from
+ * Settings → Users — or created by AUTH_ADMIN_EMAIL at bootstrap — would lose
+ * the role at their next sign-in, and nobody would be able to administer
+ * anything. These follow the middleware's own sequence: work out whether the
+ * provider is authoritative, then sign in with that answer.
+ */
+describe('an instance with no admin group configured', () => {
+  const signInAsMiddlewareWould = async (users, claims, adminGroups, currentRoles) => {
+    const authoritative = users.rolesFromClaimsAreAuthoritative(claims, adminGroups);
+    const roles = users.deriveRolesFromClaims(claims, adminGroups);
+    await signIn(users, { roles, rolesAreAuthoritative: authoritative });
+    return currentRoles;
+  };
+
+  it('keeps an administrator promoted from the interface', async () => {
+    const { users, db } = await build();
+    seedOidcUser(db, { roles: ['admin'] });
+
+    // No OIDC_ADMIN_GROUPS, and the provider reports groups the app knows
+    // nothing about — the everyday case.
+    await signInAsMiddlewareWould(users, { groups: ['staff', 'everyone'] }, null);
+
+    expect(rolesOf(db)).toEqual(['admin']);
+  });
+
+  it('keeps it across repeated sign-ins', async () => {
+    const { users, db } = await build();
+    seedOidcUser(db, { roles: ['admin'] });
+
+    for (let i = 0; i < 3; i += 1) {
+      await signInAsMiddlewareWould(users, { groups: ['staff'] }, []);
+    }
+
+    expect(rolesOf(db)).toEqual(['admin']);
+  });
+
+  it('keeps it when the provider returns no group claim at all', async () => {
+    const { users, db } = await build();
+    seedOidcUser(db, { roles: ['admin'] });
+
+    await signInAsMiddlewareWould(users, { email: 'someone@example.com' }, null);
+
+    expect(rolesOf(db)).toEqual(['admin']);
+  });
+
+  // The same protection has to hold where a group IS configured but the
+  // provider stayed silent about groups — a missing scope, not a demotion.
+  it('keeps it when a group is configured but the claim is missing', async () => {
+    const { users, db } = await build();
+    seedOidcUser(db, { roles: ['admin'] });
+
+    await signInAsMiddlewareWould(users, { email: 'someone@example.com' }, ['admins']);
+
+    expect(rolesOf(db)).toEqual(['admin']);
+  });
+});

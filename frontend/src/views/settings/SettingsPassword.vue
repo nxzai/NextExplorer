@@ -48,7 +48,9 @@ const submit = async () => {
       currentPassword: currentPassword.value,
       newPassword: newPassword.value,
     });
-    successMsg.value = t('settings.password.success');
+    // The server has just signed out every other session of this account, which
+    // someone would otherwise discover on another device without knowing why.
+    successMsg.value = t('settings.password.successOtherSessionsEnded');
     currentPassword.value = '';
     newPassword.value = '';
     confirmPassword.value = '';

@@ -19,13 +19,13 @@ Thanks for helping improve nextExplorer! This guide keeps contributions smooth, 
 ## Project Layout
 
 - `frontend/` – Vue 3 + Vite app (Pinia, TailwindCSS, Vitest, ESLint).
-- `backend/` – Express API (Node 18+, Pino logging, OIDC via express-openid-connect).
+- `backend/` – Express API (Node 24, Pino logging, OIDC via express-openid-connect).
 - `docs/` – VitePress docs (site content and guides).
 - `Dockerfile` – Multi-stage build packaging the full app.
 
 ## Prerequisites
 
-- Node.js 18+ and npm 9+.
+- Node.js 24 (the version the image and CI run) and npm 9+.
 - Docker + Docker Compose v2 (optional, recommended for end-to-end dev).
 - FFmpeg/ffprobe available if running backend outside Docker.
 
@@ -60,7 +60,7 @@ Environment tips:
 
 ## Tests & Linting
 
-- Backend tests (Node test runner):
+- Backend tests (Vitest + supertest):
 
 ```
 cd backend && npm test
@@ -77,6 +77,41 @@ cd frontend && npm run test:unit
 ```
 cd frontend && npm run lint
 ```
+
+- Browser tests (Playwright). The `app` project starts the real server serving
+  the real build, on a throwaway install, and walks through setting it up,
+  signing in, opening a volume, uploading and sharing — so build first:
+
+```
+npm run build && npm run test:e2e
+```
+
+### What CI holds every push to
+
+**A change in behaviour arrives with its test, in the same commit.** A commit
+that touches `backend/src` or `frontend/src` without touching a test is
+refused. Some changes rightly carry none — a refactor under tests that already
+exist, a move, a rename — and those say so with a trailer, so the exception is
+a decision written down rather than something nobody noticed:
+
+```
+Split the share decision into the three questions it asks
+
+No-test: pure extraction, held by tests/routes/shares.test.js
+```
+
+Run the same check before pushing with
+`scripts/check-commit-tests.sh origin/main..HEAD`.
+
+**Coverage does not go down.** The floors live in `coverage-thresholds.json`
+and fail the test run when a figure drops below them. The frontend floors apply
+everywhere; the backend ones apply in CI only, because several backend suites
+skip themselves without 7-Zip, ffmpeg, ripgrep or pdftotext, and a machine
+without those covers a little less for no fault of the change. Each floor keeps
+half a point of room under the CI figure, so a run that happens to miss a few
+lines does not turn red. When a figure climbs far enough to raise its floor and
+still keep that room, CI says so — raise it in the same pull request, so the
+ground gained cannot be lost again.
 
 ## Build
 
@@ -95,7 +130,7 @@ cd frontend && npm run build && npm run preview
 ## Pull Requests
 
 - Keep PRs small and atomic. Describe the problem and the approach.
-- Include tests for new behavior when practical (backend: Node test runner + supertest; frontend: Vitest).
+- A change in behaviour comes with its test in the same commit, or a `No-test:` trailer saying why (see above).
 - Update docs in `docs/` and user-facing `README.md` when behavior or settings change.
 - Run tests and linters locally before submitting.
 

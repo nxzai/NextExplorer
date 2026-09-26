@@ -1,12 +1,14 @@
 <script setup>
 import HeaderLogo from '@/components/HeaderLogo.vue';
 import LanguageSelector from '@/components/LanguageSelector.vue';
+import { useI18n } from 'vue-i18n';
 import { useAppSettings } from '@/stores/appSettings';
 import { usePageTitle } from '@/composables/usePageTitle';
 
 const appSettings = useAppSettings();
 // Signing in, or setting the instance up: the tab says which instance.
 usePageTitle('');
+const { t } = useI18n();
 
 const props = defineProps({
   version: { type: String, required: true },

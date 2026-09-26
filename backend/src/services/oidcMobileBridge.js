@@ -60,6 +60,9 @@ const redeemCode = ({ code, codeVerifier }) => {
   const entry = codes.get(code);
   if (!entry) return null;
   codes.delete(code);
+  // `sweep` above already dropped everything past its time, so this decides
+  // nothing on its own — it is the belt to that pair of braces, and the reason
+  // no test can tell the two apart.
   if (entry.expiresAt <= Date.now()) return null;
   if (!verifyChallenge(codeVerifier, entry.codeChallenge)) return null;
   return { userId: entry.userId };

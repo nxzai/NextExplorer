@@ -14,10 +14,14 @@ import {
 } from '@heroicons/vue/24/outline';
 import LoadingIcon from '@/icons/LoadingIcon.vue';
 import logger from '@/utils/logger';
+import { usePageTitle } from '@/composables/usePageTitle';
+import { folderRoute } from '@/utils/folderRoute';
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
+// The instance's name in the tab, as on its own sign-in page.
+usePageTitle('');
 const auth = useAuthStore();
 
 const shareToken = computed(() => route.params.token || '');
@@ -32,12 +36,10 @@ const verificationError = ref('');
 
 // Computed
 const isExpired = computed(() => shareInfo.value?.isExpired || false);
-// requiresPassword comes from the server and already accounts for the viewer:
-// the owner of a share is not asked for its password. An older server that
-// does not send it leaves hasPassword to decide, as before.
-const needsPassword = (info) => Boolean(info?.requiresPassword ?? info?.hasPassword);
-const requiresPassword = computed(
-  () => needsPassword(shareInfo.value) && shareInfo.value?.sharingType === 'anyone'
+// requiresPassword comes from the backend and already accounts for the viewer:
+// the owner of a protected link is not asked for their own password.
+const requiresPassword = computed(() =>
+  Boolean(shareInfo.value?.requiresPassword && shareInfo.value?.sharingType === 'anyone')
 );
 const redirectTarget = computed(() => {
   const value = route.query.redirect;
@@ -68,7 +70,7 @@ async function loadShareInfo() {
     shareInfo.value = info;
 
     // If share doesn't require password and is public, auto-access
-    if (!needsPassword(info) && info.sharingType === 'anyone' && !info.isExpired) {
+    if (!info.requiresPassword && info.sharingType === 'anyone' && !info.isExpired) {
       logger.debug('Auto-accessing share (no password required)');
       await handleAutoAccess();
     }
@@ -110,10 +112,7 @@ function navigateAfterShareAccess() {
     return;
   }
 
-  router.push({
-    name: 'FolderView',
-    params: { path: `share/${shareToken.value}` },
-  });
+  router.push(folderRoute(`share/${shareToken.value}`));
 }
 
 async function handleAutoAccess() {
@@ -125,7 +124,7 @@ async function handleAutoAccess() {
 
     if (result.guestSessionId) {
       logger.debug('Setting guest session', result.guestSessionId);
-      setGuestSession(result.guestSessionId);
+      setGuestSession(result.guestSessionId, shareToken.value);
     }
 
     navigateAfterShareAccess();
@@ -153,7 +152,7 @@ async function handlePasswordSubmit() {
     if (result.success) {
       if (result.guestSessionId) {
         logger.debug('Setting guest session', result.guestSessionId);
-        setGuestSession(result.guestSessionId);
+        setGuestSession(result.guestSessionId, shareToken.value);
       }
 
       navigateAfterShareAccess();

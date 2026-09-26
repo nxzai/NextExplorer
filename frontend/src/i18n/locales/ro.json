@@ -70,7 +70,8 @@
     "unsavedChanges": "Ai modificări nesalvate",
     "readonly": "Doar citire",
     "readwrite": "Citire/Scriere",
-    "add": "Adaugă"
+    "add": "Adaugă",
+    "back": "Înapoi"
   },
   "editor": {
     "editing": "Editing",
@@ -105,7 +106,14 @@
     "sortBy": "Sortează după",
     "addRule": "Adaugă regulă",
     "clearAll": "Șterge tot",
-    "cancelAll": "Anulează tot"
+    "cancelAll": "Anulează tot",
+    "newWordDocument": "Document Word nou",
+    "newSpreadsheet": "Registru Excel nou",
+    "newPresentation": "Prezentare PowerPoint nouă",
+    "newTextFile": "Fișier text nou",
+    "newMarkdownFile": "Fișier Markdown nou",
+    "newCsvFile": "Fișier CSV nou",
+    "newDocument": "Document nou"
   },
   "placeholders": {
     "email": "utilizator{'@'}exemplu.com",
@@ -117,7 +125,8 @@
     "path": "ex. Imagini/Vacanțe",
     "search": "Caută fișiere și dosare…",
     "volumeLabel": "ex. Documente, Proiecte, Media",
-    "totpCode": "123456"
+    "totpCode": "123456",
+    "emailOrUsername": "nume{'@'}companie.ro sau nume"
   },
   "loading": {
     "default": "Se încarcă…",
@@ -158,7 +167,8 @@
     "pathRequired": "Calea este obligatorie",
     "saveVolume": "Nu s-a putut salva volumul",
     "removeVolume": "Nu s-a putut elimina volumul",
-    "totpCodeRequired": "Introduceți codul."
+    "totpCodeRequired": "Introduceți codul.",
+    "identifierRequired": "Este necesară o adresă de e-mail sau un nume de utilizator"
   },
   "serverErrors": {
     "AUTH_REQUIRED": "Autentificare necesară",
@@ -217,7 +227,13 @@
     "darkTheme": "Temă închisă"
   },
   "create": {
-    "createNew": "Nou"
+    "createNew": "Nou",
+    "documentName": "Numele documentului",
+    "createAndOpen": "Creează și deschide",
+    "defaultDocumentName": "Document",
+    "defaultSpreadsheetName": "Registru",
+    "defaultPresentationName": "Prezentare",
+    "defaultDataName": "Date"
   },
   "context": {
     "getInfo": "Obține informații",
@@ -332,7 +348,9 @@
     "camera": "Cameră: {makeModel}",
     "lens": "Obiectiv: {lens}",
     "duration": "Durată: {seconds}s",
-    "versions": "Versiuni"
+    "versions": "Versiuni",
+    "folderSizeExcluded": "Exclus",
+    "folderSizeExcludedHelp": "Această cale este exclusă din indexarea dimensiunii dosarelor."
   },
   "auth": {
     "preparing": "Se pregătește explorerul…",
@@ -359,7 +377,9 @@
       },
       "totpCode": "Cod",
       "totpExplain": "Parola a fost acceptată. Introduceți codul din aplicația de autentificare sau unul dintre codurile de recuperare.",
-      "totpSubmit": "Conectați-vă"
+      "totpSubmit": "Conectați-vă",
+      "sessionExpired": "Sesiunea ta a expirat. Conectează-te din nou pentru a continua de unde ai rămas.",
+      "totpBack": "Reluați"
     },
     "setup": {
       "headline": "Să configurăm totul",
@@ -381,7 +401,8 @@
     },
     "passkey": {
       "signIn": "Conectare cu o cheie de acces"
-    }
+    },
+    "emailOrUsername": "Adresă de e-mail sau nume de utilizator"
   },
   "breadcrumb": {
     "volumes": "Volume",
@@ -428,7 +449,25 @@
       "gitCommit": "Commit git",
       "gitCommitHelp": "Revizia sursei integrată la momentul build-ului.",
       "branch": "Branch",
-      "branchHelp": "Branch-ul git la momentul build-ului."
+      "branchHelp": "Branch-ul git la momentul build-ului.",
+      "tools": {
+        "title": "Instrumente opționale",
+        "subtitle": "Ce poate face această instanță și ce ar adăuga un instrument lipsă. Serverul spune același lucru în jurnal la pornire.",
+        "installed": "Instalat",
+        "missing": "Neinstalat",
+        "unused": "Nefolosit aici",
+        "package": "Pachet",
+        "cannotOpen": "Nu poate deschide: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniaturi video și imagini din fotografiile HEIC",
+          "mediaDetails": "Durata și pistele audio și video",
+          "fastSearch": "Căutare rapidă în conținutul fișierelor",
+          "pdfSearch": "Textul PDF-urilor în căutare",
+          "rawPreviews": "Previzualizări ale fotografiilor RAW",
+          "copyProgress": "Progresul copierilor și mutărilor mari",
+          "archives": "Răsfoirea și extragerea arhivelor dincolo de .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Personalizează numele aplicației și sigla afișate în întreaga interfață.",
@@ -446,7 +485,8 @@
       "fileTooLargeForDataUri": "Fișierul este prea mare. Folosește o imagine mai mică (sub 500 KB pentru cele mai bune rezultate)",
       "preview": "Previzualizare",
       "showPoweredBy": "Afișează linkul de atribuire",
-      "showPoweredByHelp": "Afișează în subsol un link „Powered by nextExplorer” pentru a ajuta la susținerea proiectului"
+      "showPoweredByHelp": "Afișează în subsol un link „Powered by nextExplorer” pentru a ajuta la susținerea proiectului",
+      "defaultLogoSelected": "Siglă implicită selectată. Faceți clic pe Salvare pentru a aplica."
     },
     "userPreferences": {
       "title": "Preferințe utilizator",
@@ -508,7 +548,8 @@
       "browse": "Alegeți un dosar",
       "pathInvalid": "Această cale nu se află în niciun volum, așa că regula nu se va aplica niciodată.",
       "pathMissing": "Nu există niciun dosar la această cale. O regulă folosește calea așa cum o arată NextExplorer, începând cu numele volumului.",
-      "useSuggestion": "Folosiți {path}"
+      "useSuggestion": "Folosiți {path}",
+      "title": "Acces"
     },
     "comingSoon": {
       "subtitle": "Această secțiune de setări este în lucru. Revino în curând!"
@@ -520,7 +561,8 @@
       "confirm": "Confirmă parola nouă",
       "update": "Actualizează parola",
       "success": "Parola a fost actualizată cu succes.",
-      "validation": "Completează toate câmpurile; parola nouă trebuie să aibă cel puțin 6 caractere și să se potrivească cu confirmarea."
+      "validation": "Completează toate câmpurile; parola nouă trebuie să aibă cel puțin 6 caractere și să se potrivească cu confirmarea.",
+      "successOtherSessionsEnded": "Parola a fost actualizată. Toate celelalte sesiuni ale acestui cont au fost deconectate."
     },
     "users": {
       "subtitle": "Manage users, roles, and access credentials.",
@@ -554,7 +596,8 @@
       "selectedPath": "Selectat",
       "volumePath": "Cale volum",
       "pathCannotChange": "Calea nu poate fi schimbată după creare. Șterge și creează unul nou dacă e necesar.",
-      "accessMode": "Mod acces"
+      "accessMode": "Mod acces",
+      "noUsers": "Nu există utilizatori disponibili"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1019,13 @@
       "download": "Descarcă"
     },
     "deleteShareTitle": "Elimini partajarea?",
-    "deleteShareMessage": "Persoanele cu acest link nu vor mai putea accesa elementul partajat."
+    "deleteShareMessage": "Persoanele cu acest link nu vor mai putea accesa elementul partajat.",
+    "creating": "Se creează…",
+    "expires": "Expiră",
+    "loadingUsers": "Se încarcă utilizatorii...",
+    "password": "Parolă",
+    "protected": "Protejat",
+    "sharedWith": "Partajat cu"
   },
   "trash": {
     "title": "Coș de gunoi",

@@ -73,9 +73,21 @@ const storageRefusal = (err) => {
   return sentence ? [403, sentence] : null;
 };
 
+/**
+ * The addresses a browser is sent to, rather than fetches, on the way through
+ * an identity provider: where a sign-in starts, and where it comes back.
+ *
+ * A failure at either is a page the person is looking at, so it has to land
+ * back on the sign-in screen. `/login` is the provider's own route, mounted
+ * only when there is a provider to mount; `/api/auth/oidc/login` answers
+ * whether or not there is, which is how the screen learns which of the two
+ * happened.
+ */
+const OIDC_DOCUMENT_PATHS = new Set(['/callback', '/login', '/api/auth/oidc/login']);
+
 const isOidcDocumentRequest = (req) => {
   const path = req?.path || '';
-  if (path !== '/callback') return false;
+  if (!OIDC_DOCUMENT_PATHS.has(path)) return false;
   const accept = typeof req.headers?.accept === 'string' ? req.headers.accept : '';
   const secFetchDest =
     typeof req.headers?.['sec-fetch-dest'] === 'string' ? req.headers['sec-fetch-dest'] : '';
@@ -84,27 +96,18 @@ const isOidcDocumentRequest = (req) => {
   return accept.includes('text/html') || secFetchDest === 'document' || secFetchMode === 'navigate';
 };
 
-const clearOidcSessionCookies = (res) => {
-  // express-openid-connect defaults to "appSession"
-  try {
-    res.clearCookie('appSession', {
-      path: '/',
-      sameSite: 'Lax',
-      secure: true,
-      httpOnly: true,
-    });
-  } catch (_) {
-    /* ignore */
-  }
-  try {
-    res.clearCookie('appSession', {
-      path: '/',
-      sameSite: 'Lax',
-      secure: false,
-      httpOnly: true,
-    });
-  } catch (_) {
-    /* ignore */
+const clearOidcSessionCookies = (req, res) => {
+  const cookieNames = new Set([req.nextExplorerOidcSessionCookieName, 'appSession']);
+  for (const cookieName of cookieNames) {
+    if (!cookieName) continue;
+    try {
+      if (cookieName in req) req[cookieName] = undefined;
+      const cookieOptions = { path: '/', sameSite: 'Lax', httpOnly: true };
+      res.clearCookie(cookieName, { ...cookieOptions, secure: true });
+      res.clearCookie(cookieName, { ...cookieOptions, secure: false });
+    } catch (_) {
+      /* ignore */
+    }
   }
 };
 
@@ -129,10 +132,18 @@ const errorHandler = (err, req, res, next) => {
   // For OIDC callback navigations, redirect back into the SPA so the login screen can show the error.
   // Otherwise, the browser will render the JSON payload as a standalone error page.
   if (!res.headersSent && isOidcDocumentRequest(req)) {
-    clearOidcSessionCookies(res);
-    const nextUrl = `/auth/login?error=${encodeURIComponent(message)}`;
+    clearOidcSessionCookies(req, res);
+    // Same redaction as the JSON body: this one lands in the address bar, browser
+    // history and every proxy log along the way, so a raw server path here travels
+    // further than it would in a response body.
+    const query = new URLSearchParams({ error: sanitizeClientMessage(message) });
+    // The code travels beside the sentence, never instead of it. The screen says
+    // what the codes it knows mean in the reader's own language — which is how "the
+    // provider could not be reached" stops reading as "OIDC is not configured" —
+    // and falls back to the sentence for the ones it does not.
+    if (err.code) query.set('error_code', String(err.code));
     res.setHeader('Cache-Control', 'no-store');
-    res.redirect(302, nextUrl);
+    res.redirect(302, `/auth/login?${query.toString()}`);
     return;
   }
 

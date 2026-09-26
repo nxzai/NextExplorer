@@ -70,7 +70,8 @@
     "unsavedChanges": "Tienes cambios sin guardar",
     "readonly": "Solo lectura",
     "readwrite": "Lectura/Escritura",
-    "add": "Añadir"
+    "add": "Añadir",
+    "back": "Atrás"
   },
   "editor": {
     "editing": "Editing",
@@ -105,7 +106,14 @@
     "sortBy": "Ordenar por",
     "addRule": "Añadir regla",
     "clearAll": "Borrar todo",
-    "cancelAll": "Cancelar todo"
+    "cancelAll": "Cancelar todo",
+    "newWordDocument": "Nuevo documento de Word",
+    "newSpreadsheet": "Nueva hoja de cálculo de Excel",
+    "newPresentation": "Nueva presentación de PowerPoint",
+    "newTextFile": "Nuevo archivo de texto",
+    "newMarkdownFile": "Nuevo archivo Markdown",
+    "newCsvFile": "Nuevo archivo CSV",
+    "newDocument": "Nuevo documento"
   },
   "placeholders": {
     "email": "usuario{'@'}ejemplo.com",
@@ -117,7 +125,8 @@
     "path": "p. ej. Imágenes/Vacaciones",
     "search": "Buscar archivos y carpetas…",
     "volumeLabel": "",
-    "totpCode": "123456"
+    "totpCode": "123456",
+    "emailOrUsername": "nombre{'@'}empresa.com o nombre"
   },
   "loading": {
     "default": "Cargando…",
@@ -158,7 +167,8 @@
     "pathRequired": "",
     "saveVolume": "",
     "removeVolume": "",
-    "totpCodeRequired": "Introduzca el código."
+    "totpCodeRequired": "Introduzca el código.",
+    "identifierRequired": "Se requiere un correo electrónico o un nombre de usuario"
   },
   "serverErrors": {
     "AUTH_REQUIRED": "Se requiere autenticación",
@@ -217,7 +227,13 @@
     "darkTheme": "Tema oscuro"
   },
   "create": {
-    "createNew": "Nuevo"
+    "createNew": "Nuevo",
+    "documentName": "Nombre del documento",
+    "createAndOpen": "Crear y abrir",
+    "defaultDocumentName": "Documento",
+    "defaultSpreadsheetName": "Hoja de cálculo",
+    "defaultPresentationName": "Presentación",
+    "defaultDataName": "Datos"
   },
   "context": {
     "getInfo": "Obtener información",
@@ -332,7 +348,9 @@
     "camera": "Cámara: {makeModel}",
     "lens": "Lente: {lens}",
     "duration": "Duración: {seconds}s",
-    "versions": "Versiones"
+    "versions": "Versiones",
+    "folderSizeExcluded": "Excluido",
+    "folderSizeExcludedHelp": "Esta ruta está excluida de la indexación de tamaños de carpeta."
   },
   "auth": {
     "preparing": "Preparando tu explorador…",
@@ -359,7 +377,9 @@
       },
       "totpCode": "Código",
       "totpExplain": "Su contraseña se ha aceptado. Introduzca el código de su aplicación de autenticación o uno de sus códigos de recuperación.",
-      "totpSubmit": "Iniciar sesión"
+      "totpSubmit": "Iniciar sesión",
+      "sessionExpired": "Su sesión ha caducado. Vuelva a iniciar sesión para continuar donde lo dejó.",
+      "totpBack": "Empezar de nuevo"
     },
     "setup": {
       "headline": "Vamos a configurarlo",
@@ -381,7 +401,8 @@
     },
     "passkey": {
       "signIn": "Iniciar sesión con una clave de acceso"
-    }
+    },
+    "emailOrUsername": "Correo electrónico o nombre de usuario"
   },
   "breadcrumb": {
     "volumes": "Volúmenes",
@@ -428,7 +449,25 @@
       "gitCommit": "Commit de Git",
       "gitCommitHelp": "Revisión de código fuente incrustada en el momento de la compilación.",
       "branch": "Rama",
-      "branchHelp": "Rama de Git en el momento de la compilación."
+      "branchHelp": "Rama de Git en el momento de la compilación.",
+      "tools": {
+        "title": "Herramientas opcionales",
+        "subtitle": "Lo que esta instancia puede hacer y lo que añadiría una herramienta que falta. El servidor dice lo mismo en su registro al arrancar.",
+        "installed": "Instalada",
+        "missing": "No instalada",
+        "unused": "No se usa aquí",
+        "package": "Paquete",
+        "cannotOpen": "No puede abrir: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniaturas de vídeo e imágenes de fotos HEIC",
+          "mediaDetails": "Duración y pistas de audio y vídeo",
+          "fastSearch": "Búsqueda rápida dentro de los archivos",
+          "pdfSearch": "El texto de los PDF en la búsqueda",
+          "rawPreviews": "Vistas previas de fotos RAW",
+          "copyProgress": "Progreso en copias y movimientos grandes",
+          "archives": "Explorar y extraer archivos comprimidos más allá de .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Personaliza el nombre de la aplicación y el logotipo que se muestran en toda la interfaz.",
@@ -446,7 +485,8 @@
       "fileTooLargeForDataUri": "El archivo es demasiado grande. Usa una imagen más pequeña (menos de 500 KB para obtener mejores resultados)",
       "preview": "Vista previa",
       "showPoweredBy": "Mostrar enlace de atribución",
-      "showPoweredByHelp": "Muestra un enlace 'Powered by nextExplorer' en el pie de página para ayudar a apoyar el proyecto"
+      "showPoweredByHelp": "Muestra un enlace 'Powered by nextExplorer' en el pie de página para ayudar a apoyar el proyecto",
+      "defaultLogoSelected": "Logotipo predeterminado seleccionado. Haz clic en Guardar para aplicar."
     },
     "userPreferences": {
       "title": "Preferencias de usuario",
@@ -508,7 +548,8 @@
       "browse": "Elegir una carpeta",
       "pathInvalid": "Esta ruta no está dentro de ningún volumen, así que la regla nunca se aplicará.",
       "pathMissing": "No hay ninguna carpeta en esta ruta. Una regla usa la ruta tal como la muestra NextExplorer, empezando por el nombre del volumen.",
-      "useSuggestion": "Usar {path}"
+      "useSuggestion": "Usar {path}",
+      "title": "Acceso"
     },
     "comingSoon": {
       "subtitle": "Esta sección de configuración está en desarrollo. ¡Permanece atento!"
@@ -520,7 +561,8 @@
       "confirm": "Confirmar nueva contraseña",
       "update": "Actualizar contraseña",
       "success": "Contraseña actualizada correctamente.",
-      "validation": "Rellena todos los campos; la nueva contraseña debe tener al menos 6 caracteres y coincidir con la confirmación."
+      "validation": "Rellena todos los campos; la nueva contraseña debe tener al menos 6 caracteres y coincidir con la confirmación.",
+      "successOtherSessionsEnded": "Contraseña actualizada. Se han cerrado todas las demás sesiones de esta cuenta."
     },
     "users": {
       "subtitle": "Manage users, roles, and access credentials.",
@@ -554,7 +596,8 @@
       "selectedPath": "Seleccionado",
       "volumePath": "Ruta del volumen",
       "pathCannotChange": "La ruta no se puede cambiar después de la creación. Elimine este volumen y cree uno nuevo si es necesario.",
-      "accessMode": "Modo de acceso"
+      "accessMode": "Modo de acceso",
+      "noUsers": "No hay usuarios disponibles"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1019,13 @@
       "download": "Descargar"
     },
     "deleteShareTitle": "¿Eliminar enlace compartido?",
-    "deleteShareMessage": "Las personas con este enlace ya no podrán acceder al elemento compartido."
+    "deleteShareMessage": "Las personas con este enlace ya no podrán acceder al elemento compartido.",
+    "creating": "Creando…",
+    "expires": "Expira",
+    "loadingUsers": "Cargando usuarios...",
+    "password": "Contraseña",
+    "protected": "Protegido",
+    "sharedWith": "Compartido con"
   },
   "trash": {
     "title": "Papelera",

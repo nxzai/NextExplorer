@@ -70,7 +70,8 @@
     "unsavedChanges": "Er zijn niet-opgeslagen wijzigingen",
     "readonly": "Alleen-lezen",
     "readwrite": "Lezen/schrijven",
-    "add": "Toevoegen"
+    "add": "Toevoegen",
+    "back": "Terug"
   },
   "editor": {
     "editing": "Bewerken",
@@ -105,7 +106,14 @@
     "addRule": "Regel toevoegen",
     "clearAll": "Alles wissen",
     "cancelAll": "Alles annuleren",
-    "extractZip": "ZIP uitpakken"
+    "extractZip": "ZIP uitpakken",
+    "newWordDocument": "Nieuw Word-document",
+    "newSpreadsheet": "Nieuwe Excel-werkmap",
+    "newPresentation": "Nieuwe PowerPoint-presentatie",
+    "newTextFile": "Nieuw tekstbestand",
+    "newMarkdownFile": "Nieuw Markdown-bestand",
+    "newCsvFile": "Nieuw CSV-bestand",
+    "newDocument": "Nieuw document"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -117,7 +125,8 @@
     "path": "bijv. Afbeeldingen/Vakanties",
     "search": "Bestanden en mappen zoeken…",
     "volumeLabel": "bijv. Documenten, Projecten, Media",
-    "totpCode": "123456"
+    "totpCode": "123456",
+    "emailOrUsername": "naam{'@'}bedrijf.nl of naam"
   },
   "loading": {
     "default": "Laden…",
@@ -158,7 +167,8 @@
     "pathRequired": "Pad is vereist",
     "saveVolume": "Volume opslaan is mislukt",
     "removeVolume": "Volume verwijderen is mislukt",
-    "totpCodeRequired": "Voer de code in."
+    "totpCodeRequired": "Voer de code in.",
+    "identifierRequired": "Een e-mailadres of gebruikersnaam is verplicht"
   },
   "serverErrors": {
     "AUTH_REQUIRED": "Authenticatie vereist",
@@ -217,7 +227,13 @@
     "darkTheme": "Donker thema"
   },
   "create": {
-    "createNew": "Nieuw"
+    "createNew": "Nieuw",
+    "documentName": "Naam van het document",
+    "createAndOpen": "Maken en openen",
+    "defaultDocumentName": "Document",
+    "defaultSpreadsheetName": "Werkmap",
+    "defaultPresentationName": "Presentatie",
+    "defaultDataName": "Gegevens"
   },
   "context": {
     "getInfo": "Eigenschappen",
@@ -332,7 +348,9 @@
     "camera": "Camera: {makeModel}",
     "lens": "Lens: {lens}",
     "duration": "Duur: {seconds}s",
-    "versions": "Versies"
+    "versions": "Versies",
+    "folderSizeExcluded": "Uitgesloten",
+    "folderSizeExcludedHelp": "Dit pad is uitgesloten van het indexeren van mapgroottes."
   },
   "auth": {
     "preparing": "Verkenner voorbereiden…",
@@ -359,7 +377,9 @@
       "announcementConfirm": "Markeren als gelezen",
       "totpCode": "Code",
       "totpExplain": "Uw wachtwoord is geaccepteerd. Voer de code uit uw authenticatie-app in, of een van uw herstelcodes.",
-      "totpSubmit": "Aanmelden"
+      "totpSubmit": "Aanmelden",
+      "sessionExpired": "Uw sessie is beëindigd. Meld u opnieuw aan om verder te gaan waar u gebleven was.",
+      "totpBack": "Opnieuw beginnen"
     },
     "setup": {
       "headline": "Laten we alles opzetten",
@@ -381,7 +401,8 @@
     },
     "passkey": {
       "signIn": "Aanmelden met een passkey"
-    }
+    },
+    "emailOrUsername": "E-mailadres of gebruikersnaam"
   },
   "breadcrumb": {
     "volumes": "Volumes",
@@ -428,7 +449,25 @@
       "gitCommit": "Git commit",
       "gitCommitHelp": "Bronrevisie die tijdens het bouwen is vastgelegd.",
       "branch": "Branch",
-      "branchHelp": "Git-branch tijdens het bouwen."
+      "branchHelp": "Git-branch tijdens het bouwen.",
+      "tools": {
+        "title": "Optionele hulpmiddelen",
+        "subtitle": "Wat deze instantie kan en wat een ontbrekend hulpmiddel zou toevoegen. De server zegt hetzelfde in zijn log bij het starten.",
+        "installed": "Geïnstalleerd",
+        "missing": "Niet geïnstalleerd",
+        "unused": "Hier niet gebruikt",
+        "package": "Pakket",
+        "cannotOpen": "Kan niet openen: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniaturen van video's en stilstaande beelden uit HEIC-foto's",
+          "mediaDetails": "Duur en sporen van audio en video",
+          "fastSearch": "Snel zoeken in de inhoud van bestanden",
+          "pdfSearch": "De tekst van pdf's in de zoekfunctie",
+          "rawPreviews": "Voorbeelden van RAW-foto's",
+          "copyProgress": "Voortgang bij grote kopieer- en verplaatsacties",
+          "archives": "Archieven buiten .zip bekijken en uitpakken"
+        }
+      }
     },
     "branding": {
       "subtitle": "Pas de naam en het logo van de applicatie aan die door de hele interface worden weergegeven.",
@@ -446,7 +485,8 @@
       "uploading": "Uploaden…",
       "uploadSuccess": "Logo succesvol geüpload",
       "uploadError": "Logo uploaden mislukt",
-      "fileTooLargeForDataUri": "Bestand is te groot. Gebruik een kleinere afbeelding (voor het beste resultaat minder dan 500 KB)."
+      "fileTooLargeForDataUri": "Bestand is te groot. Gebruik een kleinere afbeelding (voor het beste resultaat minder dan 500 KB).",
+      "defaultLogoSelected": "Standaardlogo geselecteerd. Klik op Opslaan om het toe te passen."
     },
     "userPreferences": {
       "title": "Gebruikersvoorkeuren",
@@ -508,7 +548,8 @@
       "browse": "Map kiezen",
       "pathInvalid": "Dit pad ligt niet in een volume, dus de regel wordt nooit toegepast.",
       "pathMissing": "Er is geen map op dit pad. Een regel gebruikt het pad zoals NextExplorer het toont, beginnend met de naam van het volume.",
-      "useSuggestion": "{path} gebruiken"
+      "useSuggestion": "{path} gebruiken",
+      "title": "Toegang"
     },
     "comingSoon": {
       "subtitle": "Deze sectie Instellingen wordt momenteel gebouwd. Blijf op de hoogte!"
@@ -520,7 +561,8 @@
       "confirm": "Nieuw wachtwoord bevestigen",
       "update": "Wachtwoord bijwerken",
       "validation": "Vul alle velden in; het nieuwe wachtwoord moet tenminste 6 tekens lang zijn en overeenkomen.",
-      "success": "Wachtwoord succesvol bijgewerkt."
+      "success": "Wachtwoord succesvol bijgewerkt.",
+      "successOtherSessionsEnded": "Wachtwoord bijgewerkt. Alle andere sessies van dit account zijn afgemeld."
     },
     "users": {
       "subtitle": "Gebruikers, rollen en toegangsgegevens beheren.",
@@ -554,7 +596,8 @@
       "pathCannotChange": "Het pad kan na aanmaak niet worden gewijzigd. Verwijder dit volume en maak zonodig een nieuwe aan.",
       "accessMode": "Toegangsmodus",
       "makeAdmin": "Beheerder maken",
-      "editUser": "Gebruiker bewerken"
+      "editUser": "Gebruiker bewerken",
+      "noUsers": "Geen gebruikers beschikbaar"
     },
     "userDetails": {
       "profileTab": "Profiel",
@@ -959,7 +1002,13 @@
     "noMyShares": "U hebt nog geen shares aangemaakt.",
     "noMySharesDescription": "Maak een share van een bestand of map om die hier te zien.",
     "mySharesCount": "{count} actieve sharelink | {count} actieve sharelinks",
-    "sharedWithUsers": "{count} gebruiker | {count} gebruikers"
+    "sharedWithUsers": "{count} gebruiker | {count} gebruikers",
+    "creating": "Bezig met maken…",
+    "expires": "Verloopt",
+    "loadingUsers": "Gebruikers laden...",
+    "password": "Wachtwoord",
+    "protected": "Beveiligd",
+    "sharedWith": "Gedeeld met"
   },
   "mediaPreview": {
     "download": "Media downloaden",

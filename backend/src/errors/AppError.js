@@ -123,6 +123,20 @@ class UnsupportedMediaTypeError extends AppError {
 }
 
 /** 507: the storage cannot hold what is being sent. */
+/**
+ * 503 Service Unavailable - something this server depends on did not answer
+ *
+ * Not the caller's doing and not a misconfiguration: the request was right and
+ * can be made again. Saying 404 here is what sends an administrator to change
+ * settings that are already correct.
+ */
+class ServiceUnavailableError extends AppError {
+  constructor(message = 'Service unavailable', code = null) {
+    super(message, 503, code);
+    this.name = 'ServiceUnavailableError';
+  }
+}
+
 class InsufficientStorageError extends AppError {
   constructor(message = 'Insufficient storage') {
     super(message, 507, 'INSUFFICIENT_STORAGE');
@@ -140,5 +154,6 @@ module.exports = {
   RateLimitError,
   InternalError,
   UnsupportedMediaTypeError,
+  ServiceUnavailableError,
   InsufficientStorageError,
 };

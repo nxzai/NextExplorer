@@ -70,7 +70,8 @@
     "unsavedChanges": "You have unsaved changes",
     "readonly": "Read Only",
     "readwrite": "Read/Write",
-    "add": "Add"
+    "add": "Add",
+    "back": "Back"
   },
   "editor": {
     "editing": "Editing",
@@ -105,7 +106,14 @@
     "sortBy": "Sort by",
     "addRule": "Add rule",
     "clearAll": "Clear all",
-    "cancelAll": "Cancel all"
+    "cancelAll": "Cancel all",
+    "newWordDocument": "New Word document",
+    "newSpreadsheet": "New Excel spreadsheet",
+    "newPresentation": "New PowerPoint presentation",
+    "newTextFile": "New text file",
+    "newMarkdownFile": "New Markdown file",
+    "newCsvFile": "New CSV file",
+    "newDocument": "New document"
   },
   "placeholders": {
     "email": "user{'@'}example.com",
@@ -117,7 +125,8 @@
     "path": "e.g. Pictures/Holidays",
     "search": "Search files and folders…",
     "volumeLabel": "e.g. Documents, Projects, Media",
-    "totpCode": "123456"
+    "totpCode": "123456",
+    "emailOrUsername": "name{'@'}company.com or name"
   },
   "loading": {
     "default": "Loading…",
@@ -158,7 +167,8 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume",
-    "totpCodeRequired": "Enter the code."
+    "totpCodeRequired": "Enter the code.",
+    "identifierRequired": "An email address or username is required"
   },
   "serverErrors": {
     "AUTH_REQUIRED": "Authentication required",
@@ -217,7 +227,13 @@
     "darkTheme": "Dark theme"
   },
   "create": {
-    "createNew": "New"
+    "createNew": "New",
+    "documentName": "Document name",
+    "createAndOpen": "Create and open",
+    "defaultDocumentName": "Document",
+    "defaultSpreadsheetName": "Spreadsheet",
+    "defaultPresentationName": "Presentation",
+    "defaultDataName": "Data"
   },
   "context": {
     "getInfo": "Get Info",
@@ -332,7 +348,9 @@
     "camera": "Camera: {makeModel}",
     "lens": "Lens: {lens}",
     "duration": "Duration: {seconds}s",
-    "versions": "Versions"
+    "versions": "Versions",
+    "folderSizeExcluded": "Excluded",
+    "folderSizeExcludedHelp": "This path is excluded from folder-size indexing."
   },
   "auth": {
     "preparing": "Preparing your explorer…",
@@ -359,7 +377,9 @@
       },
       "totpCode": "Code",
       "totpExplain": "Your password was accepted. Enter the code from your authenticator app, or one of your recovery codes.",
-      "totpSubmit": "Sign in"
+      "totpSubmit": "Sign in",
+      "sessionExpired": "Your session has ended. Sign in again to carry on where you left off.",
+      "totpBack": "Start again"
     },
     "setup": {
       "headline": "Let's get set up",
@@ -381,7 +401,8 @@
     },
     "passkey": {
       "signIn": "Sign in with a passkey"
-    }
+    },
+    "emailOrUsername": "Email address or username"
   },
   "breadcrumb": {
     "volumes": "Volumes",
@@ -428,7 +449,25 @@
       "gitCommit": "Git commit",
       "gitCommitHelp": "Source revision embedded at build time.",
       "branch": "Branch",
-      "branchHelp": "Git branch at build time."
+      "branchHelp": "Git branch at build time.",
+      "tools": {
+        "title": "Optional tools",
+        "subtitle": "What this instance can do, and what installing a missing tool would add. The server says the same in its log when it starts.",
+        "installed": "Installed",
+        "missing": "Not installed",
+        "unused": "Not used here",
+        "package": "Package",
+        "cannotOpen": "Cannot open: {formats}",
+        "gives": {
+          "videoThumbnails": "Video thumbnails, and stills from HEIC photos",
+          "mediaDetails": "Durations and tracks of audio and video",
+          "fastSearch": "Fast search inside files",
+          "pdfSearch": "The text of PDFs in search",
+          "rawPreviews": "Previews of RAW photos",
+          "copyProgress": "Progress on large copies and moves",
+          "archives": "Browsing and extracting archives beyond .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Customize the application name and logo displayed throughout the interface.",
@@ -446,7 +485,8 @@
       "fileTooLargeForDataUri": "File is too large. Please use a smaller image (under 500KB for best results)",
       "preview": "Preview",
       "showPoweredBy": "Display attribution link",
-      "showPoweredByHelp": "Show a 'Powered by nextExplorer' link in the footer to help support the project"
+      "showPoweredByHelp": "Show a 'Powered by nextExplorer' link in the footer to help support the project",
+      "defaultLogoSelected": "Default logo selected. Click Save to apply."
     },
     "userPreferences": {
       "title": "User Preferences",
@@ -508,7 +548,8 @@
       "browse": "Choose a folder",
       "pathInvalid": "This path is not inside a volume, so the rule will never apply.",
       "pathMissing": "No folder at this path. A rule uses the path as NextExplorer shows it, starting with the volume name.",
-      "useSuggestion": "Use {path}"
+      "useSuggestion": "Use {path}",
+      "title": "Access"
     },
     "comingSoon": {
       "subtitle": "This settings section is being built. Stay tuned!"
@@ -520,7 +561,8 @@
       "confirm": "Confirm new password",
       "update": "Update Password",
       "success": "Password updated successfully.",
-      "validation": "Please fill all fields; new password must be at least 6 characters and match confirmation."
+      "validation": "Please fill all fields; new password must be at least 6 characters and match confirmation.",
+      "successOtherSessionsEnded": "Password updated. Every other session of this account has been signed out."
     },
     "users": {
       "subtitle": "Manage users, roles, and access credentials.",
@@ -554,7 +596,8 @@
       "selectedPath": "Selected",
       "volumePath": "Volume Path",
       "pathCannotChange": "The path cannot be changed after creation. Remove this volume and create a new one if needed.",
-      "accessMode": "Access Mode"
+      "accessMode": "Access Mode",
+      "noUsers": "No users available"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1019,13 @@
     "removeShare": "Remove share",
     "sharedWithAnyone": "Everyone",
     "sharedWithUsers": "{count} user | {count} users",
-    "expiresNever": "Never"
+    "expiresNever": "Never",
+    "creating": "Creating…",
+    "expires": "Expires",
+    "loadingUsers": "Loading users...",
+    "password": "Password",
+    "protected": "Protected",
+    "sharedWith": "Shared with"
   },
   "trash": {
     "title": "Trash",

@@ -70,7 +70,8 @@
     "unsavedChanges": "Masz niezapisane zmiany",
     "readonly": "Tylko do odczytu",
     "readwrite": "Odczyt/Zapis",
-    "add": "Dodaj"
+    "add": "Dodaj",
+    "back": "Wstecz"
   },
   "editor": {
     "editing": "Editing",
@@ -105,7 +106,14 @@
     "sortBy": "Sortuj według",
     "addRule": "Dodaj regułę",
     "clearAll": "Wyczyść wszystko",
-    "cancelAll": "Anuluj wszystko"
+    "cancelAll": "Anuluj wszystko",
+    "newWordDocument": "Nowy dokument Word",
+    "newSpreadsheet": "Nowy arkusz Excel",
+    "newPresentation": "Nowa prezentacja PowerPoint",
+    "newTextFile": "Nowy plik tekstowy",
+    "newMarkdownFile": "Nowy plik Markdown",
+    "newCsvFile": "Nowy plik CSV",
+    "newDocument": "Nowy dokument"
   },
   "placeholders": {
     "email": "uzytkownik{'@'}przyklad.com",
@@ -117,7 +125,8 @@
     "path": "np. Obrazy/Wakacje",
     "search": "Szukaj plików i folderów…",
     "volumeLabel": "e.g. Documents, Projects, Media",
-    "totpCode": "123456"
+    "totpCode": "123456",
+    "emailOrUsername": "imie{'@'}firma.pl lub nazwa"
   },
   "loading": {
     "default": "Ładowanie…",
@@ -158,7 +167,8 @@
     "pathRequired": "Path is required",
     "saveVolume": "Failed to save volume",
     "removeVolume": "Failed to remove volume",
-    "totpCodeRequired": "Wpisz kod."
+    "totpCodeRequired": "Wpisz kod.",
+    "identifierRequired": "Wymagany jest adres e-mail lub nazwa użytkownika"
   },
   "serverErrors": {
     "AUTH_REQUIRED": "Wymagana autentykacja",
@@ -217,7 +227,13 @@
     "darkTheme": "Ciemny motyw"
   },
   "create": {
-    "createNew": "Nowy"
+    "createNew": "Nowy",
+    "documentName": "Nazwa dokumentu",
+    "createAndOpen": "Utwórz i otwórz",
+    "defaultDocumentName": "Dokument",
+    "defaultSpreadsheetName": "Arkusz",
+    "defaultPresentationName": "Prezentacja",
+    "defaultDataName": "Dane"
   },
   "context": {
     "getInfo": "Informacje",
@@ -332,7 +348,9 @@
     "camera": "Aparat: {makeModel}",
     "lens": "Obiektyw: {lens}",
     "duration": "Czas trwania: {seconds}s",
-    "versions": "Wersje"
+    "versions": "Wersje",
+    "folderSizeExcluded": "Wykluczone",
+    "folderSizeExcludedHelp": "Ta ścieżka jest wykluczona z indeksowania rozmiaru folderów."
   },
   "auth": {
     "preparing": "Trwa przygotowywanie eksploratora…",
@@ -359,7 +377,9 @@
       },
       "totpCode": "Kod",
       "totpExplain": "Hasło zostało przyjęte. Wpisz kod z aplikacji uwierzytelniającej albo jeden z kodów zapasowych.",
-      "totpSubmit": "Zaloguj się"
+      "totpSubmit": "Zaloguj się",
+      "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie, aby wrócić tam, gdzie skończyłeś.",
+      "totpBack": "Zacznij od nowa"
     },
     "setup": {
       "headline": "Skonfigurujmy wszystko",
@@ -381,7 +401,8 @@
     },
     "passkey": {
       "signIn": "Zaloguj się kluczem dostępu"
-    }
+    },
+    "emailOrUsername": "Adres e-mail lub nazwa użytkownika"
   },
   "breadcrumb": {
     "volumes": "Woluminy",
@@ -428,7 +449,25 @@
       "gitCommit": "Commit Git",
       "gitCommitHelp": "Rewizja źródła osadzona w czasie kompilacji.",
       "branch": "Gałąź",
-      "branchHelp": "Gałąź Git w czasie kompilacji."
+      "branchHelp": "Gałąź Git w czasie kompilacji.",
+      "tools": {
+        "title": "Narzędzia opcjonalne",
+        "subtitle": "Co potrafi ta instancja i co dodałoby brakujące narzędzie. Serwer mówi to samo w swoim dzienniku przy starcie.",
+        "installed": "Zainstalowane",
+        "missing": "Niezainstalowane",
+        "unused": "Nieużywane tutaj",
+        "package": "Pakiet",
+        "cannotOpen": "Nie otworzy: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniatury filmów i klatki ze zdjęć HEIC",
+          "mediaDetails": "Czas trwania i ścieżki audio oraz wideo",
+          "fastSearch": "Szybkie wyszukiwanie w treści plików",
+          "pdfSearch": "Tekst plików PDF w wyszukiwaniu",
+          "rawPreviews": "Podglądy zdjęć RAW",
+          "copyProgress": "Postęp dużych operacji kopiowania i przenoszenia",
+          "archives": "Przeglądanie i rozpakowywanie archiwów innych niż .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Dostosuj nazwę aplikacji i logo wyświetlane w całym interfejsie.",
@@ -446,7 +485,8 @@
       "fileTooLargeForDataUri": "Plik jest za duży. Użyj mniejszego obrazu (poniżej 500 KB dla najlepszych efektów)",
       "preview": "Podgląd",
       "showPoweredBy": "Wyświetl link z atrybucją",
-      "showPoweredByHelp": "Pokaż w stopce link „Powered by nextExplorer”, aby wesprzeć projekt"
+      "showPoweredByHelp": "Pokaż w stopce link „Powered by nextExplorer”, aby wesprzeć projekt",
+      "defaultLogoSelected": "Wybrano domyślne logo. Kliknij Zapisz, aby zastosować."
     },
     "userPreferences": {
       "title": "Preferencje użytkownika",
@@ -508,7 +548,8 @@
       "browse": "Wybierz folder",
       "pathInvalid": "Ta ścieżka nie leży w żadnym woluminie, więc reguła nigdy nie zadziała.",
       "pathMissing": "Pod tą ścieżką nie ma folderu. Reguła używa ścieżki tak, jak pokazuje ją NextExplorer, zaczynając od nazwy woluminu.",
-      "useSuggestion": "Użyj {path}"
+      "useSuggestion": "Użyj {path}",
+      "title": "Dostęp"
     },
     "comingSoon": {
       "subtitle": "Ta sekcja ustawień jest w przygotowaniu. Bądź na bieżąco!"
@@ -520,7 +561,8 @@
       "confirm": "Potwierdź nowe hasło",
       "update": "Zaktualizuj hasło",
       "success": "Hasło zostało pomyślnie zaktualizowane.",
-      "validation": "Wypełnij wszystkie pola; nowe hasło musi mieć co najmniej 6 znaków i zgadzać się z potwierdzeniem."
+      "validation": "Wypełnij wszystkie pola; nowe hasło musi mieć co najmniej 6 znaków i zgadzać się z potwierdzeniem.",
+      "successOtherSessionsEnded": "Hasło zostało zaktualizowane. Wszystkie pozostałe sesje tego konta zostały wylogowane."
     },
     "users": {
       "subtitle": "Manage users, roles, and access credentials.",
@@ -554,7 +596,8 @@
       "selectedPath": "Wybrano",
       "volumePath": "Ścieżka woluminu",
       "pathCannotChange": "Ścieżki nie można zmienić po utworzeniu. Usuń ten wolumin i utwórz nowy w razie potrzeby.",
-      "accessMode": "Tryb dostępu"
+      "accessMode": "Tryb dostępu",
+      "noUsers": "Brak dostępnych użytkowników"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1019,13 @@
       "download": "Pobierz"
     },
     "deleteShareTitle": "Usunąć udostępnienie?",
-    "deleteShareMessage": "Osoby z tym linkiem nie będą już mogły uzyskać dostępu do udostępnionego elementu."
+    "deleteShareMessage": "Osoby z tym linkiem nie będą już mogły uzyskać dostępu do udostępnionego elementu.",
+    "creating": "Tworzenie…",
+    "expires": "Wygasa",
+    "loadingUsers": "Ładowanie użytkowników...",
+    "password": "Hasło",
+    "protected": "Chronione",
+    "sharedWith": "Udostępnione dla"
   },
   "trash": {
     "title": "Kosz",

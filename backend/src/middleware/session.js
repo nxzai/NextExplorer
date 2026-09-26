@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const session = require('express-session');
 
 const { auth: envAuthConfig } = require('../config/index');
@@ -6,10 +5,10 @@ const { localStore } = require('../utils/sessionStore');
 const logger = require('../utils/logger');
 
 const configureSession = (app) => {
-  const sessionSecret =
-    (envAuthConfig && envAuthConfig.sessionSecret) ||
-    process.env.SESSION_SECRET ||
-    crypto.randomBytes(32).toString('hex');
+  // One source: the configuration resolved it, from SESSION_SECRET or from the
+  // copy kept in CONFIG_DIR. A second fallback drawing its own random secret
+  // here would have signed everyone out whenever it was the one that applied.
+  const sessionSecret = envAuthConfig.sessionSecret;
 
   logger.debug({ hasSessionSecret: Boolean(sessionSecret) }, 'Session secret resolved');
 

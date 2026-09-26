@@ -118,8 +118,7 @@ const fetchUserInfoClaims = async ({
     // Guarded like the userinfo fetch below. The sign-in has already succeeded
     // when this runs and the caller falls back to the id token's claims on
     // null, so a provider whose discovery document is briefly unreachable is no
-    // reason to refuse someone — unguarded, a failure here failed the whole
-    // sign-in.
+    // reason to refuse someone — unguarded, a 503 here failed the whole sign-in.
     let configuration = null;
     try {
       configuration = await discoverOpenIdConfiguration({
@@ -158,7 +157,5 @@ const fetchUserInfoClaims = async ({
 };
 
 module.exports = {
-  discoverOpenIdConfiguration,
   fetchUserInfoClaims,
-  normalizeIssuer,
 };

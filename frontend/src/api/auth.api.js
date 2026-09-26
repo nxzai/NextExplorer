@@ -12,10 +12,17 @@ const setupAccount = ({ email, username, password }) =>
 
 const fetchCurrentUser = () => requestJson('/api/auth/me', { method: 'GET' });
 
-const login = ({ email, password }) =>
+/**
+ * Sign in with an email address or a username.
+ *
+ * One box on screen, one field on the wire: the server decides which of the
+ * two it was handed, because only the server can tell whether a name belongs
+ * to exactly one account.
+ */
+const login = ({ identifier, password }) =>
   requestJson('/api/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ identifier, password }),
   });
 
 /**
@@ -68,9 +75,9 @@ export {
   setupAccount,
   fetchCurrentUser,
   login,
+  submitTotpCode,
   logout,
   changePassword,
-  submitTotpCode,
   fetchTwoFactorStatus,
   startTwoFactorEnrolment,
   confirmTwoFactorEnrolment,

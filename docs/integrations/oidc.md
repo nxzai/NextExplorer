@@ -9,11 +9,10 @@ nextExplorer uses Express OpenID Connect (EOC) to federate authentication with e
 - `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` store client credentials.
 - `OIDC_SCOPES` defaults to `openid profile email`; add `groups` if you want nextExplorer to inspect group claims.
 - `OIDC_ADMIN_GROUPS` contains comma/space-separated group names that grant the admin role when present in `groups`, `roles`, or `entitlements` claims.
-- `OIDC_REQUIRE_EMAIL_VERIFIED` (default `false`) — when `true`, requires the IdP to verify the user's email before allowing user creation or auto-linking. Some providers like newer versions of Authentik set `email_verified` to `false` by default; keep this setting as `false` to allow those users to log in. Whatever it is set to, an address the IdP has **not** verified never attaches a sign-in to an account that already exists here: that would let whoever controls an unverified address at the IdP sign in as the account holding it. Such a sign-in gets an account of its own; to reach an existing one, have the IdP mark the address verified. Only a boolean `true` counts — the string `"false"` is not verified.
+- `OIDC_REQUIRE_EMAIL_VERIFIED` (default `false`) — when `true`, requires the IdP to verify the user's email before allowing user creation or auto-linking. Some providers like newer versions of Authentik set `email_verified` to `false` by default; keep this setting as `false` to allow those users to log in.
 - `OIDC_AUTO_CREATE_USERS` (default `true`) — when `false`, the user must already exist in the nextExplorer database (local or previously OIDC-linked), otherwise OIDC login is denied.
-- `OIDC_MOBILE_REDIRECT_URIS` — optional comma-separated allowlist of native-app custom-scheme callbacks for the mobile bridge. The default is `nextexplorer://oidc-callback`; HTTP(S) URLs are deliberately rejected.
 - Optional overrides: `OIDC_AUTHORIZATION_URL`, `OIDC_TOKEN_URL`, `OIDC_USERINFO_URL`, `OIDC_LOGOUT_URL`, and an explicit `OIDC_CALLBACK_URL` (defaults to `${PUBLIC_URL}/callback`).
-  - `OIDC_LOGOUT_URL` — optional custom IdP logout URL. When set, logout requests redirect to this URL with a `post_logout_redirect_uri` parameter (OIDC standard). If not set, logout only clears the local session without redirecting to the IdP. A `returnTo` given to `/logout` is honoured only as a path on this site; anything else ends on the sign-in page.
+  - `OIDC_LOGOUT_URL` — optional custom IdP logout URL. When set, logout requests redirect to this URL with a `post_logout_redirect_uri` parameter (OIDC standard). If not set, logout only clears the local session without redirecting to the IdP.
 
 ## Choosing authentication modes
 
@@ -53,30 +52,52 @@ to stop a misconfiguration from locking everyone out:
 
 Where neither holds, roles stay as they are and are managed from **Settings →
 Users** instead. If you do lock yourself out, setting `AUTH_ADMIN_EMAIL` to your
-address and `AUTH_ADMIN_PASSWORD`, with `AUTH_MODE` at `local` or `both`, and
-restarting restores the admin role on that account.
+address and restarting restores the admin role on that account.
 
-**Who signs in is the person the id token names.** The claims are read from the
-id token the library verified; a userinfo answer about a different subject
-refuses the sign-in, and when userinfo or the discovery document is briefly
-unavailable, the sign-in goes ahead on the id token alone.
+## Signing in from a native app
 
-## Native iOS & Android clients
+A native iOS or Android client cannot complete an OIDC sign-in the way the web
+app does. On iOS, passkeys only work inside `ASWebAuthenticationSession`, and
+that system web view never hands the `HttpOnly` session cookie back to the
+application. The web view that _can_ read cookies does not do passkeys
+reliably. So against a passkey-only provider, an app is stuck: the person signs
+in successfully and the application never learns of it.
 
-The mobile bridge lets a native client use the device’s system browser (such as `ASWebAuthenticationSession` on iOS or Custom Tabs on Android) while keeping the authorization result bound to the app with PKCE.
+Three routes bridge that gap, and they exist only for native clients — nothing
+in the web interface uses them:
 
-1. Generate a PKCE verifier and its `S256` challenge in the app.
-2. Open `GET /api/auth/oidc/mobile/login` in the system browser with `code_challenge`, `code_challenge_method=S256`, and an allowlisted `redirect_uri`.
-3. After the IdP completes sign-in, nextExplorer redirects to that custom-scheme URI with a short-lived, single-use `code`.
-4. Send the `code` and original `code_verifier` to `POST /api/auth/oidc/exchange` to establish the normal nextExplorer session.
+1. `GET /api/auth/oidc/mobile/login` — the app opens this in the system web
+   session with a PKCE `code_challenge` (S256 only) and one of the allowlisted
+   redirect URIs. Standard OIDC login follows.
+2. `GET /api/auth/oidc/mobile/complete` — once the provider has authenticated
+   the person, the server mints a single-use code, valid for sixty seconds and
+   bound to that PKCE challenge, and redirects to
+   `nextexplorer://oidc-callback?code=…`.
+3. `POST /api/auth/oidc/exchange` — the app sends the code and its
+   `code_verifier` and receives an ordinary session cookie, the same one a
+   password sign-in produces.
 
-Only custom-scheme URIs listed in `OIDC_MOBILE_REDIRECT_URIS` can receive the code. Do not use an embedded web view, reuse an authorization code, or send the PKCE verifier through the redirect URI.
+The code is destroyed by the first attempt to redeem it, right or wrong, so
+there is no second guess against a live one. `OIDC_MOBILE_REDIRECT_URIS`
+restricts where it can be delivered to custom schemes an app has registered;
+`http(s)` addresses are refused, so the code cannot be redirected to a web page.
+
+Nothing here is reachable unless OIDC is configured — the routes answer 404
+otherwise — and no configuration is needed to keep it off.
 
 ## Common troubleshooting
 
 - **Invalid redirect URI**: Ensure your IdP’s redirect URI matches `${PUBLIC_URL}/callback` or the explicitly configured `OIDC_CALLBACK_URL`.
-- **Sessions drop after restart**: Supply a stable `SESSION_SECRET` instead of letting the app generate one dynamically.
+- **Sessions drop after restart**: Keep `/config` persistent, since the session secret generated when `SESSION_SECRET` is unset is kept there, or supply a stable `SESSION_SECRET`.
 - **Not an admin after login**: Verify the IdP includes the expected group claim (e.g., `groups` scope) and that `OIDC_ADMIN_GROUPS` contains the group name exactly. Both are required before the IdP may set roles at all — without them the role stored on the account is kept, whatever the claims say.
-- **"Email must be verified before linking an existing account"**: the IdP reported the address as unverified and an account here already holds it. Have the IdP mark it verified (in Authentik, map `email_verified` to `true`), then sign in again.
 - **Cookies flagged Insecure**: Run the app over HTTPS (`PUBLIC_URL` must use `https`) and confirm your proxy forwards `X-Forwarded-Proto`/`Host` headers (see the Reverse Proxy guide).
-- **Mobile callback rejected**: Add the app’s exact custom-scheme URI to `OIDC_MOBILE_REDIRECT_URIS`, and ensure the request uses an `S256` PKCE challenge.
+- **The sign-in screen says single sign-on is not configured**: it means what it
+  says — one of `OIDC_ENABLED`, `OIDC_ISSUER`, `OIDC_CLIENT_ID` or a public
+  address (`PUBLIC_URL`, or `OIDC_CALLBACK_URL`) is missing. The start-up log
+  names which.
+- **The sign-in screen says single sign-on could not be started**: the settings
+  are all there and the hand-off failed — the provider did not answer, discovery
+  failed, or the library refused what it was given (a missing
+  `OIDC_CLIENT_SECRET` is the usual one). Nothing to change in the configuration
+  before reading the server log, which carries the reason; the message shown in
+  the browser never does, because it would name the provider's internal host.

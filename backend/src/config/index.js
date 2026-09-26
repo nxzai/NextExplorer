@@ -1,6 +1,7 @@
 const path = require('path');
 const crypto = require('crypto');
 const env = require('./env');
+const { resolveSessionSecret } = require('./sessionSecret');
 const constants = require('./constants');
 const loggingConfig = require('./logging');
 const { parseByteSize } = require('../utils/env');
@@ -251,7 +252,7 @@ const authMode = determineAuthMode();
 
 const auth = {
   enabled: authMode === 'disabled' ? false : env.AUTH_ENABLED !== false,
-  sessionSecret: env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
+  sessionSecret: resolveSessionSecret({ configured: env.SESSION_SECRET, configDir }),
   sessionMaxAgeMs: env.SESSION_MAX_AGE_DAYS * 24 * 60 * 60 * 1000, // Convert days to milliseconds
   mode: authMode,
   oidc: {

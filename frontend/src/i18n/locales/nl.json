@@ -70,7 +70,8 @@
     "unsavedChanges": "Er zijn niet-opgeslagen wijzigingen",
     "readonly": "Alleen-lezen",
     "readwrite": "Lezen/schrijven",
-    "add": "Toevoegen"
+    "add": "Toevoegen",
+    "back": "Terug"
   },
   "editor": {
     "editing": "Bewerken",
@@ -332,7 +333,9 @@
     "camera": "Camera: {makeModel}",
     "lens": "Lens: {lens}",
     "duration": "Duur: {seconds}s",
-    "versions": "Versies"
+    "versions": "Versies",
+    "folderSizeExcluded": "Uitgesloten",
+    "folderSizeExcludedHelp": "Dit pad is uitgesloten van het indexeren van mapgroottes."
   },
   "auth": {
     "preparing": "Verkenner voorbereiden…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git commit",
       "gitCommitHelp": "Bronrevisie die tijdens het bouwen is vastgelegd.",
       "branch": "Branch",
-      "branchHelp": "Git-branch tijdens het bouwen."
+      "branchHelp": "Git-branch tijdens het bouwen.",
+      "tools": {
+        "title": "Optionele hulpmiddelen",
+        "subtitle": "Wat deze instantie kan en wat een ontbrekend hulpmiddel zou toevoegen. De server zegt hetzelfde in zijn log bij het starten.",
+        "installed": "Geïnstalleerd",
+        "missing": "Niet geïnstalleerd",
+        "unused": "Hier niet gebruikt",
+        "package": "Pakket",
+        "cannotOpen": "Kan niet openen: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniaturen van video's en stilstaande beelden uit HEIC-foto's",
+          "mediaDetails": "Duur en sporen van audio en video",
+          "fastSearch": "Snel zoeken in de inhoud van bestanden",
+          "pdfSearch": "De tekst van pdf's in de zoekfunctie",
+          "rawPreviews": "Voorbeelden van RAW-foto's",
+          "copyProgress": "Voortgang bij grote kopieer- en verplaatsacties",
+          "archives": "Archieven buiten .zip bekijken en uitpakken"
+        }
+      }
     },
     "branding": {
       "subtitle": "Pas de naam en het logo van de applicatie aan die door de hele interface worden weergegeven.",
@@ -446,7 +467,8 @@
       "uploading": "Uploaden…",
       "uploadSuccess": "Logo succesvol geüpload",
       "uploadError": "Logo uploaden mislukt",
-      "fileTooLargeForDataUri": "Bestand is te groot. Gebruik een kleinere afbeelding (voor het beste resultaat minder dan 500 KB)."
+      "fileTooLargeForDataUri": "Bestand is te groot. Gebruik een kleinere afbeelding (voor het beste resultaat minder dan 500 KB).",
+      "defaultLogoSelected": "Standaardlogo geselecteerd. Klik op Opslaan om het toe te passen."
     },
     "userPreferences": {
       "title": "Gebruikersvoorkeuren",
@@ -508,7 +530,8 @@
       "browse": "Map kiezen",
       "pathInvalid": "Dit pad ligt niet in een volume, dus de regel wordt nooit toegepast.",
       "pathMissing": "Er is geen map op dit pad. Een regel gebruikt het pad zoals NextExplorer het toont, beginnend met de naam van het volume.",
-      "useSuggestion": "{path} gebruiken"
+      "useSuggestion": "{path} gebruiken",
+      "title": "Toegang"
     },
     "comingSoon": {
       "subtitle": "Deze sectie Instellingen wordt momenteel gebouwd. Blijf op de hoogte!"
@@ -554,7 +577,8 @@
       "pathCannotChange": "Het pad kan na aanmaak niet worden gewijzigd. Verwijder dit volume en maak zonodig een nieuwe aan.",
       "accessMode": "Toegangsmodus",
       "makeAdmin": "Beheerder maken",
-      "editUser": "Gebruiker bewerken"
+      "editUser": "Gebruiker bewerken",
+      "noUsers": "Geen gebruikers beschikbaar"
     },
     "userDetails": {
       "profileTab": "Profiel",
@@ -959,7 +983,13 @@
     "noMyShares": "U hebt nog geen shares aangemaakt.",
     "noMySharesDescription": "Maak een share van een bestand of map om die hier te zien.",
     "mySharesCount": "{count} actieve sharelink | {count} actieve sharelinks",
-    "sharedWithUsers": "{count} gebruiker | {count} gebruikers"
+    "sharedWithUsers": "{count} gebruiker | {count} gebruikers",
+    "creating": "Bezig met maken…",
+    "expires": "Verloopt",
+    "loadingUsers": "Gebruikers laden...",
+    "password": "Wachtwoord",
+    "protected": "Beveiligd",
+    "sharedWith": "Gedeeld met"
   },
   "mediaPreview": {
     "download": "Media downloaden",

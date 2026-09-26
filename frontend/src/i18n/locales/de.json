@@ -70,7 +70,8 @@
     "unsavedChanges": "Sie haben ungespeicherte Änderungen",
     "readonly": "Schreibgeschützt",
     "readwrite": "Lesen/Schreiben",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "back": "Zurück"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "Kamera: {makeModel}",
     "lens": "Objektiv: {lens}",
     "duration": "Dauer: {seconds}s",
-    "versions": "Versionen"
+    "versions": "Versionen",
+    "folderSizeExcluded": "Ausgeschlossen",
+    "folderSizeExcludedHelp": "Dieser Pfad ist von der Indizierung der Ordnergrößen ausgeschlossen."
   },
   "auth": {
     "preparing": "Ihr Explorer wird vorbereitet…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git-Commit",
       "gitCommitHelp": "Quell-Revision, die zur Build-Zeit eingebettet wurde.",
       "branch": "Branch",
-      "branchHelp": "Git-Branch zur Build-Zeit."
+      "branchHelp": "Git-Branch zur Build-Zeit.",
+      "tools": {
+        "title": "Optionale Werkzeuge",
+        "subtitle": "Was diese Instanz kann und was ein fehlendes Werkzeug hinzufügen würde. Der Server sagt dasselbe beim Start in seinem Protokoll.",
+        "installed": "Installiert",
+        "missing": "Nicht installiert",
+        "unused": "Hier nicht verwendet",
+        "package": "Paket",
+        "cannotOpen": "Kann nicht öffnen: {formats}",
+        "gives": {
+          "videoThumbnails": "Vorschaubilder für Videos und Standbilder aus HEIC-Fotos",
+          "mediaDetails": "Dauer und Spuren von Audio und Video",
+          "fastSearch": "Schnelle Suche im Inhalt von Dateien",
+          "pdfSearch": "Der Text von PDFs in der Suche",
+          "rawPreviews": "Vorschauen von RAW-Fotos",
+          "copyProgress": "Fortschritt bei großen Kopier- und Verschiebevorgängen",
+          "archives": "Archive jenseits von .zip durchsuchen und entpacken"
+        }
+      }
     },
     "branding": {
       "subtitle": "Passen Sie den in der Oberfläche angezeigten Anwendungsnamen und das Logo an.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "Datei ist zu groß. Bitte verwenden Sie ein kleineres Bild (unter 500 KB für beste Ergebnisse)",
       "preview": "Vorschau",
       "showPoweredBy": "Attributionslink anzeigen",
-      "showPoweredByHelp": "Zeigt in der Fußzeile einen Link 'Powered by nextExplorer', um das Projekt zu unterstützen"
+      "showPoweredByHelp": "Zeigt in der Fußzeile einen Link 'Powered by nextExplorer', um das Projekt zu unterstützen",
+      "defaultLogoSelected": "Standardlogo ausgewählt. Zum Anwenden auf Speichern klicken."
     },
     "userPreferences": {
       "title": "Benutzereinstellungen",
@@ -508,7 +530,8 @@
       "browse": "Ordner auswählen",
       "pathInvalid": "Dieser Pfad liegt in keinem Volume, daher greift die Regel nie.",
       "pathMissing": "Unter diesem Pfad gibt es keinen Ordner. Eine Regel verwendet den Pfad so, wie NextExplorer ihn anzeigt, beginnend mit dem Namen des Volumes.",
-      "useSuggestion": "{path} verwenden"
+      "useSuggestion": "{path} verwenden",
+      "title": "Zugriff"
     },
     "comingSoon": {
       "subtitle": "Dieser Einstellungsbereich wird derzeit entwickelt. Bleiben Sie dran!"
@@ -554,7 +577,8 @@
       "selectedPath": "Ausgewählt",
       "volumePath": "Volumenpfad",
       "pathCannotChange": "Der Pfad kann nach der Erstellung nicht mehr geändert werden. Entfernen Sie dieses Volume und erstellen Sie bei Bedarf ein neues.",
-      "accessMode": "Zugriffsmodus"
+      "accessMode": "Zugriffsmodus",
+      "noUsers": "Keine Benutzer verfügbar"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "Herunterladen"
     },
     "deleteShareTitle": "Freigabe entfernen?",
-    "deleteShareMessage": "Personen mit diesem Link können nicht mehr auf das freigegebene Element zugreifen."
+    "deleteShareMessage": "Personen mit diesem Link können nicht mehr auf das freigegebene Element zugreifen.",
+    "creating": "Wird erstellt…",
+    "expires": "Läuft ab",
+    "loadingUsers": "Benutzer werden geladen...",
+    "password": "Passwort",
+    "protected": "Geschützt",
+    "sharedWith": "Geteilt mit"
   },
   "trash": {
     "title": "Papierkorb",

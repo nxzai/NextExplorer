@@ -70,7 +70,8 @@
     "unsavedChanges": "您有未儲存的變更",
     "readonly": "讀取",
     "readwrite": "讀寫",
-    "add": "新增"
+    "add": "新增",
+    "back": "後退"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "相機：{makeModel}",
     "lens": "鏡頭：{lens}",
     "duration": "長度：{seconds}s",
-    "versions": "版本"
+    "versions": "版本",
+    "folderSizeExcluded": "已排除",
+    "folderSizeExcludedHelp": "此路徑已從檔案夾大小索引中排除。"
   },
   "auth": {
     "preparing": "正在為您準備 Explorer…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git 提交",
       "gitCommitHelp": "構建時提交的原始碼修訂版本。",
       "branch": "分支",
-      "branchHelp": "構建時的 Git 分支。"
+      "branchHelp": "構建時的 Git 分支。",
+      "tools": {
+        "title": "選用工具",
+        "subtitle": "此實例能做什麼，以及安裝缺少的工具會增加什麼。伺服器啟動時也會在記錄中說明這些。",
+        "installed": "已安裝",
+        "missing": "未安裝",
+        "unused": "此處未使用",
+        "package": "套件",
+        "cannotOpen": "無法開啟：{formats}",
+        "gives": {
+          "videoThumbnails": "影片縮圖，以及 HEIC 相片的靜態影像",
+          "mediaDetails": "音訊與影片的長度與音軌",
+          "fastSearch": "快速搜尋檔案內容",
+          "pdfSearch": "在搜尋中包含 PDF 文字",
+          "rawPreviews": "RAW 相片預覽",
+          "copyProgress": "大型複製與移動的進度",
+          "archives": "瀏覽並解壓縮 .zip 以外的壓縮檔"
+        }
+      }
     },
     "branding": {
       "subtitle": "自訂在使用者界面中顯示的應用名稱和圖示。",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "文件過大。請使用更小的圖片（建議小於 500KB 以獲得最佳效果）",
       "preview": "預覽",
       "showPoweredBy": "顯示簽名連結",
-      "showPoweredByHelp": "在頁尾顯示 “Powered by nextExplorer” 連結來支持專案"
+      "showPoweredByHelp": "在頁尾顯示 “Powered by nextExplorer” 連結來支持專案",
+      "defaultLogoSelected": "已選擇預設標誌。點選「儲存」以套用。"
     },
     "userPreferences": {
       "title": "使用者偏好設定",
@@ -508,7 +530,8 @@
       "browse": "選擇資料夾",
       "pathInvalid": "此路徑不在任何磁碟區內，因此該規則永遠不會生效。",
       "pathMissing": "此路徑下沒有資料夾。規則使用 NextExplorer 顯示的路徑，以磁碟區名稱開頭。",
-      "useSuggestion": "使用 {path}"
+      "useSuggestion": "使用 {path}",
+      "title": "存取"
     },
     "comingSoon": {
       "subtitle": "此設置部分正在建置中，敬請期待！"
@@ -554,7 +577,8 @@
       "selectedPath": "已選擇",
       "volumePath": "儲存卷路徑",
       "pathCannotChange": "建立後無法更改路徑。如需更改，請刪除此卷並重新建立。",
-      "accessMode": "存取模式"
+      "accessMode": "存取模式",
+      "noUsers": "沒有可用使用者"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "下載"
     },
     "deleteShareTitle": "移除分享？",
-    "deleteShareMessage": "擁有此連結的人將無法再存取分享的項目。"
+    "deleteShareMessage": "擁有此連結的人將無法再存取分享的項目。",
+    "creating": "正在建立…",
+    "expires": "到期時間",
+    "loadingUsers": "正在載入使用者...",
+    "password": "密碼",
+    "protected": "已保護",
+    "sharedWith": "分享對象"
   },
   "trash": {
     "title": "資源回收筒",

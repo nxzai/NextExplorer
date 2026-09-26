@@ -70,7 +70,8 @@
     "unsavedChanges": "Você tem alterações não salvas",
     "readonly": "Somente leitura",
     "readwrite": "Leitura/Escrita",
-    "add": "Adicionar"
+    "add": "Adicionar",
+    "back": "Voltar"
   },
   "editor": {
     "editing": "Editando",
@@ -332,7 +333,9 @@
     "camera": "Câmera: {makeModel}",
     "lens": "Lente: {lens}",
     "duration": "Duração: {seconds}s",
-    "versions": "Versões"
+    "versions": "Versões",
+    "folderSizeExcluded": "Excluído",
+    "folderSizeExcludedHelp": "Este caminho está fora da indexação de tamanho de pastas."
   },
   "auth": {
     "preparing": "Preparando seu explorador…",
@@ -428,7 +431,25 @@
       "gitCommit": "Commit Git",
       "gitCommitHelp": "Revisão do código-fonte embutida na compilação.",
       "branch": "Branch",
-      "branchHelp": "Branch Git na compilação."
+      "branchHelp": "Branch Git na compilação.",
+      "tools": {
+        "title": "Ferramentas opcionais",
+        "subtitle": "O que esta instância sabe fazer e o que uma ferramenta ausente acrescentaria. O servidor diz o mesmo no seu log ao iniciar.",
+        "installed": "Instalada",
+        "missing": "Não instalada",
+        "unused": "Não usada aqui",
+        "package": "Pacote",
+        "cannotOpen": "Não abre: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniaturas de vídeos e imagens de fotos HEIC",
+          "mediaDetails": "Duração e faixas de áudio e vídeo",
+          "fastSearch": "Busca rápida dentro dos arquivos",
+          "pdfSearch": "O texto dos PDFs na busca",
+          "rawPreviews": "Pré-visualizações de fotos RAW",
+          "copyProgress": "Progresso em cópias e movimentações grandes",
+          "archives": "Navegar e extrair arquivos compactados além de .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Personalize o nome e o logotipo do aplicativo exibidos em toda a interface.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "O arquivo é muito grande. Use uma imagem menor (menos de 500KB para melhores resultados)",
       "preview": "Pré-visualização",
       "showPoweredBy": "Exibir link de atribuição",
-      "showPoweredByHelp": "Exibir um link 'Desenvolvido por nextExplorer' no rodapé para apoiar o projeto"
+      "showPoweredByHelp": "Exibir um link 'Desenvolvido por nextExplorer' no rodapé para apoiar o projeto",
+      "defaultLogoSelected": "Logotipo padrão selecionado. Clique em Salvar para aplicar."
     },
     "userPreferences": {
       "title": "Preferências do Usuário",
@@ -508,7 +530,8 @@
       "browse": "Escolher uma pasta",
       "pathInvalid": "Este caminho não está dentro de nenhum volume, então a regra nunca será aplicada.",
       "pathMissing": "Não há pasta neste caminho. Uma regra usa o caminho como o NextExplorer o mostra, começando pelo nome do volume.",
-      "useSuggestion": "Usar {path}"
+      "useSuggestion": "Usar {path}",
+      "title": "Acesso"
     },
     "comingSoon": {
       "subtitle": "Esta seção de configurações está em construção. Aguarde!"
@@ -554,7 +577,8 @@
       "selectedPath": "Selecionado",
       "volumePath": "Caminho do Volume",
       "pathCannotChange": "O caminho não pode ser alterado após a criação. Remova este volume e crie um novo se necessário.",
-      "accessMode": "Modo de Acesso"
+      "accessMode": "Modo de Acesso",
+      "noUsers": "Nenhum usuário disponível"
     },
     "userDetails": {
       "profileTab": "Perfil",
@@ -976,7 +1000,13 @@
     "removeShare": "Remover compartilhamento",
     "sharedWithAnyone": "Todos",
     "sharedWithUsers": "{count} usuário | {count} usuários",
-    "expiresNever": "Nunca"
+    "expiresNever": "Nunca",
+    "creating": "Criando…",
+    "expires": "Expira em",
+    "loadingUsers": "Carregando usuários...",
+    "password": "Senha",
+    "protected": "Protegido",
+    "sharedWith": "Compartilhado com"
   },
   "trash": {
     "title": "Lixeira",

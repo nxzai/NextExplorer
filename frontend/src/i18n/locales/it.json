@@ -70,7 +70,8 @@
     "unsavedChanges": "Hai modifiche non salvate",
     "readonly": "Sola lettura",
     "readwrite": "Lettura/Scrittura",
-    "add": "Aggiungi"
+    "add": "Aggiungi",
+    "back": "Indietro"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "Fotocamera: {makeModel}",
     "lens": "Obiettivo: {lens}",
     "duration": "Durata: {seconds}s",
-    "versions": "Versioni"
+    "versions": "Versioni",
+    "folderSizeExcluded": "Escluso",
+    "folderSizeExcludedHelp": "Questo percorso è escluso dall'indicizzazione delle dimensioni delle cartelle."
   },
   "auth": {
     "preparing": "Preparazione del tuo explorer…",
@@ -428,7 +431,25 @@
       "gitCommit": "Commit git",
       "gitCommitHelp": "Revisione sorgente incorporata al momento della build.",
       "branch": "Branch",
-      "branchHelp": "Branch git al momento della build."
+      "branchHelp": "Branch git al momento della build.",
+      "tools": {
+        "title": "Strumenti opzionali",
+        "subtitle": "Cosa sa fare questa istanza e cosa aggiungerebbe uno strumento mancante. Il server dice lo stesso nel suo log all'avvio.",
+        "installed": "Installato",
+        "missing": "Non installato",
+        "unused": "Non usato qui",
+        "package": "Pacchetto",
+        "cannotOpen": "Non può aprire: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniature dei video e immagini delle foto HEIC",
+          "mediaDetails": "Durata e tracce di audio e video",
+          "fastSearch": "Ricerca rapida nel contenuto dei file",
+          "pdfSearch": "Il testo dei PDF nella ricerca",
+          "rawPreviews": "Anteprime delle foto RAW",
+          "copyProgress": "Avanzamento di copie e spostamenti di grandi dimensioni",
+          "archives": "Sfogliare ed estrarre archivi oltre .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Personalizza il nome dell’applicazione e il logo visualizzati in tutta l’interfaccia.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "Il file è troppo grande. Usa un’immagine più piccola (sotto i 500 KB per risultati migliori)",
       "preview": "Anteprima",
       "showPoweredBy": "Mostra link di attribuzione",
-      "showPoweredByHelp": "Mostra nel piè di pagina un link 'Powered by nextExplorer' per supportare il progetto"
+      "showPoweredByHelp": "Mostra nel piè di pagina un link 'Powered by nextExplorer' per supportare il progetto",
+      "defaultLogoSelected": "Logo predefinito selezionato. Fai clic su Salva per applicare."
     },
     "userPreferences": {
       "title": "Preferenze utente",
@@ -508,7 +530,8 @@
       "browse": "Scegli una cartella",
       "pathInvalid": "Questo percorso non è in nessun volume, quindi la regola non si applicherà mai.",
       "pathMissing": "Nessuna cartella a questo percorso. Una regola usa il percorso come lo mostra NextExplorer, a partire dal nome del volume.",
-      "useSuggestion": "Usa {path}"
+      "useSuggestion": "Usa {path}",
+      "title": "Accesso"
     },
     "comingSoon": {
       "subtitle": "Questa sezione delle impostazioni è in costruzione. Resta sintonizzato!"
@@ -554,7 +577,8 @@
       "selectedPath": "Selezionato",
       "volumePath": "Percorso volume",
       "pathCannotChange": "Il percorso non può essere cambiato dopo la creazione. Rimuovi questo volume e creane uno nuovo se necessario.",
-      "accessMode": "Modalità di accesso"
+      "accessMode": "Modalità di accesso",
+      "noUsers": "Nessun utente disponibile"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "Scarica"
     },
     "deleteShareTitle": "Rimuovere la condivisione?",
-    "deleteShareMessage": "Le persone con questo link non potranno più accedere all’elemento condiviso."
+    "deleteShareMessage": "Le persone con questo link non potranno più accedere all’elemento condiviso.",
+    "creating": "Creazione…",
+    "expires": "Scade",
+    "loadingUsers": "Caricamento utenti...",
+    "password": "Password",
+    "protected": "Protetto",
+    "sharedWith": "Condiviso con"
   },
   "trash": {
     "title": "Cestino",

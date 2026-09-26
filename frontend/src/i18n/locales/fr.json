@@ -70,7 +70,8 @@
     "unsavedChanges": "Vous avez des modifications non enregistrées",
     "readonly": "Lecture seule",
     "readwrite": "Lecture/Écriture",
-    "add": "Ajouter"
+    "add": "Ajouter",
+    "back": "Retour"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "Appareil photo : {makeModel}",
     "lens": "Objectif : {lens}",
     "duration": "Durée : {seconds}s",
-    "versions": "Versions"
+    "versions": "Versions",
+    "folderSizeExcluded": "Exclu",
+    "folderSizeExcludedHelp": "Ce chemin est exclu de l’indexation des tailles."
   },
   "auth": {
     "preparing": "Préparation de votre explorateur…",
@@ -428,7 +431,25 @@
       "gitCommit": "Commit Git",
       "gitCommitHelp": "Révision du code source intégrée au moment de la build.",
       "branch": "Branche",
-      "branchHelp": "Branche Git au moment de la build."
+      "branchHelp": "Branche Git au moment de la build.",
+      "tools": {
+        "title": "Outils optionnels",
+        "subtitle": "Ce que cette instance sait faire, et ce qu'apporterait un outil manquant. Le serveur dit la même chose dans son journal au démarrage.",
+        "installed": "Installé",
+        "missing": "Non installé",
+        "unused": "Non utilisé ici",
+        "package": "Paquet",
+        "cannotOpen": "Ne sait pas ouvrir : {formats}",
+        "gives": {
+          "videoThumbnails": "Vignettes des vidéos et images des photos HEIC",
+          "mediaDetails": "Durées et pistes de l'audio et de la vidéo",
+          "fastSearch": "Recherche rapide dans le contenu des fichiers",
+          "pdfSearch": "Le texte des PDF dans la recherche",
+          "rawPreviews": "Aperçus des photos RAW",
+          "copyProgress": "Progression des grosses copies et déplacements",
+          "archives": "Parcourir et extraire les archives autres que .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Personnalisez le nom de l’application et le logo affichés dans toute l’interface.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "Le fichier est trop volumineux. Veuillez utiliser une image plus petite (moins de 500 Ko pour de meilleurs résultats)",
       "preview": "Aperçu",
       "showPoweredBy": "Afficher le lien d’attribution",
-      "showPoweredByHelp": "Afficher un lien « Powered by nextExplorer » dans le pied de page pour aider à soutenir le projet"
+      "showPoweredByHelp": "Afficher un lien « Powered by nextExplorer » dans le pied de page pour aider à soutenir le projet",
+      "defaultLogoSelected": "Logo par défaut sélectionné. Cliquez sur Enregistrer pour appliquer."
     },
     "userPreferences": {
       "title": "Préférences utilisateur",
@@ -508,7 +530,8 @@
       "browse": "Choisir un dossier",
       "pathInvalid": "Ce chemin n'est dans aucun volume : la règle ne s'appliquera jamais.",
       "pathMissing": "Aucun dossier à ce chemin. Une règle utilise le chemin tel que NextExplorer l'affiche, en commençant par le nom du volume.",
-      "useSuggestion": "Utiliser {path}"
+      "useSuggestion": "Utiliser {path}",
+      "title": "Accès"
     },
     "comingSoon": {
       "subtitle": "Cette section de paramètres est en cours de développement. Restez à l'écoute !"
@@ -554,7 +577,8 @@
       "selectedPath": "Sélectionné",
       "volumePath": "Chemin du volume",
       "pathCannotChange": "Le chemin ne peut pas être modifié après la création. Supprimez ce volume et créez-en un nouveau si nécessaire.",
-      "accessMode": "Mode d'accès"
+      "accessMode": "Mode d'accès",
+      "noUsers": "Aucun utilisateur disponible"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
     "removeShare": "Supprimer le partage",
     "sharedWithAnyone": "Tout le monde",
     "sharedWithUsers": "{count} utilisateur | {count} utilisateurs",
-    "expiresNever": "Jamais"
+    "expiresNever": "Jamais",
+    "creating": "Création…",
+    "expires": "Expire",
+    "loadingUsers": "Chargement des utilisateurs...",
+    "password": "Mot de passe",
+    "protected": "Protégé",
+    "sharedWith": "Partagé avec"
   },
   "trash": {
     "title": "Corbeille",

@@ -70,7 +70,8 @@
     "unsavedChanges": "You have unsaved changes",
     "readonly": "Read Only",
     "readwrite": "Read/Write",
-    "add": "Add"
+    "add": "Add",
+    "back": "Back"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "Camera: {makeModel}",
     "lens": "Lens: {lens}",
     "duration": "Duration: {seconds}s",
-    "versions": "Versions"
+    "versions": "Versions",
+    "folderSizeExcluded": "Excluded",
+    "folderSizeExcludedHelp": "This path is excluded from folder-size indexing."
   },
   "auth": {
     "preparing": "Preparing your explorer…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git commit",
       "gitCommitHelp": "Source revision embedded at build time.",
       "branch": "Branch",
-      "branchHelp": "Git branch at build time."
+      "branchHelp": "Git branch at build time.",
+      "tools": {
+        "title": "Optional tools",
+        "subtitle": "What this instance can do, and what installing a missing tool would add. The server says the same in its log when it starts.",
+        "installed": "Installed",
+        "missing": "Not installed",
+        "unused": "Not used here",
+        "package": "Package",
+        "cannotOpen": "Cannot open: {formats}",
+        "gives": {
+          "videoThumbnails": "Video thumbnails, and stills from HEIC photos",
+          "mediaDetails": "Durations and tracks of audio and video",
+          "fastSearch": "Fast search inside files",
+          "pdfSearch": "The text of PDFs in search",
+          "rawPreviews": "Previews of RAW photos",
+          "copyProgress": "Progress on large copies and moves",
+          "archives": "Browsing and extracting archives beyond .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Customize the application name and logo displayed throughout the interface.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "File is too large. Please use a smaller image (under 500KB for best results)",
       "preview": "Preview",
       "showPoweredBy": "Display attribution link",
-      "showPoweredByHelp": "Show a 'Powered by nextExplorer' link in the footer to help support the project"
+      "showPoweredByHelp": "Show a 'Powered by nextExplorer' link in the footer to help support the project",
+      "defaultLogoSelected": "Default logo selected. Click Save to apply."
     },
     "userPreferences": {
       "title": "User Preferences",
@@ -508,7 +530,8 @@
       "browse": "Choose a folder",
       "pathInvalid": "This path is not inside a volume, so the rule will never apply.",
       "pathMissing": "No folder at this path. A rule uses the path as NextExplorer shows it, starting with the volume name.",
-      "useSuggestion": "Use {path}"
+      "useSuggestion": "Use {path}",
+      "title": "Access"
     },
     "comingSoon": {
       "subtitle": "This settings section is being built. Stay tuned!"
@@ -554,7 +577,8 @@
       "selectedPath": "Selected",
       "volumePath": "Volume Path",
       "pathCannotChange": "The path cannot be changed after creation. Remove this volume and create a new one if needed.",
-      "accessMode": "Access Mode"
+      "accessMode": "Access Mode",
+      "noUsers": "No users available"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
     "removeShare": "Remove share",
     "sharedWithAnyone": "Everyone",
     "sharedWithUsers": "{count} user | {count} users",
-    "expiresNever": "Never"
+    "expiresNever": "Never",
+    "creating": "Creating…",
+    "expires": "Expires",
+    "loadingUsers": "Loading users...",
+    "password": "Password",
+    "protected": "Protected",
+    "sharedWith": "Shared with"
   },
   "trash": {
     "title": "Trash",

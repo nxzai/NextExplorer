@@ -70,7 +70,8 @@
     "unsavedChanges": "Ai modificări nesalvate",
     "readonly": "Doar citire",
     "readwrite": "Citire/Scriere",
-    "add": "Adaugă"
+    "add": "Adaugă",
+    "back": "Înapoi"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "Cameră: {makeModel}",
     "lens": "Obiectiv: {lens}",
     "duration": "Durată: {seconds}s",
-    "versions": "Versiuni"
+    "versions": "Versiuni",
+    "folderSizeExcluded": "Exclus",
+    "folderSizeExcludedHelp": "Această cale este exclusă din indexarea dimensiunii dosarelor."
   },
   "auth": {
     "preparing": "Se pregătește explorerul…",
@@ -428,7 +431,25 @@
       "gitCommit": "Commit git",
       "gitCommitHelp": "Revizia sursei integrată la momentul build-ului.",
       "branch": "Branch",
-      "branchHelp": "Branch-ul git la momentul build-ului."
+      "branchHelp": "Branch-ul git la momentul build-ului.",
+      "tools": {
+        "title": "Instrumente opționale",
+        "subtitle": "Ce poate face această instanță și ce ar adăuga un instrument lipsă. Serverul spune același lucru în jurnal la pornire.",
+        "installed": "Instalat",
+        "missing": "Neinstalat",
+        "unused": "Nefolosit aici",
+        "package": "Pachet",
+        "cannotOpen": "Nu poate deschide: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniaturi video și imagini din fotografiile HEIC",
+          "mediaDetails": "Durata și pistele audio și video",
+          "fastSearch": "Căutare rapidă în conținutul fișierelor",
+          "pdfSearch": "Textul PDF-urilor în căutare",
+          "rawPreviews": "Previzualizări ale fotografiilor RAW",
+          "copyProgress": "Progresul copierilor și mutărilor mari",
+          "archives": "Răsfoirea și extragerea arhivelor dincolo de .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Personalizează numele aplicației și sigla afișate în întreaga interfață.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "Fișierul este prea mare. Folosește o imagine mai mică (sub 500 KB pentru cele mai bune rezultate)",
       "preview": "Previzualizare",
       "showPoweredBy": "Afișează linkul de atribuire",
-      "showPoweredByHelp": "Afișează în subsol un link „Powered by nextExplorer” pentru a ajuta la susținerea proiectului"
+      "showPoweredByHelp": "Afișează în subsol un link „Powered by nextExplorer” pentru a ajuta la susținerea proiectului",
+      "defaultLogoSelected": "Siglă implicită selectată. Faceți clic pe Salvare pentru a aplica."
     },
     "userPreferences": {
       "title": "Preferințe utilizator",
@@ -508,7 +530,8 @@
       "browse": "Alegeți un dosar",
       "pathInvalid": "Această cale nu se află în niciun volum, așa că regula nu se va aplica niciodată.",
       "pathMissing": "Nu există niciun dosar la această cale. O regulă folosește calea așa cum o arată NextExplorer, începând cu numele volumului.",
-      "useSuggestion": "Folosiți {path}"
+      "useSuggestion": "Folosiți {path}",
+      "title": "Acces"
     },
     "comingSoon": {
       "subtitle": "Această secțiune de setări este în lucru. Revino în curând!"
@@ -554,7 +577,8 @@
       "selectedPath": "Selectat",
       "volumePath": "Cale volum",
       "pathCannotChange": "Calea nu poate fi schimbată după creare. Șterge și creează unul nou dacă e necesar.",
-      "accessMode": "Mod acces"
+      "accessMode": "Mod acces",
+      "noUsers": "Nu există utilizatori disponibili"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "Descarcă"
     },
     "deleteShareTitle": "Elimini partajarea?",
-    "deleteShareMessage": "Persoanele cu acest link nu vor mai putea accesa elementul partajat."
+    "deleteShareMessage": "Persoanele cu acest link nu vor mai putea accesa elementul partajat.",
+    "creating": "Se creează…",
+    "expires": "Expiră",
+    "loadingUsers": "Se încarcă utilizatorii...",
+    "password": "Parolă",
+    "protected": "Protejat",
+    "sharedWith": "Partajat cu"
   },
   "trash": {
     "title": "Coș de gunoi",

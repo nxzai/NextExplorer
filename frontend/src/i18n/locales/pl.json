@@ -70,7 +70,8 @@
     "unsavedChanges": "Masz niezapisane zmiany",
     "readonly": "Tylko do odczytu",
     "readwrite": "Odczyt/Zapis",
-    "add": "Dodaj"
+    "add": "Dodaj",
+    "back": "Wstecz"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "Aparat: {makeModel}",
     "lens": "Obiektyw: {lens}",
     "duration": "Czas trwania: {seconds}s",
-    "versions": "Wersje"
+    "versions": "Wersje",
+    "folderSizeExcluded": "Wykluczone",
+    "folderSizeExcludedHelp": "Ta ścieżka jest wykluczona z indeksowania rozmiaru folderów."
   },
   "auth": {
     "preparing": "Trwa przygotowywanie eksploratora…",
@@ -428,7 +431,25 @@
       "gitCommit": "Commit Git",
       "gitCommitHelp": "Rewizja źródła osadzona w czasie kompilacji.",
       "branch": "Gałąź",
-      "branchHelp": "Gałąź Git w czasie kompilacji."
+      "branchHelp": "Gałąź Git w czasie kompilacji.",
+      "tools": {
+        "title": "Narzędzia opcjonalne",
+        "subtitle": "Co potrafi ta instancja i co dodałoby brakujące narzędzie. Serwer mówi to samo w swoim dzienniku przy starcie.",
+        "installed": "Zainstalowane",
+        "missing": "Niezainstalowane",
+        "unused": "Nieużywane tutaj",
+        "package": "Pakiet",
+        "cannotOpen": "Nie otworzy: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniatury filmów i klatki ze zdjęć HEIC",
+          "mediaDetails": "Czas trwania i ścieżki audio oraz wideo",
+          "fastSearch": "Szybkie wyszukiwanie w treści plików",
+          "pdfSearch": "Tekst plików PDF w wyszukiwaniu",
+          "rawPreviews": "Podglądy zdjęć RAW",
+          "copyProgress": "Postęp dużych operacji kopiowania i przenoszenia",
+          "archives": "Przeglądanie i rozpakowywanie archiwów innych niż .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Dostosuj nazwę aplikacji i logo wyświetlane w całym interfejsie.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "Plik jest za duży. Użyj mniejszego obrazu (poniżej 500 KB dla najlepszych efektów)",
       "preview": "Podgląd",
       "showPoweredBy": "Wyświetl link z atrybucją",
-      "showPoweredByHelp": "Pokaż w stopce link „Powered by nextExplorer”, aby wesprzeć projekt"
+      "showPoweredByHelp": "Pokaż w stopce link „Powered by nextExplorer”, aby wesprzeć projekt",
+      "defaultLogoSelected": "Wybrano domyślne logo. Kliknij Zapisz, aby zastosować."
     },
     "userPreferences": {
       "title": "Preferencje użytkownika",
@@ -508,7 +530,8 @@
       "browse": "Wybierz folder",
       "pathInvalid": "Ta ścieżka nie leży w żadnym woluminie, więc reguła nigdy nie zadziała.",
       "pathMissing": "Pod tą ścieżką nie ma folderu. Reguła używa ścieżki tak, jak pokazuje ją NextExplorer, zaczynając od nazwy woluminu.",
-      "useSuggestion": "Użyj {path}"
+      "useSuggestion": "Użyj {path}",
+      "title": "Dostęp"
     },
     "comingSoon": {
       "subtitle": "Ta sekcja ustawień jest w przygotowaniu. Bądź na bieżąco!"
@@ -554,7 +577,8 @@
       "selectedPath": "Wybrano",
       "volumePath": "Ścieżka woluminu",
       "pathCannotChange": "Ścieżki nie można zmienić po utworzeniu. Usuń ten wolumin i utwórz nowy w razie potrzeby.",
-      "accessMode": "Tryb dostępu"
+      "accessMode": "Tryb dostępu",
+      "noUsers": "Brak dostępnych użytkowników"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "Pobierz"
     },
     "deleteShareTitle": "Usunąć udostępnienie?",
-    "deleteShareMessage": "Osoby z tym linkiem nie będą już mogły uzyskać dostępu do udostępnionego elementu."
+    "deleteShareMessage": "Osoby z tym linkiem nie będą już mogły uzyskać dostępu do udostępnionego elementu.",
+    "creating": "Tworzenie…",
+    "expires": "Wygasa",
+    "loadingUsers": "Ładowanie użytkowników...",
+    "password": "Hasło",
+    "protected": "Chronione",
+    "sharedWith": "Udostępnione dla"
   },
   "trash": {
     "title": "Kosz",

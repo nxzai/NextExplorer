@@ -70,7 +70,8 @@
     "unsavedChanges": "आपके पास बिना सहेजे परिवर्तन हैं",
     "readonly": "केवल पढ़ने के लिए",
     "readwrite": "पढ़ना/लिखना",
-    "add": "जोड़ें"
+    "add": "जोड़ें",
+    "back": "पीछे"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "कैमरा: {makeModel}",
     "lens": "लेंस: {lens}",
     "duration": "अवधि: {seconds}s",
-    "versions": "संस्करण"
+    "versions": "संस्करण",
+    "folderSizeExcluded": "बाहर रखा गया",
+    "folderSizeExcludedHelp": "यह पथ फ़ोल्डर-आकार अनुक्रमण से बाहर रखा गया है।"
   },
   "auth": {
     "preparing": "आपका एक्सप्लोरर तैयार किया जा रहा है…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git कमिट",
       "gitCommitHelp": "बिल्ड समय पर जोड़ी गई स्रोत संशोधन।",
       "branch": "ब्रांच",
-      "branchHelp": "बिल्ड समय पर Git ब्रांच।"
+      "branchHelp": "बिल्ड समय पर Git ब्रांच।",
+      "tools": {
+        "title": "वैकल्पिक टूल",
+        "subtitle": "यह इंस्टेंस क्या कर सकता है, और कोई अनुपस्थित टूल क्या जोड़ेगा। सर्वर शुरू होते समय अपने लॉग में यही बताता है।",
+        "installed": "इंस्टॉल है",
+        "missing": "इंस्टॉल नहीं है",
+        "unused": "यहाँ उपयोग नहीं होता",
+        "package": "पैकेज",
+        "cannotOpen": "नहीं खोल सकता: {formats}",
+        "gives": {
+          "videoThumbnails": "वीडियो के थंबनेल और HEIC फ़ोटो की छवियाँ",
+          "mediaDetails": "ऑडियो और वीडियो की अवधि और ट्रैक",
+          "fastSearch": "फ़ाइलों की सामग्री में तेज़ खोज",
+          "pdfSearch": "खोज में PDF का पाठ",
+          "rawPreviews": "RAW फ़ोटो के पूर्वावलोकन",
+          "copyProgress": "बड़ी कॉपी और स्थानांतरण की प्रगति",
+          "archives": ".zip के अलावा अन्य आर्काइव ब्राउज़ करना और निकालना"
+        }
+      }
     },
     "branding": {
       "subtitle": "इंटरफ़ेस में दिखने वाले एप्लिकेशन नाम और लोगो को अनुकूलित करें।",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "फ़ाइल बहुत बड़ी है। कृपया एक छोटी छवि उपयोग करें (बेहतर परिणामों के लिए 500KB से कम)",
       "preview": "पूर्वावलोकन",
       "showPoweredBy": "अट्रिब्यूशन लिंक दिखाएँ",
-      "showPoweredByHelp": "प्रोजेक्ट को सपोर्ट करने के लिए फ़ुटर में 'Powered by nextExplorer' लिंक दिखाएँ"
+      "showPoweredByHelp": "प्रोजेक्ट को सपोर्ट करने के लिए फ़ुटर में 'Powered by nextExplorer' लिंक दिखाएँ",
+      "defaultLogoSelected": "डिफ़ॉल्ट लोगो चुना गया। लागू करने के लिए सहेजें पर क्लिक करें।"
     },
     "userPreferences": {
       "title": "उपयोगकर्ता प्राथमिकताएँ",
@@ -508,7 +530,8 @@
       "browse": "फ़ोल्डर चुनें",
       "pathInvalid": "यह पथ किसी वॉल्यूम के भीतर नहीं है, इसलिए यह नियम कभी लागू नहीं होगा।",
       "pathMissing": "इस पथ पर कोई फ़ोल्डर नहीं है। नियम उसी पथ का उपयोग करता है जैसा NextExplorer दिखाता है, वॉल्यूम के नाम से शुरू करके।",
-      "useSuggestion": "{path} उपयोग करें"
+      "useSuggestion": "{path} उपयोग करें",
+      "title": "एक्सेस"
     },
     "comingSoon": {
       "subtitle": "यह सेटिंग सेक्शन बनाया जा रहा है। जुड़े रहें!"
@@ -554,7 +577,8 @@
       "selectedPath": "चयनित",
       "volumePath": "वॉल्यूम पथ",
       "pathCannotChange": "निर्माण के बाद पथ बदला नहीं जा सकता। यदि आवश्यक हो तो इसे हटा दें और नया बनाएँ।",
-      "accessMode": "पहुँच मोड"
+      "accessMode": "पहुँच मोड",
+      "noUsers": "कोई उपयोगकर्ता उपलब्ध नहीं"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "डाउनलोड करें"
     },
     "deleteShareTitle": "शेयर हटाएँ?",
-    "deleteShareMessage": "इस लिंक वाले लोग अब साझा किए गए आइटम तक पहुँच नहीं कर पाएँगे।"
+    "deleteShareMessage": "इस लिंक वाले लोग अब साझा किए गए आइटम तक पहुँच नहीं कर पाएँगे।",
+    "creating": "बनाया जा रहा है…",
+    "expires": "समाप्त होगा",
+    "loadingUsers": "उपयोगकर्ता लोड हो रहे हैं...",
+    "password": "पासवर्ड",
+    "protected": "सुरक्षित",
+    "sharedWith": "इनके साथ साझा"
   },
   "trash": {
     "title": "रीसायकल बिन",

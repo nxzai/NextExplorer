@@ -70,7 +70,8 @@
     "unsavedChanges": "저장되지 않은 변경 사항이 있습니다",
     "readonly": "읽기 전용",
     "readwrite": "읽기/쓰기",
-    "add": "추가"
+    "add": "추가",
+    "back": "뒤로 가기"
   },
   "editor": {
     "editing": "편집 중",
@@ -332,7 +333,9 @@
     "camera": "카메라: {makeModel}",
     "lens": "렌즈: {lens}",
     "duration": "길이: {seconds}초",
-    "versions": "버전"
+    "versions": "버전",
+    "folderSizeExcluded": "제외됨",
+    "folderSizeExcludedHelp": "이 경로는 폴더 크기 인덱싱에서 제외됩니다."
   },
   "auth": {
     "preparing": "탐색기를 준비하는 중입니다…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git 커밋 해시",
       "gitCommitHelp": "빌드 시점에 삽입된 커밋 해시입니다.",
       "branch": "브랜치",
-      "branchHelp": "빌드 시점의 Git 브랜치입니다."
+      "branchHelp": "빌드 시점의 Git 브랜치입니다.",
+      "tools": {
+        "title": "선택 도구",
+        "subtitle": "이 인스턴스가 할 수 있는 일과, 없는 도구를 설치하면 추가되는 기능입니다. 서버는 시작할 때 로그에도 같은 내용을 기록합니다.",
+        "installed": "설치됨",
+        "missing": "설치 안 됨",
+        "unused": "여기서는 사용 안 함",
+        "package": "패키지",
+        "cannotOpen": "열 수 없음: {formats}",
+        "gives": {
+          "videoThumbnails": "동영상 미리보기 이미지와 HEIC 사진의 정지 이미지",
+          "mediaDetails": "오디오와 동영상의 길이와 트랙",
+          "fastSearch": "파일 내용 빠른 검색",
+          "pdfSearch": "검색에 포함되는 PDF 텍스트",
+          "rawPreviews": "RAW 사진 미리보기",
+          "copyProgress": "대용량 복사 및 이동 진행률",
+          "archives": ".zip 외 압축 파일 탐색 및 추출"
+        }
+      }
     },
     "branding": {
       "subtitle": "인터페이스에 표시되는 애플리케이션 이름과 로고를 커스터마이징하세요.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "파일 크기가 너무 큽니다. 더 작은 이미지를 사용해주세요 (500KB 이하가 가장 좋음)",
       "preview": "미리보기",
       "showPoweredBy": "기여 링크 표시",
-      "showPoweredByHelp": "페이지 하단에 'Powered by nextExplorer' 링크를 표시하여 프로젝트를 지원해주세요."
+      "showPoweredByHelp": "페이지 하단에 'Powered by nextExplorer' 링크를 표시하여 프로젝트를 지원해주세요.",
+      "defaultLogoSelected": "기본 로고가 선택되었습니다. 적용하려면 저장을 클릭하세요."
     },
     "userPreferences": {
       "title": "유저 설정",
@@ -508,7 +530,8 @@
       "browse": "폴더 선택",
       "pathInvalid": "이 경로는 어떤 볼륨에도 속하지 않으므로 규칙이 적용되지 않습니다.",
       "pathMissing": "이 경로에 폴더가 없습니다. 규칙은 볼륨 이름부터 시작하여 NextExplorer에 표시되는 경로를 사용합니다.",
-      "useSuggestion": "{path} 사용"
+      "useSuggestion": "{path} 사용",
+      "title": "접근"
     },
     "comingSoon": {
       "subtitle": "이 설정 항목은 현재 개발 중입니다. 기대해주세요!"
@@ -554,7 +577,8 @@
       "selectedPath": "선택된 경로",
       "volumePath": "볼륨 경로",
       "pathCannotChange": "생성된 이후에는 경로를 변경할 수 없습니다. 필요 시에는 이 볼륨을 제거하고 새로운 볼륨을 생성해야 합니다.",
-      "accessMode": "접근 모드"
+      "accessMode": "접근 모드",
+      "noUsers": "유저가 없습니다"
     },
     "userDetails": {
       "profileTab": "프로필",
@@ -976,7 +1000,13 @@
       "download": "다운로드"
     },
     "deleteShareTitle": "공유를 제거할까요?",
-    "deleteShareMessage": "이 링크가 있는 사용자는 더 이상 공유 항목에 접근할 수 없습니다."
+    "deleteShareMessage": "이 링크가 있는 사용자는 더 이상 공유 항목에 접근할 수 없습니다.",
+    "creating": "생성 중…",
+    "expires": "만료",
+    "loadingUsers": "유저 정보 로딩 중...",
+    "password": "비밀번호",
+    "protected": "보호됨",
+    "sharedWith": "공유 대상"
   },
   "trash": {
     "title": "휴지통",

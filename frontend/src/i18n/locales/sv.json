@@ -70,7 +70,8 @@
     "unsavedChanges": "Du har osparade ändringar",
     "readonly": "Skrivskyddad",
     "readwrite": "Läs/Skriv",
-    "add": "Lägg till"
+    "add": "Lägg till",
+    "back": "Bakåt"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "Kamera: {makeModel}",
     "lens": "Lins: {lens}",
     "duration": "Speltid: {seconds}s",
-    "versions": "Versioner"
+    "versions": "Versioner",
+    "folderSizeExcluded": "Undantagen",
+    "folderSizeExcludedHelp": "Denna sökväg är undantagen från indexering av mappstorlekar."
   },
   "auth": {
     "preparing": "Förbereder din utforskare…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git commit",
       "gitCommitHelp": "Källkodsrevision inbäddad vid byggtid.",
       "branch": "Gren",
-      "branchHelp": "Git-gren vid byggtid."
+      "branchHelp": "Git-gren vid byggtid.",
+      "tools": {
+        "title": "Valfria verktyg",
+        "subtitle": "Vad den här instansen kan och vad ett saknat verktyg skulle tillföra. Servern säger samma sak i sin logg vid start.",
+        "installed": "Installerat",
+        "missing": "Inte installerat",
+        "unused": "Används inte här",
+        "package": "Paket",
+        "cannotOpen": "Kan inte öppna: {formats}",
+        "gives": {
+          "videoThumbnails": "Miniatyrer för videor och stillbilder ur HEIC-foton",
+          "mediaDetails": "Längd och spår för ljud och video",
+          "fastSearch": "Snabb sökning i filers innehåll",
+          "pdfSearch": "Texten i PDF:er i sökningen",
+          "rawPreviews": "Förhandsvisningar av RAW-foton",
+          "copyProgress": "Förlopp för stora kopieringar och flyttar",
+          "archives": "Bläddra i och packa upp arkiv utöver .zip"
+        }
+      }
     },
     "branding": {
       "subtitle": "Anpassa appens namn och logotyp som visas i hela gränssnittet.",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "Filen är för stor. Använd en mindre bild (under 500 KB för bästa resultat)",
       "preview": "Förhandsgranskning",
       "showPoweredBy": "Visa attribueringslänk",
-      "showPoweredByHelp": "Visa en \"Powered by nextExplorer\"-länk i sidfoten för att stödja projektet"
+      "showPoweredByHelp": "Visa en \"Powered by nextExplorer\"-länk i sidfoten för att stödja projektet",
+      "defaultLogoSelected": "Standardlogotyp vald. Klicka på Spara för att tillämpa."
     },
     "userPreferences": {
       "title": "Användarpreferenser",
@@ -508,7 +530,8 @@
       "browse": "Välj en mapp",
       "pathInvalid": "Den här sökvägen ligger inte i någon volym, så regeln kommer aldrig att gälla.",
       "pathMissing": "Det finns ingen mapp på den här sökvägen. En regel använder sökvägen så som NextExplorer visar den, med volymens namn först.",
-      "useSuggestion": "Använd {path}"
+      "useSuggestion": "Använd {path}",
+      "title": "Åtkomst"
     },
     "comingSoon": {
       "subtitle": "Denna inställningssektion håller på att byggas. Vänta och se!"
@@ -554,7 +577,8 @@
       "selectedPath": "Vald",
       "volumePath": "Volymsökväg",
       "pathCannotChange": "Sökvägen kan inte ändras i efterhand. Ta bort och skapa ny vid behov.",
-      "accessMode": "Åtkomstläge"
+      "accessMode": "Åtkomstläge",
+      "noUsers": "Inga användare tillgängliga"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "Hämta"
     },
     "deleteShareTitle": "Ta bort delning?",
-    "deleteShareMessage": "Personer med den här länken kommer inte längre åt det delade objektet."
+    "deleteShareMessage": "Personer med den här länken kommer inte längre åt det delade objektet.",
+    "creating": "Skapar…",
+    "expires": "Går ut",
+    "loadingUsers": "Läser in användare...",
+    "password": "Lösenord",
+    "protected": "Skyddad",
+    "sharedWith": "Delad med"
   },
   "trash": {
     "title": "Papperskorg",

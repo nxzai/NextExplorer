@@ -70,7 +70,8 @@
     "unsavedChanges": "您有未保存的更改",
     "readonly": "只读",
     "readwrite": "读/写",
-    "add": "添加"
+    "add": "添加",
+    "back": "后退"
   },
   "editor": {
     "editing": "Editing",
@@ -332,7 +333,9 @@
     "camera": "相机：{makeModel}",
     "lens": "镜头：{lens}",
     "duration": "时长：{seconds}s",
-    "versions": "版本"
+    "versions": "版本",
+    "folderSizeExcluded": "已排除",
+    "folderSizeExcludedHelp": "此路径已从文件夹大小索引中排除。"
   },
   "auth": {
     "preparing": "正在为您准备 Explorer…",
@@ -428,7 +431,25 @@
       "gitCommit": "Git 提交",
       "gitCommitHelp": "构建时嵌入的源代码修订版本。",
       "branch": "分支",
-      "branchHelp": "构建时的 Git 分支。"
+      "branchHelp": "构建时的 Git 分支。",
+      "tools": {
+        "title": "可选工具",
+        "subtitle": "此实例能做什么，以及安装缺少的工具会增加什么。服务器启动时也会在日志中说明这些。",
+        "installed": "已安装",
+        "missing": "未安装",
+        "unused": "此处未使用",
+        "package": "软件包",
+        "cannotOpen": "无法打开：{formats}",
+        "gives": {
+          "videoThumbnails": "视频缩略图，以及 HEIC 照片的静态图像",
+          "mediaDetails": "音频和视频的时长与轨道",
+          "fastSearch": "快速搜索文件内容",
+          "pdfSearch": "在搜索中包含 PDF 文本",
+          "rawPreviews": "RAW 照片预览",
+          "copyProgress": "大型复制和移动的进度",
+          "archives": "浏览和解压 .zip 以外的压缩包"
+        }
+      }
     },
     "branding": {
       "subtitle": "自定义在界面中显示的应用名称和标志。",
@@ -446,7 +467,8 @@
       "fileTooLargeForDataUri": "文件过大。请使用更小的图片（建议小于 500KB 以获得最佳效果）",
       "preview": "预览",
       "showPoweredBy": "显示署名链接",
-      "showPoweredByHelp": "在页脚显示 “Powered by nextExplorer” 链接以支持项目"
+      "showPoweredByHelp": "在页脚显示 “Powered by nextExplorer” 链接以支持项目",
+      "defaultLogoSelected": "已选择默认徽标。点击\"保存\"以应用。"
     },
     "userPreferences": {
       "title": "用户偏好",
@@ -508,7 +530,8 @@
       "browse": "选择文件夹",
       "pathInvalid": "此路径不在任何卷内，因此该规则永远不会生效。",
       "pathMissing": "此路径下没有文件夹。规则使用 NextExplorer 显示的路径，以卷名开头。",
-      "useSuggestion": "使用 {path}"
+      "useSuggestion": "使用 {path}",
+      "title": "访问"
     },
     "comingSoon": {
       "subtitle": "此设置部分正在构建中，敬请期待！"
@@ -554,7 +577,8 @@
       "selectedPath": "已选择",
       "volumePath": "卷路径",
       "pathCannotChange": "创建后无法更改路径。如需更改，请删除此卷并重新创建。",
-      "accessMode": "访问模式"
+      "accessMode": "访问模式",
+      "noUsers": "没有可用用户"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -976,7 +1000,13 @@
       "download": "下载"
     },
     "deleteShareTitle": "移除共享？",
-    "deleteShareMessage": "拥有此链接的人员将无法再访问共享项目。"
+    "deleteShareMessage": "拥有此链接的人员将无法再访问共享项目。",
+    "creating": "正在创建…",
+    "expires": "到期",
+    "loadingUsers": "正在加载用户...",
+    "password": "密码",
+    "protected": "已保护",
+    "sharedWith": "共享对象"
   },
   "trash": {
     "title": "回收站",

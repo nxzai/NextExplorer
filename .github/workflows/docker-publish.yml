@@ -21,11 +21,9 @@ jobs:
       contents: read
       packages: write
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -86,8 +84,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=docker-release
+          cache-to: type=gha,scope=docker-release,mode=min
 
       - name: Update Docker Hub description
         if: github.event_name == 'release'

@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/node:24-alpine
+FROM node:24.21-alpine3.24
 
 WORKDIR /repo
 ENV NODE_ENV=development

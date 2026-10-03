@@ -13,31 +13,70 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
  */
 
 let store;
+/**
+ * Which pane is asking. Null is the ordinary case — one pane, which is the tab in
+ * front — and the tests about a split view name a tab themselves.
+ */
+const paneTab = { id: null };
 
 vi.mock('@/api', () => ({
   normalizePath: (p = '') => String(p).replace(/^\/+|\/+$/g, ''),
 }));
 vi.mock('@/stores/fileStore', () => ({ useFileStore: () => store }));
+vi.mock('@/composables/paneTab', () => ({
+  usePaneTabId: () => ({
+    get value() {
+      return paneTab.id || 'tab-in-front';
+    },
+  }),
+}));
 
 import { useSelection } from './itemSelection';
 
 const item = (name, path = 'Docs') => ({ name, path, kind: 'txt' });
 const LIST = ['a', 'b', 'c', 'd', 'e'].map((n) => item(`${n}.txt`));
 
-const makeStore = (selected = []) => {
-  const state = {
-    getCurrentPathItems: LIST,
-    selectedItems: selected,
-    get selectedItemKeys() {
-      return new Set(state.selectedItems.map((i) => `${i.path}::${i.name}`));
+/**
+ * The store as it really is: one folder per tab, each with its own listing and
+ * its own selection. A stand-in with a single selection on it would answer every
+ * question the same whichever pane asked — which is the whole of what this is for.
+ */
+const folderHolding = (selected = [], items = LIST) => {
+  const selectedItems = { value: selected };
+  const folder = {
+    items: { value: items },
+    selection: {
+      selectedItems,
+      get selectedItemKeys() {
+        return { value: new Set(selectedItems.value.map((i) => `${i.path}::${i.name}`)) };
+      },
+      clearSelection: () => {
+        selectedItems.value = [];
+      },
     },
   };
-  return state;
+  return folder;
+};
+
+const makeStore = (selected = []) => {
+  const folders = { 'tab-in-front': folderHolding(selected) };
+  return {
+    folders,
+    // As the real one does: no tab named is the tab in front.
+    folderFor: (id) => (folders[id || 'tab-in-front'] ??= folderHolding()),
+    arrange: (items) => items,
+    // What this spec reads, which is the folder of whichever tab was asked about
+    // last — the tab in front unless a test says otherwise.
+    get selectedItems() {
+      return folders[paneTab.id || 'tab-in-front'].selection.selectedItems.value;
+    },
+  };
 };
 
 const names = () => store.selectedItems.map((i) => i.name);
 
 beforeEach(() => {
+  paneTab.id = null;
   store = makeStore();
 });
 
@@ -193,22 +232,73 @@ describe('Ctrl beats Shift when both are held', () => {
 });
 
 describe('clearing', () => {
-  it('uses the store’s own clear when it has one', () => {
-    const clearSelection = vi.fn();
-    store = makeStore([item('a.txt')]);
-    store.clearSelection = clearSelection;
-
-    useSelection().clearSelection();
-
-    expect(clearSelection).toHaveBeenCalled();
-  });
-
-  it('empties the list itself when the store offers nothing', () => {
+  it('asks the folder to let go of what it was holding', () => {
     store = makeStore([item('a.txt')]);
 
     useSelection().clearSelection();
 
     expect(names()).toEqual([]);
+  });
+
+  it('clears its own pane and leaves the other alone', () => {
+    store = makeStore([item('a.txt')]);
+    store.folders['tab-beside'] = folderHolding([item('d.txt')]);
+    paneTab.id = 'tab-beside';
+
+    useSelection().clearSelection();
+
+    expect(names()).toEqual([]);
+    expect(store.folders['tab-in-front'].selection.selectedItems.value.map((i) => i.name)).toEqual([
+      'a.txt',
+    ]);
+  });
+});
+
+/**
+ * Two panes are two places, and what is selected belongs to a place.
+ *
+ * Asked of the window, one selection served both halves: choosing a file in one
+ * half moved the highlight in the other — and in the half the reader was not in it
+ * jumped to wherever the other had just been pressed, which is somewhere else
+ * entirely in the list.
+ */
+describe('a row drawn in a pane', () => {
+  it('selects into its own tab, not the one in front', () => {
+    store = makeStore([item('a.txt')]);
+    store.folders['tab-beside'] = folderHolding([]);
+    paneTab.id = 'tab-beside';
+
+    useSelection().handleSelection(item('d.txt'), {});
+
+    expect(names()).toEqual(['d.txt']);
+    // And the tab in front is still holding what it was.
+    expect(store.folders['tab-in-front'].selection.selectedItems.value.map((i) => i.name)).toEqual([
+      'a.txt',
+    ]);
+  });
+
+  it('says what its own tab holds, not what the one in front does', () => {
+    store = makeStore([item('a.txt')]);
+    store.folders['tab-beside'] = folderHolding([item('e.txt')]);
+    paneTab.id = 'tab-beside';
+    const selection = useSelection();
+
+    expect(selection.isSelected(item('e.txt'))).toBe(true);
+    expect(selection.isSelected(item('a.txt'))).toBe(false);
+  });
+
+  /** And a range runs through its own pane's listing, which may not be the same one. */
+  it('extends a range through its own listing', () => {
+    store = makeStore([]);
+    store.folders['tab-beside'] = folderHolding(
+      [item('x.txt', 'Media')],
+      ['x', 'y', 'z'].map((n) => item(`${n}.txt`, 'Media'))
+    );
+    paneTab.id = 'tab-beside';
+
+    useSelection().handleSelection(item('z.txt', 'Media'), { shiftKey: true });
+
+    expect(names()).toEqual(['x.txt', 'y.txt', 'z.txt']);
   });
 });
 

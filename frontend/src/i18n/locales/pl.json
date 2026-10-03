@@ -77,7 +77,10 @@
     "dismissWarning": "Odrzuć ostrzeżenie",
     "reset": "Resetuj",
     "moveUp": "Przesuń w górę",
-    "moveDown": "Przesuń w dół"
+    "moveDown": "Przesuń w dół",
+    "confirm": "Potwierdź",
+    "closeAnyway": "Zamknij mimo to",
+    "leaveAnyway": "Wyjdź mimo to"
   },
   "editor": {
     "editing": "Edytowanie",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Wcześniejsza wersja, tylko do odczytu",
     "highlightingOffTooLarge": "Podświetlanie składni jest wyłączone dla tego pliku: jego część jest zbyt duża, by ją podświetlić bez zamrożenia strony.",
     "raw": "Surowy",
-    "selectTheme": "Wybierz motyw edytora"
+    "selectTheme": "Wybierz motyw edytora",
+    "unsavedTitle": "Niezapisane zmiany"
   },
   "status": {
     "updated": "Pomyślnie zaktualizowano",
@@ -497,6 +501,7 @@
       "accountPassword": "Zmień hasło",
       "about": "Informacje",
       "userPreferences": "Preferencje",
+      "tabs": "Karty",
       "branding": "Wygląd marki",
       "filesThumbnails": "Pliki i miniatury",
       "security": "Bezpieczeństwo",
@@ -591,6 +596,12 @@
       "viewPhotos": "Zdjęcia",
       "documentsOpenInNewTab": "Otwieraj dokumenty w nowej karcie",
       "documentsOpenInNewTabHelp": "Otwarcie pliku daje mu własną kartę przeglądarki, więc kilka pozostaje otwartych, gdy przeglądasz dalej. Wyłączone — otwiera się nad folderem, tak jak dziś.",
+      "browseInTabs": "Przeglądanie w kartach",
+      "browseInTabsHelp": "Kilka miejsc otwartych naraz — foldery, dokumenty, kosz — każde we własnej karcie, tak jak w menedżerze plików na pulpicie. Wyłączone: jedno miejsce naraz, a nad paskiem narzędzi nic się nie rysuje.",
+      "closeTabsOnDoubleClick": "Zamykanie karty podwójnym kliknięciem",
+      "closeTabsOnDoubleClickHelp": "Podwójne kliknięcie w dowolnym miejscu karty zamyka ją, obok krzyżyka.",
+      "preloadBackgroundTabs": "Przygotuj karty otwarte w tle",
+      "preloadBackgroundTabsHelp": "Karta otwarta w tle lub przywrócona wraz z oknem wczytuje się od razu, zamiast czekać, aż do niej przejdziesz. Dokument przygotowany w ten sposób zostaje otwarty w edytorze, więc liczy się jako edytowany.",
       "downloadMode": "Pobieranie wielu elementów",
       "downloadModeHelp": "Co się dzieje przy pobieraniu więcej niż jednego elementu naraz. Wybrane foldery zawsze przychodzą jako jedno archiwum.",
       "downloadModeZip": "Jedno archiwum ZIP",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "Wyrównane do krawędzi kolumny nazw zajmują to samo miejsce w każdym wierszu; miejsce dla nich jest zarezerwowane niezależnie od tego, czy wskaźnik jest nad wierszem.",
       "quickActionsPositionAfter": "Po nazwie",
       "quickActionsPositionStart": "Na początku kolumny nazw",
-      "quickActionsPositionEnd": "Na końcu kolumny nazw"
+      "quickActionsPositionEnd": "Na końcu kolumny nazw",
+      "reopenTabs": "Otwieraj karty ponownie po powrocie",
+      "reopenTabsHelp": "Wyłączone — wracają tylko karty przypięte, i po to właśnie jest przypinanie. Włączone — wracają wszystkie."
     },
     "thumbs": {
       "subtitle": "Dostosuj miniatury podglądu dla obrazów i filmów.",
@@ -692,7 +705,10 @@
       "accessMode": "Tryb dostępu",
       "noUsers": "Brak dostępnych użytkowników",
       "lockedBadge": "Zablokowane",
-      "lockedUntil": "Zablokowane do {time}"
+      "lockedUntil": "Zablokowane do {time}",
+      "removeTitle": "Usuń użytkownika",
+      "removeVolumeTitle": "Usuń wolumin",
+      "newPasswordTitle": "Nowe hasło"
     },
     "userDetails": {
       "profileTab": "Profil",
@@ -914,7 +930,8 @@
       "loadFailed": "Nie udało się odczytać kluczy dostępu tego konta.",
       "addFailed": "Nie udało się dodać tego klucza dostępu.",
       "cancelled": "Nic nie dodano: przeglądarka została zamknięta lub minęło zbyt dużo czasu.",
-      "alreadyHere": "To urządzenie ma już klucz dostępu do tego konta."
+      "alreadyHere": "To urządzenie ma już klucz dostępu do tego konta.",
+      "renameTitle": "Zmień nazwę klucza dostępu"
     },
     "activity": {
       "title": "Dziennik aktywności",
@@ -1000,7 +1017,9 @@
       "loadFailed": "Nie udało się wczytać tokenów.",
       "createFailed": "Nie udało się wydać tokenu.",
       "renameFailed": "Nie udało się zmienić nazwy tokenu.",
-      "revokeFailed": "Nie udało się unieważnić tokenu."
+      "revokeFailed": "Nie udało się unieważnić tokenu.",
+      "renameTitle": "Zmień nazwę tokenu",
+      "revokeTitle": "Unieważnij token"
     },
     "folderSize": {
       "title": "Rozmiary folderów",
@@ -1014,6 +1033,12 @@
       "additional": "Dodatkowe wykluczenia",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Nie skonfigurowano żadnych ścieżek"
+    },
+    "tabs": {
+      "title": "Karty",
+      "description": "Jak działa przeglądanie w kartach dla wszystkich w tej instalacji.",
+      "maxOpen": "Najwięcej kart naraz",
+      "maxOpenHelp": "Pasek nigdy się nie przewija: rząd kończy się tutaj, zamiast zwężać karty nie do odczytania."
     },
     "searchIndex": {
       "title": "Indeks wyszukiwania",
@@ -1032,6 +1057,73 @@
       "useSwitch": "Włącz ją przełącznikiem powyżej.",
       "locked": "Ustawione przez {variable} w środowisku — decyduje się o tym tam, a nie tutaj."
     }
+  },
+  "tabs": {
+    "strip": "Otwarte karty",
+    "openInNewTab": "Otwórz w nowej karcie",
+    "openInNewTabs": "Otwórz {count} w nowych kartach",
+    "newTab": "Nowa karta",
+    "moveLeft": "Przenieś w lewo",
+    "moveRight": "Przenieś w prawo",
+    "duplicate": "Powiel kartę",
+    "showOnRight": "Pokaż po prawej",
+    "unfoldPair": "Pokaż obie połowy",
+    "ungroup": "Rozgrupuj",
+    "closeSplit": "Zamknij ten panel",
+    "resizeSplit": "Zmień rozmiar paneli",
+    "pin": "Przypnij kartę",
+    "unpin": "Odepnij kartę",
+    "closeTab": "Zamknij kartę",
+    "closeOthers": "Zamknij pozostałe karty",
+    "closeAll": "Zamknij wszystkie karty",
+    "full": "Brak miejsca na kolejną kartę (limit: {count})"
+  },
+  "compare": {
+    "title": "Porównaj",
+    "versionOf": "Wersja pliku {name}",
+    "compareCount": "Porównaj {count} plików",
+    "differences": "Różnice: {count}",
+    "identical": "Te pliki są identyczne",
+    "position": "{index} z {count}",
+    "next": "Następna różnica (F8)",
+    "previous": "Poprzednia różnica (F7)",
+    "copyForward": "Skopiuj tę różnicę z {from} do {to}",
+    "copyBack": "Skopiuj tę różnicę z {from} do {to}",
+    "save": "Zapisz {name}",
+    "saved": "Zapisano {name}",
+    "saveFailed": "Nie udało się zapisać {name}",
+    "onlyDifferences": "Tylko różnice",
+    "wrap": "Zawijaj długie wiersze",
+    "folded": "Identyczne wiersze: {count}",
+    "needTwo": "Porównanie wymaga dwóch lub trzech plików.",
+    "failed": "Nie udało się odczytać tych plików.",
+    "leaveUnsaved": "Wiersze zostały skopiowane i nie są zapisane. Wyjść mimo to?",
+    "swap": "Zamień {left} i {right} miejscami",
+    "saveShort": "Zapisz",
+    "search": "Znajdź i zamień",
+    "searchFor": "Znajdź",
+    "replaceWith": "Zamień na",
+    "searchIn": "Szukaj w",
+    "everywhere": "Wszystkie pliki",
+    "matchCase": "Uwzględnij wielkość liter",
+    "matchPosition": "{index} z {count}",
+    "noMatch": "Brak wyników",
+    "nextMatch": "Następny wynik",
+    "previousMatch": "Poprzedni wynik",
+    "replace": "Zamień",
+    "replaceAll": "Zamień wszystko",
+    "replaced": "Zamieniono: {count}",
+    "editHint": "Kliknij dwukrotnie, aby edytować ten wiersz",
+    "editKeys": "Enter dzieli wiersz, backspace na początku łączy go z wierszem powyżej",
+    "insertLine": "Dodaj wiersz poniżej",
+    "deleteLine": "Usuń ten wiersz",
+    "nothingToFold": "Nie ma czego zwinąć: każdy wiersz sąsiaduje z różnicą",
+    "onlyDifferencesOf": "Pokaż tylko różnice, zwijając {count} identycznych wierszy",
+    "closeUnsaved": "To porównanie zawiera skopiowane, niezapisane wiersze. Zamknąć mimo to?",
+    "matchCount": "Wyniki: {count}",
+    "unsavedTitle": "Niezapisane wiersze",
+    "mapHint": "Gdzie jesteś w pliku. Czerwony: tylko po lewej. Zielony: tylko po prawej. Bursztynowy: obie strony mają wiersz i się różnią. Kliknij, aby tam przejść.",
+    "pinMap": "Zostaw mapę różnic otwartą"
   },
   "mediaPreview": {
     "audioTrack": "Ścieżka dźwiękowa",
@@ -1271,6 +1363,7 @@
       "deleteSelected": "Usuń zaznaczone ({count})",
       "deleteAll": "Usuń wszystkie",
       "preview": "Otwórz tylko do odczytu",
+      "compare": "Porównaj z obecnym plikiem",
       "download": "Pobierz",
       "restore": "Przywróć",
       "rename": "Nazwij…",

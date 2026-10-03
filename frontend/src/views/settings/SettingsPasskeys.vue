@@ -11,6 +11,7 @@ import {
 } from '@/api';
 import { formatLocalDateTime } from '@/utils';
 import { useAuthStore } from '@/stores/auth';
+import { useAsk } from '@/composables/useAsk';
 
 /**
  * The passkeys on this account.
@@ -24,6 +25,7 @@ import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
 const { t } = useI18n();
+const { askFor } = useAsk();
 
 const isLocalUser = computed(() => auth.currentUser?.provider === 'local');
 const supported = ref(passkeysSupported());
@@ -91,7 +93,12 @@ const add = async () => {
 
 const rename = async (passkey) => {
   resetMessages();
-  const name = window.prompt(t('settings.passkeys.renamePrompt'), passkey.name);
+  const name = await askFor({
+    title: t('settings.passkeys.renameTitle'),
+    label: t('settings.passkeys.renamePrompt'),
+    value: passkey.name,
+    confirmLabel: t('common.save'),
+  });
   if (name === null) return;
   busy.value = true;
   try {

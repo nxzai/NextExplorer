@@ -23,6 +23,12 @@ const openEditorForFavorite = vi.fn();
 vi.mock('@/stores/favorites', () => ({ useFavoritesStore: () => favoritesStore }));
 vi.mock('vue-router', () => ({ useRoute: () => route }));
 vi.mock('@/composables/navigation', () => ({ useNavigation: () => ({ openBreadcrumb }) }));
+// What a tab behind means is the rule's own, in `composables/openPlaceInTab.js`
+// and its spec. What is asked here is that the gesture reaches it.
+const openPlaceInTab = vi.fn(() => true);
+vi.mock('@/composables/openPlaceInTab', () => ({
+  useOpenPlaceInTab: () => ({ openPlaceInTab }),
+}));
 vi.mock('@/composables/useFavoriteEditor', () => ({
   useFavoriteEditor: () => ({ openEditorForFavorite }),
 }));
@@ -104,6 +110,8 @@ beforeEach(() => {
   };
   route.params = {};
   [openBreadcrumb, openEditorForFavorite].forEach((fn) => fn.mockClear());
+  openPlaceInTab.mockClear();
+  openPlaceInTab.mockReturnValue(true);
 });
 
 afterEach(() => {
@@ -145,6 +153,38 @@ describe('the list', () => {
     await favourite('Holiday pictures').trigger('click');
 
     expect(openBreadcrumb).toHaveBeenCalledTimes(1);
+    expect(openBreadcrumb).toHaveBeenCalledWith('Media/Photos');
+  });
+
+  /**
+   * One rule everywhere: command, or control, turns *opening* into opening in a
+   * tab behind. Here the gesture that opens is the single click — a favourite is
+   * not something there is a selection of.
+   */
+  it('opens it in a tab behind when command is held', async () => {
+    await mountMenu([PROJECTS, PHOTOS]);
+
+    await favourite('Holiday pictures').trigger('click', { metaKey: true });
+
+    expect(openPlaceInTab).toHaveBeenCalledWith('Media/Photos');
+    expect(openBreadcrumb).not.toHaveBeenCalled();
+  });
+
+  it('does the same on control, for everyone else', async () => {
+    await mountMenu([PROJECTS, PHOTOS]);
+
+    await favourite('Holiday pictures').trigger('click', { ctrlKey: true });
+
+    expect(openPlaceInTab).toHaveBeenCalledWith('Media/Photos');
+  });
+
+  /** Tabs off: the modifier changes nothing, and the folder opens as it always did. */
+  it('opens the folder itself when there is no tab to open it in', async () => {
+    openPlaceInTab.mockReturnValue(false);
+    await mountMenu([PROJECTS, PHOTOS]);
+
+    await favourite('Holiday pictures').trigger('click', { metaKey: true });
+
     expect(openBreadcrumb).toHaveBeenCalledWith('Media/Photos');
   });
 

@@ -6,6 +6,7 @@ import { copyItems, moveItems, normalizePath } from '@/api';
 import { useInputMode } from '@/composables/useInputMode';
 import { useOperationTasksStore } from '@/stores/operationTasks';
 import { useOnlyOfficeTransferConfirm } from '@/composables/useOnlyOfficeTransferConfirm';
+import { useTabsStore } from '@/stores/tabs';
 
 // A drag can cross from the file view into the sidebar, where a different
 // composable instance handles dragover. Keep the preview state module-wide so
@@ -18,6 +19,7 @@ let activeDragImage = null;
  */
 export function useFileDragDrop() {
   const fileStore = useFileStore();
+  const tabsStore = useTabsStore();
   const volumeUsageStore = useVolumeUsageStore();
   const folderSizeStore = useFolderSizeStore();
   const operationTasksStore = useOperationTasksStore();
@@ -389,16 +391,41 @@ export function useFileDragDrop() {
 
       // Refresh the current path to show the changes
       await fileStore.fetchPathItems(fileStore.currentPath);
+      await refreshDestination(destination);
       volumeUsageStore.scheduleRefresh();
       folderSizeStore.scheduleRefresh();
     } catch (error) {
       if (error?.name === 'AbortError' || /aborted/i.test(error?.message || '')) {
         await fileStore.fetchPathItems(fileStore.currentPath);
+        await refreshDestination(destination);
         volumeUsageStore.scheduleRefresh();
         folderSizeStore.scheduleRefresh();
         return;
       }
       console.error(`Failed to ${copy ? 'copy' : 'move'} items:`, error);
+    }
+  };
+
+  /**
+   * Whatever else is on screen showing where the files went, read again.
+   *
+   * The folder they left is refreshed just above, because something left it.
+   * The folder they arrived in used to need nothing: there was one folder on
+   * screen and the destination was somewhere else — a tab behind, a favourite,
+   * a folder in the listing — and the reader walked there afterwards, which read
+   * it. With two panes the destination is usually the other half of the window,
+   * and a file dragged into it left one side and appeared on neither.
+   *
+   * What that pane was holding is kept, because the reader did not go anywhere:
+   * it simply has one more thing in it than it did.
+   */
+  const refreshDestination = async (destination) => {
+    const wanted = normalizePath(destination || '');
+    for (const id of tabsStore.panes) {
+      if (id === tabsStore.activeId) continue;
+      const folder = fileStore.folderFor(id);
+      if (normalizePath(folder.path.value || '') !== wanted) continue;
+      await folder.fetchItems(folder.path.value, { preserveInteraction: true });
     }
   };
 

@@ -77,7 +77,10 @@
     "dismissWarning": "Ignora l'avviso",
     "reset": "Reimposta",
     "moveUp": "Sposta su",
-    "moveDown": "Sposta giù"
+    "moveDown": "Sposta giù",
+    "confirm": "Conferma",
+    "closeAnyway": "Chiudi comunque",
+    "leaveAnyway": "Esci comunque"
   },
   "editor": {
     "editing": "Modifica in corso",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Versione precedente, sola lettura",
     "highlightingOffTooLarge": "Evidenziazione della sintassi disattivata per questo file: una parte è troppo grande per essere evidenziata senza bloccare la pagina.",
     "raw": "Grezzo",
-    "selectTheme": "Scegli il tema dell'editor"
+    "selectTheme": "Scegli il tema dell'editor",
+    "unsavedTitle": "Modifiche non salvate"
   },
   "status": {
     "updated": "Aggiornato con successo",
@@ -497,6 +501,7 @@
       "accountPassword": "Cambia password",
       "about": "Informazioni",
       "userPreferences": "Preferenze",
+      "tabs": "Schede",
       "branding": "Identità visiva",
       "filesThumbnails": "File e miniature",
       "security": "Sicurezza",
@@ -591,6 +596,12 @@
       "viewPhotos": "Foto",
       "documentsOpenInNewTab": "Aprire i documenti in una nuova scheda",
       "documentsOpenInNewTabHelp": "Aprire un file gli dà una scheda del browser tutta sua, così più documenti restano aperti mentre continuate a navigare. Spento, si apre sopra la cartella come oggi.",
+      "browseInTabs": "Navigare a schede",
+      "browseInTabsHelp": "Tenere aperti più luoghi alla volta — cartelle, documenti, il cestino — ognuno in una scheda, come fa un gestore di file da scrivania. Disattivato: un luogo alla volta, e sopra la barra degli strumenti non viene disegnato nulla.",
+      "closeTabsOnDoubleClick": "Chiudere una scheda con un doppio clic",
+      "closeTabsOnDoubleClickHelp": "Un doppio clic in qualsiasi punto della scheda la chiude, oltre alla croce.",
+      "preloadBackgroundTabs": "Prepara le schede aperte in secondo piano",
+      "preloadBackgroundTabsHelp": "Una scheda aperta dietro, o riaperta con la finestra, si carica subito invece di attendere che tu la raggiunga. Un documento preparato così viene aperto nel suo editor, quindi conta come in modifica.",
       "downloadMode": "Scaricare più elementi",
       "downloadModeHelp": "Cosa accade quando si scarica più di un elemento alla volta. Le cartelle selezionate arrivano sempre come un unico archivio.",
       "downloadModeZip": "Un unico archivio ZIP",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "Allineate a un bordo della colonna dei nomi, restano nello stesso punto in ogni riga; lo spazio che serve resta riservato, con o senza il puntatore sulla riga.",
       "quickActionsPositionAfter": "Dopo il nome",
       "quickActionsPositionStart": "All'inizio della colonna dei nomi",
-      "quickActionsPositionEnd": "Alla fine della colonna dei nomi"
+      "quickActionsPositionEnd": "Alla fine della colonna dei nomi",
+      "reopenTabs": "Riapri le schede al ritorno",
+      "reopenTabsHelp": "Spento, le schede che avevi non tornano: tornano solo quelle che hai fissato, che è a questo che serve fissarle. Acceso, tornano tutte."
     },
     "thumbs": {
       "subtitle": "Personalizza le miniature di anteprima per immagini e video.",
@@ -692,7 +705,10 @@
       "accessMode": "Modalità di accesso",
       "noUsers": "Nessun utente disponibile",
       "lockedBadge": "Bloccato",
-      "lockedUntil": "Bloccato fino alle {time}"
+      "lockedUntil": "Bloccato fino alle {time}",
+      "removeTitle": "Rimuovi l’utente",
+      "removeVolumeTitle": "Rimuovi il volume",
+      "newPasswordTitle": "Nuova password"
     },
     "userDetails": {
       "profileTab": "Profilo",
@@ -914,7 +930,8 @@
       "loadFailed": "Impossibile leggere le passkey di questo account.",
       "addFailed": "Impossibile aggiungere questa passkey.",
       "cancelled": "Non è stato aggiunto nulla: il browser è stato chiuso o ci ha messo troppo.",
-      "alreadyHere": "Questo dispositivo ha già una passkey per questo account."
+      "alreadyHere": "Questo dispositivo ha già una passkey per questo account.",
+      "renameTitle": "Rinomina la passkey"
     },
     "activity": {
       "title": "Registro attività",
@@ -1000,7 +1017,9 @@
       "loadFailed": "Non è stato possibile caricare i token.",
       "createFailed": "Non è stato possibile emettere il token.",
       "renameFailed": "Non è stato possibile rinominare il token.",
-      "revokeFailed": "Non è stato possibile revocare il token."
+      "revokeFailed": "Non è stato possibile revocare il token.",
+      "renameTitle": "Rinomina il token",
+      "revokeTitle": "Revoca il token"
     },
     "folderSize": {
       "title": "Dimensioni cartelle",
@@ -1014,6 +1033,12 @@
       "additional": "Esclusioni aggiuntive",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Nessun percorso configurato"
+    },
+    "tabs": {
+      "title": "Schede",
+      "description": "Come si comporta la navigazione a schede per tutti su questa installazione.",
+      "maxOpen": "Numero massimo di schede",
+      "maxOpenHelp": "La barra non scorre mai: la fila si ferma qui invece di rendere le schede illeggibili."
     },
     "searchIndex": {
       "title": "Indice di ricerca",
@@ -1032,6 +1057,73 @@
       "useSwitch": "Attivala con l'interruttore qui sopra.",
       "locked": "Impostato da {variable} nell'ambiente: si decide lì, non qui."
     }
+  },
+  "tabs": {
+    "strip": "Schede aperte",
+    "openInNewTab": "Apri in una nuova scheda",
+    "openInNewTabs": "Apri {count} elementi in nuove schede",
+    "newTab": "Nuova scheda",
+    "moveLeft": "Sposta a sinistra",
+    "moveRight": "Sposta a destra",
+    "duplicate": "Duplica la scheda",
+    "showOnRight": "Mostra a destra",
+    "unfoldPair": "Mostra le due metà",
+    "ungroup": "Separa",
+    "closeSplit": "Chiudi questo riquadro",
+    "resizeSplit": "Ridimensiona i riquadri",
+    "pin": "Fissa la scheda",
+    "unpin": "Sblocca la scheda",
+    "closeTab": "Chiudi la scheda",
+    "closeOthers": "Chiudi le altre schede",
+    "closeAll": "Chiudi tutte le schede",
+    "full": "Non c’è spazio per un’altra scheda (limite: {count})"
+  },
+  "compare": {
+    "title": "Confronta",
+    "versionOf": "Versione di {name}",
+    "compareCount": "Confronta {count} file",
+    "differences": "{count} differenze",
+    "identical": "Questi file sono identici",
+    "position": "{index} di {count}",
+    "next": "Differenza successiva (F8)",
+    "previous": "Differenza precedente (F7)",
+    "copyForward": "Copia questa differenza da {from} a {to}",
+    "copyBack": "Copia questa differenza da {from} a {to}",
+    "save": "Salva {name}",
+    "saved": "{name} salvato",
+    "saveFailed": "Non è stato possibile salvare {name}",
+    "onlyDifferences": "Solo le differenze",
+    "wrap": "Manda a capo le righe lunghe",
+    "folded": "{count} righe identiche",
+    "needTwo": "Un confronto richiede due o tre file.",
+    "failed": "Non è stato possibile leggere questi file.",
+    "leaveUnsaved": "Alcune righe sono state copiate e non sono salvate. Uscire comunque?",
+    "swap": "Scambia {left} e {right}",
+    "saveShort": "Salva",
+    "search": "Trova e sostituisci",
+    "searchFor": "Trova",
+    "replaceWith": "Sostituisci con",
+    "searchIn": "Cerca in",
+    "everywhere": "Tutti i file",
+    "matchCase": "Maiuscole/minuscole",
+    "matchPosition": "{index} di {count}",
+    "noMatch": "Nessun risultato",
+    "nextMatch": "Risultato successivo",
+    "previousMatch": "Risultato precedente",
+    "replace": "Sostituisci",
+    "replaceAll": "Sostituisci tutto",
+    "replaced": "{count} sostituiti",
+    "editHint": "Doppio clic per modificare questa riga",
+    "editKeys": "Invio divide la riga; backspace a inizio riga la unisce a quella sopra",
+    "insertLine": "Aggiungi una riga sotto",
+    "deleteLine": "Elimina questa riga",
+    "nothingToFold": "Niente da comprimere: ogni riga è accanto a una differenza",
+    "onlyDifferencesOf": "Mostra solo le differenze, comprimendo {count} righe identiche",
+    "closeUnsaved": "Questo confronto ha righe copiate e non salvate. Chiudere comunque?",
+    "matchCount": "{count} risultati",
+    "unsavedTitle": "Righe non salvate",
+    "mapHint": "Dove si trova nel file. Rosso: solo a sinistra. Verde: solo a destra. Ambra: entrambi hanno una riga e differiscono. Premere per andarci.",
+    "pinMap": "Tieni aperta la mappa delle differenze"
   },
   "mediaPreview": {
     "audioTrack": "Traccia audio",
@@ -1271,6 +1363,7 @@
       "deleteSelected": "Elimina selezionate ({count})",
       "deleteAll": "Elimina tutto",
       "preview": "Apri in sola lettura",
+      "compare": "Confronta con il file attuale",
       "download": "Scarica",
       "restore": "Ripristina",
       "rename": "Assegna un nome…",

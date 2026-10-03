@@ -36,6 +36,12 @@ const local = reactive({
   showVersionMarks: true,
   locale: null,
   downloadMode: 'zip',
+  browseInTabs: false,
+  closeTabsOnDoubleClick: false,
+  reopenTabs: false,
+  // On unless it is turned off: a tab opened in the background is opened in order
+  // not to wait for it.
+  preloadBackgroundTabs: true,
 });
 
 const original = computed(() => appSettings.userSettings);
@@ -59,7 +65,11 @@ const dirty = computed(() => {
     local.documentsOpenInNewTab !== (orig.documentsOpenInNewTab ?? false) ||
     local.showVersionMarks !== (orig.showVersionMarks ?? true) ||
     local.locale !== (orig.locale ?? null) ||
-    local.downloadMode !== (orig.downloadMode ?? 'zip')
+    local.downloadMode !== (orig.downloadMode ?? 'zip') ||
+    local.browseInTabs !== (orig.browseInTabs ?? false) ||
+    local.closeTabsOnDoubleClick !== (orig.closeTabsOnDoubleClick ?? false) ||
+    local.reopenTabs !== (orig.reopenTabs ?? false) ||
+    local.preloadBackgroundTabs !== (orig.preloadBackgroundTabs ?? true)
   );
 });
 
@@ -130,6 +140,10 @@ watch(
     local.showVersionMarks = userSettings.showVersionMarks ?? true;
     local.locale = userSettings.locale ?? null;
     local.downloadMode = userSettings.downloadMode ?? 'zip';
+    local.browseInTabs = userSettings.browseInTabs ?? false;
+    local.closeTabsOnDoubleClick = userSettings.closeTabsOnDoubleClick ?? false;
+    local.reopenTabs = userSettings.reopenTabs ?? false;
+    local.preloadBackgroundTabs = userSettings.preloadBackgroundTabs ?? true;
   },
   { immediate: true }
 );
@@ -158,6 +172,7 @@ const reset = () => {
   local.showVersionMarks = userSettings.showVersionMarks ?? true;
   local.locale = userSettings.locale ?? null;
   local.downloadMode = userSettings.downloadMode ?? 'zip';
+  local.browseInTabs = userSettings.browseInTabs ?? false;
 };
 
 const save = async () => {
@@ -181,6 +196,10 @@ const save = async () => {
       showVersionMarks: local.showVersionMarks,
       locale: local.locale,
       downloadMode: local.downloadMode,
+      browseInTabs: local.browseInTabs,
+      closeTabsOnDoubleClick: local.closeTabsOnDoubleClick,
+      reopenTabs: local.reopenTabs,
+      preloadBackgroundTabs: local.preloadBackgroundTabs,
     },
   });
 };
@@ -310,6 +329,81 @@ const save = async () => {
             </div>
           </div>
           <ToggleSwitch v-model="local.documentsOpenInNewTab" data-test="documents-in-new-tab" />
+        </div>
+
+        <div
+          class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+        >
+          <div>
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.userPreferences.browseInTabs') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.userPreferences.browseInTabsHelp') }}
+            </div>
+          </div>
+          <ToggleSwitch v-model="local.browseInTabs" data-test="browse-in-tabs" />
+        </div>
+
+        <!-- Under the switch that offers tabs at all, and greyed out without it:
+             a way of closing something that does not exist is a control that can
+             only puzzle. -->
+        <div
+          class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+          :class="local.browseInTabs ? '' : 'opacity-50'"
+        >
+          <div class="pl-6">
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.userPreferences.closeTabsOnDoubleClick') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.userPreferences.closeTabsOnDoubleClickHelp') }}
+            </div>
+          </div>
+          <ToggleSwitch
+            v-model="local.closeTabsOnDoubleClick"
+            :disabled="!local.browseInTabs"
+            data-test="close-tabs-on-double-click"
+          />
+        </div>
+
+        <!-- Off by default, which is what makes keeping a tab mean something: with
+             everything coming back, "kept" said nothing that "open" did not. -->
+        <div
+          class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+          :class="local.browseInTabs ? '' : 'opacity-50'"
+        >
+          <div class="pl-6">
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.userPreferences.reopenTabs') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.userPreferences.reopenTabsHelp') }}
+            </div>
+          </div>
+          <ToggleSwitch
+            v-model="local.reopenTabs"
+            :disabled="!local.browseInTabs"
+            data-test="reopen-tabs"
+          />
+        </div>
+
+        <div
+          class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+        >
+          <div>
+            <div class="font-medium text-zinc-900 dark:text-zinc-100">
+              {{ t('settings.userPreferences.preloadBackgroundTabs') }}
+            </div>
+            <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {{ t('settings.userPreferences.preloadBackgroundTabsHelp') }}
+            </div>
+          </div>
+          <ToggleSwitch
+            v-model="local.preloadBackgroundTabs"
+            :disabled="!local.browseInTabs"
+            data-test="preload-background-tabs"
+          />
         </div>
 
         <div

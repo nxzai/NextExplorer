@@ -77,7 +77,10 @@
     "dismissWarning": "忽略此警告",
     "reset": "重設",
     "moveUp": "上移",
-    "moveDown": "下移"
+    "moveDown": "下移",
+    "confirm": "確認",
+    "closeAnyway": "仍要關閉",
+    "leaveAnyway": "仍要離開"
   },
   "editor": {
     "editing": "編輯中",
@@ -90,7 +93,8 @@
     "versionReadOnly": "先前版本，唯讀",
     "highlightingOffTooLarge": "此檔案已關閉語法醒目提示：其中一部分太大，無法在不讓頁面凍結的情況下醒目提示。",
     "raw": "原始",
-    "selectTheme": "選擇編輯器佈景"
+    "selectTheme": "選擇編輯器佈景",
+    "unsavedTitle": "未儲存的變更"
   },
   "status": {
     "updated": "更新成功",
@@ -497,6 +501,7 @@
       "accountPassword": "修改密碼",
       "about": "關於",
       "userPreferences": "偏好設定",
+      "tabs": "分頁",
       "branding": "品牌",
       "filesThumbnails": "文件縮圖",
       "security": "安全",
@@ -591,6 +596,12 @@
       "viewPhotos": "相片",
       "documentsOpenInNewTab": "在新分頁中開啟文件",
       "documentsOpenInNewTabHelp": "開啟檔案時給它一個獨立的瀏覽器分頁，這樣你繼續瀏覽時可以同時開著好幾個。關閉後，它像現在一樣覆蓋在資料夾上開啟。",
+      "browseInTabs": "以索引標籤瀏覽",
+      "browseInTabsHelp": "同時開啟多個位置——資料夾、文件、回收筒——各在一個索引標籤中，就像桌面上的檔案管理員那樣。關閉時一次只有一個位置，工具列上方不繪製任何內容。",
+      "closeTabsOnDoubleClick": "雙擊關閉分頁",
+      "closeTabsOnDoubleClickHelp": "在分頁上任意位置雙擊即可關閉，與關閉按鈕一樣。",
+      "preloadBackgroundTabs": "預先準備在背景開啟的索引標籤",
+      "preloadBackgroundTabsHelp": "在背景開啟或隨視窗重新開啟的索引標籤會立即載入，而不是等到你切換過去。以這種方式準備的文件會在編輯器中開啟，因此會被算作正在編輯。",
       "downloadMode": "下載多個項目",
       "downloadModeHelp": "同時下載多個項目時的處理方式。所選資料夾一律作為一個壓縮檔。",
       "downloadModeZip": "一個 ZIP 壓縮檔",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "對齊到名稱欄的一側後，它們在每一列都在同一位置；無論是否停留，所需的空間都會保留。",
       "quickActionsPositionAfter": "名稱之後",
       "quickActionsPositionStart": "名稱欄的開頭",
-      "quickActionsPositionEnd": "名稱欄的結尾"
+      "quickActionsPositionEnd": "名稱欄的結尾",
+      "reopenTabs": "回來時重新開啟分頁",
+      "reopenTabsHelp": "關閉時只有釘選的分頁會回來，這正是釘選的用途。開啟時全部回來。"
     },
     "thumbs": {
       "subtitle": "自訂圖片和影片的預覽縮圖。",
@@ -692,7 +705,10 @@
       "accessMode": "存取模式",
       "noUsers": "沒有可用使用者",
       "lockedBadge": "已鎖定",
-      "lockedUntil": "鎖定至 {time}"
+      "lockedUntil": "鎖定至 {time}",
+      "removeTitle": "刪除使用者",
+      "removeVolumeTitle": "移除磁碟區",
+      "newPasswordTitle": "新密碼"
     },
     "userDetails": {
       "profileTab": "個人資料",
@@ -914,7 +930,8 @@
       "loadFailed": "無法讀取此帳戶的通行金鑰。",
       "addFailed": "無法新增此通行金鑰。",
       "cancelled": "未新增任何項目：瀏覽器已關閉或操作逾時。",
-      "alreadyHere": "此裝置已有此帳戶的通行金鑰。"
+      "alreadyHere": "此裝置已有此帳戶的通行金鑰。",
+      "renameTitle": "重新命名密碼金鑰"
     },
     "activity": {
       "title": "活動記錄",
@@ -1000,7 +1017,9 @@
       "loadFailed": "無法載入權杖。",
       "createFailed": "無法簽發權杖。",
       "renameFailed": "無法重新命名權杖。",
-      "revokeFailed": "無法撤銷權杖。"
+      "revokeFailed": "無法撤銷權杖。",
+      "renameTitle": "重新命名權杖",
+      "revokeTitle": "撤銷權杖"
     },
     "folderSize": {
       "title": "檔案夾大小",
@@ -1014,6 +1033,12 @@
       "additional": "額外的排除項目",
       "placeholder": "Stacks/docker/overlay2",
       "none": "未設定任何路徑"
+    },
+    "tabs": {
+      "title": "分頁",
+      "description": "本安裝中所有人的分頁瀏覽行為。",
+      "maxOpen": "同時開啟的分頁上限",
+      "maxOpenHelp": "分頁列不會捲動：達到上限即停止，而不是把分頁壓窄到看不清。"
     },
     "searchIndex": {
       "title": "搜尋索引",
@@ -1032,6 +1057,73 @@
       "useSwitch": "使用上方的開關將其開啟。",
       "locked": "由環境中的 {variable} 設定，因此在那裡決定，而不是在這裡。"
     }
+  },
+  "tabs": {
+    "strip": "已開啟的索引標籤",
+    "openInNewTab": "在新索引標籤中開啟",
+    "openInNewTabs": "在新索引標籤中開啟 {count} 個項目",
+    "newTab": "新索引標籤",
+    "moveLeft": "向左移動",
+    "moveRight": "向右移動",
+    "duplicate": "複製索引標籤",
+    "showOnRight": "在右側顯示",
+    "unfoldPair": "顯示兩個半邊",
+    "ungroup": "取消分組",
+    "closeSplit": "關閉此窗格",
+    "resizeSplit": "調整窗格大小",
+    "pin": "釘選索引標籤",
+    "unpin": "取消釘選索引標籤",
+    "closeTab": "關閉索引標籤",
+    "closeOthers": "關閉其他索引標籤",
+    "closeAll": "關閉所有分頁",
+    "full": "沒有空間再開分頁（上限：{count}）"
+  },
+  "compare": {
+    "title": "比較",
+    "versionOf": "{name} 的一個版本",
+    "compareCount": "比較 {count} 個檔案",
+    "differences": "{count} 處差異",
+    "identical": "這些檔案完全相同",
+    "position": "第 {index} / {count} 處",
+    "next": "下一處差異 (F8)",
+    "previous": "上一處差異 (F7)",
+    "copyForward": "將此差異從 {from} 複製到 {to}",
+    "copyBack": "將此差異從 {from} 複製到 {to}",
+    "save": "儲存 {name}",
+    "saved": "已儲存 {name}",
+    "saveFailed": "無法儲存 {name}",
+    "onlyDifferences": "僅顯示差異",
+    "wrap": "長行換行",
+    "folded": "{count} 行相同",
+    "needTwo": "比較需要兩個或三個檔案。",
+    "failed": "無法讀取這些檔案。",
+    "leaveUnsaved": "已複製的行尚未儲存。仍要離開嗎？",
+    "swap": "交換 {left} 與 {right}",
+    "saveShort": "儲存",
+    "search": "尋找與取代",
+    "searchFor": "尋找",
+    "replaceWith": "取代為",
+    "searchIn": "尋找範圍",
+    "everywhere": "所有檔案",
+    "matchCase": "區分大小寫",
+    "matchPosition": "第 {index} / {count} 個",
+    "noMatch": "沒有相符項目",
+    "nextMatch": "下一個相符項目",
+    "previousMatch": "上一個相符項目",
+    "replace": "取代",
+    "replaceAll": "全部取代",
+    "replaced": "已取代 {count} 處",
+    "editHint": "按兩下可編輯此行",
+    "editKeys": "Enter 會拆分該行，行首按倒退鍵與上一行合併",
+    "insertLine": "在下方新增一行",
+    "deleteLine": "刪除此行",
+    "nothingToFold": "沒有可摺疊的內容：每一行都緊鄰一處差異",
+    "onlyDifferencesOf": "僅顯示差異，摺疊 {count} 行相同內容",
+    "closeUnsaved": "此比較中有已複製但未儲存的行。仍要關閉嗎？",
+    "matchCount": "{count} 處相符",
+    "unsavedTitle": "未儲存的行",
+    "mapHint": "您在檔案中的位置。紅色：僅左側有。綠色：僅右側有。橙色：兩側都有且內容不同。按一下即可前往。",
+    "pinMap": "保持差異地圖開啟"
   },
   "mediaPreview": {
     "audioTrack": "音軌",
@@ -1271,6 +1363,7 @@
       "deleteSelected": "刪除所選（{count}）",
       "deleteAll": "全部刪除",
       "preview": "以唯讀方式開啟",
+      "compare": "與目前檔案比較",
       "download": "下載",
       "restore": "還原",
       "rename": "命名…",

@@ -510,7 +510,8 @@
       "activity": "Activiteitenlogboek",
       "accountApiTokens": "API-tokens",
       "folderSize": "Mapgroottes",
-      "searchIndex": "Zoekindex"
+      "searchIndex": "Zoekindex",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "Versieinformatie voor deze applicatie.",
@@ -621,6 +622,15 @@
       "concurrency": "Parallel aanmaken",
       "concurrencyHelp": "Het aantal miniaturen dat tegelijk wordt aangemaakt (1–50). Standaard is 10.",
       "invalid": "Controleer de waarden: kwaliteit van 1 tot 100, max. afmetingen van 64 tot 1024 px, parallel aanmaken van 1 tot 50."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "Kies de FFmpeg- en FFprobe-programma's voor mediavoorbeelden en metagegevens.",
+      "containerPathHelp": "Geef absolute paden op die binnen de container van de toepassing zichtbaar zijn. Koppel programma's van de host eerst in de container om ze te gebruiken.",
+      "ffmpegPath": "Pad naar het FFmpeg-programma",
+      "ffprobePath": "Pad naar het FFprobe-programma",
+      "invalid": "Beide paden moeten absolute containerpaden zijn en met / beginnen.",
+      "defaultHelp": "Laat een pad leeg om FFMPEG_PATH of FFPROBE_PATH uit de omgeving te gebruiken en daarna het meegeleverde programma. Wijzigingen zijn direct actief."
     },
     "security": {
       "subtitle": "Toegangscontrole tot de app.",

@@ -510,7 +510,8 @@
       "activity": "Jurnal de activitate",
       "accountApiTokens": "Jetoane API",
       "folderSize": "Dimensiunea dosarelor",
-      "searchIndex": "Index de căutare"
+      "searchIndex": "Index de căutare",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "Vezi informațiile de build pentru această aplicație.",
@@ -621,6 +622,15 @@
       "concurrency": "Generare paralelă",
       "concurrencyHelp": "Numărul de miniaturi generate simultan (1–50). Implicit este 10.",
       "invalid": "Verificați valorile: calitate între 1 și 100, dimensiune maximă între 64 și 1024 px, generare paralelă între 1 și 50."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "Alegeți executabilele FFmpeg și FFprobe folosite pentru previzualizările și metadatele media.",
+      "containerPathHelp": "Introduceți căi absolute, vizibile în interiorul containerului aplicației. Pentru a folosi binarele gazdei, montați-le mai întâi în container.",
+      "ffmpegPath": "Calea executabilului FFmpeg",
+      "ffprobePath": "Calea executabilului FFprobe",
+      "invalid": "Ambele căi trebuie să fie căi absolute din container și să înceapă cu /.",
+      "defaultHelp": "Lăsați o cale goală pentru a folosi FFMPEG_PATH sau FFPROBE_PATH din mediu, apoi executabilul inclus. Modificările se aplică imediat."
     },
     "security": {
       "subtitle": "Controlează accesul la aplicație.",

@@ -510,7 +510,8 @@
       "activity": "Dziennik aktywności",
       "accountApiTokens": "Tokeny API",
       "folderSize": "Rozmiary folderów",
-      "searchIndex": "Indeks wyszukiwania"
+      "searchIndex": "Indeks wyszukiwania",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "Wyświetl informacje o kompilacji tej aplikacji.",
@@ -621,6 +622,15 @@
       "concurrency": "Generowanie równoległe",
       "concurrencyHelp": "Liczba miniatur generowanych jednocześnie (1–50). Domyślnie 10.",
       "invalid": "Sprawdź wartości: jakość od 1 do 100, maksymalny wymiar od 64 do 1024 px, generowanie równoległe od 1 do 50."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "Wybierz pliki wykonywalne FFmpeg i FFprobe używane do miniatur i metadanych multimediów.",
+      "containerPathHelp": "Podaj ścieżki bezwzględne widoczne wewnątrz kontenera aplikacji. Aby użyć plików z hosta, najpierw zamontuj je w kontenerze.",
+      "ffmpegPath": "Ścieżka do pliku wykonywalnego FFmpeg",
+      "ffprobePath": "Ścieżka do pliku wykonywalnego FFprobe",
+      "invalid": "Obie ścieżki muszą być bezwzględnymi ścieżkami kontenera i zaczynać się od /.",
+      "defaultHelp": "Pozostaw ścieżkę pustą, aby użyć FFMPEG_PATH lub FFPROBE_PATH ze środowiska, a następnie dołączonego pliku wykonywalnego. Zmiany działają natychmiast."
     },
     "security": {
       "subtitle": "Kontroluj dostęp do aplikacji.",

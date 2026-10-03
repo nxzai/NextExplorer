@@ -510,7 +510,8 @@
       "activity": "Registro attività",
       "accountApiTokens": "Token API",
       "folderSize": "Dimensioni cartelle",
-      "searchIndex": "Indice di ricerca"
+      "searchIndex": "Indice di ricerca",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "Visualizza le informazioni di build per questa applicazione.",
@@ -621,6 +622,15 @@
       "concurrency": "Generazione parallela",
       "concurrencyHelp": "Numero di miniature da generare contemporaneamente (1–50). Il valore predefinito è 10.",
       "invalid": "Controlla i valori: qualità da 1 a 100, dimensione massima da 64 a 1024 px, generazione parallela da 1 a 50."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "Scegliere gli eseguibili FFmpeg e FFprobe usati per le anteprime e i metadati dei media.",
+      "containerPathHelp": "Indicare percorsi assoluti visibili all'interno del container dell'applicazione. Per usare i binari dell'host, montarli prima nel container.",
+      "ffmpegPath": "Percorso dell'eseguibile FFmpeg",
+      "ffprobePath": "Percorso dell'eseguibile FFprobe",
+      "invalid": "Entrambi i percorsi devono essere percorsi assoluti del container e iniziare con /.",
+      "defaultHelp": "Lasciare un percorso vuoto per usare FFMPEG_PATH o FFPROBE_PATH dall'ambiente e poi l'eseguibile incluso. Le modifiche hanno effetto immediato."
     },
     "security": {
       "subtitle": "Controlla l'accesso all'app.",

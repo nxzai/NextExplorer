@@ -510,7 +510,8 @@
       "activity": "活动日志",
       "accountApiTokens": "API 令牌",
       "folderSize": "文件夹大小",
-      "searchIndex": "搜索索引"
+      "searchIndex": "搜索索引",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "查看此应用的构建信息。",
@@ -621,6 +622,15 @@
       "concurrency": "并行生成",
       "concurrencyHelp": "同时生成的缩略图数量 (1–50)。默认值为 10。",
       "invalid": "请检查数值：质量 1 至 100，最大尺寸 64 至 1024 px，并行生成 1 至 50。"
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "选择用于媒体预览和元数据的 FFmpeg 与 FFprobe 可执行文件。",
+      "containerPathHelp": "请填写在应用容器内可见的绝对路径。若要使用主机上的程序，请先将其挂载到容器中。",
+      "ffmpegPath": "FFmpeg 可执行文件路径",
+      "ffprobePath": "FFprobe 可执行文件路径",
+      "invalid": "两个路径都必须是以 / 开头的容器绝对路径。",
+      "defaultHelp": "留空则先使用环境中的 FFMPEG_PATH 或 FFPROBE_PATH，再使用内置的可执行文件。更改立即生效。"
     },
     "security": {
       "subtitle": "控制对应用的访问。",

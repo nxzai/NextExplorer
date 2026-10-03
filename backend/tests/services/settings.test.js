@@ -127,6 +127,9 @@ describe('Settings Service', () => {
         // Whether a .md file opens in the editor rather than the preview (#347)
         // is a per-user choice, and a boolean like the others.
         await settingsService.setUserSetting('user-1', 'markdownOpensInEditor', true);
+        // Folders first when sorting is the same kind of per-user boolean (#495);
+        // turning it off is what lets one list mix files and folders.
+        await settingsService.setUserSetting('user-1', 'foldersFirst', false);
 
         // Anything that is not a boolean is not an answer, and is not stored:
         // `Boolean('yes')` used to store true and `Boolean(0)` false, in place
@@ -145,6 +148,7 @@ describe('Settings Service', () => {
         // Never stored, so the client's own default is what applies.
         expect(settings.showSidebarTools).toBeUndefined();
         expect(settings.markdownOpensInEditor).toBe(true);
+        expect(settings.foldersFirst).toBe(false);
       } finally {
         await envContext.cleanup();
       }

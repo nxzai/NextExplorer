@@ -585,6 +585,8 @@
       "useEnvSetting": "Serverconfiguratie gebruiken",
       "defaultView": "Standaardweergave",
       "defaultViewHelp": "De weergave waarin een map opent als er voor die map geen weergave is onthouden.",
+      "foldersFirst": "Mappen eerst",
+      "foldersFirstHelp": "Bij het sorteren staan mappen vóór de bestanden. Zet dit uit om bestanden en mappen samen in één lijst te sorteren op de gekozen volgorde.",
       "viewGrid": "Raster",
       "viewList": "Lijst",
       "viewColumns": "Kolommen",

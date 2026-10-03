@@ -585,6 +585,8 @@
       "useEnvSetting": "Usar configuração do servidor",
       "defaultView": "Visualização padrão",
       "defaultViewHelp": "A visualização usada ao abrir uma pasta que ainda não tem uma memorizada.",
+      "foldersFirst": "Pastas primeiro",
+      "foldersFirstHelp": "Ao ordenar, lista as pastas antes dos arquivos. Desative para ordenar arquivos e pastas juntos em uma única lista pela ordem escolhida.",
       "viewGrid": "Grade",
       "viewList": "Lista",
       "viewColumns": "Colunas",

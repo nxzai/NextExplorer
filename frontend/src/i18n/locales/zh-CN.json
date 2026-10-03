@@ -585,6 +585,8 @@
       "useEnvSetting": "使用服务器设置",
       "defaultView": "默认视图",
       "defaultViewHelp": "没有单独记住视图的文件夹所使用的视图。",
+      "foldersFirst": "文件夹优先",
+      "foldersFirstHelp": "排序时文件夹排在文件之前。关闭后，文件和文件夹会按所选顺序在同一个列表中混合排序。",
       "viewGrid": "网格",
       "viewList": "列表",
       "viewColumns": "分栏",

@@ -585,6 +585,8 @@
       "useEnvSetting": "Usar configuración del servidor",
       "defaultView": "Vista predeterminada",
       "defaultViewHelp": "La vista con la que se abre una carpeta que no tiene vista guardada.",
+      "foldersFirst": "Carpetas primero",
+      "foldersFirstHelp": "Al ordenar, muestra las carpetas antes que los archivos. Desactívalo para ordenar archivos y carpetas juntos en una sola lista según el criterio elegido.",
       "viewGrid": "Cuadrícula",
       "viewList": "Lista",
       "viewColumns": "Columnas",

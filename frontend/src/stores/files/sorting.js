@@ -1,6 +1,7 @@
 /**
  * The order a folder's entries are shown in: folders first, then by the
- * chosen key and direction.
+ * chosen key and direction — or, when asked to, one list ordered purely by
+ * the chosen key and direction (#495).
  *
  * When sorting by size, directories must be ranked by their pre-computed
  * recursive size (from the folder size index), not by the near-zero directory
@@ -10,9 +11,10 @@
  * @param {Array} items
  * @param {{ by: string, order: 'asc'|'desc' }} sortBy
  * @param {(fullPath: string) => ({ sizeBytes?: number|null }|null|undefined)} folderSizeFor
+ * @param {{ foldersFirst?: boolean }} [options] folders-first unless told otherwise
  * @returns {Array} a new array; `items` is left as it was
  */
-export const sortItems = (items, sortBy, folderSizeFor) => {
+export const sortItems = (items, sortBy, folderSizeFor, { foldersFirst = true } = {}) => {
   const direction = sortBy?.order === 'asc' ? 1 : -1;
   const sortKey = sortBy?.by;
 
@@ -29,9 +31,11 @@ export const sortItems = (items, sortBy, folderSizeFor) => {
   };
 
   return [...items].sort((a, b) => {
-    // keep directories first
-    const isDirDiff = (b.kind === 'directory') - (a.kind === 'directory');
-    if (isDirDiff) return isDirDiff; // returns -1 or 1
+    // keep directories first, unless the person asked for one list
+    if (foldersFirst) {
+      const isDirDiff = (b.kind === 'directory') - (a.kind === 'directory');
+      if (isDirDiff) return isDirDiff; // returns -1 or 1
+    }
 
     const aValue = sortValue(a, sortKey);
     const bValue = sortValue(b, sortKey);

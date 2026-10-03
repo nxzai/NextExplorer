@@ -585,6 +585,8 @@
       "useEnvSetting": "서버 설정 사용",
       "defaultView": "기본 보기",
       "defaultViewHelp": "저장된 보기가 없는 폴더에 사용할 보기입니다.",
+      "foldersFirst": "폴더 먼저",
+      "foldersFirstHelp": "정렬할 때 폴더를 파일보다 먼저 표시합니다. 끄면 파일과 폴더가 하나의 목록에서 선택한 순서대로 함께 정렬됩니다.",
       "viewGrid": "그리드",
       "viewList": "목록",
       "viewColumns": "열",

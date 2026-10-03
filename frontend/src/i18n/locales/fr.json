@@ -585,6 +585,8 @@
       "useEnvSetting": "Utiliser la configuration serveur",
       "defaultView": "Vue par défaut",
       "defaultViewHelp": "La vue utilisée à l'ouverture d'un dossier qui n'a pas de vue mémorisée.",
+      "foldersFirst": "Dossiers d'abord",
+      "foldersFirstHelp": "Lors du tri, liste les dossiers avant les fichiers. Désactivez cette option pour trier fichiers et dossiers ensemble dans une seule liste selon l'ordre choisi.",
       "viewGrid": "Grille",
       "viewList": "Liste",
       "viewColumns": "Colonnes",

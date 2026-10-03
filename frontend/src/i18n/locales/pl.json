@@ -585,6 +585,8 @@
       "useEnvSetting": "Użyj ustawień serwera",
       "defaultView": "Widok domyślny",
       "defaultViewHelp": "Widok folderu, który nie ma własnego zapamiętanego widoku.",
+      "foldersFirst": "Foldery najpierw",
+      "foldersFirstHelp": "Przy sortowaniu foldery są wyświetlane przed plikami. Wyłącz, aby sortować pliki i foldery razem na jednej liście według wybranego porządku.",
       "viewGrid": "Siatka",
       "viewList": "Lista",
       "viewColumns": "Kolumny",

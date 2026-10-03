@@ -77,7 +77,10 @@
     "dismissWarning": "Dismiss warning",
     "reset": "Reset",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "confirm": "Confirm",
+    "closeAnyway": "Close anyway",
+    "leaveAnyway": "Leave anyway"
   },
   "editor": {
     "editing": "Editing",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Earlier version, read-only",
     "highlightingOffTooLarge": "Syntax highlighting is off for this file: part of it is too large to highlight without freezing the page.",
     "raw": "Raw",
-    "selectTheme": "Select editor theme"
+    "selectTheme": "Select editor theme",
+    "unsavedTitle": "Unsaved changes"
   },
   "status": {
     "updated": "Updated successfully",
@@ -497,6 +501,7 @@
       "accountPassword": "Change Password",
       "about": "About",
       "userPreferences": "Preferences",
+      "tabs": "Tabs",
       "branding": "Branding",
       "filesThumbnails": "Files & Thumbnails",
       "security": "Security",
@@ -592,6 +597,12 @@
       "viewPhotos": "Photos",
       "documentsOpenInNewTab": "Open documents in a new tab",
       "documentsOpenInNewTabHelp": "Opening a file gives it a browser tab of its own, so several stay open while you keep browsing. Off, it opens over the folder as it does today.",
+      "browseInTabs": "Browse in tabs",
+      "browseInTabsHelp": "Keep several places open at once — folders, documents, the trash — each in a tab, the way a file manager on your desktop does. Off, there is one place at a time and nothing is drawn above the toolbar.",
+      "closeTabsOnDoubleClick": "Close a tab by double-clicking it",
+      "closeTabsOnDoubleClickHelp": "A double click anywhere on a tab closes it, as well as the cross.",
+      "preloadBackgroundTabs": "Prepare tabs opened in the background",
+      "preloadBackgroundTabsHelp": "A tab opened behind, or reopened with the window, loads straight away instead of waiting until you reach it. A document prepared this way is opened in its editor, so it counts as being edited.",
       "downloadMode": "Downloading several items",
       "downloadModeHelp": "What happens when more than one item is downloaded at once. Selected folders always come as one archive.",
       "downloadModeZip": "One ZIP archive",
@@ -609,7 +620,9 @@
       "quickActionsPositionHelp": "Aligned at an edge of the name column, they keep the same place on every row; the room they need is held whether a row is hovered or not.",
       "quickActionsPositionAfter": "After the name",
       "quickActionsPositionStart": "At the start of the name column",
-      "quickActionsPositionEnd": "At the end of the name column"
+      "quickActionsPositionEnd": "At the end of the name column",
+      "reopenTabs": "Reopen tabs when you return",
+      "reopenTabsHelp": "Off, every tab you had is gone when you return and only the ones you kept come back — which is what keeping a tab is for. On, they all come back."
     },
     "thumbs": {
       "subtitle": "Customize preview thumbnails for images and videos.",
@@ -702,7 +715,10 @@
       "accessMode": "Access Mode",
       "noUsers": "No users available",
       "lockedBadge": "Locked",
-      "lockedUntil": "Locked until {time}"
+      "lockedUntil": "Locked until {time}",
+      "removeTitle": "Remove user",
+      "removeVolumeTitle": "Remove volume",
+      "newPasswordTitle": "New password"
     },
     "userDetails": {
       "profileTab": "Profile",
@@ -924,7 +940,8 @@
       "loadFailed": "Could not read the passkeys on this account.",
       "addFailed": "Could not add this passkey.",
       "cancelled": "Nothing was added: the browser was closed or it took too long.",
-      "alreadyHere": "This device already holds a passkey for this account."
+      "alreadyHere": "This device already holds a passkey for this account.",
+      "renameTitle": "Rename passkey"
     },
     "activity": {
       "title": "Activity log",
@@ -1010,7 +1027,9 @@
       "loadFailed": "The tokens could not be loaded.",
       "createFailed": "The token could not be issued.",
       "renameFailed": "The token could not be renamed.",
-      "revokeFailed": "The token could not be revoked."
+      "revokeFailed": "The token could not be revoked.",
+      "renameTitle": "Rename token",
+      "revokeTitle": "Revoke token"
     },
     "folderSize": {
       "title": "Folder sizes",
@@ -1024,6 +1043,12 @@
       "additional": "Additional exclusions",
       "placeholder": "Stacks/docker/overlay2",
       "none": "No paths configured"
+    },
+    "tabs": {
+      "title": "Tabs",
+      "description": "How browsing in tabs behaves for everybody on this installation.",
+      "maxOpen": "Most tabs at once",
+      "maxOpenHelp": "The strip never scrolls, so the row stops here rather than making tabs too narrow to read."
     },
     "searchIndex": {
       "title": "Search index",
@@ -1042,6 +1067,68 @@
       "useSwitch": "Turn it on with the switch above.",
       "locked": "Set by {variable} in the environment, so it is decided there and not here."
     }
+  },
+  "tabs": {
+    "strip": "Open tabs",
+    "openInNewTab": "Open in a new tab",
+    "openInNewTabs": "Open {count} in new tabs",
+    "newTab": "New tab",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "duplicate": "Duplicate tab",
+    "pin": "Pin tab",
+    "unpin": "Unpin tab",
+    "closeTab": "Close tab",
+    "closeOthers": "Close the other tabs",
+    "closeAll": "Close every tab",
+    "full": "No room for another tab (limit: {count})"
+  },
+  "compare": {
+    "title": "Compare",
+    "versionOf": "Version of {name}",
+    "compareCount": "Compare {count} files",
+    "differences": "{count} differences",
+    "identical": "These files are identical",
+    "position": "{index} of {count}",
+    "next": "Next difference (F8)",
+    "previous": "Previous difference (F7)",
+    "copyForward": "Copy this difference from {from} to {to}",
+    "copyBack": "Copy this difference from {from} to {to}",
+    "save": "Save {name}",
+    "saved": "{name} saved",
+    "saveFailed": "{name} could not be saved",
+    "onlyDifferences": "Only the differences",
+    "wrap": "Wrap long lines",
+    "folded": "{count} identical lines",
+    "needTwo": "A comparison needs two or three files.",
+    "failed": "These files could not be read.",
+    "leaveUnsaved": "Lines have been copied across and not saved. Leave anyway?",
+    "swap": "Put {left} and {right} the other way round",
+    "saveShort": "Save",
+    "search": "Search and replace",
+    "searchFor": "Search for",
+    "replaceWith": "Replace with",
+    "searchIn": "Search in",
+    "everywhere": "All files",
+    "matchCase": "Match case",
+    "matchPosition": "{index} of {count}",
+    "noMatch": "No match",
+    "nextMatch": "Next match",
+    "previousMatch": "Previous match",
+    "replace": "Replace",
+    "replaceAll": "Replace all",
+    "replaced": "{count} replaced",
+    "editHint": "Double-click to edit this line",
+    "editKeys": "Enter breaks the line, backspace at the start joins it to the line above",
+    "insertLine": "Add a line below this one",
+    "deleteLine": "Remove this line",
+    "nothingToFold": "Nothing to fold away: every line is beside a difference",
+    "onlyDifferencesOf": "Show only the differences, folding {count} identical lines away",
+    "closeUnsaved": "This comparison has lines that were copied across and not saved. Close it anyway?",
+    "matchCount": "{count} matches",
+    "unsavedTitle": "Unsaved lines",
+    "mapHint": "Where you are in the file. Red: only on the left. Green: only on the right. Amber: both have a line and they differ. Press to go there.",
+    "pinMap": "Keep the map of the differences open"
   },
   "mediaPreview": {
     "audioTrack": "Audio track",
@@ -1281,6 +1368,7 @@
       "deleteSelected": "Delete selected ({count})",
       "deleteAll": "Delete all",
       "preview": "Open read-only",
+      "compare": "Compare with the file now",
       "download": "Download",
       "restore": "Restore",
       "rename": "Name…",

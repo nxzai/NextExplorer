@@ -32,6 +32,21 @@ const features = vi.hoisted(() => ({ folderSizeEnabled: true }));
 const sizeFor = vi.hoisted(() => vi.fn(() => null));
 
 vi.mock('@/composables/navigation', () => ({ useNavigation: () => navigation }));
+// Where an entry opens is the preview manager's business, and mocking it here
+// keeps the plugin registry — and the i18n instance it builds — out of a spec
+// about one row. The row's own part is that it asks, and that it asks only when
+// tabs are on.
+const addressFor = vi.hoisted(() => vi.fn(() => ({ path: '/open/Docs/rapport.docx' })));
+// What a tab behind means — which entries have somewhere to be, where the tab
+// lands, and that there is none at all with tabs off — is the rule's own, held in
+// `itemAddress.openInTab.spec.js`. What is asked here is that the row asks it,
+// and on which gestures.
+const openItemInTab = vi.hoisted(() => vi.fn(() => true));
+vi.mock('@/composables/itemAddress', () => ({
+  useItemAddress: () => ({ addressFor }),
+  useOpenItemInTab: () => ({ openItemInTab }),
+}));
+
 vi.mock('@/composables/itemSelection', () => ({ useSelection: () => selection }));
 vi.mock('@/composables/contextMenu', () => ({ useExplorerContextMenu: () => contextMenu }));
 vi.mock('@/composables/useFileDragDrop', () => ({ useFileDragDrop: () => dragDrop }));
@@ -142,6 +157,10 @@ beforeEach(() => {
   setActivePinia(createPinia());
   inputMode.touch = false;
   features.folderSizeEnabled = true;
+  openItemInTab.mockClear();
+  openItemInTab.mockReturnValue(true);
+  addressFor.mockReset();
+  addressFor.mockReturnValue({ path: '/open/Docs/rapport.docx' });
   [
     navigation.openItem,
     selection.handleSelection,
@@ -238,8 +257,14 @@ describe('the rename box', () => {
     expect(applyRename).toHaveBeenCalled();
   });
 
+  /**
+   * Said where this application says things, rather than in the browser's own box.
+   *
+   * `alert` was headed by the server's address and port, and stopped the page until it
+   * was dismissed — for a message. The box is gone; the message is not.
+   */
   it('says why a rename was refused, and comes back for another try', async () => {
-    const alert = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    notifications.addNotification.mockClear();
     vi.spyOn(console, 'error').mockImplementation(() => {});
     applyRename.mockRejectedValueOnce(new Error('A file with that name already exists'));
     await renaming(FILE);
@@ -247,9 +272,11 @@ describe('the rename box', () => {
     await wrapper.find('input').trigger('keydown', { key: 'Enter' });
     await flushPromises();
 
-    expect(alert).toHaveBeenCalledWith('A file with that name already exists');
+    expect(notifications.addNotification).toHaveBeenCalledWith({
+      type: 'error',
+      heading: 'A file with that name already exists',
+    });
     expect(document.activeElement).toBe(input());
-    alert.mockRestore();
   });
 
   it('ignores any other key', async () => {
@@ -692,5 +719,73 @@ describe('where the quick actions sit in the row', () => {
     mountRow();
 
     expect(slot().exists()).toBe(false);
+  });
+});
+
+/**
+ * The middle button opens an entry in a tab behind.
+ *
+ * Anything with an address of its own — a folder, a document, a spreadsheet, a
+ * file the editor opens — because that is what somebody queueing up four things
+ * to look at expects, and because the address is the one a plain click would take
+ * them to. With tabs off it does nothing rather than navigating: the store would
+ * put it in the one tab there is, which is a move nobody asked for.
+ */
+/**
+ * One rule everywhere: command, or control, turns *opening* into opening in a tab
+ * behind. On a row the gesture that opens is the double click — the single one
+ * selects, and with that modifier it adds to the selection, which is worth more
+ * than a tab. The middle button says the same thing without a modifier.
+ */
+describe('opening a row in a tab behind', () => {
+  const openRow = async (item = FILE, options = {}) => {
+    mountRow(item);
+    await wrapper.find('[title]').trigger('dblclick', options);
+  };
+
+  it('is what command with a double click means', async () => {
+    await openRow(FILE, { metaKey: true });
+
+    expect(openItemInTab).toHaveBeenCalledWith(FILE, 'Docs');
+    expect(navigation.openItem).not.toHaveBeenCalled();
+  });
+
+  it('is what control with a double click means, for everyone else', async () => {
+    await openRow(FILE, { ctrlKey: true });
+
+    expect(openItemInTab).toHaveBeenCalledWith(FILE, 'Docs');
+    expect(navigation.openItem).not.toHaveBeenCalled();
+  });
+
+  /** Nowhere of its own, or tabs off: the modifier changes nothing. */
+  it('opens the ordinary way when there is no tab to open it in', async () => {
+    openItemInTab.mockReturnValue(false);
+
+    await openRow(FILE, { metaKey: true });
+
+    expect(navigation.openItem).toHaveBeenCalledWith(FILE);
+  });
+
+  it('leaves a plain double click alone', async () => {
+    await openRow();
+
+    expect(openItemInTab).not.toHaveBeenCalled();
+    expect(navigation.openItem).toHaveBeenCalledWith(FILE);
+  });
+
+  it('is also what the middle button means, with no modifier at all', async () => {
+    mountRow(FILE);
+
+    await wrapper.find('[title]').trigger('auxclick', { button: 1 });
+
+    expect(openItemInTab).toHaveBeenCalledWith(FILE, 'Docs');
+  });
+
+  it('is not offered on a row being renamed', async () => {
+    await renaming(FILE);
+
+    await wrapper.find('[title]').trigger('auxclick', { button: 1 });
+
+    expect(openItemInTab).not.toHaveBeenCalled();
   });
 });

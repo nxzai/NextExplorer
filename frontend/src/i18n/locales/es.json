@@ -77,7 +77,10 @@
     "dismissWarning": "Descartar el aviso",
     "reset": "Restablecer",
     "moveUp": "Subir",
-    "moveDown": "Bajar"
+    "moveDown": "Bajar",
+    "confirm": "Confirmar",
+    "closeAnyway": "Cerrar de todos modos",
+    "leaveAnyway": "Salir de todos modos"
   },
   "editor": {
     "editing": "Editando",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Versión anterior, solo lectura",
     "highlightingOffTooLarge": "El resaltado de sintaxis está desactivado para este archivo: una parte es demasiado grande para resaltarla sin bloquear la página.",
     "raw": "Sin formato",
-    "selectTheme": "Elegir el tema del editor"
+    "selectTheme": "Elegir el tema del editor",
+    "unsavedTitle": "Cambios sin guardar"
   },
   "status": {
     "updated": "Actualizado correctamente",
@@ -497,6 +501,7 @@
       "accountPassword": "Cambiar contraseña",
       "about": "Acerca de",
       "userPreferences": "Preferencias",
+      "tabs": "Pestañas",
       "branding": "Marca",
       "filesThumbnails": "Archivos y miniaturas",
       "security": "Seguridad",
@@ -591,6 +596,12 @@
       "viewPhotos": "Fotos",
       "documentsOpenInNewTab": "Abrir los documentos en una pestaña nueva",
       "documentsOpenInNewTabHelp": "Al abrir un archivo se le da su propia pestaña del navegador, así varios siguen abiertos mientras usted sigue navegando. Desactivado, se abre sobre la carpeta como hasta ahora.",
+      "browseInTabs": "Navegar en pestañas",
+      "browseInTabsHelp": "Mantener varios lugares abiertos a la vez — carpetas, documentos, la papelera — cada uno en una pestaña, como hace un gestor de archivos de escritorio. Desactivado: un lugar a la vez, y no se dibuja nada encima de la barra de herramientas.",
+      "closeTabsOnDoubleClick": "Cerrar una pestaña con doble clic",
+      "closeTabsOnDoubleClickHelp": "Un doble clic en cualquier parte de la pestaña la cierra, además de la cruz.",
+      "preloadBackgroundTabs": "Preparar las pestañas abiertas en segundo plano",
+      "preloadBackgroundTabsHelp": "Una pestaña abierta detrás, o reabierta con la ventana, se carga de inmediato en lugar de esperar a que llegues a ella. Un documento preparado así se abre en su editor, por lo que cuenta como en edición.",
       "downloadMode": "Descargar varios elementos",
       "downloadModeHelp": "Qué ocurre al descargar más de un elemento a la vez. Las carpetas seleccionadas siempre llegan como un único archivo comprimido.",
       "downloadModeZip": "Un archivo ZIP",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "Alineados en un borde de la columna de nombres, ocupan el mismo lugar en todas las filas; el espacio que necesitan se reserva, se pase o no el ratón por la fila.",
       "quickActionsPositionAfter": "Después del nombre",
       "quickActionsPositionStart": "Al principio de la columna de nombres",
-      "quickActionsPositionEnd": "Al final de la columna de nombres"
+      "quickActionsPositionEnd": "Al final de la columna de nombres",
+      "reopenTabs": "Reabrir las pestañas al volver",
+      "reopenTabsHelp": "Apagado, las pestañas que tenía no vuelven: solo vuelven las que fijó, que es para lo que sirve fijarlas. Encendido, vuelven todas."
     },
     "thumbs": {
       "subtitle": "Personaliza las miniaturas de vista previa para imágenes y vídeos.",
@@ -692,7 +705,10 @@
       "accessMode": "Modo de acceso",
       "noUsers": "No hay usuarios disponibles",
       "lockedBadge": "Bloqueado",
-      "lockedUntil": "Bloqueado hasta las {time}"
+      "lockedUntil": "Bloqueado hasta las {time}",
+      "removeTitle": "Eliminar el usuario",
+      "removeVolumeTitle": "Quitar el volumen",
+      "newPasswordTitle": "Nueva contraseña"
     },
     "userDetails": {
       "profileTab": "Perfil",
@@ -914,7 +930,8 @@
       "loadFailed": "No se han podido leer las claves de acceso de esta cuenta.",
       "addFailed": "No se ha podido añadir esta clave de acceso.",
       "cancelled": "No se ha añadido nada: se cerró el navegador o tardó demasiado.",
-      "alreadyHere": "Este dispositivo ya tiene una clave de acceso para esta cuenta."
+      "alreadyHere": "Este dispositivo ya tiene una clave de acceso para esta cuenta.",
+      "renameTitle": "Renombrar la clave de acceso"
     },
     "activity": {
       "title": "Registro de actividad",
@@ -1000,7 +1017,9 @@
       "loadFailed": "No se han podido cargar los tokens.",
       "createFailed": "No se ha podido emitir el token.",
       "renameFailed": "No se ha podido renombrar el token.",
-      "revokeFailed": "No se ha podido revocar el token."
+      "revokeFailed": "No se ha podido revocar el token.",
+      "renameTitle": "Renombrar el token",
+      "revokeTitle": "Revocar el token"
     },
     "folderSize": {
       "title": "Tamaño de carpetas",
@@ -1014,6 +1033,12 @@
       "additional": "Exclusiones adicionales",
       "placeholder": "Stacks/docker/overlay2",
       "none": "No hay rutas configuradas"
+    },
+    "tabs": {
+      "title": "Pestañas",
+      "description": "Cómo se comporta la navegación por pestañas para todos en esta instalación.",
+      "maxOpen": "Máximo de pestañas a la vez",
+      "maxOpenHelp": "La barra nunca se desplaza: la fila se detiene aquí en lugar de dejar pestañas ilegibles."
     },
     "searchIndex": {
       "title": "Índice de búsqueda",
@@ -1032,6 +1057,68 @@
       "useSwitch": "Actívela con el interruptor de arriba.",
       "locked": "Definido por {variable} en el entorno: se decide allí, no aquí."
     }
+  },
+  "tabs": {
+    "strip": "Pestañas abiertas",
+    "openInNewTab": "Abrir en una pestaña nueva",
+    "openInNewTabs": "Abrir {count} en pestañas nuevas",
+    "newTab": "Nueva pestaña",
+    "moveLeft": "Mover a la izquierda",
+    "moveRight": "Mover a la derecha",
+    "duplicate": "Duplicar la pestaña",
+    "pin": "Fijar la pestaña",
+    "unpin": "Soltar la pestaña",
+    "closeTab": "Cerrar la pestaña",
+    "closeOthers": "Cerrar las demás pestañas",
+    "closeAll": "Cerrar todas las pestañas",
+    "full": "No hay sitio para otra pestaña (límite: {count})"
+  },
+  "compare": {
+    "title": "Comparar",
+    "versionOf": "Versión de {name}",
+    "compareCount": "Comparar {count} archivos",
+    "differences": "{count} diferencias",
+    "identical": "Estos archivos son idénticos",
+    "position": "{index} de {count}",
+    "next": "Diferencia siguiente (F8)",
+    "previous": "Diferencia anterior (F7)",
+    "copyForward": "Copiar esta diferencia de {from} a {to}",
+    "copyBack": "Copiar esta diferencia de {from} a {to}",
+    "save": "Guardar {name}",
+    "saved": "{name} guardado",
+    "saveFailed": "No se pudo guardar {name}",
+    "onlyDifferences": "Solo las diferencias",
+    "wrap": "Ajustar líneas largas",
+    "folded": "{count} líneas idénticas",
+    "needTwo": "Una comparación necesita dos o tres archivos.",
+    "failed": "No se pudieron leer estos archivos.",
+    "leaveUnsaved": "Se han copiado líneas y no están guardadas. ¿Salir de todos modos?",
+    "swap": "Intercambiar {left} y {right}",
+    "saveShort": "Guardar",
+    "search": "Buscar y reemplazar",
+    "searchFor": "Buscar",
+    "replaceWith": "Reemplazar con",
+    "searchIn": "Buscar en",
+    "everywhere": "Todos los archivos",
+    "matchCase": "Coincidir mayúsculas",
+    "matchPosition": "{index} de {count}",
+    "noMatch": "Sin resultados",
+    "nextMatch": "Resultado siguiente",
+    "previousMatch": "Resultado anterior",
+    "replace": "Reemplazar",
+    "replaceAll": "Reemplazar todo",
+    "replaced": "{count} reemplazados",
+    "editHint": "Doble clic para editar esta línea",
+    "editKeys": "Intro parte la línea; retroceso al principio la une a la de arriba",
+    "insertLine": "Añadir una línea debajo",
+    "deleteLine": "Eliminar esta línea",
+    "nothingToFold": "Nada que plegar: cada línea está junto a una diferencia",
+    "onlyDifferencesOf": "Mostrar solo las diferencias, plegando {count} líneas idénticas",
+    "closeUnsaved": "Esta comparación tiene líneas copiadas y sin guardar. ¿Cerrar de todos modos?",
+    "matchCount": "{count} resultados",
+    "unsavedTitle": "Líneas sin guardar",
+    "mapHint": "Dónde está en el archivo. Rojo: solo a la izquierda. Verde: solo a la derecha. Ámbar: ambos tienen una línea y difieren. Pulse para ir allí.",
+    "pinMap": "Mantener abierto el mapa de las diferencias"
   },
   "mediaPreview": {
     "audioTrack": "Pista de audio",
@@ -1271,6 +1358,7 @@
       "deleteSelected": "Eliminar la selección ({count})",
       "deleteAll": "Eliminar todo",
       "preview": "Abrir en solo lectura",
+      "compare": "Comparar con el archivo actual",
       "download": "Descargar",
       "restore": "Restaurar",
       "rename": "Nombrar…",

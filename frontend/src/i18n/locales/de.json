@@ -77,7 +77,10 @@
     "dismissWarning": "Warnung ausblenden",
     "reset": "Zurücksetzen",
     "moveUp": "Nach oben",
-    "moveDown": "Nach unten"
+    "moveDown": "Nach unten",
+    "confirm": "Bestätigen",
+    "closeAnyway": "Trotzdem schließen",
+    "leaveAnyway": "Trotzdem verlassen"
   },
   "editor": {
     "editing": "Wird bearbeitet",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Frühere Version, schreibgeschützt",
     "highlightingOffTooLarge": "Syntaxhervorhebung für diese Datei ausgeschaltet: Ein Teil davon ist zu groß, um ihn hervorzuheben, ohne die Seite einzufrieren.",
     "raw": "Roh",
-    "selectTheme": "Editor-Thema wählen"
+    "selectTheme": "Editor-Thema wählen",
+    "unsavedTitle": "Nicht gespeicherte Änderungen"
   },
   "status": {
     "updated": "Erfolgreich aktualisiert",
@@ -497,6 +501,7 @@
       "accountPassword": "Passwort ändern",
       "about": "Info",
       "userPreferences": "Präferenzen",
+      "tabs": "Tabs",
       "branding": "Erscheinungsbild",
       "filesThumbnails": "Dateien & Miniaturansichten",
       "security": "Sicherheit",
@@ -591,6 +596,12 @@
       "viewPhotos": "Fotos",
       "documentsOpenInNewTab": "Dokumente in einem neuen Tab öffnen",
       "documentsOpenInNewTabHelp": "Eine Datei bekommt beim Öffnen einen eigenen Browser-Tab, sodass mehrere offen bleiben, während Sie weiter stöbern. Aus öffnet sie sich wie bisher über dem Ordner.",
+      "browseInTabs": "In Tabs arbeiten",
+      "browseInTabsHelp": "Mehrere Orte gleichzeitig offen halten — Ordner, Dokumente, den Papierkorb — jeden in einem Tab, wie es ein Dateimanager auf dem Schreibtisch tut. Aus: ein Ort zur Zeit, und über der Werkzeugleiste wird nichts gezeichnet.",
+      "closeTabsOnDoubleClick": "Tab per Doppelklick schließen",
+      "closeTabsOnDoubleClickHelp": "Ein Doppelklick irgendwo auf einem Tab schließt ihn, zusätzlich zum Kreuz.",
+      "preloadBackgroundTabs": "Im Hintergrund geöffnete Tabs vorbereiten",
+      "preloadBackgroundTabsHelp": "Ein Tab, der im Hintergrund geöffnet oder mit dem Fenster wiederhergestellt wurde, lädt sofort, statt zu warten, bis Sie ihn aufrufen. Ein so vorbereitetes Dokument wird im Editor geöffnet und gilt damit als in Bearbeitung.",
       "downloadMode": "Mehrere Elemente herunterladen",
       "downloadModeHelp": "Was beim Herunterladen von mehr als einem Element gleichzeitig geschieht. Ausgewählte Ordner kommen immer als ein Archiv.",
       "downloadModeZip": "Ein ZIP-Archiv",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "An einem Rand der Namensspalte ausgerichtet, bleiben sie in jeder Zeile an derselben Stelle; der Platz dafür bleibt frei, ob eine Zeile überfahren wird oder nicht.",
       "quickActionsPositionAfter": "Nach dem Namen",
       "quickActionsPositionStart": "Am Anfang der Namensspalte",
-      "quickActionsPositionEnd": "Am Ende der Namensspalte"
+      "quickActionsPositionEnd": "Am Ende der Namensspalte",
+      "reopenTabs": "Tabs beim nächsten Besuch wieder öffnen",
+      "reopenTabsHelp": "Aus kommt keiner Ihrer Tabs zurück, nur die angehefteten – wofür das Anheften da ist. An kommen alle zurück."
     },
     "thumbs": {
       "subtitle": "Vorschau-Miniaturen für Bilder und Videos anpassen.",
@@ -692,7 +705,10 @@
       "accessMode": "Zugriffsmodus",
       "noUsers": "Keine Benutzer verfügbar",
       "lockedBadge": "Gesperrt",
-      "lockedUntil": "Gesperrt bis {time}"
+      "lockedUntil": "Gesperrt bis {time}",
+      "removeTitle": "Benutzer entfernen",
+      "removeVolumeTitle": "Volume entfernen",
+      "newPasswordTitle": "Neues Passwort"
     },
     "userDetails": {
       "profileTab": "Profil",
@@ -914,7 +930,8 @@
       "loadFailed": "Die Passkeys dieses Kontos konnten nicht gelesen werden.",
       "addFailed": "Dieser Passkey konnte nicht hinzugefügt werden.",
       "cancelled": "Nichts wurde hinzugefügt: Der Browser wurde geschlossen oder es hat zu lange gedauert.",
-      "alreadyHere": "Dieses Gerät hat bereits einen Passkey für dieses Konto."
+      "alreadyHere": "Dieses Gerät hat bereits einen Passkey für dieses Konto.",
+      "renameTitle": "Passkey umbenennen"
     },
     "activity": {
       "title": "Aktivitätsprotokoll",
@@ -1000,7 +1017,9 @@
       "loadFailed": "Die Token konnten nicht geladen werden.",
       "createFailed": "Das Token konnte nicht ausgestellt werden.",
       "renameFailed": "Das Token konnte nicht umbenannt werden.",
-      "revokeFailed": "Das Token konnte nicht widerrufen werden."
+      "revokeFailed": "Das Token konnte nicht widerrufen werden.",
+      "renameTitle": "Token umbenennen",
+      "revokeTitle": "Token widerrufen"
     },
     "folderSize": {
       "title": "Ordnergrößen",
@@ -1014,6 +1033,12 @@
       "additional": "Zusätzliche Ausschlüsse",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Keine Pfade konfiguriert"
+    },
+    "tabs": {
+      "title": "Tabs",
+      "description": "Wie das Browsen in Tabs für alle auf dieser Installation funktioniert.",
+      "maxOpen": "Höchstzahl gleichzeitiger Tabs",
+      "maxOpenHelp": "Die Leiste scrollt nie: Die Reihe endet hier, statt Tabs unlesbar schmal zu machen."
     },
     "searchIndex": {
       "title": "Suchindex",
@@ -1032,6 +1057,68 @@
       "useSwitch": "Schalten Sie sie mit dem Schalter oben ein.",
       "locked": "Durch {variable} in der Umgebung festgelegt – das wird dort entschieden, nicht hier."
     }
+  },
+  "tabs": {
+    "strip": "Offene Tabs",
+    "openInNewTab": "In neuem Tab öffnen",
+    "openInNewTabs": "{count} in neuen Tabs öffnen",
+    "newTab": "Neuer Tab",
+    "moveLeft": "Nach links verschieben",
+    "moveRight": "Nach rechts verschieben",
+    "duplicate": "Tab duplizieren",
+    "pin": "Tab anheften",
+    "unpin": "Tab lösen",
+    "closeTab": "Tab schließen",
+    "closeOthers": "Die anderen Tabs schließen",
+    "closeAll": "Alle Tabs schließen",
+    "full": "Kein Platz für einen weiteren Tab (Grenze: {count})"
+  },
+  "compare": {
+    "title": "Vergleichen",
+    "versionOf": "Version von {name}",
+    "compareCount": "{count} Dateien vergleichen",
+    "differences": "{count} Unterschiede",
+    "identical": "Diese Dateien sind identisch",
+    "position": "{index} von {count}",
+    "next": "Nächster Unterschied (F8)",
+    "previous": "Voriger Unterschied (F7)",
+    "copyForward": "Diesen Unterschied von {from} nach {to} kopieren",
+    "copyBack": "Diesen Unterschied von {from} nach {to} kopieren",
+    "save": "{name} speichern",
+    "saved": "{name} gespeichert",
+    "saveFailed": "{name} konnte nicht gespeichert werden",
+    "onlyDifferences": "Nur die Unterschiede",
+    "wrap": "Lange Zeilen umbrechen",
+    "folded": "{count} identische Zeilen",
+    "needTwo": "Ein Vergleich braucht zwei oder drei Dateien.",
+    "failed": "Diese Dateien konnten nicht gelesen werden.",
+    "leaveUnsaved": "Zeilen wurden übernommen und nicht gespeichert. Trotzdem verlassen?",
+    "swap": "{left} und {right} vertauschen",
+    "saveShort": "Speichern",
+    "search": "Suchen und ersetzen",
+    "searchFor": "Suchen",
+    "replaceWith": "Ersetzen durch",
+    "searchIn": "Suchen in",
+    "everywhere": "Alle Dateien",
+    "matchCase": "Groß-/Kleinschreibung",
+    "matchPosition": "{index} von {count}",
+    "noMatch": "Kein Treffer",
+    "nextMatch": "Nächster Treffer",
+    "previousMatch": "Voriger Treffer",
+    "replace": "Ersetzen",
+    "replaceAll": "Alle ersetzen",
+    "replaced": "{count} ersetzt",
+    "editHint": "Doppelklicken, um diese Zeile zu bearbeiten",
+    "editKeys": "Enter teilt die Zeile, Rücktaste am Zeilenanfang hängt sie an die Zeile darüber",
+    "insertLine": "Zeile darunter einfügen",
+    "deleteLine": "Diese Zeile entfernen",
+    "nothingToFold": "Nichts zusammenzufalten: jede Zeile steht neben einem Unterschied",
+    "onlyDifferencesOf": "Nur die Unterschiede zeigen und {count} identische Zeilen einklappen",
+    "closeUnsaved": "Dieser Vergleich enthält übernommene, nicht gespeicherte Zeilen. Trotzdem schließen?",
+    "matchCount": "{count} Treffer",
+    "unsavedTitle": "Nicht gespeicherte Zeilen",
+    "mapHint": "Wo Sie in der Datei sind. Rot: nur links. Grün: nur rechts. Gelb: beide haben eine Zeile und sie unterscheiden sich. Klicken, um dorthin zu gehen.",
+    "pinMap": "Karte der Unterschiede offen lassen"
   },
   "mediaPreview": {
     "audioTrack": "Tonspur",
@@ -1271,6 +1358,7 @@
       "deleteSelected": "Auswahl löschen ({count})",
       "deleteAll": "Alle löschen",
       "preview": "Schreibgeschützt öffnen",
+      "compare": "Mit der aktuellen Datei vergleichen",
       "download": "Herunterladen",
       "restore": "Wiederherstellen",
       "rename": "Benennen…",

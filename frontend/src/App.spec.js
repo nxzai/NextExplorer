@@ -9,13 +9,6 @@ const dismissConfigWarning = vi.fn(() => {
   }
 });
 
-// The language somebody's account is set to is watched from here now, which
-// reaches a store. This test is about the configuration gate above it, and a
-// store it never exercises would only be a second thing to keep in step.
-vi.mock('@/composables/useAccountLanguage', () => ({
-  useAccountLanguage: () => {},
-}));
-
 vi.mock('@/composables/useConfigErrorGate', () => ({
   useConfigErrorGate: () => ({
     configError,
@@ -32,6 +25,66 @@ vi.mock('@/components/ConfigWarningNotice.vue', () => ({
   },
 }));
 
+// The account's language is the settings store's business, and this spec is
+// about the configuration gate: what belongs here is that the shell asks for
+// it at all, which the test at the bottom checks.
+const accountLanguage = vi.fn();
+vi.mock('@/composables/useAccountLanguage', () => ({
+  useAccountLanguage: () => accountLanguage(),
+}));
+
+// The tabs follow the address from the shell, for the same reason the language is
+// applied there: it has to hold across every screen and outlive the route changes
+// between them. Mocked here because this spec is about the configuration gate;
+// that the shell asks for it at all is checked below.
+const tabRouteSync = vi.fn();
+vi.mock('@/composables/tabNavigation', () => ({
+  useTabRouteSync: () => tabRouteSync(),
+}));
+
+vi.mock('@/components/TabStrip.vue', () => ({
+  default: { template: '<div data-test="tab-strip-stub"></div>' },
+}));
+
+// Every tab's open document, mounted here and only here: it has to outlive the
+// pages, or bringing a folder tab forward and going back would rebuild whatever
+// was open. Stubbed because this spec is about the configuration gate; that the
+// shell mounts it, once, is checked below.
+const previewHost = vi.fn();
+/**
+ * Every open shell, mounted here and only here — for the same reason the documents
+ * are: `/browse` and `/terminal` are two route records, so a host inside the browser
+ * layout was destroyed whenever the reader crossed between them, and an unmounted
+ * terminal is a killed shell.
+ */
+const terminals = vi.hoisted(() => ({ terminalEnabled: false, openIds: [] }));
+vi.mock('@/stores/features', () => ({ useFeaturesStore: () => terminals }));
+vi.mock('@/stores/terminal', () => ({ useTerminalStore: () => terminals }));
+// Marked as a module so Vue's async resolution reads it as one rather than asking the
+// mock for exports it does not have.
+vi.mock('@/components/TerminalHost.vue', () => ({
+  __esModule: true,
+  default: { template: '<div data-test="terminal-host-stub"></div>' },
+}));
+
+vi.mock('@/plugins/preview/PreviewHost.vue', () => ({
+  default: {
+    setup: () => previewHost(),
+    template: '<div data-test="preview-host-stub"></div>',
+  },
+}));
+
+// Whatever the application is asking, mounted here and only here, for the same reason
+// the documents are: the screens that ask are the ones on their way out. Stubbed, and
+// that the shell mounts it is checked below.
+const askDialog = vi.fn();
+vi.mock('@/components/AskDialog.vue', () => ({
+  default: {
+    setup: () => askDialog(),
+    template: '<div data-test="ask-dialog-stub"></div>',
+  },
+}));
+
 vi.mock('@/components/ConfigErrorScreen.vue', () => ({
   default: {
     props: ['mode', 'expectedOrigin', 'requestOrigin'],
@@ -45,6 +98,85 @@ describe('App config error handling', () => {
   beforeEach(() => {
     configError.value = null;
     dismissConfigWarning.mockClear();
+    accountLanguage.mockClear();
+    tabRouteSync.mockClear();
+    previewHost.mockClear();
+    askDialog.mockClear();
+  });
+
+  /**
+   * Asked for by the shell and nowhere else, so it holds for every screen —
+   * a folder, a document, the editor — and outlives the route changes between
+   * them (nxzai/NextExplorer discussion #408).
+   */
+  it('puts the account’s language on screen', () => {
+    mount(App, { global: { stubs: { RouterView: true } } });
+
+    expect(accountLanguage).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * Once, and from the shell: the strip is only drawn where a tab can be, and the
+   * tabs have to keep up with the address wherever it goes. Asked for in a screen
+   * instead, every folder row that wanted the middle-button gesture would have
+   * installed another copy of the same watcher.
+   */
+  it('has the tabs follow the address, once', () => {
+    mount(App, { global: { stubs: { RouterView: true } } });
+
+    expect(tabRouteSync).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * Here rather than in the pages that show documents, and that is the point:
+   * a surface mounted by a page is built when that page is and thrown away when
+   * it is, so bringing a folder tab forward and coming back re-opened an
+   * ONLYOFFICE document from nothing — new connection, no cursor, no undo.
+   */
+  it('keeps every tab’s document in one place, mounted once', () => {
+    const wrapper = mount(App, { global: { stubs: { RouterView: true } } });
+
+    expect(previewHost).toHaveBeenCalledTimes(1);
+    expect(wrapper.findAll('[data-test="preview-host-stub"]')).toHaveLength(1);
+  });
+
+  /**
+   * And whatever the application is asking, in the same one place and for the same
+   * reason: a dialog belonging to a page would leave with the page that is asking to
+   * be allowed to leave.
+   */
+  it('keeps the question the application asks in one place too', () => {
+    const wrapper = mount(App, { global: { stubs: { RouterView: true } } });
+
+    expect(askDialog).toHaveBeenCalledTimes(1);
+    expect(wrapper.findAll('[data-test="ask-dialog-stub"]')).toHaveLength(1);
+  });
+
+  /**
+   * And every open shell, in that same one place.
+   *
+   * A host inside the browser layout was destroyed whenever the reader crossed between
+   * `/browse` and `/terminal` — two route records, two layout instances — and every
+   * shell went with it: coming back to a terminal tab found a new one, with the slide
+   * from the right playing again and what had been typed gone.
+   */
+  it('keeps every open shell in one place too', async () => {
+    terminals.terminalEnabled = true;
+    terminals.openIds = ['tab-1'];
+
+    const wrapper = mount(App, { global: { stubs: { RouterView: true } } });
+    await flushPromises();
+
+    expect(wrapper.findAll('[data-test="terminal-host-stub"]')).toHaveLength(1);
+    terminals.terminalEnabled = false;
+    terminals.openIds = [];
+  });
+
+  /** And nothing at all when no shell is open: xterm is carried in only when asked. */
+  it('draws no shell host when nothing has asked for one', () => {
+    const wrapper = mount(App, { global: { stubs: { RouterView: true } } });
+
+    expect(wrapper.find('[data-test="terminal-host-stub"]').exists()).toBe(false);
   });
 
   it('shows a dismissible warning for PUBLIC_URL mismatches without blocking the router', async () => {

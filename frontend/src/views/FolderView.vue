@@ -9,6 +9,8 @@ import { useFolderSizeStore } from '@/stores/folderSize';
 import { useVolumeUsageStore } from '@/stores/volumeUsage';
 import { useFeaturesStore } from '@/stores/features';
 import { useFolderScrollStore } from '@/stores/folderScroll';
+import { useTabsStore } from '@/stores/tabs';
+import { useTabLoadingStore } from '@/stores/tabLoading';
 import { revealOffset } from '@/utils/revealOffset';
 import LoadingIcon from '@/icons/LoadingIcon.vue';
 import { useSelection } from '@/composables/itemSelection';
@@ -36,6 +38,7 @@ import {
 } from '@/utils/folderKeyboard';
 import { useFileDragDrop } from '@/composables/useFileDragDrop';
 import { useNavigation } from '@/composables/navigation';
+import { useOpenItemInTab } from '@/composables/itemAddress';
 import { useFileActions } from '@/composables/fileActions';
 import { useDeleteConfirm } from '@/composables/useDeleteConfirm';
 import { useOperationTasksStore } from '@/stores/operationTasks';
@@ -82,6 +85,9 @@ const handleCurrentFolderDrop = (event) => {
   handleDrop(event, currentFolderDropTarget.value);
 };
 const { openItem, goNext, goPrev, goUp } = useNavigation();
+// Command (or control) with the key that opens things: a tab behind, as a
+// browser does with a link.
+const { openItemInTab } = useOpenItemInTab();
 const actions = useFileActions();
 const { isDeleteConfirmOpen } = useDeleteConfirm();
 
@@ -106,9 +112,60 @@ let keyboardTypeaheadTimer = null;
 // BrowserLayout keys this view by full route, so navigating into a directory
 // replaces the component. Capture this instance's folder now: during unmount
 // the reactive route may already point to the destination.
-const scrollPositionKey = `${normalizePath(
+const ownFolderPath = normalizePath(
   Array.isArray(route.params.path) ? route.params.path.join('/') : route.params.path || ''
-)}::${settings.view}`;
+);
+
+/**
+ * Where the reader was, keyed by folder *and* by the view it was seen in.
+ *
+ * The view belongs in the key because the same folder is a different height in
+ * each of them, so a position taken in one says nothing about the other. What it
+ * cannot be is the view at the moment this instance was built: how a folder is
+ * shown is its own preference, and walking into another folder applies that
+ * folder's. Coming back, the window could be in a different view from the one this
+ * tab was left in — so a key frozen at setup looked up a position that belonged to
+ * a view nobody was in, found an old one, and put the reader two hundred pixels
+ * down a folder they had left four thousand pixels down. The selection came back,
+ * because a selection is not keyed by a view, and that is exactly how it was
+ * reported.
+ *
+ * So the folder is captured and the view is read when it is asked for.
+ */
+const scrollKey = () => `${ownFolderPath}::${settings.view}`;
+
+/**
+ * The same folder, in this tab.
+ *
+ * Two tabs can be on one folder and be in different places in it, so the tab is
+ * part of the key. The tab is taken once, like everything else about this
+ * instance: the keyed router view builds a new one of these for every address, so
+ * the tab in front when it is built is the tab it belongs to.
+ */
+const tabsStore = useTabsStore();
+const ownTabId = tabsStore.activeId;
+const tabLoading = useTabLoadingStore();
+const placeKey = () => `${ownTabId}::${scrollKey()}`;
+
+/**
+ * Whether this is a tab coming back rather than a folder being opened.
+ *
+ * The tab says so itself — bringing one forward and walking into a folder are
+ * indistinguishable from here, both being a new address on the same route, and a
+ * guess made from what the store happens to hold calls a search result landing in
+ * a folder somebody was just in a "return" too.
+ *
+ * And it has to already hold the folder: a tab brought forward before it ever
+ * listed anything has nothing to come back to.
+ */
+const cameForward = tabsStore.takeBroughtForward(tabsStore.activeId);
+const comingBack = () =>
+  cameForward &&
+  fileStore.getCurrentPathItems.length > 0 &&
+  normalizePath(fileStore.currentPath || '') ===
+    normalizePath(
+      Array.isArray(route.params.path) ? route.params.path.join('/') : route.params.path || ''
+    );
 
 const getScrollTarget = () => {
   const localTarget = dropTargetRef.value;
@@ -119,18 +176,75 @@ const getScrollTarget = () => {
   return document.scrollingElement || document.documentElement;
 };
 
+/**
+ * Where the reader is, written down — but only when there is something to write.
+ *
+ * Both answers come from whatever is actually scrolling, and the catch is what
+ * happens when nothing is. On the way out the listing is taken off screen before
+ * the last scroll events stop arriving, and the fallback behind it is the page,
+ * which never scrolls and is therefore always at zero. Writing that down
+ * overwrote where the reader was with the top of the folder, and the symptom was
+ * the odd one: coming back, the file they had chosen was still chosen — that is
+ * remembered separately — while the folder was scrolled to the top under it.
+ *
+ * So nothing is written from a container that cannot scroll. It has nothing to
+ * say about where anybody was, and silence keeps what was already known.
+ */
+/**
+ * Whether this instance still speaks for where the reader is.
+ *
+ * Bringing another tab forward is the moment this goes wrong, and the tab changes
+ * before the address does. This listing reads the folder of whichever tab is in
+ * front, so the instant that is somebody else's tab it is drawing somebody else's
+ * folder — a handful of rows where there were twelve hundred. The container becomes
+ * shorter than the position it was holding, the browser clamps that position, and
+ * the clamp arrives as an ordinary scroll event. Four thousand pixels down became
+ * two hundred, and two hundred is what was written down, a moment before anybody
+ * could come back to it.
+ *
+ * Which is why it only ever happened in long folders: a short one has no position
+ * to lose. And why the selection survived — a selection is not a measurement of a
+ * container that had just been emptied.
+ *
+ * So this instance speaks only while the tab in front is its own and the address is
+ * still its own. After that it has nothing to say about where anybody is.
+ */
+const stillOurs = () =>
+  ownTabId === tabsStore.activeId &&
+  normalizePath(
+    Array.isArray(route.params.path) ? route.params.path.join('/') : route.params.path || ''
+  ) === ownFolderPath;
+
 const rememberScrollPosition = () => {
+  if (!stillOurs()) return;
   const target = getScrollTarget();
-  if (target) {
-    folderScrollStore.remember(scrollPositionKey, target.scrollTop);
+  if (target && target.scrollHeight - target.clientHeight > 2) {
+    folderScrollStore.remember(scrollKey(), target.scrollTop);
+    // And for this tab, which is a different question with a different answer:
+    // the tab never left this folder, another one simply came in front of it, so
+    // where it was is always worth putting back.
+    folderScrollStore.rememberTabPlace(placeKey(), target.scrollTop);
   }
   rememberActiveItem();
+};
+
+/**
+ * Where this tab was, taken on the way out and not touched again.
+ *
+ * The scroll handler remembers on every event, and a listing being taken off
+ * screen produces a few last ones. Freezing costs nothing and says what is meant:
+ * after this, where the reader was is settled.
+ */
+const freezeWhereItIs = () => {
+  if (!canRememberScroll.value) return;
+  rememberScrollPosition();
+  canRememberScroll.value = false;
 };
 
 const rememberActiveItem = (itemKey = keyboardActiveItemKey.value) => {
   const selectedItem = fileStore.selectedItems[fileStore.selectedItems.length - 1];
   const key = itemKey || getItemKey(selectedItem);
-  if (key) folderScrollStore.rememberActiveItem(scrollPositionKey, key);
+  if (key) folderScrollStore.rememberActiveItem(scrollKey(), key);
 };
 
 /**
@@ -349,10 +463,57 @@ const waitForScrollLayout = () =>
 
 const applySavedScrollPosition = (savedScrollTop) => {
   const target = getScrollTarget();
-  if (!target) return;
+  if (!target) return 0;
 
   const maxScrollTop = Math.max(0, target.scrollHeight - target.clientHeight);
   target.scrollTop = Math.min(savedScrollTop, maxScrollTop);
+  return maxScrollTop;
+};
+
+/**
+ * Put the listing back where it was, and keep asking until it holds.
+ *
+ * One attempt is enough for a folder of twenty and never enough for a folder of
+ * two thousand. A long list is not as tall as it will be at the moment it is
+ * asked: the virtual window has not measured its viewport yet, or the
+ * progressive one is still on its first five hundred rows, so the container's
+ * height is short and the browser clamps the position to what fits — which for a
+ * container that is not scrollable yet is the top.
+ *
+ * So it is asked again on each of the next few frames, until the list is tall
+ * enough to hold the answer. It stops as soon as it holds, and after a fixed
+ * number of frames whatever happens, because a folder that has genuinely lost its
+ * length — files deleted while this tab was away — is never going to be that tall.
+ *
+ * It does not try to tell whether the reader has scrolled in the meantime. The
+ * first version did, by watching whether the position moved between two frames,
+ * and it was wrong about the one case that matters: setting the position of a
+ * virtual list makes it draw different rows, which changes its height for a frame,
+ * which makes the browser clamp the position — a move that looks exactly like a
+ * hand on the wheel. It gave up there, in the folders the whole thing exists for.
+ * A third of a second is not long enough for anybody to have scrolled anywhere on
+ * purpose, and if they do, the loop is over before it could fight them for long.
+ */
+const FRAMES_TO_SETTLE_SCROLL = 20;
+
+const settleScrollAt = async (savedScrollTop) => {
+  if (!(savedScrollTop > 0)) return false;
+
+  for (let frame = 0; frame < FRAMES_TO_SETTLE_SCROLL; frame += 1) {
+    // A progressively rendered list is only as tall as the rows it has drawn.
+    if (!useVirtualList.value && visibleLimit.value < sortedItems.value.length) {
+      visibleLimit.value = sortedItems.value.length;
+      await nextTick();
+    }
+
+    const maxScrollTop = applySavedScrollPosition(savedScrollTop);
+    const placed = getScrollTarget()?.scrollTop ?? 0;
+    if (maxScrollTop >= savedScrollTop && Math.abs(placed - savedScrollTop) <= 1) return true;
+
+    await waitForScrollLayout();
+  }
+
+  return false;
 };
 
 const restoreKeyboardActiveItem = (itemKey) => {
@@ -372,7 +533,7 @@ const restoreScrollPosition = async () => {
   // Landing on a named item wins over coming back to where this folder was
   // last left: one is what the reader just asked for, the other is where they
   // happened to be some time ago.
-  const restoreState = folderScrollStore.consumeRestoreState(scrollPositionKey);
+  const restoreState = folderScrollStore.consumeRestoreState(scrollKey(), ownTabId);
   if (await revealPendingItem()) return;
   if (!restoreState.permitted) return;
 
@@ -390,13 +551,9 @@ const restoreScrollPosition = async () => {
   await nextTick();
   await waitForScrollLayout();
 
-  // The virtual window reacts to scrollTop, so restoring it changes the DOM
-  // one frame later. Apply the same saved value again after that frame. This
-  // also covers an IntersectionObserver extending a progressively rendered
-  // list immediately after it becomes visible.
-  applySavedScrollPosition(savedScrollTop);
-  await waitForScrollLayout();
-  applySavedScrollPosition(savedScrollTop);
+  // The virtual window reacts to scrollTop, so restoring it changes the DOM one
+  // frame later, and a list of any length is not yet as tall as it will be.
+  await settleScrollAt(savedScrollTop);
   updateScrollState();
 };
 
@@ -659,6 +816,16 @@ const handleFolderKeydown = (event) => {
   if (event.key === 'Enter' || (event.key === 'ArrowRight' && selected?.kind === 'directory')) {
     if (!selected) return;
     event.preventDefault();
+    // The modifier a browser uses to open a link in a tab, on the key that opens
+    // things here. `metaKey` first: on a Mac the command key is the one people
+    // reach for, and control there means something else entirely.
+    //
+    // It is the *keyboard* that carries this, because on a row the same modifier
+    // with a click already means "and this one too" — taking multiple selection
+    // away to offer a tab would be a poor trade. The middle button and the row's
+    // own menu say it with a pointer.
+    if ((event.metaKey || event.ctrlKey) && openItemInTab(selected, fileStore.currentPath || ''))
+      return;
     openItem(selected);
     return;
   }
@@ -720,6 +887,10 @@ const loadFiles = async () => {
   loading.value = true;
   canRememberScroll.value = false;
   resetVisibleItems();
+  // And said on the tab as well, where the reader can see it from anywhere: this is
+  // the same wait, and a tab that was opened in the background is having it while
+  // somebody is looking at something else.
+  const doneLoading = tabLoading.begin(ownTabId);
   const path = route.params.path || '';
   try {
     await fileStore.fetchPathItems(path);
@@ -728,6 +899,7 @@ const loadFiles = async () => {
     console.error('Failed to load directory contents', error);
   } finally {
     loading.value = false;
+    doneLoading();
     await setupLoadMoreObserver();
     await nextTick();
     await restoreScrollPosition();
@@ -737,7 +909,87 @@ const loadFiles = async () => {
   }
 };
 
-onMounted(loadFiles);
+/**
+ * Coming back to a tab: what is on screen is what this tab was holding, and it
+ * appears at once — no spinner, no lost selection, and back where it was.
+ */
+const returnToFolder = async () => {
+  loading.value = false;
+  // As it was left, which includes how it was shown: how a folder is shown is its
+  // own preference, and walking into another folder applied that one to the window.
+  // Coming back to a tab that was left in the list view and finding it in the grid
+  // is wrong on its own, and it also asks the wrong question about where the reader
+  // was — the position is remembered per view, because the same folder is a
+  // different height in each.
+  settings.restoreFolderPreferences(ownFolderPath);
+  await nextTick();
+  await setupLoadMoreObserver();
+  await nextTick();
+  /**
+   * Where this tab was — and, failing that, where this folder was.
+   *
+   * Two memories answer the same question from different angles. The tab's is the
+   * precise one: two tabs on one folder can be in different places in it, so the
+   * tab is part of the key. The folder's is the one that has been putting readers
+   * back where they were since long before tabs existed — it is what a walk back
+   * up the path reads, and it demonstrably works.
+   *
+   * So the tab's answer is preferred and the folder's is the fallback, rather than
+   * the tab's being the only one asked. A tab that never left the folder has the
+   * same answer under both keys, so the fallback costs nothing when the first one
+   * is there — and when it is not, for any of the reasons a tab place can be
+   * missing, the reader still lands where they were instead of at the top.
+   */
+  // Asked as "has this tab a place here", not as a number: the top is an answer, and
+  // as a number it is zero, which reads as no answer at all. A tab left at the top
+  // therefore fell through to the folder's memory — shared by every tab on that
+  // folder — and came back wherever another tab had last been left in it.
+  // Asked as "has this tab a place here", not as a number: the top is an answer, and
+  // as a number it is zero, which reads as no answer at all. A tab left at the top
+  // therefore fell through to the folder's memory — shared by every tab on that
+  // folder — and came back wherever another tab had last been left in it.
+  const savedScrollTop = folderScrollStore.hasTabPlace(placeKey())
+    ? folderScrollStore.tabPlace(placeKey())
+    : folderScrollStore.get(scrollKey());
+  if (savedScrollTop > 0) {
+    await waitForScrollLayout();
+    // Asked for over several frames: a folder of two thousand files is not as
+    // tall as it will be on the frame it is asked, and a place the container
+    // cannot hold yet is a place the browser quietly turns into the top.
+    await settleScrollAt(savedScrollTop);
+  }
+  canRememberScroll.value = true;
+  updateScrollState();
+  resetIdleThumbnailPrefetch();
+
+  /**
+   * Somebody else may have changed the folder while this tab was behind another.
+   *
+   * Asked for quietly: the listing is replaced under whatever is selected, and
+   * nothing about it moves the reader. That last part took two goes. Replacing the
+   * rows makes the listing briefly shorter than it was, and a browser handed a
+   * container that can no longer hold the position clamps it — so the reader,
+   * having just been put back four thousand pixels down, was taken to two hundred
+   * the moment the answer arrived. Whether it happened at all depended on whether
+   * the answer beat the loop that was still placing them, which is why it came and
+   * went: a slower network made it certain.
+   *
+   * So the position is placed again, and only where it was clamped — a position
+   * that is still where it was put, or further down, is the reader's own and is
+   * left alone.
+   */
+  void fileStore
+    .fetchPathItems(route.params.path || '', { preserveInteraction: true })
+    .then(async () => {
+      if (!(savedScrollTop > 0)) return;
+      const now = getScrollTarget()?.scrollTop ?? 0;
+      if (now >= savedScrollTop - 1) return;
+      await settleScrollAt(savedScrollTop);
+    })
+    .catch(() => {});
+};
+
+onMounted(() => (comingBack() ? returnToFolder() : loadFiles()));
 
 // Populate folder sizes for the directories currently in view (one batch
 // request; O(1) index reads server-side). Re-runs whenever the listing changes.
@@ -832,9 +1084,7 @@ const liveRefreshTimer = window.setInterval(() => {
 // The keyed RouterView normally unmounts this component on folder changes, but
 // this guard runs before the route transition starts. It captures the actual
 // scroll container before a view transition or layout change can reset it.
-onBeforeRouteLeave(() => {
-  rememberScrollPosition();
-});
+onBeforeRouteLeave(freezeWhereItIs);
 
 watch(hasMoreItems, () => {
   setupLoadMoreObserver();
@@ -977,7 +1227,7 @@ useEventListener(window, 'keydown', handleFolderKeydown);
 
 onBeforeUnmount(() => {
   stopIdleThumbnailPrefetch();
-  rememberScrollPosition();
+  freezeWhereItIs();
   stopResize();
   window.clearInterval(liveRefreshTimer);
   if (onViewFollowupTimer) window.clearTimeout(onViewFollowupTimer);
@@ -1010,6 +1260,8 @@ onBeforeUnmount(() => {
         <div
           :class="[gridClasses, 'min-h-full', settings.view === 'list' ? 'pb-5' : '']"
           :style="gridStyle"
+          :data-view="settings.view"
+          data-test="listing"
           @dragover.self="handleCurrentFolderDragOver"
           @dragleave.self="handleCurrentFolderDragLeave"
           @drop.self="handleCurrentFolderDrop"

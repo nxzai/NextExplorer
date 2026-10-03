@@ -62,11 +62,6 @@ const goHome = async () => {
   await router.push('/browse/');
 };
 
-const currentFolderPath = computed(() => {
-  const p = route.params.path;
-  return Array.isArray(p) ? p.join('/') : p || '';
-});
-
 // Drives lazy rendering of the folder quick-actions (only while hovered).
 const crumbHover = ref(false);
 
@@ -76,7 +71,7 @@ const refreshFolder = async () => {
   if (refreshing.value) return;
   refreshing.value = true;
   try {
-    await fileStore.fetchPathItems(currentFolderPath.value);
+    await fileStore.refresh();
   } finally {
     refreshing.value = false;
   }

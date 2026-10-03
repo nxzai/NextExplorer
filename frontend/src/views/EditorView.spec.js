@@ -61,6 +61,49 @@ vi.mock('vue-router', async () => {
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key) => key }) }));
 
+// This application's own tabs. A `.txt` or a `.md` opened in one is closed by
+// closing that tab, exactly as an office document is — the rule for *which* tab
+// may be closed is `tabNavigation`'s, with its own spec, so what is asked here is
+// that this view asks it, and asks it before offering the window to the browser.
+const closeOwn = vi.fn(() => false);
+const appTabs = vi.hoisted(() => ({ activeId: 'tab-1', tabs: [{ id: 'tab-1' }] }));
+/**
+ * What the application asks, in its own dialog rather than the browser's box. Answers
+ * with a promise, as the real one does: it is part of the page, so it cannot answer
+ * before it has been read.
+ */
+const asked = vi.hoisted(() => ({ ask: vi.fn(async () => false), askFor: vi.fn() }));
+vi.mock('@/composables/useAsk', () => ({ useAsk: () => asked }));
+
+vi.mock('@/composables/tabNavigation', () => ({
+  useTabNavigation: () => ({
+    get tabs() {
+      return appTabs;
+    },
+    closeOwn: (...args) => closeOwn(...args),
+  }),
+}));
+
+// What a tab holds on to between two glances. A faithful stand-in rather than the
+// store itself: the rule about *which* address a draft belongs to is the store's,
+// and `stores/editorDrafts.spec.js` holds it to that.
+const drafts = vi.hoisted(() => new Map());
+// Which tabs are still working, so the strip can say so. A stand-in: whether the
+// work is a listing or a file is this screen's business, drawing it is the strip's.
+vi.mock('@/stores/tabLoading', () => ({
+  useTabLoadingStore: () => ({ begin: () => () => {}, isLoading: () => false }),
+}));
+vi.mock('@/stores/editorDrafts', () => ({
+  useEditorDraftsStore: () => ({
+    keep: (key, address, where) => drafts.set(key, { address, ...where }),
+    forget: (key) => drafts.delete(key),
+    placeFor: (key, address) => {
+      const draft = drafts.get(key);
+      return draft && draft.address === address ? draft : null;
+    },
+  }),
+}));
+
 const folderScroll = vi.hoisted(() => ({ permitExplicitRestore: vi.fn() }));
 // The instance's name, for the tab's title, as Settings → Branding set it.
 vi.mock('@/stores/appSettings', () => ({
@@ -78,18 +121,54 @@ vi.mock('@/stores/versionsPanel', () => ({ useVersionsPanelStore: () => versions
  * the same promise: a document, a way to type into it, and whether it differs
  * from what was last read or saved.
  */
-const surface = vi.hoisted(() => ({ view: null, current: null }));
+const surface = vi.hoisted(() => ({
+  view: null,
+  current: null,
+  restored: [],
+  settlingWhenRestored: null,
+}));
 
 vi.mock('@/components/editor/CodeSurface.vue', async () => {
-  const { defineComponent: define, onMounted, onBeforeUnmount } = await import('vue');
+  const {
+    defineComponent: define,
+    onMounted,
+    onBeforeUnmount,
+    getCurrentInstance,
+    watch,
+    h,
+  } = await import('vue');
   return {
     default: define({
       name: 'CodeSurfaceStub',
       props: ['content', 'extensions', 'autofocus'],
       emits: ['ready', 'edit', 'dirty-change'],
       setup(props, { emit, expose }) {
+        // A different content is a different document, as the real surface has it:
+        // replaced, and not an unsaved change. Without this the stand-in ignored the
+        // file being handed to it again, which is what the quiet check after a tab
+        // comes back does when somebody else has written to it.
+        watch(
+          () => props.content,
+          (next) => {
+            if (next === text) return;
+            text = next;
+            saved = next;
+            emit('dirty-change', false);
+          }
+        );
+        // This stand-in's own element, so what the page puts on the editor can be
+        // read without attaching the whole wrapper to the document.
+        const instance = getCurrentInstance();
         let text = props.content;
         let saved = props.content;
+        // Where the cursor is and how far down the editor was, which is the rest
+        // of what a tab holds on to.
+        let selection = { anchor: 0, head: 0 };
+        const scrollDOM = { scrollTop: 0 };
+        // The line at the top of the screen, which is what the real surface
+        // answers with and what a pixel cannot stand in for — see `place()` in
+        // `components/editor/CodeSurface.vue`.
+        let topLine = 0;
         const handle = {
           typeText: (value) => {
             text = value;
@@ -101,6 +180,48 @@ vi.mock('@/components/editor/CodeSurface.vue', async () => {
             saved = doc;
             emit('dirty-change', text !== saved);
           },
+          // Where the reader is, which the real surface answers from CodeMirror
+          // and this one answers from the two values it keeps. `topLine` is null
+          // because nothing here has a layout — which is exactly the case the
+          // real one has to survive, and why it keeps a line as well as a pixel.
+          place: () => ({
+            selection: { ...selection },
+            scrollTop: scrollDOM.scrollTop,
+            topLine,
+          }),
+          restorePlace: (kept) => {
+            if (!kept) return;
+            // What the page was showing at the instant the place went back in: the
+            // editor is meant to be out of sight until then, so that the file does
+            // not appear at the top and jump to the line somebody was reading.
+            surface.settlingWhenRestored = instance?.vnode?.el?.getAttribute?.('data-settling');
+            surface.restored.push(kept);
+            if (kept.selection) selection = { ...kept.selection };
+            if (kept.scrollTop > 0) scrollDOM.scrollTop = kept.scrollTop;
+            if (Number.isFinite(kept.topLine)) topLine = kept.topLine;
+          },
+          // What the screen reaches for when it puts a kept place back: an
+          // ordinary edit for the text — which is how "unsaved" stays the
+          // editor's own comparison with the file rather than something the page
+          // decides — and a selection and a scroll that change no document at
+          // all, so neither of them can make a file look edited.
+          view: {
+            get state() {
+              return {
+                doc: { toString: () => text, length: text.length },
+                selection: { main: selection },
+              };
+            },
+            scrollDOM,
+            dispatch: ({ changes, selection: to }) => {
+              if (changes) {
+                text = changes.insert;
+                emit('edit');
+                emit('dirty-change', text !== saved);
+              }
+              if (to) selection = { ...to };
+            },
+          },
         };
         // What the screen reaches through its template ref, and what the tests
         // type through.
@@ -110,7 +231,10 @@ vi.mock('@/components/editor/CodeSurface.vue', async () => {
         onBeforeUnmount(() => {
           if (surface.current === handle) surface.current = null;
         });
-        return () => null;
+        // A real element, so what the page puts on the editor — the class that
+        // holds it back while the reader is being put back where they were — lands
+        // somewhere a test can read it.
+        return () => h('div');
       },
     }),
   };
@@ -164,20 +288,33 @@ const type = async (view, text) => {
 let historyLength = 3;
 
 beforeEach(() => {
+  asked.ask.mockClear();
+  asked.ask.mockResolvedValue(false);
   Object.defineProperty(window.history, 'length', {
     configurable: true,
     get: () => historyLength,
   });
   historyLength = 3;
+  closeOwn.mockClear();
+  closeOwn.mockReturnValue(false);
+  appTabs.activeId = 'tab-1';
+  appTabs.tabs = [{ id: 'tab-1' }];
+  drafts.clear();
   vi.spyOn(window, 'close').mockImplementation(() => {});
   localStorage.clear();
   surface.view = { dispatch: vi.fn() };
   surface.current = null;
+  surface.restored.length = 0;
+  surface.settlingWhenRestored = null;
   languageData.markdown.load.mockClear();
   languageData.json.load.mockClear();
   shared.guards.length = 0;
   Object.values(api).forEach((fn) => fn.mockClear());
   api.fetchFileContent.mockResolvedValue({ content: 'hello' });
+  // Re-armed, not merely cleared: `mockClear` leaves an implementation in place,
+  // and the test that holds a write open forever left every later test awaiting
+  // a promise that never settles.
+  api.saveFileContent.mockResolvedValue({});
   api.fetchSharedFileContent.mockResolvedValue({
     content: 'shared hello',
     name: 'notes.md',
@@ -452,10 +589,43 @@ describe('leaving the editor', () => {
     historyLength = 1;
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(window.close).toHaveBeenCalled();
     expect(router.replace).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The same cross, in one of this application's tabs.
+   *
+   * A `.txt` and a `.md` come here rather than to the preview, so without this
+   * the cross of half the documents somebody opens in a tab left that tab sitting
+   * on a folder listing — and the office documents beside it closed theirs.
+   */
+  it('closes the tab of this application it was opened in', async () => {
+    closeOwn.mockReturnValue(true);
+    historyLength = 1;
+    const view = await mountEditor();
+
+    await view.requestClose();
+
+    expect(closeOwn).toHaveBeenCalled();
+    // Asked first, or shutting a file would take the browser window with it.
+    expect(window.close).not.toHaveBeenCalled();
+    expect(router.replace).not.toHaveBeenCalled();
+  });
+
+  /** Unsaved work is asked about before anything is closed, tab or window. */
+  it('asks before closing its tab when there is unsaved work', async () => {
+    closeOwn.mockReturnValue(true);
+    asked.ask.mockResolvedValue(false);
+    const view = await mountEditor();
+    await type(view, 'unsaved');
+
+    await view.requestClose();
+
+    expect(asked.ask).toHaveBeenCalled();
+    expect(closeOwn).not.toHaveBeenCalled();
   });
 
   // The tab somebody opened the whole application in is also "created by web
@@ -464,7 +634,7 @@ describe('leaving the editor', () => {
   it('does not close a tab that has been somewhere else', async () => {
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(window.close).not.toHaveBeenCalled();
     expect(router.replace).toHaveBeenCalledWith('/browse/Docs');
@@ -473,7 +643,7 @@ describe('leaving the editor', () => {
   it('goes back to the folder the file lives in', async () => {
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(router.replace).toHaveBeenCalledWith('/browse/Docs');
   });
@@ -482,7 +652,7 @@ describe('leaving the editor', () => {
     route().params = { path: 'notes.md' };
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(router.replace).toHaveBeenCalledWith('/browse');
   });
@@ -491,43 +661,40 @@ describe('leaving the editor', () => {
     asShare();
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(router.replace).toHaveBeenCalledWith('/share/tok');
   });
 
   /** Leaving with unsaved work is a decision, not a side effect of a click. */
   it('asks first when there is unsaved work', async () => {
-    const confirmed = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    asked.ask.mockResolvedValue(false);
     const view = await mountEditor();
     await type(view, 'unsaved');
 
-    view.requestClose();
+    await view.requestClose();
 
-    expect(confirmed).toHaveBeenCalled();
+    expect(asked.ask).toHaveBeenCalled();
     expect(router.replace).not.toHaveBeenCalled();
-    confirmed.mockRestore();
   });
 
   it('leaves when the answer is yes', async () => {
-    const confirmed = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    asked.ask.mockResolvedValue(true);
     const view = await mountEditor();
     await type(view, 'unsaved');
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(router.replace).toHaveBeenCalled();
-    confirmed.mockRestore();
   });
 
   it('does not ask when there is nothing unsaved', async () => {
-    const confirmed = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    asked.ask.mockResolvedValue(true);
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
-    expect(confirmed).not.toHaveBeenCalled();
-    confirmed.mockRestore();
+    expect(asked.ask).not.toHaveBeenCalled();
   });
 
   /**
@@ -535,17 +702,16 @@ describe('leaving the editor', () => {
    * one moment when saying yes to the question must not be enough.
    */
   it('refuses to leave in the middle of a write', async () => {
-    const confirmed = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    asked.ask.mockResolvedValue(true);
     const view = await mountEditor();
     await type(view, 'unsaved');
     api.saveFileContent.mockImplementation(() => new Promise(() => {}));
     view.saveFile();
     await flushPromises();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(router.replace).not.toHaveBeenCalled();
-    confirmed.mockRestore();
   });
 
   /**
@@ -557,7 +723,9 @@ describe('leaving the editor', () => {
 
     shared.guards.forEach((guard) => guard({ name: 'FolderView', params: { path: 'Docs' } }));
 
-    expect(folderScroll.permitExplicitRestore).toHaveBeenCalledWith('Docs');
+    // Named for this tab: the folder's memory is shared by every tab on it, and so
+    // was the permission to read it.
+    expect(folderScroll.permitExplicitRestore).toHaveBeenCalledWith('Docs', 'tab-1');
   });
 
   it('says nothing to a folder it was not editing inside', async () => {
@@ -633,7 +801,7 @@ describe('reading a file from the trash', () => {
     await type(view, 'changed anyway');
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(confirm).not.toHaveBeenCalled();
     expect(router.replace).toHaveBeenCalledWith({
@@ -647,7 +815,7 @@ describe('reading a file from the trash', () => {
     asTrash(['run.sh']);
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(router.replace).toHaveBeenCalledWith({ name: 'Trash', query: { item: 'id-1' } });
   });
@@ -656,7 +824,7 @@ describe('reading a file from the trash', () => {
     asTrash([]);
     const view = await mountEditor();
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(api.getTrashFileText).toHaveBeenCalledWith('id-1', '');
     expect(router.replace).toHaveBeenCalledWith({ name: 'Trash', query: {} });
@@ -737,7 +905,7 @@ describe('reading an earlier version of a file', () => {
     await type(view, 'changed anyway');
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
 
-    view.requestClose();
+    await view.requestClose();
 
     expect(confirm).not.toHaveBeenCalled();
     expect(versionsPanel.openPath).toHaveBeenCalledWith('Docs/notes.md');
@@ -972,5 +1140,316 @@ describe('wrapping lines', () => {
 
     expect(view.isLineWrapping).toBe(true);
     expect(surface.view.dispatch).toHaveBeenCalled();
+  });
+});
+
+/**
+ * What was typed and never saved, when another tab comes forward.
+ *
+ * This page is unmounted the moment a tab is brought forward, so everything typed
+ * since the last save went with it — silently, for a click that never said
+ * "discard". A document open in the preview does not have this problem: its
+ * session lives in the manager and outlives the page. This is the same promise
+ * for the one kind of document that is not a preview.
+ */
+describe('what a tab holds on to', () => {
+  /** A second tab, brought forward: the page goes, the tab stays on the file. */
+  const anotherTabComesForward = async () => {
+    appTabs.tabs = [{ id: 'tab-1' }, { id: 'tab-9' }];
+    appTabs.activeId = 'tab-9';
+    wrapper.unmount();
+  };
+
+  it('keeps what was typed', async () => {
+    const view = await mountEditor();
+    await type(view, 'half a sentence');
+
+    await anotherTabComesForward();
+
+    expect(drafts.get('tab-1')).toMatchObject({
+      address: '/editor/Docs/notes.md',
+      text: 'half a sentence',
+    });
+  });
+
+  /**
+   * And the place, with nothing typed at all — which was the complaint: scrolled
+   * two hundred lines down, a paragraph selected, and back to the top of the file
+   * with nothing selected.
+   */
+  it('keeps where the reader was, in a file nothing was typed into', async () => {
+    await mountEditor();
+    surface.current.view.dispatch({ selection: { anchor: 40, head: 96 } });
+    surface.current.view.scrollDOM.scrollTop = 720;
+
+    await anotherTabComesForward();
+
+    expect(drafts.get('tab-1')).toMatchObject({
+      text: null,
+      selection: { anchor: 40, head: 96 },
+      scrollTop: 720,
+    });
+  });
+
+  it('hands the place back when its tab comes back', async () => {
+    drafts.set('tab-1', {
+      address: '/editor/Docs/notes.md',
+      text: null,
+      selection: { anchor: 3, head: 5 },
+      scrollTop: 480,
+    });
+
+    await mountEditor();
+    await flushPromises();
+
+    expect(surface.current.view.state.selection.main).toEqual({ anchor: 3, head: 5 });
+    expect(surface.current.view.scrollDOM.scrollTop).toBe(480);
+  });
+
+  // A cursor past the end of a file somebody else shortened is clamped by the
+  // editor itself, where the document is — see `CodeSurface.spec.js`.
+
+  /**
+   * Handed back whole, `topLine` and all.
+   *
+   * Where the reader is in a long file is the line at the top of the screen
+   * rather than a number of pixels, because a scroll position written into the
+   * editor before it has measured is clamped to whatever fits. The editor
+   * answered with that line, and it was dropped between here and the store, so
+   * the fix was in the file and the reader still came back to the top — with the
+   * cursor intact beside them, which made it look as though the editor were at
+   * fault. This is the seam it fell through.
+   */
+  it('gives the editor back every part of the place it answered with', async () => {
+    await mountEditor();
+    await flushPromises();
+    surface.current.restorePlace({
+      selection: { anchor: 12, head: 20 },
+      scrollTop: 640,
+      topLine: 1840,
+    });
+    surface.restored.length = 0;
+    surface.settlingWhenRestored = null;
+
+    // Another tab in front, and back again.
+    await anotherTabComesForward();
+    appTabs.activeId = 'tab-1';
+    await mountEditor();
+    await flushPromises();
+
+    expect(surface.restored.at(-1)).toMatchObject({ scrollTop: 640, topLine: 1840 });
+  });
+
+  /**
+   * Shown once the reader is back where they were, not before.
+   *
+   * The place can only be applied after the file has reached the editor, so the
+   * file appeared at the top and then jumped to the line somebody was reading.
+   * A frame or two of nothing costs nothing — they are the same frames — and it is
+   * cleared whatever happens, because an editor that never appears is worse than
+   * a jump.
+   */
+  it('keeps the editor out of sight until the place is back', async () => {
+    drafts.set('tab-1', {
+      address: '/editor/Docs/notes.md',
+      text: null,
+      selection: { anchor: 3, head: 5 },
+      scrollTop: 480,
+      topLine: 1840,
+    });
+
+    await mountEditor();
+    await flushPromises();
+
+    // Out of sight while it was put back, and shown once it was.
+    expect(surface.settlingWhenRestored).toBe('true');
+    expect(wrapper.get('[data-test="editor-surface"]').attributes('data-settling')).toBe('false');
+  });
+
+  it('shows the editor even when there was no place to put back', async () => {
+    await mountEditor();
+    await flushPromises();
+
+    expect(wrapper.get('[data-test="editor-surface"]').attributes('data-settling')).toBe('false');
+  });
+
+  /**
+   * A tab coming back does not read the file again.
+   *
+   * The page is unmounted the moment another tab comes forward, so it used to read
+   * the file from the server on the way back: every glance at another tab cost a
+   * "Loading file…" and a redraw of everything. What it kept is on screen before
+   * anything is asked of the network, and the file is checked quietly afterwards.
+   */
+  it('shows what it read before, without a spinner', async () => {
+    await mountEditor();
+    await flushPromises();
+    await anotherTabComesForward();
+    appTabs.activeId = 'tab-1';
+    // Never answers, so anything that waits for the network waits for ever: the
+    // point is that this does not wait for it at all.
+    api.fetchFileContent.mockImplementation(() => new Promise(() => {}));
+
+    wrapper = mount(EditorViewComponent, { global: { mocks: { $t: (key) => key } } });
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.vm.isLoading).toBe(false);
+    expect(surface.current.snapshot()).toBe('hello');
+  });
+
+  /** A file this tab has never read is read, spinner and all. */
+  it('reads the file when the tab has nothing in hand', async () => {
+    api.fetchFileContent.mockImplementation(() => new Promise(() => {}));
+
+    wrapper = mount(EditorViewComponent, { global: { mocks: { $t: (key) => key } } });
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.vm.isLoading).toBe(true);
+  });
+
+  it('checks the file afterwards, and takes what somebody else wrote', async () => {
+    await mountEditor();
+    await flushPromises();
+    await anotherTabComesForward();
+    appTabs.activeId = 'tab-1';
+    api.fetchFileContent.mockResolvedValue({ content: 'somebody else wrote this' });
+
+    await mountEditor();
+    await flushPromises();
+
+    expect(api.fetchFileContent).toHaveBeenCalled();
+    expect(surface.current.snapshot()).toBe('somebody else wrote this');
+  });
+
+  /** The reader's own work outranks anything found on the disk. */
+  it('leaves unsaved text alone, whatever the file now says', async () => {
+    const view = await mountEditor();
+    await type(view, 'half a sentence');
+    await anotherTabComesForward();
+    appTabs.activeId = 'tab-1';
+    api.fetchFileContent.mockResolvedValue({ content: 'somebody else wrote this' });
+
+    await mountEditor();
+    await flushPromises();
+
+    expect(surface.current.snapshot()).toBe('half a sentence');
+  });
+
+  it('hands it back, still unsaved, when its tab comes back', async () => {
+    drafts.set('tab-1', { address: '/editor/Docs/notes.md', text: 'half a sentence' });
+
+    const view = await mountEditor();
+    await flushPromises();
+
+    expect(surface.current.snapshot()).toBe('half a sentence');
+    // Unsaved, because it is: the file on disk is what was read, and a grey save
+    // button over text that exists nowhere else is how that work gets lost.
+    expect(view.canSave).toBe(true);
+  });
+
+  it('keeps no text for a file that is only being read', async () => {
+    Object.assign(route(), {
+      name: 'TrashFileViewer',
+      fullPath: '/trash/view/id-1/drafts/run.sh',
+      params: { itemId: 'id-1', entryPath: ['drafts', 'run.sh'] },
+    });
+    const view = await mountEditor();
+    await type(view, 'not that it could be written');
+
+    await anotherTabComesForward();
+
+    // Its place, yes — nothing about reading a deleted file says where in it the
+    // reader was. Its text, no: there is nothing to write back.
+    expect(drafts.get('tab-1').text).toBeNull();
+  });
+
+  it('keeps no text when there was nothing unsaved', async () => {
+    await mountEditor();
+
+    await anotherTabComesForward();
+
+    expect(drafts.get('tab-1').text).toBeNull();
+  });
+
+  /** The tab stayed in front, so the address changed under it: another file now. */
+  /**
+   * Crossing from one text tab to another does not mount a new page: both
+   * addresses match the same route, so vue-router keeps this component and hands
+   * it new parameters. A tab read once at setup kept the place for the tab the
+   * reader had left, and gave the tab they were on nothing back.
+   */
+  it('changes hands when another tab comes forward with a file', async () => {
+    appTabs.tabs = [{ id: 'tab-1' }, { id: 'tab-9' }];
+    const view = await mountEditor();
+    await type(view, 'half a sentence');
+
+    // What the strip does: the other tab is in front, and its address follows.
+    appTabs.activeId = 'tab-9';
+    route().fullPath = '/editor/Docs/other.md';
+    await flushPromises();
+
+    // The tab that was left keeps what was in it…
+    expect(drafts.get('tab-1')).toMatchObject({
+      address: '/editor/Docs/notes.md',
+      text: 'half a sentence',
+    });
+    // …and nothing was kept for the tab that came forward, which has its own.
+    expect(drafts.has('tab-9')).toBe(false);
+  });
+
+  /**
+   * The other half of changing hands: what the tab coming forward had kept is
+   * what is put back. Kept for the tab that was left, it would be handed to
+   * nobody — and the reader would land at the top of a file they had scrolled.
+   */
+  it('takes back what the tab coming forward had kept', async () => {
+    appTabs.tabs = [{ id: 'tab-1' }, { id: 'tab-9' }];
+    drafts.set('tab-9', {
+      address: '/editor/Docs/other.md',
+      text: null,
+      selection: { anchor: 2, head: 4 },
+      scrollTop: 360,
+    });
+    await mountEditor();
+
+    appTabs.activeId = 'tab-9';
+    Object.assign(route(), {
+      fullPath: '/editor/Docs/other.md',
+      params: { path: 'Docs/other.md' },
+    });
+    await flushPromises();
+
+    expect(surface.current.view.state.selection.main).toEqual({ anchor: 2, head: 4 });
+    expect(surface.current.view.scrollDOM.scrollTop).toBe(360);
+  });
+
+  it('lets go when the tab itself is taken somewhere else', async () => {
+    const view = await mountEditor();
+    await type(view, 'half a sentence');
+
+    wrapper.unmount();
+
+    expect(drafts.has('tab-1')).toBe(false);
+  });
+
+  it('lets go once the file is saved', async () => {
+    const view = await mountEditor();
+    await type(view, 'half a sentence');
+    drafts.set('tab-1', { address: '/editor/Docs/notes.md', text: 'half a sentence' });
+
+    await view.saveFile();
+
+    expect(drafts.has('tab-1')).toBe(false);
+  });
+
+  it('lets go when leaving without saving is said out loud', async () => {
+    asked.ask.mockResolvedValue(true);
+    const view = await mountEditor();
+    await type(view, 'half a sentence');
+    drafts.set('tab-1', { address: '/editor/Docs/notes.md', text: 'half a sentence' });
+
+    await view.requestClose();
+
+    expect(drafts.has('tab-1')).toBe(false);
   });
 });

@@ -77,7 +77,10 @@
     "dismissWarning": "Ignorer l'avertissement",
     "reset": "Réinitialiser",
     "moveUp": "Monter",
-    "moveDown": "Descendre"
+    "moveDown": "Descendre",
+    "confirm": "Confirmer",
+    "closeAnyway": "Fermer quand même",
+    "leaveAnyway": "Quitter quand même"
   },
   "editor": {
     "editing": "Édition en cours",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Version antérieure, lecture seule",
     "highlightingOffTooLarge": "Coloration syntaxique désactivée pour ce fichier : une partie est trop grande pour être colorée sans figer la page.",
     "raw": "Brut",
-    "selectTheme": "Choisir le thème de l'éditeur"
+    "selectTheme": "Choisir le thème de l'éditeur",
+    "unsavedTitle": "Modifications non enregistrées"
   },
   "status": {
     "updated": "Mis à jour avec succès",
@@ -497,6 +501,7 @@
       "accountPassword": "Changer le mot de passe",
       "about": "À propos",
       "userPreferences": "Préférences",
+      "tabs": "Onglets",
       "branding": "Identité visuelle",
       "filesThumbnails": "Fichiers et vignettes",
       "security": "Sécurité",
@@ -591,6 +596,12 @@
       "viewPhotos": "Photos",
       "documentsOpenInNewTab": "Ouvrir les documents dans un nouvel onglet",
       "documentsOpenInNewTabHelp": "Ouvrir un fichier lui donne son propre onglet de navigateur : plusieurs restent ouverts pendant que vous continuez à naviguer. Désactivé, il s’ouvre par-dessus le dossier comme aujourd’hui.",
+      "browseInTabs": "Naviguer en onglets",
+      "browseInTabsHelp": "Garder plusieurs endroits ouverts à la fois — dossiers, documents, corbeille — chacun dans un onglet, comme le fait un gestionnaire de fichiers de bureau. Désactivé : un seul endroit à la fois, et rien n'est dessiné au-dessus de la barre d'outils.",
+      "closeTabsOnDoubleClick": "Fermer un onglet par double-clic",
+      "closeTabsOnDoubleClickHelp": "Un double-clic n’importe où sur un onglet le ferme, en plus de la croix.",
+      "preloadBackgroundTabs": "Préparer les onglets ouverts en arrière-plan",
+      "preloadBackgroundTabsHelp": "Un onglet ouvert derrière, ou rouvert avec la fenêtre, se charge tout de suite au lieu d'attendre que vous y arriviez. Un document ainsi préparé est ouvert dans son éditeur : il compte donc comme en cours d'édition.",
       "downloadMode": "Téléchargement de plusieurs éléments",
       "downloadModeHelp": "Ce qui se passe quand plusieurs éléments sont téléchargés à la fois. Les dossiers sélectionnés arrivent toujours dans une archive.",
       "downloadModeZip": "Une archive ZIP",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "Alignées sur un bord de la colonne des noms, elles gardent la même place à chaque ligne ; la place qu'il leur faut est réservée, que la ligne soit survolée ou non.",
       "quickActionsPositionAfter": "Après le nom",
       "quickActionsPositionStart": "Au début de la colonne des noms",
-      "quickActionsPositionEnd": "À la fin de la colonne des noms"
+      "quickActionsPositionEnd": "À la fin de la colonne des noms",
+      "reopenTabs": "Rouvrir les onglets au retour",
+      "reopenTabsHelp": "Éteint, les onglets que vous aviez ne reviennent pas : seuls ceux que vous avez épinglés reviennent — c'est à cela que sert l'épinglage. Allumé, ils reviennent tous."
     },
     "thumbs": {
       "subtitle": "Personnalisez les vignettes d'aperçu pour les images et les vidéos.",
@@ -692,7 +705,10 @@
       "accessMode": "Mode d'accès",
       "noUsers": "Aucun utilisateur disponible",
       "lockedBadge": "Verrouillé",
-      "lockedUntil": "Verrouillé jusqu'à {time}"
+      "lockedUntil": "Verrouillé jusqu'à {time}",
+      "removeTitle": "Supprimer l’utilisateur",
+      "removeVolumeTitle": "Retirer le volume",
+      "newPasswordTitle": "Nouveau mot de passe"
     },
     "userDetails": {
       "profileTab": "Profil",
@@ -914,7 +930,8 @@
       "loadFailed": "Impossible de lire les clés d’accès de ce compte.",
       "addFailed": "Impossible d’ajouter cette clé d’accès.",
       "cancelled": "Rien n’a été ajouté : le navigateur a été fermé ou le délai a expiré.",
-      "alreadyHere": "Cet appareil détient déjà une clé d’accès pour ce compte."
+      "alreadyHere": "Cet appareil détient déjà une clé d’accès pour ce compte.",
+      "renameTitle": "Renommer la clé d’accès"
     },
     "activity": {
       "title": "Journal d’activité",
@@ -1000,7 +1017,9 @@
       "loadFailed": "Les jetons n’ont pas pu être chargés.",
       "createFailed": "Le jeton n’a pas pu être émis.",
       "renameFailed": "Le jeton n’a pas pu être renommé.",
-      "revokeFailed": "Le jeton n’a pas pu être révoqué."
+      "revokeFailed": "Le jeton n’a pas pu être révoqué.",
+      "renameTitle": "Renommer le jeton",
+      "revokeTitle": "Révoquer le jeton"
     },
     "folderSize": {
       "title": "Taille des dossiers",
@@ -1014,6 +1033,12 @@
       "additional": "Exclusions supplémentaires",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Aucun chemin configuré"
+    },
+    "tabs": {
+      "title": "Onglets",
+      "description": "Le comportement de la navigation par onglets pour tout le monde sur cette installation.",
+      "maxOpen": "Nombre maximal d’onglets",
+      "maxOpenHelp": "La barre ne défile jamais : la rangée s’arrête ici plutôt que de rendre les onglets illisibles."
     },
     "searchIndex": {
       "title": "Index de recherche",
@@ -1032,6 +1057,21 @@
       "useSwitch": "Activez-la avec l'interrupteur ci-dessus.",
       "locked": "Défini par {variable} dans l'environnement : c'est là que cela se décide, pas ici."
     }
+  },
+  "tabs": {
+    "strip": "Onglets ouverts",
+    "openInNewTab": "Ouvrir dans un nouvel onglet",
+    "openInNewTabs": "Ouvrir {count} éléments dans de nouveaux onglets",
+    "newTab": "Nouvel onglet",
+    "moveLeft": "Déplacer vers la gauche",
+    "moveRight": "Déplacer vers la droite",
+    "duplicate": "Dupliquer l'onglet",
+    "pin": "Épingler l'onglet",
+    "unpin": "Détacher l'onglet",
+    "closeTab": "Fermer l'onglet",
+    "closeOthers": "Fermer les autres onglets",
+    "closeAll": "Fermer tous les onglets",
+    "full": "Plus de place pour un onglet (limite : {count})"
   },
   "mediaPreview": {
     "audioTrack": "Piste audio",

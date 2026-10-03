@@ -4,6 +4,7 @@ import { useFavoritesStore } from '@/stores/favorites';
 import { useFeaturesStore } from '@/stores/features';
 import { useVolumeUsageStore } from '@/stores/volumeUsage';
 import { useNavigation } from '@/composables/navigation';
+import { useOpenPlaceInTab } from '@/composables/openPlaceInTab';
 import * as OutlineIcons from '@heroicons/vue/24/outline';
 import * as SolidIcons from '@heroicons/vue/24/solid';
 import { resolveFavoriteIcon } from '@/utils/favoriteIcons';
@@ -15,6 +16,8 @@ const favoritesStore = useFavoritesStore();
 const featuresStore = useFeaturesStore();
 const volumeUsageStore = useVolumeUsageStore();
 const { openItem, openBreadcrumb } = useNavigation();
+// The middle button opens a place in a tab behind, as it does a folder row.
+const { openPlaceInTab } = useOpenPlaceInTab();
 const showVolumeUsage = computed(() => featuresStore.volumeUsageEnabled);
 const personalEnabled = computed(() => featuresStore.personalEnabled);
 const volumes = computed(() => volumeUsageStore.volumes);
@@ -42,14 +45,26 @@ const quickAccess = computed(() =>
   })
 );
 
-const handleOpenFavorite = (favorite) => {
+/**
+ * Command, or control, opens it in a tab behind — what a browser does with a
+ * link. `metaKey` first, because on a Mac the command key is the one people
+ * reach for and control there means something else entirely.
+ */
+const handleOpenFavorite = (favorite, event) => {
   if (!favorite?.path) return;
+  if ((event?.metaKey || event?.ctrlKey) && openPlaceInTab(favorite.path)) return;
   openBreadcrumb(favorite.path);
+};
+
+const openVolume = (volume, event) => {
+  if ((event?.metaKey || event?.ctrlKey) && openPlaceInTab(volume.name)) return;
+  openItem(volume);
 };
 
 const PersonalIcon = OutlineIcons.FolderIcon || SolidIcons.FolderIcon;
 
-const openPersonal = () => {
+const openPersonal = (event) => {
+  if ((event?.metaKey || event?.ctrlKey) && openPlaceInTab('personal')) return;
   openBreadcrumb('personal');
 };
 </script>
@@ -77,7 +92,8 @@ const openPersonal = () => {
           :key="fav.path"
           type="button"
           :title="fav.label"
-          @click="handleOpenFavorite(fav)"
+          @click="handleOpenFavorite(fav, $event)"
+          @auxclick.middle.prevent="openPlaceInTab(fav.path)"
           class="flex w-full items-center gap-3 rounded-md py-3 text-left text-neutral-700 select-none dark:text-neutral-300"
         >
           <div class="flex h-16 w-16 shrink-0 items-center">
@@ -112,7 +128,8 @@ const openPersonal = () => {
           v-for="vol in volumes"
           :key="vol.name"
           type="button"
-          @click="openItem(vol)"
+          @click="openVolume(vol, $event)"
+          @auxclick.middle.prevent="openPlaceInTab(vol.name)"
           :class="[
             'w-full max-w-full rounded-lg py-3 pr-3 text-left transition-colors hover:bg-neutral-100/70 dark:hover:bg-neutral-800/60',
             showVolumeUsage
@@ -162,7 +179,12 @@ const openPersonal = () => {
         {{ $t('drives.personal') }}
       </h3>
       <div v-if="!loading">
-        <button type="button" @click="openPersonal" class="flex items-center gap-3 py-4 text-left">
+        <button
+          type="button"
+          @click="openPersonal($event)"
+          @auxclick.middle.prevent="openPlaceInTab('personal')"
+          class="flex items-center gap-3 py-4 text-left"
+        >
           <component :is="PersonalIcon" class="h-14 w-16 shrink-0" />
           <div>
             <div class="mb-1 truncate text-sm font-medium text-neutral-900 dark:text-white">

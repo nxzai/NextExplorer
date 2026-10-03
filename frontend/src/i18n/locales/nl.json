@@ -77,7 +77,10 @@
     "dismissWarning": "Waarschuwing sluiten",
     "reset": "Herstellen",
     "moveUp": "Omhoog",
-    "moveDown": "Omlaag"
+    "moveDown": "Omlaag",
+    "confirm": "Bevestigen",
+    "closeAnyway": "Toch sluiten",
+    "leaveAnyway": "Toch weggaan"
   },
   "editor": {
     "editing": "Bewerken",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Eerdere versie, alleen-lezen",
     "highlightingOffTooLarge": "Syntaxiskleuring staat uit voor dit bestand: een deel ervan is te groot om te kleuren zonder de pagina te laten vastlopen.",
     "raw": "Onbewerkt",
-    "selectTheme": "Editorthema kiezen"
+    "selectTheme": "Editorthema kiezen",
+    "unsavedTitle": "Niet-opgeslagen wijzigingen"
   },
   "status": {
     "updated": "Met succes bijgewerkt",
@@ -497,6 +501,7 @@
       "accountPassword": "Wachtwoord wijzigen",
       "about": "Over",
       "userPreferences": "Voorkeuren",
+      "tabs": "Tabbladen",
       "branding": "Merkvoering",
       "filesThumbnails": "Bestanden & miniaturen",
       "security": "Beveiliging",
@@ -591,6 +596,12 @@
       "viewPhotos": "Foto's",
       "documentsOpenInNewTab": "Documenten in een nieuw tabblad openen",
       "documentsOpenInNewTabHelp": "Een bestand openen geeft het een eigen browsertabblad, zodat er meerdere open blijven terwijl u verder bladert. Uit opent het over de map heen, zoals nu.",
+      "browseInTabs": "Met tabbladen werken",
+      "browseInTabsHelp": "Meerdere plekken tegelijk openhouden — mappen, documenten, de prullenbak — elk in een tabblad, zoals een bestandsbeheerder op het bureaublad doet. Uit: één plek tegelijk, en boven de werkbalk wordt niets getekend.",
+      "closeTabsOnDoubleClick": "Een tabblad sluiten met dubbelklik",
+      "closeTabsOnDoubleClickHelp": "Dubbelklikken op een tabblad sluit het, naast het kruisje.",
+      "preloadBackgroundTabs": "Tabbladen die op de achtergrond zijn geopend voorbereiden",
+      "preloadBackgroundTabsHelp": "Een tabblad dat op de achtergrond is geopend, of met het venster is heropend, laadt direct in plaats van te wachten tot u er komt. Een zo voorbereid document wordt in de editor geopend en geldt dus als in bewerking.",
       "downloadMode": "Meerdere items downloaden",
       "downloadModeHelp": "Wat er gebeurt als er meer dan één item tegelijk wordt gedownload. Geselecteerde mappen komen altijd als één archief.",
       "downloadModeZip": "Één ZIP-archief",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "Uitgelijnd op een rand van de naamkolom staan ze op elke rij op dezelfde plek; de ruimte die ze nodig hebben blijft vrij, of de rij aangewezen wordt of niet.",
       "quickActionsPositionAfter": "Na de naam",
       "quickActionsPositionStart": "Aan het begin van de naamkolom",
-      "quickActionsPositionEnd": "Aan het eind van de naamkolom"
+      "quickActionsPositionEnd": "Aan het eind van de naamkolom",
+      "reopenTabs": "Tabbladen opnieuw openen bij terugkomst",
+      "reopenTabsHelp": "Uit komen uw tabbladen niet terug, alleen de vastgezette — daar is vastzetten voor. Aan komen ze allemaal terug."
     },
     "thumbs": {
       "subtitle": "Voorbeeldminiaturen aanpassen voor afbeeldingen en video's.",
@@ -692,7 +705,10 @@
       "accessMode": "Toegangsmodus",
       "noUsers": "Geen gebruikers beschikbaar",
       "lockedBadge": "Vergrendeld",
-      "lockedUntil": "Vergrendeld tot {time}"
+      "lockedUntil": "Vergrendeld tot {time}",
+      "removeTitle": "Gebruiker verwijderen",
+      "removeVolumeTitle": "Volume verwijderen",
+      "newPasswordTitle": "Nieuw wachtwoord"
     },
     "userDetails": {
       "profileTab": "Profiel",
@@ -914,7 +930,8 @@
       "loadFailed": "Kon de passkeys van dit account niet lezen.",
       "addFailed": "Kon deze passkey niet toevoegen.",
       "cancelled": "Er is niets toegevoegd: de browser werd gesloten of het duurde te lang.",
-      "alreadyHere": "Dit apparaat heeft al een passkey voor dit account."
+      "alreadyHere": "Dit apparaat heeft al een passkey voor dit account.",
+      "renameTitle": "Passkey hernoemen"
     },
     "activity": {
       "title": "Activiteitenlogboek",
@@ -1000,7 +1017,9 @@
       "loadFailed": "De tokens konden niet worden geladen.",
       "createFailed": "Het token kon niet worden uitgegeven.",
       "renameFailed": "Het token kon niet worden hernoemd.",
-      "revokeFailed": "Het token kon niet worden ingetrokken."
+      "revokeFailed": "Het token kon niet worden ingetrokken.",
+      "renameTitle": "Token hernoemen",
+      "revokeTitle": "Token intrekken"
     },
     "folderSize": {
       "title": "Mapgroottes",
@@ -1014,6 +1033,12 @@
       "additional": "Extra uitsluitingen",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Geen paden ingesteld"
+    },
+    "tabs": {
+      "title": "Tabbladen",
+      "description": "Hoe bladeren met tabbladen werkt voor iedereen op deze installatie.",
+      "maxOpen": "Maximaal aantal tabbladen",
+      "maxOpenHelp": "De balk schuift nooit: de rij stopt hier in plaats van tabbladen onleesbaar smal te maken."
     },
     "searchIndex": {
       "title": "Zoekindex",
@@ -1032,6 +1057,21 @@
       "useSwitch": "Zet het aan met de schakelaar hierboven.",
       "locked": "Ingesteld door {variable} in de omgeving: dat wordt daar beslist, niet hier."
     }
+  },
+  "tabs": {
+    "strip": "Open tabbladen",
+    "openInNewTab": "In een nieuw tabblad openen",
+    "openInNewTabs": "{count} in nieuwe tabbladen openen",
+    "newTab": "Nieuw tabblad",
+    "moveLeft": "Naar links verplaatsen",
+    "moveRight": "Naar rechts verplaatsen",
+    "duplicate": "Tabblad dupliceren",
+    "pin": "Tabblad vastzetten",
+    "unpin": "Tabblad losmaken",
+    "closeTab": "Tabblad sluiten",
+    "closeOthers": "De andere tabbladen sluiten",
+    "closeAll": "Alle tabbladen sluiten",
+    "full": "Geen ruimte voor nog een tabblad (limiet: {count})"
   },
   "share": {
     "sharedWithMe": "Gedeeld met mij",

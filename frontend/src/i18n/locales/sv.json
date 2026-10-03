@@ -77,7 +77,10 @@
     "dismissWarning": "Avfärda varningen",
     "reset": "Återställ",
     "moveUp": "Flytta upp",
-    "moveDown": "Flytta ner"
+    "moveDown": "Flytta ner",
+    "confirm": "Bekräfta",
+    "closeAnyway": "Stäng ändå",
+    "leaveAnyway": "Lämna ändå"
   },
   "editor": {
     "editing": "Redigerar",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Tidigare version, skrivskyddad",
     "highlightingOffTooLarge": "Syntaxmarkering är avstängd för den här filen: en del av den är för stor för att markeras utan att sidan fryser.",
     "raw": "Rå",
-    "selectTheme": "Välj redigerarens tema"
+    "selectTheme": "Välj redigerarens tema",
+    "unsavedTitle": "Osparade ändringar"
   },
   "status": {
     "updated": "Uppdaterades",
@@ -497,6 +501,7 @@
       "accountPassword": "Ändra lösenord",
       "about": "Om",
       "userPreferences": "Preferenser",
+      "tabs": "Flikar",
       "branding": "Profilering",
       "filesThumbnails": "Filer och miniatyrbilder",
       "security": "Säkerhet",
@@ -591,6 +596,12 @@
       "viewPhotos": "Foton",
       "documentsOpenInNewTab": "Öppna dokument i en ny flik",
       "documentsOpenInNewTabHelp": "En fil som öppnas får en egen webbläsarflik, så att flera kan stå öppna medan du bläddrar vidare. Av öppnas den ovanpå mappen som i dag.",
+      "browseInTabs": "Bläddra i flikar",
+      "browseInTabsHelp": "Håll flera platser öppna samtidigt — mappar, dokument, papperskorgen — var och en i en flik, som en filhanterare på skrivbordet gör. Av: en plats i taget, och ovanför verktygsraden ritas ingenting.",
+      "closeTabsOnDoubleClick": "Stäng en flik med dubbelklick",
+      "closeTabsOnDoubleClickHelp": "Ett dubbelklick var som helst på fliken stänger den, utöver krysset.",
+      "preloadBackgroundTabs": "Förbered flikar som öppnas i bakgrunden",
+      "preloadBackgroundTabsHelp": "En flik som öppnas bakom, eller återöppnas med fönstret, laddas direkt i stället för att vänta till du kommer dit. Ett dokument som förbereds så öppnas i sin redigerare och räknas därför som under redigering.",
       "downloadMode": "Ladda ner flera element",
       "downloadModeHelp": "Vad som händer när mer än ett element laddas ner samtidigt. Valda mappar kommer alltid som ett arkiv.",
       "downloadModeZip": "Ett ZIP-arkiv",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "Justerade mot en kant av namnkolumnen ligger de på samma plats i varje rad; utrymmet de behöver hålls ledigt vare sig raden pekas på eller inte.",
       "quickActionsPositionAfter": "Efter namnet",
       "quickActionsPositionStart": "I början av namnkolumnen",
-      "quickActionsPositionEnd": "I slutet av namnkolumnen"
+      "quickActionsPositionEnd": "I slutet av namnkolumnen",
+      "reopenTabs": "Öppna flikarna igen när du kommer tillbaka",
+      "reopenTabsHelp": "Av kommer bara de fästa flikarna tillbaka — det är vad fästning är till för. På kommer alla tillbaka."
     },
     "thumbs": {
       "subtitle": "Anpassa förhandsvisningsminiatyrer för bilder och videor.",
@@ -692,7 +705,10 @@
       "accessMode": "Åtkomstläge",
       "noUsers": "Inga användare tillgängliga",
       "lockedBadge": "Låst",
-      "lockedUntil": "Låst till {time}"
+      "lockedUntil": "Låst till {time}",
+      "removeTitle": "Ta bort användaren",
+      "removeVolumeTitle": "Ta bort volymen",
+      "newPasswordTitle": "Nytt lösenord"
     },
     "userDetails": {
       "profileTab": "Profil",
@@ -914,7 +930,8 @@
       "loadFailed": "Det gick inte att läsa kontots lösenordsnycklar.",
       "addFailed": "Det gick inte att lägga till nyckeln.",
       "cancelled": "Ingenting lades till: webbläsaren stängdes eller det tog för lång tid.",
-      "alreadyHere": "Den här enheten har redan en nyckel för det här kontot."
+      "alreadyHere": "Den här enheten har redan en nyckel för det här kontot.",
+      "renameTitle": "Byt namn på nyckel"
     },
     "activity": {
       "title": "Aktivitetslogg",
@@ -1000,7 +1017,9 @@
       "loadFailed": "Nycklarna kunde inte läsas in.",
       "createFailed": "Nyckeln kunde inte utfärdas.",
       "renameFailed": "Nyckeln kunde inte byta namn.",
-      "revokeFailed": "Nyckeln kunde inte återkallas."
+      "revokeFailed": "Nyckeln kunde inte återkallas.",
+      "renameTitle": "Byt namn på token",
+      "revokeTitle": "Återkalla token"
     },
     "folderSize": {
       "title": "Mappstorlekar",
@@ -1014,6 +1033,12 @@
       "additional": "Ytterligare undantag",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Inga sökvägar konfigurerade"
+    },
+    "tabs": {
+      "title": "Flikar",
+      "description": "Hur flikbläddring fungerar för alla i den här installationen.",
+      "maxOpen": "Högsta antal flikar samtidigt",
+      "maxOpenHelp": "Listen rullar aldrig: raden stannar här i stället för att göra flikarna oläsligt smala."
     },
     "searchIndex": {
       "title": "Sökindex",
@@ -1032,6 +1057,21 @@
       "useSwitch": "Slå på den med reglaget ovan.",
       "locked": "Satt av {variable} i miljön – det avgörs där, inte här."
     }
+  },
+  "tabs": {
+    "strip": "Öppna flikar",
+    "openInNewTab": "Öppna i en ny flik",
+    "openInNewTabs": "Öppna {count} i nya flikar",
+    "newTab": "Ny flik",
+    "moveLeft": "Flytta till vänster",
+    "moveRight": "Flytta till höger",
+    "duplicate": "Duplicera fliken",
+    "pin": "Fäst fliken",
+    "unpin": "Lossa fliken",
+    "closeTab": "Stäng fliken",
+    "closeOthers": "Stäng de andra flikarna",
+    "closeAll": "Stäng alla flikar",
+    "full": "Ingen plats för ännu en flik (gräns: {count})"
   },
   "mediaPreview": {
     "audioTrack": "Ljudspår",

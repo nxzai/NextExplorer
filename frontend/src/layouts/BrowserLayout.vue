@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch, defineAsyncComponent } from 'vue';
+import { computed, ref, watch } from 'vue';
 import HeaderLogo from '@/components/HeaderLogo.vue';
 import FavMenu from '@/components/FavMenu.vue';
 import VolMenu from '@/components/VolMenu.vue';
@@ -13,12 +13,11 @@ import NotificationPanel from '@/components/NotificationPanel.vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
 import { useStorage, useEventListener, useMediaQuery } from '@vueuse/core';
 
-import PreviewHost from '@/plugins/preview/PreviewHost.vue';
 import ExplorerContextMenu from '@/components/ExplorerContextMenu.vue';
-// The terminal carries xterm with it, which is a large library for a panel
-// most sessions never open and only an administrator can. Loaded when it is
-// first shown rather than on every page.
-const TerminalPanel = defineAsyncComponent(() => import('@/components/TerminalPanel.vue'));
+// The terminal carries xterm with it, which is a large library for something
+// most sessions never open and only an administrator can. Loaded when the first
+// terminal is asked for rather than on every page — which is why the host below
+// is not merely hidden when there are none, it is not there.
 import { useAuthStore } from '@/stores/auth';
 import { useAppSettings } from '@/stores/appSettings';
 import { useFeaturesStore } from '@/stores/features';
@@ -50,6 +49,7 @@ const featuresStore = useFeaturesStore();
 
 // Resizable aside state
 const asideWidth = useStorage('browser-aside-width', 230);
+
 const isDragging = ref(false);
 const minAsideWidth = 200;
 const maxAsideWidth = 460;
@@ -146,9 +146,10 @@ const handleGuestLogin = () => {
 </script>
 
 <template>
-  <div class="relative flex h-dvh w-full overflow-hidden">
+  <div class="relative flex h-full w-full overflow-hidden">
     <aside
-      class="flex flex-col bg-default-muted dark:bg-default-muted pt-4 pb-2 px-6 shrink-0 fixed inset-y-0 left-0 transition-transform duration-200 ease-in-out z-50 lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0"
+      data-test="browser-aside"
+      class="flex flex-col bg-default-muted dark:bg-default-muted pt-4 pb-2 px-6 shrink-0 fixed inset-y-0 left-0 transition-transform duration-200 ease-in-out z-50 lg:sticky lg:top-0 lg:h-full lg:translate-x-0"
       :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'"
       :style="{ width: asideWidth + 'px' }"
     >
@@ -223,6 +224,10 @@ const handleGuestLogin = () => {
           </RouterView>
         </div>
       </ExplorerContextMenu>
+
+      <!-- Beside what a tab holds rather than over the window: the sidebar and
+           the strip of tabs stay reachable while a shell is open, which is the
+           whole point of a terminal that belongs to one tab. -->
     </main>
 
     <!-- Backdrop to close sidebar on small screens -->
@@ -234,7 +239,6 @@ const handleGuestLogin = () => {
       @click="closeSidebar"
     ></button>
     <ClipboardProgress class="z-560" />
-    <PreviewHost />
     <InfoPanel />
     <VersionsPanel />
     <SpotlightSearch />
@@ -244,7 +248,6 @@ const handleGuestLogin = () => {
     <SeparateDownloadConfirm />
     <NotificationToastContainer />
     <NotificationPanel />
-    <TerminalPanel v-if="featuresStore.terminalEnabled" />
 
     <!-- Footer with powered by link -->
     <footer

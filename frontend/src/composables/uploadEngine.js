@@ -120,11 +120,17 @@ export const createUploadEngine = async () => {
   // A folder upload emits one success event per file. Wait for a short quiet
   // period so those events produce one listing refresh instead of repeatedly
   // aborting the preceding browse request.
+  //
+  // `refresh` rather than a fetch of the same path: this is the folder already on
+  // screen being read again, not somebody walking into it. A fetch clears what is
+  // selected, and this one lands the better part of a second after the upload —
+  // long enough for the reader to have chosen a file in the meantime and watched
+  // the choice disappear under them.
   const scheduleUploadViewRefresh = (delayMs = 700) => {
     if (uploadViewRefreshTimer) clearTimeout(uploadViewRefreshTimer);
     uploadViewRefreshTimer = setTimeout(() => {
       uploadViewRefreshTimer = null;
-      fileStore.fetchPathItems(fileStore.currentPath).catch(() => {});
+      fileStore.refresh().catch(() => {});
       volumeUsageStore.scheduleRefresh();
       folderSizeStore.scheduleRefresh();
     }, delayMs);

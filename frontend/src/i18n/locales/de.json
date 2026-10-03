@@ -77,7 +77,10 @@
     "dismissWarning": "Warnung ausblenden",
     "reset": "Zurücksetzen",
     "moveUp": "Nach oben",
-    "moveDown": "Nach unten"
+    "moveDown": "Nach unten",
+    "confirm": "Bestätigen",
+    "closeAnyway": "Trotzdem schließen",
+    "leaveAnyway": "Trotzdem verlassen"
   },
   "editor": {
     "editing": "Wird bearbeitet",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Frühere Version, schreibgeschützt",
     "highlightingOffTooLarge": "Syntaxhervorhebung für diese Datei ausgeschaltet: Ein Teil davon ist zu groß, um ihn hervorzuheben, ohne die Seite einzufrieren.",
     "raw": "Roh",
-    "selectTheme": "Editor-Thema wählen"
+    "selectTheme": "Editor-Thema wählen",
+    "unsavedTitle": "Nicht gespeicherte Änderungen"
   },
   "status": {
     "updated": "Erfolgreich aktualisiert",
@@ -497,6 +501,7 @@
       "accountPassword": "Passwort ändern",
       "about": "Info",
       "userPreferences": "Präferenzen",
+      "tabs": "Tabs",
       "branding": "Erscheinungsbild",
       "filesThumbnails": "Dateien & Miniaturansichten",
       "security": "Sicherheit",
@@ -591,6 +596,12 @@
       "viewPhotos": "Fotos",
       "documentsOpenInNewTab": "Dokumente in einem neuen Tab öffnen",
       "documentsOpenInNewTabHelp": "Eine Datei bekommt beim Öffnen einen eigenen Browser-Tab, sodass mehrere offen bleiben, während Sie weiter stöbern. Aus öffnet sie sich wie bisher über dem Ordner.",
+      "browseInTabs": "In Tabs arbeiten",
+      "browseInTabsHelp": "Mehrere Orte gleichzeitig offen halten — Ordner, Dokumente, den Papierkorb — jeden in einem Tab, wie es ein Dateimanager auf dem Schreibtisch tut. Aus: ein Ort zur Zeit, und über der Werkzeugleiste wird nichts gezeichnet.",
+      "closeTabsOnDoubleClick": "Tab per Doppelklick schließen",
+      "closeTabsOnDoubleClickHelp": "Ein Doppelklick irgendwo auf einem Tab schließt ihn, zusätzlich zum Kreuz.",
+      "preloadBackgroundTabs": "Im Hintergrund geöffnete Tabs vorbereiten",
+      "preloadBackgroundTabsHelp": "Ein Tab, der im Hintergrund geöffnet oder mit dem Fenster wiederhergestellt wurde, lädt sofort, statt zu warten, bis Sie ihn aufrufen. Ein so vorbereitetes Dokument wird im Editor geöffnet und gilt damit als in Bearbeitung.",
       "downloadMode": "Mehrere Elemente herunterladen",
       "downloadModeHelp": "Was beim Herunterladen von mehr als einem Element gleichzeitig geschieht. Ausgewählte Ordner kommen immer als ein Archiv.",
       "downloadModeZip": "Ein ZIP-Archiv",
@@ -608,7 +619,9 @@
       "quickActionsPositionHelp": "An einem Rand der Namensspalte ausgerichtet, bleiben sie in jeder Zeile an derselben Stelle; der Platz dafür bleibt frei, ob eine Zeile überfahren wird oder nicht.",
       "quickActionsPositionAfter": "Nach dem Namen",
       "quickActionsPositionStart": "Am Anfang der Namensspalte",
-      "quickActionsPositionEnd": "Am Ende der Namensspalte"
+      "quickActionsPositionEnd": "Am Ende der Namensspalte",
+      "reopenTabs": "Tabs beim nächsten Besuch wieder öffnen",
+      "reopenTabsHelp": "Aus kommt keiner Ihrer Tabs zurück, nur die angehefteten – wofür das Anheften da ist. An kommen alle zurück."
     },
     "thumbs": {
       "subtitle": "Vorschau-Miniaturen für Bilder und Videos anpassen.",
@@ -692,7 +705,10 @@
       "accessMode": "Zugriffsmodus",
       "noUsers": "Keine Benutzer verfügbar",
       "lockedBadge": "Gesperrt",
-      "lockedUntil": "Gesperrt bis {time}"
+      "lockedUntil": "Gesperrt bis {time}",
+      "removeTitle": "Benutzer entfernen",
+      "removeVolumeTitle": "Volume entfernen",
+      "newPasswordTitle": "Neues Passwort"
     },
     "userDetails": {
       "profileTab": "Profil",
@@ -914,7 +930,8 @@
       "loadFailed": "Die Passkeys dieses Kontos konnten nicht gelesen werden.",
       "addFailed": "Dieser Passkey konnte nicht hinzugefügt werden.",
       "cancelled": "Nichts wurde hinzugefügt: Der Browser wurde geschlossen oder es hat zu lange gedauert.",
-      "alreadyHere": "Dieses Gerät hat bereits einen Passkey für dieses Konto."
+      "alreadyHere": "Dieses Gerät hat bereits einen Passkey für dieses Konto.",
+      "renameTitle": "Passkey umbenennen"
     },
     "activity": {
       "title": "Aktivitätsprotokoll",
@@ -1000,7 +1017,9 @@
       "loadFailed": "Die Token konnten nicht geladen werden.",
       "createFailed": "Das Token konnte nicht ausgestellt werden.",
       "renameFailed": "Das Token konnte nicht umbenannt werden.",
-      "revokeFailed": "Das Token konnte nicht widerrufen werden."
+      "revokeFailed": "Das Token konnte nicht widerrufen werden.",
+      "renameTitle": "Token umbenennen",
+      "revokeTitle": "Token widerrufen"
     },
     "folderSize": {
       "title": "Ordnergrößen",
@@ -1014,6 +1033,12 @@
       "additional": "Zusätzliche Ausschlüsse",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Keine Pfade konfiguriert"
+    },
+    "tabs": {
+      "title": "Tabs",
+      "description": "Wie das Browsen in Tabs für alle auf dieser Installation funktioniert.",
+      "maxOpen": "Höchstzahl gleichzeitiger Tabs",
+      "maxOpenHelp": "Die Leiste scrollt nie: Die Reihe endet hier, statt Tabs unlesbar schmal zu machen."
     },
     "searchIndex": {
       "title": "Suchindex",
@@ -1032,6 +1057,21 @@
       "useSwitch": "Schalten Sie sie mit dem Schalter oben ein.",
       "locked": "Durch {variable} in der Umgebung festgelegt – das wird dort entschieden, nicht hier."
     }
+  },
+  "tabs": {
+    "strip": "Offene Tabs",
+    "openInNewTab": "In neuem Tab öffnen",
+    "openInNewTabs": "{count} in neuen Tabs öffnen",
+    "newTab": "Neuer Tab",
+    "moveLeft": "Nach links verschieben",
+    "moveRight": "Nach rechts verschieben",
+    "duplicate": "Tab duplizieren",
+    "pin": "Tab anheften",
+    "unpin": "Tab lösen",
+    "closeTab": "Tab schließen",
+    "closeOthers": "Die anderen Tabs schließen",
+    "closeAll": "Alle Tabs schließen",
+    "full": "Kein Platz für einen weiteren Tab (Grenze: {count})"
   },
   "mediaPreview": {
     "audioTrack": "Tonspur",

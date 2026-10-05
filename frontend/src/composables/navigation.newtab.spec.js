@@ -47,6 +47,10 @@ vi.mock('@/config/editor', () => ({
   isEditableExtension: (ext) => ['md', 'markdown', 'txt', 'js'].includes(ext),
 }));
 
+// This application's own tabs, which the preference means once they are on.
+const tabsOpen = vi.fn(() => ({ id: 't2', path: '/open/Notes/notes.md' }));
+vi.mock('@/stores/tabs', () => ({ useTabsStore: () => ({ open: tabsOpen }) }));
+
 import { useNavigation } from './navigation';
 
 const opened = () => window.open.mock.calls.at(-1);
@@ -59,6 +63,8 @@ beforeEach(() => {
   findPlugin.mockClear();
   findPlugin.mockReturnValue({ plugin: { id: 'image' }, context: {} });
   userSettings = { documentsOpenInNewTab: true };
+  tabsOpen.mockClear();
+  tabsOpen.mockReturnValue({ id: 't2', path: '/open/Notes/notes.md' });
   vi.stubGlobal('open', vi.fn());
 });
 
@@ -161,5 +167,56 @@ describe('with the preference off', () => {
 
     expect(push).toHaveBeenCalledWith({ path: '/editor/Notes/notes.txt' });
     expect(window.open).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * With this application's own tabs on, a document goes to its address.
+ *
+ * Never over the folder: the panel a preview opens in is `fixed` and lives in the
+ * body, so it would stay on screen while somebody moved to another tab — a
+ * document sitting over a folder it has nothing to do with. At an address it is
+ * the tab's content, and leaving the tab closes it because leaving the route does.
+ */
+describe('with this application own tabs on', () => {
+  it('becomes the tab it was opened from', () => {
+    userSettings = { browseInTabs: true };
+
+    useNavigation().openItem({ kind: 'md', name: 'notes.md', path: 'Notes' });
+
+    expect(push).toHaveBeenCalledWith({ path: '/open/Notes/notes.md' });
+    expect(tabsOpen).not.toHaveBeenCalled();
+    expect(previewOpen).not.toHaveBeenCalled();
+    expect(window.open).not.toHaveBeenCalled();
+  });
+
+  it('takes a tab of its own when that is what the account asked for', () => {
+    userSettings = { browseInTabs: true, documentsOpenInNewTab: true };
+
+    useNavigation().openItem({ kind: 'md', name: 'notes.md', path: 'Notes' });
+
+    expect(tabsOpen).toHaveBeenCalledWith('/open/Notes/notes.md', { own: true });
+    expect(push).toHaveBeenCalledWith({ path: '/open/Notes/notes.md' });
+    expect(window.open).not.toHaveBeenCalled();
+  });
+
+  it('leaves a folder to the folder', () => {
+    userSettings = { browseInTabs: true };
+
+    useNavigation().openItem({ kind: 'directory', name: '2026', path: 'Notes' });
+
+    expect(tabsOpen).not.toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith({ path: '/browse/Notes/2026' });
+  });
+
+  /** A file with no preview and no editor has nowhere of its own to be taken to. */
+  it('leaves a file nothing opens exactly where it was', () => {
+    userSettings = { browseInTabs: true };
+    findPlugin.mockReturnValue(null);
+
+    useNavigation().openItem({ kind: 'bin', name: 'firmware.bin', path: 'Notes' });
+
+    expect(tabsOpen).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });

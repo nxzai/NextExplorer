@@ -67,9 +67,60 @@ describe('folder scroll positions', () => {
     const store = useFolderScrollStore();
 
     store.remember('volume/parent::list', 420);
-    store.permitExplicitRestore('volume/parent');
-    store.preventRestore('volume/parent');
+    store.permitExplicitRestore('volume/parent', 'tab-1');
+    store.preventRestore('volume/parent', 'tab-1');
 
-    expect(store.consumeRestore('volume/parent::list')).toBe(420);
+    expect(store.consumeRestore('volume/parent::list', 'tab-1')).toBe(420);
+  });
+
+  /**
+   * A promised return belongs to the tab it was promised to.
+   *
+   * The folder's memory is shared by every tab on it, and so was the permission to
+   * read it. One tab walking up into a folder, or coming back out of a file in it,
+   * left a permission that the *next* tab drawn on that folder consumed — and that
+   * tab was then put where the first one had been.
+   */
+  it('gives a promised return to the tab it was promised to', () => {
+    const store = useFolderScrollStore();
+
+    store.remember('volume/parent::list', 900);
+    store.permitRestore('volume/parent', 'tab-1');
+
+    expect(store.consumeRestore('volume/parent::list', 'tab-2')).toBe(0);
+    expect(store.consumeRestore('volume/parent::list', 'tab-1')).toBe(900);
+  });
+
+  it('keeps one tab’s explicit return out of another’s way', () => {
+    const store = useFolderScrollStore();
+
+    store.remember('volume/parent::list', 640);
+    store.permitExplicitRestore('volume/parent', 'tab-1');
+
+    expect(store.consumeRestore('volume/parent::list', 'tab-2')).toBe(0);
+    expect(store.consumeRestore('volume/parent::list', 'tab-1')).toBe(640);
+  });
+
+  /**
+   * The top is a place, and a tab that is there has an answer.
+   *
+   * Asked as a number it answers zero, which a caller reads as "no answer" and
+   * falls through to the folder's own memory — the one every tab on that folder
+   * shares. Two tabs on one folder, the first scrolled to the bottom and left
+   * there, the second never moved: the second came back beside the first.
+   */
+  it('says a tab left at the top has a place, rather than no place', () => {
+    const store = useFolderScrollStore();
+
+    store.rememberTabPlace('tab-2::volume/parent::list', 0);
+
+    expect(store.hasTabPlace('tab-2::volume/parent::list')).toBe(true);
+    expect(store.tabPlace('tab-2::volume/parent::list')).toBe(0);
+  });
+
+  it('says a tab that has never been drawn in a folder has no place in it', () => {
+    const store = useFolderScrollStore();
+
+    expect(store.hasTabPlace('tab-3::volume/parent::list')).toBe(false);
   });
 });

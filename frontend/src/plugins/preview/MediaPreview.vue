@@ -1,5 +1,8 @@
 <template>
-  <div v-if="currentMedia" class="fixed inset-0 z-2000 flex flex-col bg-black text-white">
+  <div
+    v-if="currentMedia"
+    class="fixed left-[var(--pane-left)] top-[var(--pane-top)] h-[var(--pane-height)] w-[var(--pane-width)] z-2000 flex flex-col bg-black text-white"
+  >
     <header
       class="flex shrink-0 items-center gap-3 border-b border-white/15 bg-black/80 px-3 py-2 backdrop-blur-sm"
     >

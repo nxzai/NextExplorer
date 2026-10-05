@@ -68,6 +68,7 @@ const iconComponent = iconComponents[props.iconName] || InformationCircleIcon;
         <div class="ml-4 flex shrink-0">
           <button
             type="button"
+            data-test="toast-close"
             @click="emit('close', id)"
             class="inline-flex rounded-md text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-offset-zinc-800"
           >

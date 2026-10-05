@@ -52,6 +52,20 @@ vi.mock('./components/UserDetail.vue', () => ({
   default: { name: 'UserDetailStub', render: () => null },
 }));
 
+/**
+ * The three things the browser used to answer for, answered by the application.
+ *
+ * `alert`, `prompt` and `confirm` put the server's address and port at the top of every
+ * message and question on this screen, and stopped the page until they were dismissed.
+ * The harness below keeps its shape — what was said, what was typed, what was
+ * answered — and only the place they now come from has changed.
+ */
+const notifications = vi.hoisted(() => ({ addNotification: vi.fn() }));
+vi.mock('@/stores/notifications', () => ({ useNotificationsStore: () => notifications }));
+
+const asked = vi.hoisted(() => ({ ask: vi.fn(), askFor: vi.fn() }));
+vi.mock('@/composables/useAsk', () => ({ useAsk: () => asked }));
+
 const AdminUsers = (await import('./AdminUsers.vue')).default;
 
 const ALICE = { id: 'u1', username: 'alice', email: 'alice@example.com', roles: [] };
@@ -74,9 +88,9 @@ beforeEach(() => {
   alerts = [];
   prompted = null;
   confirmed = true;
-  vi.spyOn(window, 'alert').mockImplementation((message) => alerts.push(message));
-  vi.spyOn(window, 'prompt').mockImplementation(() => prompted);
-  vi.spyOn(window, 'confirm').mockImplementation(() => confirmed);
+  notifications.addNotification.mockImplementation(({ heading }) => alerts.push(heading));
+  asked.askFor.mockImplementation(async () => prompted);
+  asked.ask.mockImplementation(async () => confirmed);
   Object.values(api).forEach((fn) => fn.mockClear());
   api.fetchUsers.mockResolvedValue({ users: [] });
   api.updateUser.mockResolvedValue({});

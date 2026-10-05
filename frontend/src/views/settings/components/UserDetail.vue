@@ -18,6 +18,8 @@ import { useAuthStore } from '@/stores/auth';
 import { useFeaturesStore } from '@/stores/features';
 import { fetchUserVolumes, removeUserVolume } from '@/api';
 import VolumeAssignModal from './VolumeAssignModal.vue';
+import { useAsk } from '@/composables/useAsk';
+import { useNotificationsStore } from '@/stores/notifications';
 
 const props = defineProps({
   user: {
@@ -37,6 +39,8 @@ const emit = defineEmits([
   'unlock',
 ]);
 const { t, locale } = useI18n();
+const { ask } = useAsk();
+const notifications = useNotificationsStore();
 const authStore = useAuthStore();
 const featuresStore = useFeaturesStore();
 
@@ -109,14 +113,22 @@ const handleVolumeSaved = () => {
 };
 
 const handleRemoveVolume = async (volume) => {
-  const ok = window.confirm(t('settings.users.confirmRemoveVolume', { label: volume.label }));
+  const ok = await ask({
+    title: t('settings.users.removeVolumeTitle'),
+    body: t('settings.users.confirmRemoveVolume', { label: volume.label }),
+    confirmLabel: t('common.remove'),
+    tone: 'danger',
+  });
   if (!ok) return;
 
   try {
     await removeUserVolume(props.user.id, volume.id);
     volumes.value = volumes.value.filter((v) => v.id !== volume.id);
   } catch (e) {
-    alert(e?.message || t('errors.removeVolume'));
+    notifications.addNotification({
+      type: 'error',
+      heading: e?.message || t('errors.removeVolume'),
+    });
   }
 };
 

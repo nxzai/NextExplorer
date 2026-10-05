@@ -564,6 +564,14 @@ const terminal = {
   extensions: parseExtensionList(env.TERMINAL_FILE_EXTENSIONS),
 };
 
+// --- Comparing files side by side ---
+// Only what this installation adds. What is always comparable is whatever the text
+// editor can open, which the client already knows: a second list of the same
+// extensions would be a second list to keep in step.
+const compare = {
+  extensions: parseExtensionList(env.COMPARE_FILE_EXTENSIONS),
+};
+
 // --- Favorites ---
 const favorites = {
   defaultIcon: env.FAVORITES_DEFAULT_ICON,
@@ -846,6 +854,7 @@ module.exports = {
   collabora,
   editor,
   terminal,
+  compare,
   favorites,
   shares,
   hiddenFiles,

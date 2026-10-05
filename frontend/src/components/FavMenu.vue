@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia';
 import draggable from 'vuedraggable';
 import { useFavoritesStore } from '@/stores/favorites';
 import { useNavigation } from '@/composables/navigation';
+import { useOpenPlaceInTab } from '@/composables/openPlaceInTab';
 import { normalizePath } from '@/api';
 import { useI18n } from 'vue-i18n';
 import { useFavoriteEditor } from '@/composables/useFavoriteEditor';
@@ -28,6 +29,8 @@ const favoritesStore = useFavoritesStore();
 const { favorites } = storeToRefs(favoritesStore);
 const route = useRoute();
 const { openBreadcrumb } = useNavigation();
+// The middle button opens a place in a tab behind, as it does a folder row.
+const { openPlaceInTab } = useOpenPlaceInTab();
 const { openEditorForFavorite } = useFavoriteEditor();
 const { handleDragOver, handleDragLeave, handleDrop, isDragTarget, isCopyDragTarget } =
   useFileDragDrop();
@@ -57,10 +60,16 @@ const isActiveFav = (favoritePath = '') => {
   return normalizedFavorite === currentPath.value;
 };
 
-const handleOpenFavorite = (favorite) => {
+/**
+ * Command, or control, opens it in a tab behind — what a browser does with a
+ * link. `metaKey` first, because on a Mac the command key is the one people
+ * reach for and control there means something else entirely.
+ */
+const handleOpenFavorite = (favorite, event) => {
   if (!favorite?.path) {
     return;
   }
+  if ((event?.metaKey || event?.ctrlKey) && openPlaceInTab(favorite.path)) return;
   openBreadcrumb(favorite.path);
 };
 
@@ -190,7 +199,8 @@ onBeforeUnmount(() => {
                   />
                   <button
                     type="button"
-                    @click="handleOpenFavorite(favorite)"
+                    @click="handleOpenFavorite(favorite, $event)"
+                    @auxclick.middle.prevent="openPlaceInTab(favorite.path)"
                     @dragover="handleDragOver($event, favoriteDropTarget(favorite))"
                     @dragleave="handleDragLeave($event, favoriteDropTarget(favorite))"
                     @drop="handleDrop($event, favoriteDropTarget(favorite))"

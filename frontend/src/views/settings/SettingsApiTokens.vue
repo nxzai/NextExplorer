@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { createApiToken, listApiTokens, renameApiToken, revokeApiToken } from '@/api';
 import { formatLocalDateTime } from '@/utils';
 import { useAuthStore } from '@/stores/auth';
+import { useAsk } from '@/composables/useAsk';
 
 /**
  * The API tokens on this account.
@@ -18,6 +19,7 @@ import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
 const { t } = useI18n();
+const { ask, askFor } = useAsk();
 
 const tokens = ref([]);
 const busy = ref(false);
@@ -93,7 +95,12 @@ const create = async () => {
 
 const rename = async (token) => {
   resetMessages();
-  const name = window.prompt(t('settings.apiTokens.renamePrompt'), token.name);
+  const name = await askFor({
+    title: t('settings.apiTokens.renameTitle'),
+    label: t('settings.apiTokens.renamePrompt'),
+    value: token.name,
+    confirmLabel: t('settings.apiTokens.rename'),
+  });
   if (name === null) return;
   busy.value = true;
   try {
@@ -109,7 +116,13 @@ const rename = async (token) => {
 
 const revoke = async (token) => {
   resetMessages();
-  if (!window.confirm(t('settings.apiTokens.revokeConfirm', { name: token.name }))) return;
+  const go = await ask({
+    title: t('settings.apiTokens.revokeTitle'),
+    body: t('settings.apiTokens.revokeConfirm', { name: token.name }),
+    confirmLabel: t('settings.apiTokens.revoke'),
+    tone: 'danger',
+  });
+  if (!go) return;
   busy.value = true;
   try {
     await revokeApiToken(token.id);

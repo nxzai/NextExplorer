@@ -3,7 +3,6 @@ import FolderView from '@/views/FolderView.vue';
 import HomeView from '@/views/HomeView.vue';
 import EditorView from '@/views/EditorView.vue';
 import BrowserLayout from '@/layouts/BrowserLayout.vue';
-import EditorLayout from '@/layouts/EditorLayout.vue';
 import SearchResultsView from '@/views/SearchResultsView.vue';
 import SettingsView from '@/views/settings/SettingsView.vue';
 import SettingsBranding from '@/views/settings/SettingsBranding.vue';
@@ -11,6 +10,7 @@ import SettingsFilesThumbnails from '@/views/settings/SettingsFilesThumbnails.vu
 import SettingsFfmpeg from '@/views/settings/SettingsFfmpeg.vue';
 import SettingsUploads from '@/views/settings/SettingsUploads.vue';
 import SettingsSearchIndex from '@/views/settings/SettingsSearchIndex.vue';
+import SettingsTabs from '@/views/settings/SettingsTabs.vue';
 import SettingsFolderSize from '@/views/settings/SettingsFolderSize.vue';
 import SettingsAccessControl from '@/views/settings/SettingsAccessControl.vue';
 import SettingsComingSoon from '@/views/settings/SettingsComingSoon.vue';
@@ -35,6 +35,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useFeaturesStore } from '@/stores/features';
 import { useAppSettings } from '@/stores/appSettings';
 import { useFolderScrollStore } from '@/stores/folderScroll';
+import { useTabsStore } from '@/stores/tabs';
 import { getVolumes } from '@/api';
 import { readGuestSession, resolveShareAccess } from '@/router/shareGuard';
 import { loadAccountSettings } from '@/router/settingsGuard';
@@ -81,6 +82,11 @@ const router = createRouter({
             {
               path: 'folder-size',
               component: SettingsFolderSize,
+              meta: { requiresAdmin: true },
+            },
+            {
+              path: 'tabs',
+              component: SettingsTabs,
               meta: { requiresAdmin: true },
             },
             {
@@ -147,89 +153,91 @@ const router = createRouter({
         },
       ],
     },
+    /**
+     * The two screens a pane holds most of the time, each a record of its own.
+     *
+     * They were children of `BrowserLayout`, which is now nothing but a
+     * `<RouterView />` — and that passthrough had a cost nobody could see: the pane
+     * the reader is in draws the router's own component, which was the *layout*,
+     * while the pane beside it resolves the deepest one, which is the screen. Two
+     * different components for the same address, so moving from one half to the
+     * other rebuilt both screens: the listing was read again, the reader was put
+     * back from memory, and a click that crossed into the other half was swallowed
+     * whole — the row it was pressed on had been replaced before the button came up.
+     *
+     * Flat, both panes draw the same component and crossing costs nothing. The
+     * addresses, the names and what each record allows are exactly as they were.
+     */
     {
       path: '/browse',
-      component: BrowserLayout,
+      name: 'HomeView',
+      component: HomeView,
       meta: { requiresAuth: true },
-      children: [
-        {
-          path: '',
-          name: 'HomeView',
-          component: HomeView,
-        },
-        {
-          path: ':path(.+)',
-          name: 'FolderView',
-          component: FolderView,
-          meta: { allowGuest: true }, // Allow guest access for share paths
-        },
-      ],
     },
     {
-      path: '/shares',
-      component: BrowserLayout,
+      path: '/browse/:path(.+)',
+      name: 'FolderView',
+      component: FolderView,
+      // Allow guest access for share paths
+      meta: { requiresAuth: true, allowGuest: true },
+    },
+    {
+      path: '/shares/shared-with-me',
+      name: 'SharedWithMe',
+      component: SharedWithMeView,
       meta: { requiresAuth: true },
-      children: [
-        {
-          path: 'shared-with-me',
-          name: 'SharedWithMe',
-          component: SharedWithMeView,
-        },
-        {
-          path: 'shared-by-me',
-          name: 'SharedByMe',
-          component: SharedByMeView,
-        },
-      ],
+    },
+    {
+      path: '/shares/shared-by-me',
+      name: 'SharedByMe',
+      component: SharedByMeView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/trash',
-      component: BrowserLayout,
+      name: 'Trash',
+      component: TrashView,
       meta: { requiresAuth: true },
-      children: [{ path: '', name: 'Trash', component: TrashView }],
     },
     {
       // A file in the trash, shown in the editor to be read: nothing there can
       // be saved. Its own path, so no volume name can ever collide with it.
-      path: '/trash/view',
-      component: EditorLayout,
+      path: '/trash/view/:itemId/:entryPath(.*)*',
+      name: 'TrashFileViewer',
+      component: EditorView,
       meta: { requiresAuth: true },
-      children: [
-        { path: ':itemId/:entryPath(.*)*', name: 'TrashFileViewer', component: EditorView },
-      ],
     },
     {
       // An earlier version of a file, shown in the editor to be read. The file
       // is named by its path, a share path for a share's visitor.
-      path: '/versions/view',
-      component: EditorLayout,
+      path: '/versions/view/:versionId/:path(.*)',
+      name: 'VersionFileViewer',
+      component: EditorView,
       meta: { requiresAuth: true, allowGuest: true },
-      children: [
-        { path: ':versionId/:path(.*)', name: 'VersionFileViewer', component: EditorView },
-      ],
     },
     {
       path: '/search',
-      component: BrowserLayout,
+      component: SearchResultsView,
       meta: { requiresAuth: true },
-      children: [{ path: '', component: SearchResultsView }],
     },
     {
-      path: '/editor',
-      component: EditorLayout,
+      // Two or three files side by side — see views/CompareView.vue. Loaded on
+      // demand; nothing else needs the alignment.
+      path: '/compare',
+      name: 'CompareView',
+      component: () => import('@/views/CompareView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/editor/share/:token/:sharedPath(.*)*',
+      name: 'SharedEditor',
+      component: EditorView,
+      meta: { requiresAuth: true, allowGuest: true, sharedEditor: true },
+    },
+    {
+      path: '/editor/:path(.*)',
+      component: EditorView,
       meta: { requiresAuth: true, allowGuest: true },
-      children: [
-        {
-          path: 'share/:token/:sharedPath(.*)*',
-          name: 'SharedEditor',
-          component: EditorView,
-          meta: { sharedEditor: true },
-        },
-        {
-          path: ':path(.*)',
-          component: EditorView,
-        },
-      ],
     },
     {
       // One document, at an address of its own — see views/DocumentView.vue.
@@ -238,6 +246,25 @@ const router = createRouter({
       path: '/open/:path(.*)',
       component: DocumentView,
       meta: { requiresAuth: true },
+    },
+    {
+      // One terminal, at an address of its own — see views/TerminalView.vue.
+      //
+      // No layout at all, and the page deliberately draws no terminal of its own:
+      // every open shell belongs to `TerminalHost.vue`, which is mounted once in the
+      // shell of the application and outlives every page *and* every layout. It used
+      // to be inside the browser layout, which is not one thing — `/browse` and this
+      // are two route records, so crossing between them destroys that layout and
+      // builds another, and it took every shell with it. A terminal that is unmounted
+      // is a shell that has been killed.
+      //
+      // Which also gives a shell the whole tab: the sidebar is for going somewhere,
+      // and beside a shell its only answer was to leave the shell — easy to confuse
+      // with a `cd` a keystroke away. The strip of tabs still leads out.
+      path: '/terminal/:path(.*)*',
+      name: 'TerminalView',
+      component: () => import('@/views/TerminalView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/auth/setup',
@@ -276,10 +303,14 @@ router.beforeEach(async (to, from) => {
   const destinationPath = folderPathFromRoute(to);
   const sourcePath = folderPathFromRoute(from);
   if (destinationPath) {
+    // The tab this walk belongs to: the window has one address and it is the tab in
+    // front's. A permission keyed by the folder alone is one any other tab on that
+    // folder would consume, and jump to where this one had been.
+    const walking = useTabsStore().activeId;
     if (isAncestorFolder(destinationPath, sourcePath)) {
-      folderScrollStore.permitRestore(destinationPath);
+      folderScrollStore.permitRestore(destinationPath, walking);
     } else {
-      folderScrollStore.preventRestore(destinationPath);
+      folderScrollStore.preventRestore(destinationPath, walking);
     }
   }
 

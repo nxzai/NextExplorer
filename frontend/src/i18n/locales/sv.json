@@ -586,6 +586,8 @@
       "useEnvSetting": "Använd serverinställning",
       "defaultView": "Standardvy",
       "defaultViewHelp": "Vyn för en mapp som saknar egen sparad vy.",
+      "foldersFirst": "Mappar först",
+      "foldersFirstHelp": "Vid sortering listas mappar före filer. Stäng av detta för att sortera filer och mappar tillsammans i en lista i vald ordning.",
       "viewGrid": "Rutnät",
       "viewList": "Lista",
       "viewColumns": "Kolumner",

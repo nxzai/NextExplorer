@@ -586,6 +586,8 @@
       "useEnvSetting": "Use server setting",
       "defaultView": "Default view",
       "defaultViewHelp": "The view a folder opens in when it has no remembered view of its own.",
+      "foldersFirst": "Folders first",
+      "foldersFirstHelp": "When sorting, list folders ahead of files. Turn this off to sort one list of files and folders together by the chosen order.",
       "viewGrid": "Grid",
       "viewList": "List",
       "viewColumns": "Columns",

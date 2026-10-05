@@ -586,6 +586,8 @@
       "useEnvSetting": "Servereinstellung verwenden",
       "defaultView": "Standardansicht",
       "defaultViewHelp": "Die Ansicht für Ordner ohne eigene gespeicherte Ansicht.",
+      "foldersFirst": "Ordner zuerst",
+      "foldersFirstHelp": "Ordner beim Sortieren vor den Dateien auflisten. Ausschalten, um Dateien und Ordner in einer gemeinsamen Liste nach der gewählten Ordnung zu sortieren.",
       "viewGrid": "Raster",
       "viewList": "Liste",
       "viewColumns": "Spalten",

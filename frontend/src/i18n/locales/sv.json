@@ -510,7 +510,8 @@
       "activity": "Aktivitetslogg",
       "accountApiTokens": "API-nycklar",
       "folderSize": "Mappstorlekar",
-      "searchIndex": "Sökindex"
+      "searchIndex": "Sökindex",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "Visa bygginformation för denna applikation.",
@@ -621,6 +622,15 @@
       "concurrency": "Samtidig generering",
       "concurrencyHelp": "Antal miniatyrbilder som ska genereras samtidigt (1–50). Standard är 10.",
       "invalid": "Kontrollera värdena: kvalitet 1 till 100, max mått 64 till 1024 px, samtidig generering 1 till 50."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "Välj de FFmpeg- och FFprobe-program som används för förhandsvisningar och metadata.",
+      "containerPathHelp": "Ange absoluta sökvägar som syns inuti programmets container. Montera värdens program i containern först om du vill använda dem.",
+      "ffmpegPath": "Sökväg till FFmpeg-programmet",
+      "ffprobePath": "Sökväg till FFprobe-programmet",
+      "invalid": "Båda sökvägarna måste vara absoluta sökvägar i containern och börja med /.",
+      "defaultHelp": "Lämna en sökväg tom för att använda FFMPEG_PATH eller FFPROBE_PATH från miljön och därefter det medföljande programmet. Ändringar gäller direkt."
     },
     "security": {
       "subtitle": "Kontrollera åtkomst till appen.",

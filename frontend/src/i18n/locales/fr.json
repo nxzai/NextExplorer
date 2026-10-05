@@ -510,7 +510,8 @@
       "activity": "Journal d’activité",
       "accountApiTokens": "Jetons d’API",
       "folderSize": "Taille des dossiers",
-      "searchIndex": "Index de recherche"
+      "searchIndex": "Index de recherche",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "Afficher les informations de build de cette application.",
@@ -621,6 +622,15 @@
       "concurrency": "Génération parallèle",
       "concurrencyHelp": "Nombre de vignettes générées simultanément (1–50). La valeur par défaut est 10.",
       "invalid": "Vérifiez les valeurs : qualité de 1 à 100, dimension maximale de 64 à 1024 px, génération parallèle de 1 à 50."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "Choisissez les exécutables FFmpeg et FFprobe utilisés pour les aperçus et les métadonnées des médias.",
+      "containerPathHelp": "Indiquez des chemins absolus visibles à l'intérieur du conteneur de l'application. Pour utiliser les binaires de l'hôte, montez-les d'abord dans le conteneur.",
+      "ffmpegPath": "Chemin de l'exécutable FFmpeg",
+      "ffprobePath": "Chemin de l'exécutable FFprobe",
+      "invalid": "Les deux chemins doivent être des chemins absolus du conteneur, commençant par /.",
+      "defaultHelp": "Laissez un chemin vide pour utiliser FFMPEG_PATH ou FFPROBE_PATH de l'environnement, puis l'exécutable fourni. Les changements s'appliquent immédiatement."
     },
     "security": {
       "subtitle": "Contrôlez l'accès à l'application.",

@@ -510,7 +510,8 @@
       "activity": "Aktivitätsprotokoll",
       "accountApiTokens": "API-Token",
       "folderSize": "Ordnergrößen",
-      "searchIndex": "Suchindex"
+      "searchIndex": "Suchindex",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "Build-Informationen für diese Anwendung anzeigen.",
@@ -621,6 +622,15 @@
       "concurrency": "Parallele Generierung",
       "concurrencyHelp": "Anzahl der gleichzeitig zu generierenden Miniaturen (1–50). Standard ist 10.",
       "invalid": "Prüfen Sie die Werte: Qualität 1 bis 100, maximale Abmessung 64 bis 1024 px, parallele Generierung 1 bis 50."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "FFmpeg- und FFprobe-Programme für Medienvorschauen und Metadaten auswählen.",
+      "containerPathHelp": "Geben Sie absolute Pfade an, die im Container der Anwendung sichtbar sind. Um Programme des Hosts zu verwenden, binden Sie sie zuerst in den Container ein.",
+      "ffmpegPath": "Pfad zum FFmpeg-Programm",
+      "ffprobePath": "Pfad zum FFprobe-Programm",
+      "invalid": "Beide Pfade müssen absolute Container-Pfade sein und mit / beginnen.",
+      "defaultHelp": "Lassen Sie einen Pfad leer, um FFMPEG_PATH oder FFPROBE_PATH aus der Umgebung und danach das mitgelieferte Programm zu verwenden. Änderungen gelten sofort."
     },
     "security": {
       "subtitle": "Steuern Sie den Zugriff auf die App.",

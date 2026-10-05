@@ -510,7 +510,8 @@
       "activity": "活動記錄",
       "accountApiTokens": "API 權杖",
       "folderSize": "檔案夾大小",
-      "searchIndex": "搜尋索引"
+      "searchIndex": "搜尋索引",
+      "ffmpeg": "FFmpeg"
     },
     "about": {
       "subtitle": "查看此應用的構建資訊。",
@@ -621,6 +622,15 @@
       "concurrency": "平行產生",
       "concurrencyHelp": "同時產生的縮圖數量 (1–50)。預設值為 10。",
       "invalid": "請檢查數值：品質 1 至 100，最大尺寸 64 至 1024 px，平行產生 1 至 50。"
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "subtitle": "選擇用於媒體預覽與中介資料的 FFmpeg 與 FFprobe 執行檔。",
+      "containerPathHelp": "請填寫在應用程式容器內可見的絕對路徑。若要使用主機上的程式，請先將其掛載到容器中。",
+      "ffmpegPath": "FFmpeg 執行檔路徑",
+      "ffprobePath": "FFprobe 執行檔路徑",
+      "invalid": "兩個路徑都必須是以 / 開頭的容器絕對路徑。",
+      "defaultHelp": "留空則先使用環境中的 FFMPEG_PATH 或 FFPROBE_PATH，再使用內建的執行檔。變更立即生效。"
     },
     "security": {
       "subtitle": "控制對應用產生的存取。",

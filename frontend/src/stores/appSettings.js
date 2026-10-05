@@ -46,6 +46,10 @@ export const useAppSettings = defineStore('appSettings', () => {
     // every version until now did, so nobody's downloads change shape until
     // they ask for it (#487).
     downloadMode: 'zip',
+    // Several places open at once, each in a tab. Off, because it changes the
+    // shape of every screen: with it off there is one tab, it is never drawn,
+    // and the application is the one that has always been there.
+    browseInTabs: false,
   });
 
   const createDefaultTrashSettings = () => ({

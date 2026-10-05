@@ -99,6 +99,77 @@ describe('fileStore folder navigation', () => {
     ]);
   });
 
+  /**
+   * Going somewhere and being somewhere while it changes are two different
+   * things, and the store has a word for each.
+   *
+   * Every caller that got this wrong got it wrong the same way — by reaching for
+   * the one function there was — and what it cost was the reader's selection: an
+   * upload landing a second after they chose a file took the choice away with it,
+   * and the share button went grey under their hand.
+   */
+  it('reads the same folder again without taking away what is selected', async () => {
+    browse.mockResolvedValue({
+      path: 'Volume',
+      items: [{ name: 'notes.txt', path: 'Volume', kind: 'txt' }],
+    });
+
+    const store = useFileStore();
+    await store.fetchPathItems('Volume');
+    store.selectedItems = [store.currentPathItems[0]];
+
+    await store.refresh();
+
+    expect(store.getCurrentPath).toBe('Volume');
+    expect(store.selectedItems).toHaveLength(1);
+  });
+
+  it('clears it when the reader goes somewhere, which is the other word', async () => {
+    browse.mockResolvedValue({
+      path: 'Volume',
+      items: [{ name: 'notes.txt', path: 'Volume', kind: 'txt' }],
+    });
+
+    const store = useFileStore();
+    await store.fetchPathItems('Volume');
+    store.selectedItems = [store.currentPathItems[0]];
+
+    await store.fetchPathItems('Volume');
+
+    expect(store.selectedItems).toHaveLength(0);
+  });
+
+  /**
+   * A listing read into a tab the reader is not looking at.
+   *
+   * Every folder already has its own listing and its own selection — that is what
+   * makes a tab keep what it was holding. What was missing was a way to fill one
+   * in advance, which is what preparing a tab opened in the background means: by
+   * the time the reader arrives, the folder is there instead of a spinner.
+   */
+  it('reads a folder into a named tab without moving the one in front', async () => {
+    browse
+      .mockResolvedValueOnce({ path: 'Volume', items: [{ name: 'a.txt', path: 'Volume' }] })
+      .mockResolvedValueOnce({
+        path: 'Other',
+        items: [
+          { name: 'b.txt', path: 'Other' },
+          { name: 'c.txt', path: 'Other' },
+        ],
+      });
+
+    const store = useFileStore();
+    await store.fetchPathItems('Volume');
+
+    await store.fetchIn('tab-behind', 'Other');
+
+    // The tab in front is where it was, holding what it held.
+    expect(store.getCurrentPath).toBe('Volume');
+    expect(store.currentPathItems.map((item) => item.name)).toEqual(['a.txt']);
+    // And the folder was really read: the second call went to the server.
+    expect(browse).toHaveBeenCalledWith('Other', expect.anything());
+  });
+
   it('clears an OnlyOffice activity badge when a refresh reports the document closed', async () => {
     browse
       .mockResolvedValueOnce({

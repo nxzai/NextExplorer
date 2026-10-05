@@ -69,6 +69,28 @@ const actionsProxy = new Proxy(
   }
 );
 vi.mock('@/composables/fileActions', () => ({ useFileActions: () => actionsProxy }));
+// Where an entry opens is the preview plugins' business; mocked here so a spec
+// about the menu does not build the plugin registry, and so the one thing the menu
+// decides — whether to offer the entry at all — can be moved.
+const address = vi.hoisted(() => ({
+  addressFor: vi.fn(() => ({ path: '/open/Docs/report.docx' })),
+  enabled: true,
+  // Answering with a tab is how the store says there was room for it; null is
+  // how it says the row is full, and the menu has to read the difference.
+  open: vi.fn(() => ({ id: 'opened' })),
+  limit: 10,
+}));
+vi.mock('@/composables/itemAddress', () => ({
+  useItemAddress: () => ({ addressFor: address.addressFor }),
+}));
+vi.mock('@/composables/tabNavigation', () => ({
+  useTabNavigation: () => ({
+    get tabs() {
+      return { enabled: address.enabled, limit: address.limit };
+    },
+    open: address.open,
+  }),
+}));
 vi.mock('@/stores/fileStore', () => ({ useFileStore: () => fileStore }));
 vi.mock('@/stores/infoPanel', () => ({
   useInfoPanelStore: () => ({ open: infoOpen, close: infoClose }),
@@ -78,7 +100,12 @@ vi.mock('@/stores/versionsPanel', () => ({
 }));
 vi.mock('@/stores/favorites', () => ({ useFavoritesStore: () => favorites }));
 vi.mock('@/stores/features', () => ({ useFeaturesStore: () => features }));
-vi.mock('@/stores/terminal', () => ({ useTerminalStore: () => ({ open: terminalOpen }) }));
+vi.mock('@/stores/terminal', () => ({ useTerminalStore: () => ({ openIn: terminalOpen }) }));
+// A terminal belongs to the tab it was opened from, so the menu has to say which.
+vi.mock('@/stores/tabs', () => ({ useTabsStore: () => ({ activeId: 'tab-1' }) }));
+vi.mock('@/stores/notifications', () => ({
+  useNotificationsStore: () => ({ addNotification: vi.fn() }),
+}));
 vi.mock('@/composables/itemSelection', () => ({
   useSelection: () => ({ clearSelection: vi.fn() }),
 }));
@@ -1140,7 +1167,7 @@ describe('opening a file in the terminal', () => {
 
     await clickLabel('context.openWithTerminal');
 
-    expect(terminalOpen).toHaveBeenCalledWith('Docs/bin', './backup.sh');
+    expect(terminalOpen).toHaveBeenCalledWith('tab-1', 'Docs/bin', { input: './backup.sh' });
   });
 
   /** A name with a space in it must not become two arguments. */
@@ -1151,7 +1178,7 @@ describe('opening a file in the terminal', () => {
 
     await clickLabel('context.openWithTerminal');
 
-    expect(terminalOpen).toHaveBeenCalledWith('Docs', './my\\ backup.sh');
+    expect(terminalOpen).toHaveBeenCalledWith('tab-1', 'Docs', { input: './my\\ backup.sh' });
   });
 
   it('falls back to the folder on screen for a file with no path of its own', async () => {
@@ -1161,7 +1188,7 @@ describe('opening a file in the terminal', () => {
 
     await clickLabel('context.openWithTerminal');
 
-    expect(terminalOpen).toHaveBeenCalledWith('Docs', './run.sh');
+    expect(terminalOpen).toHaveBeenCalledWith('tab-1', 'Docs', { input: './run.sh' });
   });
 });
 
@@ -1317,5 +1344,132 @@ describe('an archive that wants a password', () => {
     await view.submitArchivePassword('hunter2');
 
     expect(fileStore.extractZipArchive).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * Opening an entry in a tab of this application.
+ *
+ * Offered where a browser offers it and for the same reason: it is about *this*
+ * entry, and it is the first thing somebody with tabs open reaches for. Not
+ * offered where it would do nothing — tabs off, or an entry with no address of its
+ * own, which is a download rather than a place.
+ */
+describe('open in a new tab', () => {
+  beforeEach(() => {
+    address.enabled = true;
+    address.open.mockReset();
+    address.open.mockReturnValue({ id: 'opened' });
+    address.limit = 10;
+    address.addressFor.mockReset();
+    address.addressFor.mockReturnValue({ path: '/open/Docs/report.docx' });
+    fileStore.selectedItems = [FILE];
+  });
+
+  const openOnFileEntry = async () => {
+    document.body.innerHTML = '';
+    const { api } = await mountMenu();
+    api.openItemMenu(rightClick(), FILE);
+    await flushPromises();
+  };
+
+  it('is offered, and opens the address the entry has', async () => {
+    await openOnFileEntry();
+    expect(labels()).toContain('tabs.openInNewTab');
+
+    await clickLabel('tabs.openInNewTab');
+
+    expect(address.addressFor).toHaveBeenCalledWith(FILE, { currentPath: 'Docs' });
+    expect(address.open).toHaveBeenCalledWith('/open/Docs/report.docx', {
+      behind: false,
+      own: true,
+    });
+  });
+
+  it('is not offered while tabs are off', async () => {
+    address.enabled = false;
+
+    await openOnFileEntry();
+
+    expect(labels()).not.toContain('tabs.openInNewTab');
+  });
+
+  it('is not offered for an entry with nowhere of its own', async () => {
+    address.addressFor.mockReturnValue(null);
+
+    await openOnFileEntry();
+
+    expect(labels()).not.toContain('tabs.openInNewTab');
+  });
+
+  /**
+   * Four chosen entries are four tabs.
+   *
+   * Opening the first and dropping the other three is the kind of answer that
+   * makes somebody stop using the menu — they said what they wanted, four times
+   * over. The first comes forward, as one entry always has; the rest line up
+   * behind it, which is the order they will be read in.
+   */
+  it('opens every entry that was chosen, the first in front and the rest behind', async () => {
+    const second = { name: 'notes.md', path: 'Docs', kind: 'md' };
+    fileStore.selectedItems = [FILE, second];
+    actions = makeActions({
+      primaryItem: ref(FILE),
+      selectedItems: ref([FILE, second]),
+    });
+    address.addressFor
+      .mockReturnValueOnce({ path: '/open/Docs/report.docx' })
+      .mockReturnValueOnce({ path: '/editor/Docs/notes.md' });
+
+    await openOnFileEntry();
+    // The label says how many, which is what makes it the right label.
+    expect(labels()).toContain('tabs.openInNewTabs {"count":2}');
+
+    await clickLabel('tabs.openInNewTabs {"count":2}');
+
+    expect(address.open).toHaveBeenNthCalledWith(1, '/open/Docs/report.docx', {
+      behind: false,
+      own: true,
+    });
+    expect(address.open).toHaveBeenNthCalledWith(2, '/editor/Docs/notes.md', {
+      behind: true,
+      own: true,
+    });
+  });
+
+  /** The row has a limit, and it is an administrator's: it stops there. */
+  it('stops when the row is full rather than asking for tabs there is no room for', async () => {
+    const second = { name: 'notes.md', path: 'Docs', kind: 'md' };
+    const third = { name: 'plan.md', path: 'Docs', kind: 'md' };
+    fileStore.selectedItems = [FILE, second, third];
+    actions = makeActions({
+      primaryItem: ref(FILE),
+      selectedItems: ref([FILE, second, third]),
+    });
+    address.addressFor.mockReturnValue({ path: '/open/Docs/report.docx' });
+    address.open.mockReturnValueOnce({ id: 'a' }).mockReturnValue(null);
+
+    await openOnFileEntry();
+    await clickLabel('tabs.openInNewTabs {"count":3}');
+
+    expect(address.open).toHaveBeenCalledTimes(2);
+  });
+
+  /** An entry with nowhere of its own is a download: it is not one of the four. */
+  it('counts only the entries that have somewhere to go', async () => {
+    const nowhere = { name: 'archive.zip', path: 'Docs', kind: 'zip' };
+    fileStore.selectedItems = [FILE, nowhere];
+    actions = makeActions({
+      primaryItem: ref(FILE),
+      selectedItems: ref([FILE, nowhere]),
+    });
+    address.addressFor
+      .mockReturnValueOnce({ path: '/open/Docs/report.docx' })
+      .mockReturnValueOnce(null);
+
+    await openOnFileEntry();
+
+    expect(labels()).toContain('tabs.openInNewTab');
+    expect(labels().some((label) => label.startsWith('tabs.openInNewTabs'))).toBe(false);
   });
 });

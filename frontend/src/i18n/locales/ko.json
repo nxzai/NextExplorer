@@ -77,7 +77,10 @@
     "dismissWarning": "경고 닫기",
     "reset": "초기화",
     "moveUp": "위로 이동",
-    "moveDown": "아래로 이동"
+    "moveDown": "아래로 이동",
+    "confirm": "확인",
+    "closeAnyway": "그래도 닫기",
+    "leaveAnyway": "그래도 나가기"
   },
   "editor": {
     "editing": "편집 중",
@@ -90,7 +93,8 @@
     "versionReadOnly": "이전 버전, 읽기 전용",
     "highlightingOffTooLarge": "이 파일은 구문 강조가 꺼져 있습니다. 일부가 너무 커서 페이지를 멈추지 않고는 강조할 수 없습니다.",
     "raw": "원본",
-    "selectTheme": "편집기 테마 선택"
+    "selectTheme": "편집기 테마 선택",
+    "unsavedTitle": "저장하지 않은 변경 사항"
   },
   "status": {
     "updated": "업데이트 성공",
@@ -497,6 +501,7 @@
       "accountPassword": "비밀번호 변경",
       "about": "정보",
       "userPreferences": "설정",
+      "tabs": "탭",
       "branding": "브랜딩",
       "filesThumbnails": "파일/썸네일",
       "security": "보안",
@@ -592,6 +597,12 @@
       "viewPhotos": "사진",
       "documentsOpenInNewTab": "문서를 새 탭에서 열기",
       "documentsOpenInNewTabHelp": "파일을 열면 브라우저 탭이 따로 생기므로, 계속 탐색하는 동안 여러 개를 열어 둘 수 있습니다. 끄면 지금처럼 폴더 위에서 열립니다.",
+      "browseInTabs": "탭으로 탐색",
+      "browseInTabsHelp": "폴더, 문서, 휴지통 등 여러 곳을 각각 탭으로 한꺼번에 열어 둡니다. 데스크톱 파일 관리자와 같은 방식입니다. 끄면 한 번에 한 곳만 열리고, 도구 모음 위에는 아무것도 표시되지 않습니다.",
+      "closeTabsOnDoubleClick": "더블 클릭으로 탭 닫기",
+      "closeTabsOnDoubleClickHelp": "탭의 아무 곳이나 더블 클릭하면 닫힙니다. 닫기 버튼과 함께 쓸 수 있습니다.",
+      "preloadBackgroundTabs": "백그라운드에서 열린 탭 미리 준비",
+      "preloadBackgroundTabsHelp": "뒤에서 열린 탭이나 창과 함께 다시 열린 탭이 이동할 때까지 기다리지 않고 바로 불러옵니다. 이렇게 준비된 문서는 편집기에서 열리므로 편집 중으로 표시됩니다.",
       "downloadMode": "여러 항목 다운로드",
       "downloadModeHelp": "한 번에 두 개 이상을 다운로드할 때의 동작입니다. 선택한 폴더는 항상 하나의 압축 파일로 받습니다.",
       "downloadModeZip": "하나의 ZIP 압축 파일",
@@ -609,7 +620,9 @@
       "quickActionsPositionHelp": "이름 열의 한쪽 끝에 맞추면 모든 행에서 같은 자리에 놓입니다. 필요한 공간은 행에 포인터가 있든 없든 그대로 유지됩니다.",
       "quickActionsPositionAfter": "이름 뒤",
       "quickActionsPositionStart": "이름 열의 시작",
-      "quickActionsPositionEnd": "이름 열의 끝"
+      "quickActionsPositionEnd": "이름 열의 끝",
+      "reopenTabs": "돌아올 때 탭 다시 열기",
+      "reopenTabsHelp": "끄면 고정한 탭만 돌아옵니다. 고정은 바로 그것을 위한 것입니다. 켜면 모두 돌아옵니다."
     },
     "thumbs": {
       "subtitle": "사진, 영상 파일의 미리보기 썸네일 관련 설정을 커스터마이징하세요.",
@@ -702,7 +715,10 @@
       "accessMode": "접근 모드",
       "noUsers": "유저가 없습니다",
       "lockedBadge": "잠김",
-      "lockedUntil": "{time}까지 잠김"
+      "lockedUntil": "{time}까지 잠김",
+      "removeTitle": "사용자 삭제",
+      "removeVolumeTitle": "볼륨 제거",
+      "newPasswordTitle": "새 비밀번호"
     },
     "userDetails": {
       "profileTab": "프로필",
@@ -924,7 +940,8 @@
       "loadFailed": "이 계정의 패스키를 읽지 못했습니다.",
       "addFailed": "이 패스키를 추가하지 못했습니다.",
       "cancelled": "아무것도 추가되지 않았습니다: 브라우저가 닫혔거나 시간이 초과되었습니다.",
-      "alreadyHere": "이 기기에는 이미 이 계정의 패스키가 있습니다."
+      "alreadyHere": "이 기기에는 이미 이 계정의 패스키가 있습니다.",
+      "renameTitle": "패스키 이름 변경"
     },
     "activity": {
       "title": "활동 로그",
@@ -1010,7 +1027,9 @@
       "loadFailed": "토큰을 불러오지 못했습니다.",
       "createFailed": "토큰을 발급하지 못했습니다.",
       "renameFailed": "토큰 이름을 바꾸지 못했습니다.",
-      "revokeFailed": "토큰을 취소하지 못했습니다."
+      "revokeFailed": "토큰을 취소하지 못했습니다.",
+      "renameTitle": "토큰 이름 변경",
+      "revokeTitle": "토큰 해지"
     },
     "folderSize": {
       "title": "폴더 크기",
@@ -1024,6 +1043,12 @@
       "additional": "추가 제외 항목",
       "placeholder": "Stacks/docker/overlay2",
       "none": "설정된 경로 없음"
+    },
+    "tabs": {
+      "title": "탭",
+      "description": "이 설치에서 모든 사용자에게 적용되는 탭 탐색 동작입니다.",
+      "maxOpen": "동시에 열 수 있는 최대 탭 수",
+      "maxOpenHelp": "탭 막대는 스크롤되지 않습니다. 읽을 수 없을 만큼 좁아지는 대신 여기서 멈춥니다."
     },
     "searchIndex": {
       "title": "검색 색인",
@@ -1042,6 +1067,21 @@
       "useSwitch": "위의 스위치로 켜세요.",
       "locked": "환경의 {variable}(으)로 설정되어 있어, 여기가 아니라 그곳에서 결정됩니다."
     }
+  },
+  "tabs": {
+    "strip": "열린 탭",
+    "openInNewTab": "새 탭에서 열기",
+    "openInNewTabs": "{count}개를 새 탭에서 열기",
+    "newTab": "새 탭",
+    "moveLeft": "왼쪽으로 이동",
+    "moveRight": "오른쪽으로 이동",
+    "duplicate": "탭 복제",
+    "pin": "탭 고정",
+    "unpin": "탭 고정 해제",
+    "closeTab": "탭 닫기",
+    "closeOthers": "다른 탭 닫기",
+    "closeAll": "모든 탭 닫기",
+    "full": "탭을 더 열 공간이 없습니다 (한도: {count})"
   },
   "mediaPreview": {
     "audioTrack": "오디오 트랙",

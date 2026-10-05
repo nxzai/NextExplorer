@@ -77,7 +77,10 @@
     "dismissWarning": "Închideți avertismentul",
     "reset": "Resetează",
     "moveUp": "Mută în sus",
-    "moveDown": "Mută în jos"
+    "moveDown": "Mută în jos",
+    "confirm": "Confirmă",
+    "closeAnyway": "Închide oricum",
+    "leaveAnyway": "Pleacă oricum"
   },
   "editor": {
     "editing": "În curs de editare",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Versiune anterioară, doar citire",
     "highlightingOffTooLarge": "Evidențierea sintaxei este dezactivată pentru acest fișier: o parte din el este prea mare pentru a fi evidențiată fără a bloca pagina.",
     "raw": "Brut",
-    "selectTheme": "Alegeți tema editorului"
+    "selectTheme": "Alegeți tema editorului",
+    "unsavedTitle": "Modificări nesalvate"
   },
   "status": {
     "updated": "Actualizat cu succes",
@@ -497,6 +501,7 @@
       "accountPassword": "Schimbă parola",
       "about": "Despre",
       "userPreferences": "Preferințe",
+      "tabs": "File",
       "branding": "Identitate vizuală",
       "filesThumbnails": "Fișiere și miniaturi",
       "security": "Securitate",
@@ -592,6 +597,12 @@
       "viewPhotos": "Fotografii",
       "documentsOpenInNewTab": "Deschide documentele într-o filă nouă",
       "documentsOpenInNewTabHelp": "Deschiderea unui fișier îi dă o filă proprie de browser, așa că mai multe rămân deschise cât timp navigați. Oprit, se deschide peste dosar ca până acum.",
+      "browseInTabs": "Navigare în taburi",
+      "browseInTabsHelp": "Mai multe locuri deschise în același timp — foldere, documente, coșul — fiecare într-un tab, așa cum face un manager de fișiere de birou. Oprit: un loc pe rând, și deasupra barei de instrumente nu se desenează nimic.",
+      "closeTabsOnDoubleClick": "Închide o filă prin dublu clic",
+      "closeTabsOnDoubleClickHelp": "Un dublu clic oriunde pe filă o închide, pe lângă cruce.",
+      "preloadBackgroundTabs": "Pregătește taburile deschise în fundal",
+      "preloadBackgroundTabsHelp": "Un tab deschis în spate, sau redeschis odată cu fereastra, se încarcă imediat în loc să aștepte până ajungi la el. Un document pregătit astfel este deschis în editorul său, deci contează ca fiind în editare.",
       "downloadMode": "Descărcarea mai multor elemente",
       "downloadModeHelp": "Ce se întâmplă când se descarcă mai mult de un element deodată. Folderele selectate vin întotdeauna ca o singură arhivă.",
       "downloadModeZip": "O singură arhivă ZIP",
@@ -609,7 +620,9 @@
       "quickActionsPositionHelp": "Aliniate la o margine a coloanei de nume, stau în același loc pe fiecare rând; spațiul de care au nevoie rămâne rezervat, indiferent dacă rândul e sub indicator.",
       "quickActionsPositionAfter": "După nume",
       "quickActionsPositionStart": "La începutul coloanei de nume",
-      "quickActionsPositionEnd": "La sfârșitul coloanei de nume"
+      "quickActionsPositionEnd": "La sfârșitul coloanei de nume",
+      "reopenTabs": "Redeschide filele la revenire",
+      "reopenTabsHelp": "Oprit, filele pe care le aveați nu revin: revin doar cele fixate, pentru asta există fixarea. Pornit, revin toate."
     },
     "thumbs": {
       "subtitle": "Personalizează miniaturile de previzualizare pentru imagini și video.",
@@ -702,7 +715,10 @@
       "accessMode": "Mod acces",
       "noUsers": "Nu există utilizatori disponibili",
       "lockedBadge": "Blocat",
-      "lockedUntil": "Blocat până la {time}"
+      "lockedUntil": "Blocat până la {time}",
+      "removeTitle": "Șterge utilizatorul",
+      "removeVolumeTitle": "Elimină volumul",
+      "newPasswordTitle": "Parolă nouă"
     },
     "userDetails": {
       "profileTab": "Profil",
@@ -924,7 +940,8 @@
       "loadFailed": "Cheile de acces ale acestui cont nu au putut fi citite.",
       "addFailed": "Cheia de acces nu a putut fi adăugată.",
       "cancelled": "Nu s-a adăugat nimic: browserul a fost închis sau a durat prea mult.",
-      "alreadyHere": "Acest dispozitiv are deja o cheie de acces pentru acest cont."
+      "alreadyHere": "Acest dispozitiv are deja o cheie de acces pentru acest cont.",
+      "renameTitle": "Redenumește cheia de acces"
     },
     "activity": {
       "title": "Jurnal de activitate",
@@ -1010,7 +1027,9 @@
       "loadFailed": "Jetoanele nu au putut fi încărcate.",
       "createFailed": "Jetonul nu a putut fi emis.",
       "renameFailed": "Jetonul nu a putut fi redenumit.",
-      "revokeFailed": "Jetonul nu a putut fi revocat."
+      "revokeFailed": "Jetonul nu a putut fi revocat.",
+      "renameTitle": "Redenumește jetonul",
+      "revokeTitle": "Revocă jetonul"
     },
     "folderSize": {
       "title": "Dimensiunea dosarelor",
@@ -1024,6 +1043,12 @@
       "additional": "Excluderi suplimentare",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Nicio cale configurată"
+    },
+    "tabs": {
+      "title": "File",
+      "description": "Cum funcționează navigarea în file pentru toată lumea pe această instalare.",
+      "maxOpen": "Numărul maxim de file",
+      "maxOpenHelp": "Bara nu derulează niciodată: rândul se oprește aici în loc să facă filele imposibil de citit."
     },
     "searchIndex": {
       "title": "Index de căutare",
@@ -1042,6 +1067,21 @@
       "useSwitch": "Activați-o cu comutatorul de mai sus.",
       "locked": "Setat de {variable} în mediu: se decide acolo, nu aici."
     }
+  },
+  "tabs": {
+    "strip": "Taburi deschise",
+    "openInNewTab": "Deschide într-un tab nou",
+    "openInNewTabs": "Deschide {count} în taburi noi",
+    "newTab": "Tab nou",
+    "moveLeft": "Mută la stânga",
+    "moveRight": "Mută la dreapta",
+    "duplicate": "Duplică tabul",
+    "pin": "Fixează tabul",
+    "unpin": "Anulează fixarea tabului",
+    "closeTab": "Închide tabul",
+    "closeOthers": "Închide celelalte taburi",
+    "closeAll": "Închide toate filele",
+    "full": "Nu mai este loc pentru încă o filă (limită: {count})"
   },
   "mediaPreview": {
     "audioTrack": "Pistă audio",

@@ -1,6 +1,16 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 
+/**
+ * The two things the browser used to answer for: the question before a volume is taken
+ * away, and the message when it could not be. Both belong to the application now.
+ */
+const notifications = vi.hoisted(() => ({ addNotification: vi.fn() }));
+vi.mock('@/stores/notifications', () => ({ useNotificationsStore: () => notifications }));
+
+const asked = vi.hoisted(() => ({ ask: vi.fn(async () => true), askFor: vi.fn() }));
+vi.mock('@/composables/useAsk', () => ({ useAsk: () => asked }));
+
 vi.mock('vue-i18n', async (importOriginal) => ({
   ...(await importOriginal()),
   useI18n: () => ({

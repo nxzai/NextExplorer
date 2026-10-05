@@ -19,6 +19,14 @@ const api = vi.hoisted(() => ({
   passkeysSupported: vi.fn(() => true),
 }));
 
+/**
+ * What the application asks, in its own dialog rather than the browser's box: the
+ * server's address and port at the top of a question about somebody's passkey was the
+ * whole reason for the change. Answers with a promise, as the real one does.
+ */
+const asked = vi.hoisted(() => ({ ask: vi.fn(async () => true), askFor: vi.fn(async () => null) }));
+vi.mock('@/composables/useAsk', () => ({ useAsk: () => asked }));
+
 vi.mock('@/api', () => api);
 
 const auth = vi.hoisted(() => ({ store: { currentUser: { provider: 'local' } } }));
@@ -213,23 +221,21 @@ describe('renaming one', () => {
   it('sends the new name, trimmed', async () => {
     const wrapper = await open([YELLOW]);
     api.renamePasskey.mockResolvedValue({ passkey: { ...YELLOW, name: 'Desk key' } });
-    vi.spyOn(window, 'prompt').mockReturnValue('  Desk key  ');
+    asked.askFor.mockResolvedValue('  Desk key  ');
 
     await wrapper.find('[data-test="passkey-rename"]').trigger('click');
     await flushPromises();
 
     expect(api.renamePasskey).toHaveBeenCalledWith('pk-1', 'Desk key');
-    window.prompt.mockRestore();
   });
 
   it('does nothing at all when the prompt is dismissed', async () => {
     const wrapper = await open([YELLOW]);
-    vi.spyOn(window, 'prompt').mockReturnValue(null);
+    asked.askFor.mockResolvedValue(null);
 
     await wrapper.find('[data-test="passkey-rename"]').trigger('click');
     await flushPromises();
 
     expect(api.renamePasskey).not.toHaveBeenCalled();
-    window.prompt.mockRestore();
   });
 });

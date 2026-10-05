@@ -25,6 +25,10 @@ export const onlyofficePreviewPlugin = (extensions) => ({
   priority: 50,
   // Render with minimal chrome in the overlay host
   minimalHeader: true,
+  // This one has a real wait after its component is on screen — a document server
+  // to reach, a session to be given, a file to load into an iframe — so it says
+  // when it is really there rather than letting the tab claim it already is.
+  reportsReady: true,
   // Can open an earlier version of a document, to be read (`item.versionId`).
   supportsVersions: true,
 

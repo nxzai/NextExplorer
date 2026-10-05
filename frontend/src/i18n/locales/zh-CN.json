@@ -77,7 +77,10 @@
     "dismissWarning": "忽略此警告",
     "reset": "重置",
     "moveUp": "上移",
-    "moveDown": "下移"
+    "moveDown": "下移",
+    "confirm": "确认",
+    "closeAnyway": "仍然关闭",
+    "leaveAnyway": "仍然离开"
   },
   "editor": {
     "editing": "编辑中",
@@ -90,7 +93,8 @@
     "versionReadOnly": "历史版本，只读",
     "highlightingOffTooLarge": "此文件已关闭语法高亮：其中一部分太大，无法在不卡住页面的情况下高亮显示。",
     "raw": "原始",
-    "selectTheme": "选择编辑器主题"
+    "selectTheme": "选择编辑器主题",
+    "unsavedTitle": "未保存的更改"
   },
   "status": {
     "updated": "更新成功",
@@ -497,6 +501,7 @@
       "accountPassword": "修改密码",
       "about": "关于",
       "userPreferences": "偏好",
+      "tabs": "标签页",
       "branding": "品牌",
       "filesThumbnails": "文件和缩略图",
       "security": "安全",
@@ -592,6 +597,12 @@
       "viewPhotos": "照片",
       "documentsOpenInNewTab": "在新标签页中打开文档",
       "documentsOpenInNewTabHelp": "打开文件时给它一个独立的浏览器标签页，这样你继续浏览时可以同时开着好几个。关闭后，它像现在一样覆盖在文件夹上打开。",
+      "browseInTabs": "以标签页浏览",
+      "browseInTabsHelp": "同时打开多个位置——文件夹、文档、回收站——各在一个标签页中，就像桌面上的文件管理器那样。关闭时一次只有一个位置，工具栏上方不绘制任何内容。",
+      "closeTabsOnDoubleClick": "双击关闭标签页",
+      "closeTabsOnDoubleClickHelp": "在标签页上任意位置双击即可关闭，与关闭按钮一样。",
+      "preloadBackgroundTabs": "预先准备在后台打开的标签页",
+      "preloadBackgroundTabsHelp": "在后台打开或随窗口重新打开的标签页会立即加载，而不是等到你切换过去。以这种方式准备的文档会在编辑器中打开，因此会被算作正在编辑。",
       "downloadMode": "下载多个项目",
       "downloadModeHelp": "同时下载多个项目时的处理方式。所选文件夹始终作为一个压缩包。",
       "downloadModeZip": "一个 ZIP 压缩包",
@@ -609,7 +620,9 @@
       "quickActionsPositionHelp": "对齐到名称列的一侧后，它们在每一行都在同一位置；无论是否悬停，所需的空间都会保留。",
       "quickActionsPositionAfter": "名称之后",
       "quickActionsPositionStart": "名称列的开头",
-      "quickActionsPositionEnd": "名称列的末尾"
+      "quickActionsPositionEnd": "名称列的末尾",
+      "reopenTabs": "返回时重新打开标签页",
+      "reopenTabsHelp": "关闭时只有固定的标签页会回来，这正是固定的用途。开启时全部回来。"
     },
     "thumbs": {
       "subtitle": "自定义图片和视频的预览缩略图。",
@@ -702,7 +715,10 @@
       "accessMode": "访问模式",
       "noUsers": "没有可用用户",
       "lockedBadge": "已锁定",
-      "lockedUntil": "锁定至 {time}"
+      "lockedUntil": "锁定至 {time}",
+      "removeTitle": "删除用户",
+      "removeVolumeTitle": "移除卷",
+      "newPasswordTitle": "新密码"
     },
     "userDetails": {
       "profileTab": "个人资料",
@@ -924,7 +940,8 @@
       "loadFailed": "无法读取此账户的通行密钥。",
       "addFailed": "无法添加此通行密钥。",
       "cancelled": "未添加任何内容：浏览器已关闭或操作超时。",
-      "alreadyHere": "此设备已有该账户的通行密钥。"
+      "alreadyHere": "此设备已有该账户的通行密钥。",
+      "renameTitle": "重命名通行密钥"
     },
     "activity": {
       "title": "活动日志",
@@ -1010,7 +1027,9 @@
       "loadFailed": "无法加载令牌。",
       "createFailed": "无法签发令牌。",
       "renameFailed": "无法重命名令牌。",
-      "revokeFailed": "无法吊销令牌。"
+      "revokeFailed": "无法吊销令牌。",
+      "renameTitle": "重命名令牌",
+      "revokeTitle": "吊销令牌"
     },
     "folderSize": {
       "title": "文件夹大小",
@@ -1024,6 +1043,12 @@
       "additional": "额外的排除项",
       "placeholder": "Stacks/docker/overlay2",
       "none": "未配置任何路径"
+    },
+    "tabs": {
+      "title": "标签页",
+      "description": "本安装中所有人的标签页浏览行为。",
+      "maxOpen": "同时打开的标签页上限",
+      "maxOpenHelp": "标签栏不会滚动：达到上限即停止，而不是把标签压窄到看不清。"
     },
     "searchIndex": {
       "title": "搜索索引",
@@ -1042,6 +1067,21 @@
       "useSwitch": "使用上方的开关将其开启。",
       "locked": "由环境中的 {variable} 设置，因此在那里决定，而不是在这里。"
     }
+  },
+  "tabs": {
+    "strip": "已打开的标签页",
+    "openInNewTab": "在新标签页中打开",
+    "openInNewTabs": "在新标签页中打开 {count} 项",
+    "newTab": "新标签页",
+    "moveLeft": "向左移动",
+    "moveRight": "向右移动",
+    "duplicate": "复制标签页",
+    "pin": "固定标签页",
+    "unpin": "取消固定标签页",
+    "closeTab": "关闭标签页",
+    "closeOthers": "关闭其他标签页",
+    "closeAll": "关闭所有标签页",
+    "full": "没有空间再打开标签页（上限：{count}）"
   },
   "mediaPreview": {
     "audioTrack": "音轨",

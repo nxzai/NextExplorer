@@ -460,11 +460,23 @@ const saveName = async () => {
 <template>
   <teleport to="body">
     <transition name="vp-fade">
-      <div v-if="isOpen" class="fixed inset-0 z-2140 bg-black/30" @click="close" />
+      <!--
+      A panel beside what a tab holds, so it stops where the strip starts.
+
+      It is `fixed` and teleported, which no amount of nesting can tell about the
+      strip — hence `--tab-strip-height`, which is 0px when there is no strip.
+      Before this the backdrop covered the whole window and swallowed every click
+      on a tab: opening the terminal meant being unable to leave it.
+    -->
+      <div
+        v-if="isOpen"
+        class="fixed inset-x-0 bottom-0 top-[var(--tab-strip-height)] z-2140 bg-black/30"
+        @click="close"
+      />
     </transition>
 
     <div
-      class="fixed inset-y-0 right-0 z-2150 w-[400px] max-w-full transform transition-transform duration-200 ease-out sm:w-[460px]"
+      class="fixed bottom-0 right-0 top-[var(--tab-strip-height)] z-2150 w-[400px] max-w-full transform transition-transform duration-200 ease-out sm:w-[460px]"
       :class="isOpen ? 'translate-x-0' : 'translate-x-full'"
       :aria-hidden="!isOpen"
     >

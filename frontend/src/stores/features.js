@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { fetchFeatures } from '@/api';
+import { DEFAULT_TAB_LIMIT } from '@/stores/tabs';
 
 export const useFeaturesStore = defineStore('features', () => {
   const publicUrl = ref('');
@@ -36,6 +37,9 @@ export const useFeaturesStore = defineStore('features', () => {
   const personalEnabled = ref(false);
   const userVolumesEnabled = ref(false);
   const skipHome = ref(false);
+  // How many tabs a row may hold. The strip never scrolls, so this is what keeps
+  // a tab wide enough to read — an administrator's choice, under Settings → Tabs.
+  const maxTabs = ref(DEFAULT_TAB_LIMIT);
   const terminalEnabled = ref(false);
   const terminalExtensions = ref([]);
   // Whether deleting goes to the trash, and for how many days it keeps things.
@@ -138,6 +142,7 @@ export const useFeaturesStore = defineStore('features', () => {
 
         // Navigation behavior
         skipHome.value = Boolean(features?.navigation?.skipHome);
+        maxTabs.value = Number(features?.tabs?.maxOpen) || DEFAULT_TAB_LIMIT;
         terminalEnabled.value = Boolean(features?.terminal?.enabled);
         terminalExtensions.value = Array.isArray(features?.terminal?.extensions)
           ? features.terminal.extensions
@@ -181,6 +186,7 @@ export const useFeaturesStore = defineStore('features', () => {
         personalEnabled.value = false;
         userVolumesEnabled.value = false;
         skipHome.value = false;
+        maxTabs.value = DEFAULT_TAB_LIMIT;
         terminalEnabled.value = false;
         terminalExtensions.value = [];
         trashEnabled.value = false;
@@ -227,6 +233,7 @@ export const useFeaturesStore = defineStore('features', () => {
     personalEnabled,
     userVolumesEnabled,
     skipHome,
+    maxTabs,
     terminalEnabled,
     terminalExtensions,
     trashEnabled,

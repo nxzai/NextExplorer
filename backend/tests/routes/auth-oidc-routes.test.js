@@ -146,6 +146,23 @@ describe('starting a sign-in at the provider', () => {
   });
 
   /**
+   * The library adds no address of its own since the callback route is mounted
+   * by hand, and a provider refuses an authorization request that names none.
+   */
+  it('tells the provider where to come back for the mobile hand-off too', async () => {
+    const { app, logins } = await build();
+
+    await request(app)
+      .get('/api/auth/oidc/mobile/login')
+      .query({ code_challenge: makePkce().challenge })
+      .set('Host', 'evil.example');
+
+    expect(logins).toHaveLength(1);
+    expect(logins[0].returnTo).toBe('/api/auth/oidc/mobile/complete');
+    expect(logins[0].authorizationParams.redirect_uri).toBe(`${PUBLIC_URL}/callback`);
+  });
+
+  /**
    * An unreachable provider fails inside the library with the network's own
    * words, which name the provider's internal host.
    */

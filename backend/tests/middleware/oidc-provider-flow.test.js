@@ -227,6 +227,23 @@ describe('where a sign-in is sent, and where it ends', () => {
     expect(authorization.searchParams.get('redirect_uri')).toBe(`${PUBLIC_URL}/callback`);
   });
 
+  /** The native app starts the same sign-in from its own route, which once named no address. */
+  it('asks the provider to return to the configured address for the mobile hand-off', async () => {
+    const { app } = await build();
+    app.use('/api/auth', currentEnv.requireFresh('src/routes/auth'));
+    const challenge = crypto.randomBytes(32).toString('base64url');
+
+    const response = await request(app)
+      .get('/api/auth/oidc/mobile/login')
+      .query({ code_challenge: challenge })
+      .set('Host', 'evil.example');
+
+    expect(response.status).toBe(302);
+    const authorization = new URL(response.headers.location);
+    expect(`${authorization.origin}${authorization.pathname}`).toBe(`${provider.origin}/authorize`);
+    expect(authorization.searchParams.get('redirect_uri')).toBe(`${PUBLIC_URL}/callback`);
+  });
+
   it.each([['https://evil.example/'], ['//evil.example/']])(
     'ends a completed sign-in on this site when the return address given is %s',
     async (returnTo) => {

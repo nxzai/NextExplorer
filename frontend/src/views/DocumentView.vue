@@ -1,4 +1,5 @@
 <script setup>
+import { usePaneRoute, usePaneTabId } from '@/composables/paneTab';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -7,10 +8,11 @@ import { usePageTitle } from '@/composables/usePageTitle';
 import { normalizePath } from '@/api';
 import { usePreviewManager } from '@/plugins/preview/manager';
 import { whenPreviewPluginsReady } from '@/plugins';
-import PreviewHost from '@/plugins/preview/PreviewHost.vue';
 import { useFileStore } from '@/stores/fileStore';
 import { folderRoute } from '@/utils/folderRoute';
+import { useTabNavigation } from '@/composables/tabNavigation';
 import { isEditableExtension } from '@/config/editor';
+import { tabKindForPath } from '@/config/tabKinds';
 
 /**
  * One document, at an address of its own.
@@ -26,14 +28,21 @@ import { isEditableExtension } from '@/config/editor';
  * - closing the document must land somewhere, not on a blank page. It goes
  *   back to the folder the document is in, with the document selected, which
  *   is where closing the panel leaves you;
- * - closing the *tab* must tell the server the same thing closing the panel
- *   tells it. A tab gives one synchronous moment on its way out, so the close
- *   hook is told it is unloading and sends what it has to send in one beacon.
- *   Without it, a document closed by closing its tab would go on being
- *   reported as open by somebody who had left.
+ * - leaving the page is not always leaving the document. In one of this
+ *   application's own tabs, another tab coming forward unmounts this page while
+ *   the document goes on existing — so what ends the document is the tab
+ *   letting go of it, not this page being taken off screen. That is why the
+ *   session is the manager's, keyed by tab, and this page only asks for it and
+ *   says when it is over.
  */
 
-const route = useRoute();
+const route = usePaneRoute();
+/**
+ * And where the *window* is, which is not where this page is whenever this page
+ * is the half beside the reader. Read on the way out, and only then — see the
+ * unmount hook, which is the one question an address alone can answer.
+ */
+const windowAddress = useRoute();
 const router = useRouter();
 const { t } = useI18n();
 const previewManager = usePreviewManager();
@@ -59,9 +68,53 @@ const parentPath = computed(() =>
 // names it after the document, and both after the instance.
 usePageTitle(name);
 
-/** Back where closing the panel would have left you. */
+const tabNavigation = useTabNavigation();
+const tabs = tabNavigation.tabs;
+
+/**
+ * The tab this page is showing a document for.
+ *
+ * Not taken once, and that was the defect behind half a week of "my tabs keep
+ * reloading": bringing one document tab forward while another document tab is in
+ * front does **not** mount a new page. The address matches the same route, so
+ * vue-router keeps this component and hands it new parameters — and a key read
+ * once at setup went on speaking for the tab the reader had left. The document
+ * they opened went into that tab's session, the tab they were actually on stayed
+ * empty, and coming back to either of them found the wrong thing there and built
+ * it again.
+ *
+ * So it is re-read whenever the address changes, which is the only moment it can
+ * change hands. Never in between: read on the way out it would already name
+ * whichever tab had come forward, and the session ended would be somebody else's.
+ *
+ * And it is the tab of the *pane* this page is drawn in, which is the tab in front
+ * only when there is one pane. In a pair this page can be the half beside the
+ * reader — a document next to a folder — and "the tab in front" is then the
+ * neighbour: the document was opened into the neighbour's session and drawn over
+ * the neighbour's half of the window.
+ */
+const paneTabId = usePaneTabId();
+const tabKey = ref(paneTabId.value);
+
+/**
+ * The address this page is drawing, kept so that leaving can be told from being
+ * taken off screen.
+ */
+const shownAddress = ref(route.fullPath);
+
+/**
+ * Back where closing the panel would have left you — in this page's own half.
+ *
+ * The window when this page's tab is the one in front, and that tab alone when it
+ * is not: a document closed in the half beside the reader used to send the *window*
+ * to the folder, which took the reader's own half there and left this one on an
+ * address with nothing behind it. A black panel with a tab still on it.
+ */
 const leave = () => {
-  router.replace(folderRoute(parentPath.value, name.value ? { select: name.value } : undefined));
+  tabNavigation.leaveFrom(
+    tabKey.value,
+    folderRoute(parentPath.value, name.value ? { select: name.value } : undefined)
+  );
 };
 
 /**
@@ -99,8 +152,17 @@ const CLOSE_REFUSED_AFTER_MS = 150;
  */
 const tabIsThisDocument = () => window.history.length === 1;
 
-const closeTabOrLeave = () => {
-  if (!tabIsThisDocument()) {
+const closeTabOrLeave = async () => {
+  // In one of this application's own tabs, the thing to close is that tab — this
+  // page's own, which is not the tab in front when this page is the half beside the
+  // reader. The rule itself is in `tabNavigation`, because the text editor's cross
+  // means exactly the same thing and a rule kept in two places is a rule that will
+  // disagree with itself.
+  if (await tabNavigation.closeOwn(tabKey.value)) return;
+
+  // And a half is not the browser's window: closing the window because a document
+  // in one of two panes was closed would take the other half with it.
+  if (tabs.activeId !== tabKey.value || !tabIsThisDocument()) {
     leave();
     return;
   }
@@ -126,18 +188,33 @@ const openDocument = async () => {
     return;
   }
 
+  // Already here. This page is mounted again every time its tab comes forward,
+  // and opening the document again would build a new editor over a live one:
+  // ONLYOFFICE would reconnect, the cursor and the undo history would go, and
+  // whoever was typing would watch it happen. Answered before anything else is
+  // asked, so nothing is fetched either.
+  if (previewManager.shows(tabKey.value, itemFromPath())) return;
+
   // The folder behind it, so that moving to the next image or the previous one
   // works here exactly as it does over the listing — the plugins read the
   // siblings from the file store. Best effort: a folder that cannot be listed
   // costs the arrows, not the document.
-  void fileStore.fetchPathItems(parentPath.value).catch(() => {});
+  //
+  // Into *this page's own tab*, not into whichever is in front. This is the one
+  // place a document page writes a listing, and it does it after an await: by the
+  // time it lands, the reader may have gone back to the folder tab it was opened
+  // from — and that tab's listing was then replaced by this folder's parent, under
+  // whatever was selected in it, at wherever the reader was in it.
+  void fileStore
+    .fetchIn(tabKey.value, parentPath.value, { preserveInteraction: true })
+    .catch(() => {});
 
   // Waited for, because the editors register once the server has said they are
   // configured. Asking before that would answer "nothing opens this" about a
   // document ONLYOFFICE was a moment away from claiming.
   await whenPreviewPluginsReady();
 
-  if (previewManager.open(itemFromPath())) return;
+  if (previewManager.openIn(tabKey.value, itemFromPath())) return;
 
   // No preview: the text editor has its own page, and it is where this kind of
   // file opens from the listing too.
@@ -157,50 +234,95 @@ const openDocument = async () => {
  * Watched rather than passed as a callback because closing is the plugin's to
  * do: it may be asynchronous, and it may be refused. When the manager has let
  * go of it, this page has nothing left to show.
+ *
+ * Watched on *this tab's* session and not on whatever is in front, and only
+ * acted on while this tab is in front. Closing the tab from the strip also ends
+ * its session, and that arrives here as the same event — acting on it would have
+ * closed the tab that had just come forward instead.
  */
 watch(
-  () => previewManager.isOpen,
-  (open, wasOpen) => {
-    if (wasOpen && !open) closeTabOrLeave();
+  () => [tabKey.value, previewManager.isOpenIn(tabKey.value)],
+  ([key, open], [wasKey, wasOpen]) => {
+    // The page changed hands rather than a document closing: the tab it speaks
+    // for is another one now, and what it is showing is that tab's business.
+    // Without this, crossing from one document tab to another read as "the
+    // document I was showing has gone" and sent the reader to a folder.
+    if (key !== wasKey) return;
+    if (!wasOpen || open) return;
+    if (paneTabId.value !== key) return;
+    closeTabOrLeave();
   }
 );
 
-/**
- * On the way out of the page, whatever took it there.
- *
- * `pagehide` and not `beforeunload`: it fires for a tab being closed, for a
- * navigation away, and on mobile browsers that never fire the other one.
- * Deliberately not `visibilitychange`, which fires every time somebody merely
- * switches to another tab — ending an editing session there would close a
- * document that is still open, which is the regression this whole thing exists
- * to avoid.
- */
-const endBeforeUnload = () => {
-  previewManager.endForUnload();
-};
-
 onMounted(() => {
-  window.addEventListener('pagehide', endBeforeUnload);
   void openDocument();
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('pagehide', endBeforeUnload);
-  // Leaving this page inside the application is a close like any other: the
-  // plugin gets the time it needs, and the session ends the ordinary way.
-  if (previewManager.isOpen) void previewManager.close();
+  // Whether leaving this page is leaving the document.
+  //
+  // It is not, when another tab simply came forward: this page goes, the tab
+  // stays on its document, and the document goes on living in the manager —
+  // which is what makes coming back to the tab instant rather than a fresh
+  // ONLYOFFICE connection. It is, when the address changed underneath this page
+  // and the document is not what its tab holds any more.
+  //
+  // And when the tab itself has gone there is nothing to do: the manager ended
+  // the session the moment the tab did, beacon and all.
+  if (!tabs.tabs.some((entry) => entry.id === tabKey.value)) return;
+
+  // Only a tab in front can have been navigated — the window has one address, and
+  // it belongs to the tab the reader is in. So a page speaking for any other tab
+  // is a page being taken off screen, whatever took it: another tab coming
+  // forward, or the half it was drawn in being removed from the window.
+  //
+  // Deliberately `activeId` and not this pane's own tab, which is what it asked
+  // until now. Inside a pane that question answers itself — a pane always names
+  // its own tab, and a pane destroyed still names it on the way out, props and
+  // all. So the guard never guarded, and the half beside the reader ended its
+  // document every time the pair went off the window.
+  if (tabs.activeId !== tabKey.value) return;
+
+  // And a tab in front may be in front *because the reader just crossed into this
+  // half*: its address did not change, the pane simply redrew this page as the
+  // router's own screen. The window's address says which of the two it was — the
+  // router's own, already changed by the time anything is unmounted, rather than
+  // what the tab has been told since.
+  if (windowAddress.fullPath === shownAddress.value) return;
+
+  if (previewManager.isOpenIn(tabKey.value)) void previewManager.closeIn(tabKey.value);
 });
 
-// A second document opened in the same tab — a link followed from inside one.
-watch(documentPath, () => {
-  void openDocument();
-});
+/**
+ * The address changed under this page: another document, or another tab holding
+ * one. Which of the two it was is what `activeId` says, and it is the only moment
+ * this page can change hands — so the tab is read again before anything is opened.
+ *
+ * Watched on the whole address rather than on the path: two tabs can hold the same
+ * document, and crossing between them changes nothing but the address.
+ */
+watch(
+  () => route.fullPath,
+  (address) => {
+    // Only for an address this page is the screen for.
+    //
+    // A pane can be given another tab, and that tab need not hold a document at
+    // all — the pair this page was drawn in is handed a folder, and this page's
+    // own address becomes that folder's for the tick before the folder's screen
+    // replaces it. Speaking for it then was expensive: the folder was opened as
+    // though it were a document, and the folder *behind* it — its parent — was
+    // read into the reader's own tab, over the listing they were in, taking their
+    // selection and their place in it with it.
+    if (tabKindForPath(address)?.id !== 'document') return;
+    tabKey.value = paneTabId.value;
+    shownAddress.value = address;
+    void openDocument();
+  }
+);
 </script>
 
 <template>
   <div class="flex h-full w-full flex-col bg-neutral-950">
-    <PreviewHost />
-
     <!-- Only ever seen when nothing claimed the document: the preview itself
          covers the page. -->
     <div

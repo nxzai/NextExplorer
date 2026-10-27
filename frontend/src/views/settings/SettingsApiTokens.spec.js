@@ -18,6 +18,14 @@ const api = vi.hoisted(() => ({
   revokeApiToken: vi.fn(),
 }));
 
+/**
+ * What the application asks, in its own dialog rather than the browser's box: the
+ * server's address and port at the top of a question about somebody's token was the
+ * whole reason for the change. Answers with a promise, as the real one does.
+ */
+const asked = vi.hoisted(() => ({ ask: vi.fn(async () => true), askFor: vi.fn(async () => null) }));
+vi.mock('@/composables/useAsk', () => ({ useAsk: () => asked }));
+
 vi.mock('@/api', () => api);
 
 const auth = vi.hoisted(() => ({ store: { currentUser: { provider: 'local' } } }));
@@ -165,7 +173,7 @@ describe('the API tokens page', () => {
     await flushPromises();
     expect(wrapper.find('[data-test="token-secret"]').exists()).toBe(true);
 
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    asked.ask.mockResolvedValue(true);
     api.revokeApiToken.mockResolvedValue(undefined);
     api.listApiTokens.mockResolvedValue({ tokens: [] });
 
@@ -179,7 +187,7 @@ describe('the API tokens page', () => {
 
   it('asks before revoking, and does nothing when the answer is no', async () => {
     const wrapper = await open([BACKUP]);
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    asked.ask.mockResolvedValue(false);
 
     await wrapper.find('[data-test="token-revoke"]').trigger('click');
     await flushPromises();
@@ -191,12 +199,12 @@ describe('the API tokens page', () => {
   it('renames one, and leaves it alone when the prompt is cancelled', async () => {
     const wrapper = await open([BACKUP]);
 
-    vi.spyOn(window, 'prompt').mockReturnValue(null);
+    asked.askFor.mockResolvedValue(null);
     await wrapper.find('[data-test="token-rename"]').trigger('click');
     await flushPromises();
     expect(api.renameApiToken).not.toHaveBeenCalled();
 
-    window.prompt.mockReturnValue('  Nightly backup  ');
+    asked.askFor.mockResolvedValue('  Nightly backup  ');
     api.renameApiToken.mockResolvedValue({ token: { ...BACKUP, name: 'Nightly backup' } });
     api.listApiTokens.mockResolvedValue({ tokens: [{ ...BACKUP, name: 'Nightly backup' }] });
 

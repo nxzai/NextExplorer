@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { documentRoute } from './documentRoute';
+import { documentItemFromAddress, documentRoute } from './documentRoute';
 
 /**
  * The address a document is opened at.
@@ -52,4 +52,56 @@ describe('the address of a document', () => {
       expect(documentRoute(nothing)).toEqual({ path: '/browse/' });
     }
   });
+});
+
+/**
+ * And the other direction, for anything that has only the address.
+ *
+ * The document page works out what its address names from its own route
+ * parameters. Preparing a tab the reader is *not* on has only the address, and two
+ * places working out what it means is two places that will disagree.
+ */
+describe('a document address, as the entry it names', () => {
+  it('is the last segment, in the folder above it', () => {
+    expect(documentItemFromAddress('/open/Docs/2026/report.docx')).toEqual({
+      name: 'report.docx',
+      path: 'Docs/2026',
+    });
+  });
+
+  it('is a file at the top of a volume, with no folder above it', () => {
+    expect(documentItemFromAddress('/open/report.docx')).toEqual({
+      name: 'report.docx',
+      path: '',
+    });
+  });
+
+  /** Written as the reader writes it, not as the address encodes it. */
+  it('is decoded, segment by segment', () => {
+    expect(documentItemFromAddress('/open/Docs/data%20set/a%20report.docx')).toEqual({
+      name: 'a report.docx',
+      path: 'Docs/data set',
+    });
+  });
+
+  it('survives a percent sign that decodes to nothing', () => {
+    expect(documentItemFromAddress('/open/Docs/100%.txt')).toEqual({
+      name: '100%.txt',
+      path: 'Docs',
+    });
+  });
+
+  it('ignores what a query or a fragment adds', () => {
+    expect(documentItemFromAddress('/open/Docs/report.docx?from=search#page=2')).toEqual({
+      name: 'report.docx',
+      path: 'Docs',
+    });
+  });
+
+  it.each(['/open/', '/open', '/browse/Docs', '', null, undefined])(
+    'is nothing for %s, which names no document',
+    (address) => {
+      expect(documentItemFromAddress(address)).toBeNull();
+    }
+  );
 });

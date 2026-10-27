@@ -224,12 +224,24 @@ onBeforeUnmount(() => {
   <teleport to="body">
     <!-- Backdrop -->
     <transition name="ip-fade">
-      <div v-if="isOpen" class="fixed inset-0 z-1450 bg-black/30" @click="close" />
+      <!--
+      A panel beside what a tab holds, so it stops where the strip starts.
+
+      It is `fixed` and teleported, which no amount of nesting can tell about the
+      strip — hence `--tab-strip-height`, which is 0px when there is no strip.
+      Before this the backdrop covered the whole window and swallowed every click
+      on a tab: opening the terminal meant being unable to leave it.
+    -->
+      <div
+        v-if="isOpen"
+        class="fixed inset-x-0 bottom-0 top-[var(--tab-strip-height)] z-1450 bg-black/30"
+        @click="close"
+      />
     </transition>
 
     <!-- Panel -->
     <div
-      class="fixed inset-y-0 right-0 z-1500 w-[380px] sm:w-[420px] transform transition-transform duration-200 ease-out"
+      class="fixed bottom-0 right-0 top-[var(--tab-strip-height)] z-1500 w-[380px] sm:w-[420px] transform transition-transform duration-200 ease-out"
       :class="isOpen ? 'translate-x-0' : 'translate-x-full'"
       :aria-label="t('info.aria')"
     >

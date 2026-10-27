@@ -1,4 +1,13 @@
 <script setup>
+/**
+ * One folder's own toolbar: where it is, how it is sorted, how it is shown, and
+ * what can be made in it.
+ *
+ * Drawn per pane, because all of it is about a folder — two panes on two folders
+ * are two breadcrumbs and two view switchers, which is the point of having them
+ * side by side. Searching and what the application has to tell you went to
+ * `WindowBar.vue`: those belong to the window, and two of each was absurd.
+ */
 import { computed, ref } from 'vue';
 import NavButtons from '@/components/NavButtons.vue';
 import BreadCrumb from '@/components/BreadCrumb.vue';
@@ -6,8 +15,6 @@ import MenuItemInfo from '@/components/MenuItemInfo.vue';
 import MenuSortBy from '@/components/MenuSortBy.vue';
 import ViewMode from '@/components/ViewMode.vue';
 import PhotoSizeControl from '@/components/PhotoSizeControl.vue';
-import NotificationBell from '@/components/NotificationBell.vue';
-import SearchBar from '@/components/SearchBar.vue';
 import MenuShare from '@/components/MenuShare.vue';
 import CreateNew from '@/components/CreateNew.vue';
 import { useFileActions } from '@/composables/fileActions';
@@ -15,7 +22,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { useAuthStore } from '@/stores/auth';
 import { useFileStore } from '@/stores/fileStore';
 import { useRoute, useRouter } from 'vue-router';
-import { ArrowDownTrayIcon, ArrowPathIcon, Bars3Icon, HomeIcon } from '@heroicons/vue/24/outline';
+import { ArrowDownTrayIcon, ArrowPathIcon, HomeIcon } from '@heroicons/vue/24/outline';
 import { useInputMode } from '@/composables/useInputMode';
 import InlineQuickActions from '@/components/InlineQuickActions.vue';
 
@@ -26,8 +33,6 @@ const route = useRoute();
 const router = useRouter();
 const { isTouchDevice } = useInputMode();
 const actions = useFileActions();
-
-defineEmits(['toggle-sidebar']);
 
 // Check if we're at the volumes home view (no path selected)
 const isVolumesView = computed(() => {
@@ -62,11 +67,6 @@ const goHome = async () => {
   await router.push('/browse/');
 };
 
-const currentFolderPath = computed(() => {
-  const p = route.params.path;
-  return Array.isArray(p) ? p.join('/') : p || '';
-});
-
 // Drives lazy rendering of the folder quick-actions (only while hovered).
 const crumbHover = ref(false);
 
@@ -76,7 +76,7 @@ const refreshFolder = async () => {
   if (refreshing.value) return;
   refreshing.value = true;
   try {
-    await fileStore.fetchPathItems(currentFolderPath.value);
+    await fileStore.refresh();
   } finally {
     refreshing.value = false;
   }
@@ -94,15 +94,6 @@ const downloadCurrentFolder = () => {
 <template>
   <div class="sticky top-0 z-40 bg-white/90 p-3 backdrop-blur dark:bg-default/90">
     <div class="flex flex-wrap items-center shrink-0">
-      <button
-        type="button"
-        class="-ml-1 mr-1.5 rounded-md p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 lg:hidden"
-        :aria-label="$t('browser.openSidebar')"
-        @click="$emit('toggle-sidebar')"
-      >
-        <Bars3Icon class="h-6 w-6" />
-      </button>
-
       <CreateNew v-if="canCreate" class="mr-3" />
 
       <div
@@ -173,8 +164,6 @@ const downloadCurrentFolder = () => {
           <PhotoSizeControl v-if="settings.view === 'photos'" />
           <div class="max-md:hidden h-8 w-px mx-1 md:mx-3 bg-neutral-200 dark:bg-neutral-700"></div>
         </template>
-        <NotificationBell />
-        <SearchBar />
       </div>
     </div>
   </div>

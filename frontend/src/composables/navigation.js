@@ -1,10 +1,12 @@
+import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { withViewTransition } from '@/utils';
 import { folderRoute } from '@/utils/folderRoute';
-import { documentRoute } from '@/utils/documentRoute';
 import { isEditableExtension } from '@/config/editor';
 import { usePreviewManager } from '@/plugins/preview/manager';
 import { useAppSettings } from '@/stores/appSettings';
+import { useItemAddress } from '@/composables/itemAddress';
+import { useTabsStore } from '@/stores/tabs';
 
 // Kept beside the markdown preview plugin's own list, which matches the same
 // two extensions.
@@ -15,10 +17,63 @@ export function useNavigation() {
   const route = useRoute();
   const previewManager = usePreviewManager();
   const appSettings = useAppSettings();
+  const { addressFor } = useItemAddress();
 
   const navigate = withViewTransition((to) => router.push(to));
-  const goPrev = withViewTransition(() => router.back());
-  const goNext = withViewTransition(() => router.forward());
+
+  /**
+   * Back and forward, in this tab rather than in the window.
+   *
+   * A window's history is the window's: pressing Back with six tabs open took the
+   * reader to whatever address they last looked at, in whichever tab that was, and
+   * left the tab they were in pointing somewhere it had never been. With tabs on,
+   * each tab keeps its own trail and these two walk it — which is what somebody
+   * pressing Back in a tab is asking for.
+   *
+   * With tabs off there is one place and one trail, and it is the browser's, so
+   * these are what they have always been.
+   */
+  const stepInTab = (which) => {
+    const tabs = useTabsStore();
+    if (!tabs.enabled) return null;
+    return tabs[which](tabs.activeId);
+  };
+
+  const goPrev = withViewTransition(() => {
+    const tabs = useTabsStore();
+    if (!tabs.enabled) {
+      router.back();
+      return;
+    }
+    const stepped = stepInTab('back');
+    if (stepped) void router.push(stepped.path);
+  });
+
+  const goNext = withViewTransition(() => {
+    const tabs = useTabsStore();
+    if (!tabs.enabled) {
+      router.forward();
+      return;
+    }
+    const stepped = stepInTab('forward');
+    if (stepped) void router.push(stepped.path);
+  });
+
+  /**
+   * Whether there is anywhere that way to go.
+   *
+   * Only answerable with tabs on: the browser's own history cannot be read, so
+   * with tabs off both buttons stay live, as they always have.
+   */
+  const canGoPrev = computed(() => {
+    const tabs = useTabsStore();
+    return !tabs.enabled || tabs.canGoBack(tabs.activeId);
+  });
+
+  const canGoNext = computed(() => {
+    const tabs = useTabsStore();
+    return !tabs.enabled || tabs.canGoForward(tabs.activeId);
+  });
 
   const openItem = (item) => {
     if (!item) return;
@@ -68,21 +123,44 @@ export function useNavigation() {
     // A tab of its own, when that is what this account asked for.
     //
     // One decision for every kind of file rather than one per plugin: a
-    // spreadsheet and a photograph open the same way, because a preference
-    // that holds for some files and not others is a preference nobody can
-    // predict. Both addresses already exist — `/open` for anything with a
-    // preview, `/editor` for anything the text editor opens — so this is the
-    // browser being handed one of them instead of this page filling itself.
-    if (appSettings.userSettings?.documentsOpenInNewTab) {
-      // Asked once: matching a plugin builds a context and walks the list.
-      const previewable = !opensInEditor && Boolean(previewManager.findPlugin(item));
-      const target = previewable
-        ? documentRoute(fullPath)
-        : opensInEditor || editable
-          ? { path: `/editor/${fullPath.split('/').map(encodeURIComponent).join('/')}` }
-          : null;
+    // spreadsheet and a photograph open the same way, because a preference that
+    // holds for some files and not others is a preference nobody can predict.
+    // Both addresses already exist — `/open` for anything with a preview,
+    // `/editor` for anything the text editor opens — so this hands one of them to
+    // whoever provides the tabs.
+    //
+    // Which is now a choice. With `browseInTabs` on, this application has tabs of
+    // its own, and a document belongs in one of those: a tab beside the folder it
+    // came from, where the same window still holds the clipboard and the
+    // transfers. With it off, the browser provides them as it always did.
+    //
+    // With tabs on, a document is always taken to its address rather than opened
+    // over the folder. The panel it opens in is `fixed` and lives in the body: it
+    // would stay on screen while somebody moved to another tab, a document sitting
+    // over a folder it has nothing to do with. At an address it is the tab's
+    // content, and leaving the tab closes it because leaving the route does.
+    //
+    // Which tab is then the reader's usual choice: `documentsOpenInNewTab` means
+    // one of ours rather than one of the browser's, and without it the tab they are
+    // in becomes the document.
+    const tabsOn = appSettings.userSettings?.browseInTabs === true;
+    const inNewTab = appSettings.userSettings?.documentsOpenInNewTab === true;
+
+    if (tabsOn || inNewTab) {
+      const target = addressFor(item, { currentPath });
 
       if (target) {
+        if (tabsOn) {
+          // The store is asked for only when there is a tab to open in it: reaching
+          // for it to find out would build it on every screen that opens a file.
+          if (inNewTab) {
+            const tab = useTabsStore().open(target.path, { own: true });
+            if (tab) navigate({ path: tab.path });
+          } else {
+            navigate(target);
+          }
+          return;
+        }
         // `noopener` because the page opened must not be able to reach back
         // into this one through `window.opener`.
         window.open(router.resolve(target).href, '_blank', 'noopener');
@@ -139,5 +217,7 @@ export function useNavigation() {
     goNext,
     goPrev,
     goUp,
+    canGoPrev,
+    canGoNext,
   };
 }

@@ -1,64 +1,58 @@
 <template>
-  <teleport to="body">
-    <!-- Backdrop -->
-    <transition name="tp-fade">
-      <div v-if="isOpen" class="fixed inset-0 z-1450 bg-black/30 dark:bg-black/50" @click="close" />
-    </transition>
-
-    <!-- Panel -->
-    <div
-      class="fixed inset-y-0 right-0 z-1500 w-full sm:w-[600px] md:w-[700px] lg:w-[800px] transform transition-transform duration-200 ease-out"
-      :class="isOpen ? 'translate-x-0' : 'translate-x-full'"
-    >
-      <aside
-        ref="panelRef"
-        class="flex h-full flex-col border-l bg-zinc-900 dark:bg-zinc-950 shadow-2xl dark:border-white/10"
-      >
-        <header class="flex items-center justify-between border-b border-white/10 px-5 py-3">
-          <h2 class="text-lg font-semibold text-white">
-            {{ $t('titles.terminal') }}
-          </h2>
-          <button
-            @click="close"
-            class="rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
-            :aria-label="$t('common.close')"
-          >
-            <XMarkIcon class="w-5 h-5" />
-          </button>
-        </header>
-        <div class="flex-1 overflow-hidden p-4">
-          <div ref="terminaldiv" class="h-full"></div>
-        </div>
-      </aside>
-    </div>
-  </teleport>
+  <div ref="terminaldiv" class="h-full w-full"></div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import { storeToRefs } from 'pinia';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
-import { XMarkIcon } from '@heroicons/vue/24/outline';
 
 import { apiBase, createTerminalSession } from '@/api';
 import { useFileStore } from '@/stores/fileStore';
-import { useTerminalStore } from '@/stores/terminal';
 import { useVolumeUsageStore } from '@/stores/volumeUsage';
 import { useFolderSizeStore } from '@/stores/folderSize';
-import { onClickOutside } from '@vueuse/core';
 import logger from '@/utils/logger';
 
-const terminalStore = useTerminalStore();
+/**
+ * One terminal: the session, the socket, and the folder listing it keeps honest.
+ *
+ * Everything here used to live inside the drawer that showed it, which meant
+ * there could only ever be one. A terminal is a place now — it has an address and
+ * a tab of its own — so what a terminal *is* had to come out of what showed it.
+ * The drawer still exists and still asks for one of these; so does the page
+ * behind a terminal tab, and neither knows anything about the other.
+ *
+ * Told rather than asking: the path to start in, the first line to type, and
+ * whether it should be running at all. Nothing here reads the terminal store, so
+ * two of these can be alive at once without a word between them.
+ */
+const props = defineProps({
+  /** The folder the shell starts in. Empty is the home of whoever is signed in. */
+  path: { type: String, default: '' },
+  /** A first line to type once the shell answers, if the caller wants one. */
+  initialInput: { type: String, default: '' },
+  /** Whether this terminal should be running. A session that has gone is not. */
+  active: { type: Boolean, default: true },
+  /**
+   * Whether it is on screen.
+   *
+   * Not the same question as `active`, and the difference is the whole reason a
+   * terminal can be left behind a tab: a shell that is not on screen is still
+   * running, still connected, still printing. What changes when it comes back is
+   * only that it has to be measured again — a terminal measured while its box was
+   * hidden came back the wrong size.
+   */
+  visible: { type: Boolean, default: true },
+});
+
+// The stores this terminal keeps honest: a shell that writes a file leaves the
+// listing and the sizes on screen out of date, and nothing else will notice.
 const fileStore = useFileStore();
 const volumeUsageStore = useVolumeUsageStore();
 const folderSizeStore = useFolderSizeStore();
-const { isOpen, launchPath, launchInput, launchKey } = storeToRefs(terminalStore);
-const { close } = terminalStore;
 
 const terminaldiv = ref(null);
-const panelRef = ref(null);
 let term;
 let socket;
 let fitAddon;
@@ -93,10 +87,12 @@ const clearRefreshTimer = () => {
 
 const refreshBrowserState = () => {
   const currentPath = normalizeLogicalPath(fileStore.currentPath || '');
-  const terminalPath = normalizeLogicalPath(launchPath.value || '');
+  const terminalPath = normalizeLogicalPath(props.path || '');
 
   if (terminalPath && currentPath === terminalPath) {
-    fileStore.fetchPathItems(currentPath).catch(() => {});
+    // The listing read again, not navigated to: a shell that wrote a file must
+    // not take away whatever the reader had selected beside it.
+    fileStore.refresh().catch(() => {});
   }
 
   volumeUsageStore.scheduleRefresh({ delayMs: 300, force: true });
@@ -137,12 +133,12 @@ const clearLaunchInputTimer = () => {
 };
 
 const scheduleLaunchInput = () => {
-  if (launchInputSent || !launchInput.value) return;
+  if (launchInputSent || !props.initialInput) return;
 
   clearLaunchInputTimer();
   launchInputTimer = setTimeout(() => {
-    if (launchInputSent || !launchInput.value) return;
-    sendInput(launchInput.value);
+    if (launchInputSent || !props.initialInput) return;
+    sendInput(props.initialInput);
     launchInputSent = true;
     launchInputTimer = null;
   }, 150);
@@ -181,7 +177,7 @@ const buildTerminalUrl = (token) => {
 
 const connectToBackend = async () => {
   try {
-    const session = await createTerminalSession(launchPath.value || '');
+    const session = await createTerminalSession(props.path || '');
     const token = session?.token;
     if (!token) {
       console.error('Failed to obtain terminal session token');
@@ -319,45 +315,51 @@ const teardownTerminal = () => {
   pendingResize = null;
 };
 
-watch([isOpen, launchKey], ([newVal]) => {
-  if (newVal) {
+/**
+ * Running, or not, as the caller says.
+ *
+ * The delay is the drawer's: it slides in over a fifth of a second, and a
+ * terminal measured while its box is still moving comes out the wrong size.
+ */
+watch(
+  () => props.active,
+  (running) => {
     teardownTerminal();
+    if (!running) return;
     setTimeout(() => {
       initTerminal();
-      if (fitAddon) {
-        fitAddon.fit();
-      }
+      if (fitAddon) fitAddon.fit();
     }, 250);
-  } else {
-    teardownTerminal();
   }
-});
+);
+
+/**
+ * Back on screen: measured again, and nothing else.
+ *
+ * A tab coming forward must not disturb the shell behind it. It was never torn
+ * down and never reconnected — what it lost while it was hidden is only the size
+ * of its box, because a hidden box has none.
+ */
+watch(
+  () => props.visible,
+  (shown) => {
+    if (!shown || !term) return;
+    setTimeout(() => {
+      // Fitting is what tells the shell its new size: the addon measures the box
+      // and the terminal's own resize event carries the answer to the server.
+      fitAddon?.fit();
+      focusTerminal();
+    }, 250);
+  }
+);
 
 onMounted(() => {
-  if (isOpen.value) {
-    initTerminal();
-  }
+  if (props.active) initTerminal();
 });
 
 onBeforeUnmount(() => {
   teardownTerminal();
 });
 
-onClickOutside(panelRef, () => {
-  if (isOpen.value) {
-    close();
-  }
-});
+defineExpose({ focus: () => focusTerminal() });
 </script>
-
-<style>
-.tp-fade-enter-active,
-.tp-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.tp-fade-enter-from,
-.tp-fade-leave-to {
-  opacity: 0;
-}
-</style>

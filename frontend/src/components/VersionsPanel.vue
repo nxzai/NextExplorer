@@ -15,6 +15,9 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { useFileStore } from '@/stores/fileStore';
 import { useDestinationPicker } from '@/composables/useDestinationPicker';
 import { isEditableExtension } from '@/config/editor';
+import { isComparableExtension } from '@/config/compare';
+import { compareAddress, compareRoute } from '@/utils/compareRoute';
+import { useTabsStore } from '@/stores/tabs';
 import { usePreviewManager } from '@/plugins/preview/manager';
 import { formatBytes, formatLocalDateTime } from '@/utils';
 import {
@@ -176,6 +179,12 @@ const actionsFor = (version) => {
   if (usable && (isEditableExtension(extension.value) || officeViewer.value)) {
     list.push({ id: 'preview', label: t('versions.actions.preview') });
   }
+  // Against the file as it is now, side by side. Only for something that can be read
+  // as lines of text: a comparison of two spreadsheets line by line would be pages of
+  // binary nonsense, whatever the versions panel can otherwise do with them.
+  if (usable && isComparableExtension(extension.value)) {
+    list.push({ id: 'compare', label: t('versions.actions.compare') });
+  }
   if (usable && rights.value.download) {
     list.push({ id: 'download', label: t('versions.actions.download') });
   }
@@ -272,6 +281,32 @@ const preview = (version) => {
   router.push({ name: 'VersionFileViewer', params: { versionId: version.id, path } });
 };
 
+/**
+ * This version against the file as it is now.
+ *
+ * The version on the left and the file on the right, which is the order that reads as
+ * "what happened since": the older thing first. In a tab of its own where there are
+ * tabs, so the panel and the folder behind it are still there to come back to.
+ */
+const compareWithNow = (version) => {
+  const sides = [{ path: filePath.value, versionId: version.id }, { path: filePath.value }];
+  const target = compareRoute(sides);
+  if (!target) return;
+  // The router's spelling, which is the one the comparison will be handed back.
+  const address = compareAddress(router, sides);
+  if (!address) return;
+  // The store rather than `tabNavigation`, and asked for when the gesture happens:
+  // that composable reaches for the router's own `useRoute`, and this panel is on
+  // every page that can show a version — which is how a suite that had mocked its own
+  // stores and nothing else would stop loading at all.
+  const tabs = useTabsStore();
+  if (tabs.enabled && tabs.open(address, { own: true })) {
+    void router.push(address);
+    return;
+  }
+  void router.push(target);
+};
+
 const restoreCopy = async (version) => {
   const destination = await picker.pick({
     mode: 'version-copy',
@@ -305,6 +340,9 @@ const runAction = (action, version) => {
   switch (action.id) {
     case 'preview':
       preview(version);
+      break;
+    case 'compare':
+      compareWithNow(version);
       break;
     case 'download':
       download(version);
@@ -460,11 +498,23 @@ const saveName = async () => {
 <template>
   <teleport to="body">
     <transition name="vp-fade">
-      <div v-if="isOpen" class="fixed inset-0 z-2140 bg-black/30" @click="close" />
+      <!--
+      A panel beside what a tab holds, so it stops where the strip starts.
+
+      It is `fixed` and teleported, which no amount of nesting can tell about the
+      strip — hence `--tab-strip-height`, which is 0px when there is no strip.
+      Before this the backdrop covered the whole window and swallowed every click
+      on a tab: opening the terminal meant being unable to leave it.
+    -->
+      <div
+        v-if="isOpen"
+        class="fixed inset-x-0 bottom-0 top-[var(--tab-strip-height)] z-2140 bg-black/30"
+        @click="close"
+      />
     </transition>
 
     <div
-      class="fixed inset-y-0 right-0 z-2150 w-[400px] max-w-full transform transition-transform duration-200 ease-out sm:w-[460px]"
+      class="fixed bottom-0 right-0 top-[var(--tab-strip-height)] z-2150 w-[400px] max-w-full transform transition-transform duration-200 ease-out sm:w-[460px]"
       :class="isOpen ? 'translate-x-0' : 'translate-x-full'"
       :aria-hidden="!isOpen"
     >

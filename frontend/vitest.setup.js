@@ -1,3 +1,5 @@
+import { beforeEach } from 'vitest';
+
 /**
  * Give tests a Web Storage that behaves like a browser's.
  *
@@ -56,6 +58,21 @@ for (const name of ['localStorage', 'sessionStorage']) {
     });
   }
 }
+
+/**
+ * Start every test file with empty storage.
+ *
+ * A worker runs several files in one process and the storage is one object, so
+ * what a file leaves behind is what the next one starts with. It cost a
+ * `fileStore` test that passed on its own and failed in the suite: the tabs it
+ * found were another file's, left in `settings:tabs:open`. Cleared here rather
+ * than in each spec, because the next spec to touch storage would have to know
+ * to do it.
+ */
+beforeEach(() => {
+  localStorage.clear();
+  sessionStorage.clear();
+});
 
 /**
  * Give tests `CSS.escape`, which jsdom does not implement.

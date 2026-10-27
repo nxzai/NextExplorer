@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { fetchFeatures } from '@/api';
+import { DEFAULT_TAB_LIMIT } from '@/stores/tabs';
 
 export const useFeaturesStore = defineStore('features', () => {
   const publicUrl = ref('');
@@ -36,8 +37,14 @@ export const useFeaturesStore = defineStore('features', () => {
   const personalEnabled = ref(false);
   const userVolumesEnabled = ref(false);
   const skipHome = ref(false);
+  // How many tabs a row may hold. The strip never scrolls, so this is what keeps
+  // a tab wide enough to read — an administrator's choice, under Settings → Tabs.
+  const maxTabs = ref(DEFAULT_TAB_LIMIT);
   const terminalEnabled = ref(false);
   const terminalExtensions = ref([]);
+  // What this installation adds to what is always comparable side by side. Whatever
+  // the text editor can open is comparable without being listed here.
+  const compareExtensions = ref([]);
   // Whether deleting goes to the trash, and for how many days it keeps things.
   const trashEnabled = ref(false);
   const trashRetentionDays = ref(null);
@@ -138,9 +145,13 @@ export const useFeaturesStore = defineStore('features', () => {
 
         // Navigation behavior
         skipHome.value = Boolean(features?.navigation?.skipHome);
+        maxTabs.value = Number(features?.tabs?.maxOpen) || DEFAULT_TAB_LIMIT;
         terminalEnabled.value = Boolean(features?.terminal?.enabled);
         terminalExtensions.value = Array.isArray(features?.terminal?.extensions)
           ? features.terminal.extensions
+          : [];
+        compareExtensions.value = Array.isArray(features?.compare?.extensions)
+          ? features.compare.extensions
           : [];
 
         // Trash
@@ -181,8 +192,10 @@ export const useFeaturesStore = defineStore('features', () => {
         personalEnabled.value = false;
         userVolumesEnabled.value = false;
         skipHome.value = false;
+        maxTabs.value = DEFAULT_TAB_LIMIT;
         terminalEnabled.value = false;
         terminalExtensions.value = [];
+        compareExtensions.value = [];
         trashEnabled.value = false;
         trashRetentionDays.value = null;
         versionsEnabled.value = false;
@@ -227,8 +240,10 @@ export const useFeaturesStore = defineStore('features', () => {
     personalEnabled,
     userVolumesEnabled,
     skipHome,
+    maxTabs,
     terminalEnabled,
     terminalExtensions,
+    compareExtensions,
     trashEnabled,
     trashRetentionDays,
     versionsEnabled,

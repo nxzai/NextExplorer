@@ -2,24 +2,30 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ChevronRight16Filled } from '@vicons/fluent';
-import { useRoute } from 'vue-router';
 import { useNavigation } from '@/composables/navigation';
-import { useFileStore } from '@/stores/fileStore';
+import { usePaneFolder } from '@/composables/paneTab';
 import { ellipses } from '@/utils/ellipses';
 
 const { openBreadcrumb } = useNavigation();
 const { t, te } = useI18n();
-const route = useRoute();
-const fileStore = useFileStore();
+/**
+ * Where its pane is, rather than where the router is.
+ *
+ * Outside a pane — in the window's own toolbar — a pane is not provided and this
+ * answers the tab in front, which is the address the router is on and what this
+ * showed before panes existed. Inside one, it answers that pane, so a split view
+ * says both places rather than the same place twice.
+ */
+const { folderPath, view: pane } = usePaneFolder();
 
 const paths = computed(() => {
-  if (route.params.path) {
-    const segments = String(route.params.path).split('/');
+  if (folderPath.value) {
+    const segments = String(folderPath.value).split('/');
 
     // Special handling for share paths
     if (segments[0] === 'share' && segments.length >= 2) {
       const shareToken = segments[1];
-      const shareInfo = fileStore.currentPathData?.shareInfo;
+      const shareInfo = pane.currentPathData?.shareInfo;
 
       // Display priority: label > sourceFolderName > token
       const shareDisplayName =

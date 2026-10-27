@@ -11,13 +11,31 @@ const updateOperation = vi.fn();
 const finishOperation = vi.fn();
 const requestConfirmation = vi.fn(() => Promise.resolve(true));
 
+/**
+ * The other pane, as a folder with its own listing and its own read.
+ *
+ * Not a spy on the store: the destination of a drag between panes is a folder
+ * that is on screen and is not the one the drag came from, and nothing about
+ * that is visible through a surface that follows the tab in front.
+ */
+const fetchInBeside = vi.fn();
+const paneBeside = {
+  path: { value: 'Destination' },
+  fetchItems: fetchInBeside,
+};
+
 const fileStore = {
   currentPath: 'Source',
   currentPathItems: [],
   selectedItems: [],
   fetchPathItems,
+  folderFor: (id) =>
+    id === 'tab-beside' ? paneBeside : { path: { value: 'Source' }, fetchItems: vi.fn() },
   warnAboutOnlyOfficeActivity: vi.fn(() => false),
 };
+
+/** One pane, or two: what is on screen and which of them the reader is in. */
+const appTabs = { panes: ['tab-here'], activeId: 'tab-here' };
 
 vi.mock('@/api', () => ({
   copyItems: (...args) => copyItems(...args),
@@ -26,6 +44,7 @@ vi.mock('@/api', () => ({
 }));
 
 vi.mock('@/stores/fileStore', () => ({ useFileStore: () => fileStore }));
+vi.mock('@/stores/tabs', () => ({ useTabsStore: () => appTabs }));
 vi.mock('@/stores/volumeUsage', () => ({
   useVolumeUsageStore: () => ({ scheduleRefresh: scheduleUsageRefresh }),
 }));
@@ -70,6 +89,10 @@ describe('useFileDragDrop', () => {
     copyItems.mockReset();
     moveItems.mockReset();
     fetchPathItems.mockReset();
+    fetchInBeside.mockReset();
+    appTabs.panes = ['tab-here'];
+    appTabs.activeId = 'tab-here';
+    paneBeside.path.value = 'Destination';
     scheduleUsageRefresh.mockReset();
     scheduleFolderRefresh.mockReset();
     startOperation.mockClear();
@@ -115,6 +138,36 @@ describe('useFileDragDrop', () => {
     );
     expect(copyItems).not.toHaveBeenCalled();
     expect(startOperation).toHaveBeenCalledWith(expect.objectContaining({ type: 'move' }));
+  });
+
+  /**
+   * The folder the files arrived in, read again.
+   *
+   * With one pane this never mattered: the destination was somewhere else — a
+   * tab behind, a favourite, a folder in the listing — and the reader walked
+   * there afterwards, which read it. With two panes the destination is usually
+   * the other half of the window, and nothing was telling it anything had
+   * happened: the files left one side and appeared on neither.
+   */
+  it('reads the other pane again when that is where the files went', async () => {
+    appTabs.panes = ['tab-here', 'tab-beside'];
+    paneBeside.path.value = 'Volume/Target';
+    const dragDrop = useFileDragDrop();
+
+    await dragDrop.handleDrop(transferEvent(), target);
+
+    expect(fetchInBeside).toHaveBeenCalledWith('Volume/Target', { preserveInteraction: true });
+  });
+
+  /** And not when it is showing something else: that pane did not change. */
+  it('leaves a pane alone when the files went somewhere it is not', async () => {
+    appTabs.panes = ['tab-here', 'tab-beside'];
+    paneBeside.path.value = 'Somewhere/Else';
+    const dragDrop = useFileDragDrop();
+
+    await dragDrop.handleDrop(transferEvent(), target);
+
+    expect(fetchInBeside).not.toHaveBeenCalled();
   });
 
   it('warns before moving a document currently edited in OnlyOffice', async () => {

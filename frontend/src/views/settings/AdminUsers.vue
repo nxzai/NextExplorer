@@ -13,9 +13,22 @@ import { useAuthStore } from '@/stores/auth';
 import { useI18n } from 'vue-i18n';
 import UserList from './components/UserList.vue';
 import UserDetail from './components/UserDetail.vue';
+import { useAsk } from '@/composables/useAsk';
+import { useNotificationsStore } from '@/stores/notifications';
 
 const auth = useAuthStore();
 const { t } = useI18n();
+const { ask, askFor } = useAsk();
+const notifications = useNotificationsStore();
+
+/**
+ * Said, rather than thrown in the reader's way.
+ *
+ * These were `alert`: the browser's box, headed by the server's address, stopping the
+ * page until it is dismissed — and used for good news as readily as for bad. A message
+ * is a message; the application already has somewhere to put one.
+ */
+const say = (type, heading) => notifications.addNotification({ type, heading });
 
 const users = ref([]);
 const loading = ref(false);
@@ -78,7 +91,7 @@ const handleUpdateUser = async (userData) => {
       selectedUser.value = { ...selectedUser.value, ...res.user };
     }
   } catch (e) {
-    alert(e?.message || t('errors.updateUser'));
+    say('error', e?.message || t('errors.updateUser'));
   } finally {
     saving.value = false;
   }
@@ -96,7 +109,7 @@ const handleMakeAdmin = async (u) => {
       }
     }
   } catch (e) {
-    alert(e?.message || t('errors.updateRoles'));
+    say('error', e?.message || t('errors.updateRoles'));
   }
 };
 
@@ -112,25 +125,30 @@ const handleRevokeAdmin = async (u) => {
       }
     }
   } catch (e) {
-    alert(e?.message || t('errors.updateRoles'));
+    say('error', e?.message || t('errors.updateRoles'));
   }
 };
 
 const handleResetPassword = async (u) => {
-  const pwd = window.prompt(t('settings.users.promptNewPassword', { user: u.username }));
+  const pwd = await askFor({
+    title: t('settings.users.newPasswordTitle'),
+    label: t('settings.users.promptNewPassword', { user: u.username }),
+    confirmLabel: t('common.save'),
+    password: true,
+  });
   if (pwd == null) return; // cancelled
   if (pwd.length < 6) {
-    alert(t('errors.passwordMin'));
+    say('error', t('errors.passwordMin'));
     return;
   }
   try {
     await adminSetUserPassword(u.id, pwd);
-    alert(t('status.passwordUpdated'));
+    say('success', t('status.passwordUpdated'));
     // Ideally we should refresh the user to update "hasLocalAuth" status if we had that info in the API response
     // But for now, we assume it worked.
     loadUsers();
   } catch (e) {
-    alert(e?.message || t('errors.resetPassword'));
+    say('error', e?.message || t('errors.resetPassword'));
   }
 };
 
@@ -144,23 +162,28 @@ const handleUnlock = async (u) => {
       selectedUser.value = { ...selectedUser.value, lockedUntil: null };
     }
   } catch (e) {
-    alert(e?.message || t('errors.unlockUser'));
+    say('error', e?.message || t('errors.unlockUser'));
   }
 };
 
 const handleDeleteUser = async (u) => {
   if (u.id === auth.currentUser?.id) {
-    alert(t('settings.users.cannotDeleteSelf'));
+    say('error', t('settings.users.cannotDeleteSelf'));
     return;
   }
-  const ok = window.confirm(t('settings.users.confirmRemove', { user: u.username }));
+  const ok = await ask({
+    title: t('settings.users.removeTitle'),
+    body: t('settings.users.confirmRemove', { user: u.username }),
+    confirmLabel: t('common.remove'),
+    tone: 'danger',
+  });
   if (!ok) return;
   try {
     await deleteUser(u.id);
     users.value = users.value.filter((it) => it.id !== u.id);
     selectedUser.value = null;
   } catch (e) {
-    alert(e?.message || t('errors.removeUser'));
+    say('error', e?.message || t('errors.removeUser'));
   }
 };
 
@@ -179,11 +202,11 @@ const closeCreateModal = () => {
 
 const handleCreate = async () => {
   if (!newEmail.value.trim()) {
-    alert(t('errors.emailRequired'));
+    say('error', t('errors.emailRequired'));
     return;
   }
   if (newPassword.value.length < 6) {
-    alert(t('errors.passwordMin'));
+    say('error', t('errors.passwordMin'));
     return;
   }
   creating.value = true;
@@ -201,7 +224,7 @@ const handleCreate = async () => {
       // selectedUser.value = res.user;
     }
   } catch (e) {
-    alert(e?.message || t('errors.createUser'));
+    say('error', e?.message || t('errors.createUser'));
   } finally {
     creating.value = false;
   }

@@ -370,3 +370,59 @@ describe('opening and closing', () => {
     expect(() => manager.close()).not.toThrow();
   });
 });
+
+/**
+ * A page that is going away gives a handler one synchronous moment.
+ *
+ * Nothing chained after a request will run, and nothing this store clears will
+ * matter — the store is about to stop existing. So closing on the way out is a
+ * different call from closing in a browser that is staying, and the difference
+ * is exactly what the plugin is told, so it can send what it has to send in
+ * one breath.
+ */
+describe('the page going away', () => {
+  it('tells the plugin it is unloading, and leaves the state alone', () => {
+    const manager = usePreviewManager();
+    const beforeClose = vi.fn();
+    manager.register(plugin('office', { onBeforeClose: beforeClose }));
+    manager.open(IMAGE);
+
+    expect(manager.endForUnload()).toBe(true);
+
+    expect(beforeClose).toHaveBeenCalledTimes(1);
+    expect(beforeClose.mock.calls[0][1]).toEqual({ unloading: true });
+    // Untouched: clearing it here would risk cancelling the very request the
+    // plugin has just handed to the browser.
+    expect(manager.isOpen).toBe(true);
+  });
+
+  it('says so when the closing panel is the ordinary one', async () => {
+    const manager = usePreviewManager();
+    const beforeClose = vi.fn();
+    manager.register(plugin('office', { onBeforeClose: beforeClose }));
+    manager.open(IMAGE);
+
+    await manager.close();
+
+    // The same hook, told it has time. A plugin that could not tell the two
+    // apart would have to assume the worst on every close.
+    expect(beforeClose.mock.calls[0][1]).toEqual({ unloading: false });
+  });
+
+  it('is harmless with nothing open, and survives a plugin that throws', () => {
+    const manager = usePreviewManager();
+
+    expect(manager.endForUnload()).toBe(false);
+
+    manager.register(
+      plugin('office', {
+        onBeforeClose: () => {
+          throw new Error('no');
+        },
+      })
+    );
+    manager.open(IMAGE);
+
+    expect(() => manager.endForUnload()).not.toThrow();
+  });
+});

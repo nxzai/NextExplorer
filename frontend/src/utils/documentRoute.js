@@ -20,3 +20,35 @@ export const documentRoute = (path) => {
   const encoded = encodeFolderPath(path);
   return { path: encoded ? `/open/${encoded}` : '/browse/' };
 };
+
+/**
+ * The other direction: a document's address, as the entry it names.
+ *
+ * `/open/Docs/2026/report.docx` is `{ name: 'report.docx', path: 'Docs/2026' }`,
+ * which is the shape every preview plugin is asked about. The document page works
+ * this out from its own route parameters; anything that wants to prepare a tab it
+ * is *not* on has only the address, and there is no reason for two places to
+ * disagree about what it means.
+ *
+ * Answers null for anything that is not a document address, including `/open/`
+ * with nothing after it.
+ */
+export const documentItemFromAddress = (address) => {
+  const match = /^\/open\/(.+)$/.exec(String(address || '').split(/[?#]/)[0]);
+  if (!match) return null;
+
+  const segments = match[1]
+    .split('/')
+    .filter(Boolean)
+    .map((segment) => {
+      try {
+        return decodeURIComponent(segment);
+      } catch {
+        // A percent sign that decodes to nothing is still part of a name.
+        return segment;
+      }
+    });
+  if (segments.length === 0) return null;
+
+  return { name: segments[segments.length - 1], path: segments.slice(0, -1).join('/') };
+};

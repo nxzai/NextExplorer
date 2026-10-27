@@ -404,6 +404,27 @@ const sanitizeVersions = (versions = {}) => {
 };
 
 /**
+ * How many tabs a row may hold.
+ *
+ * A row of tabs that never scrolls has to stop somewhere: past a certain number
+ * they are too narrow to read, and a strip that scrolls hides the very tabs
+ * somebody opened. Four numbers is all anybody has asked for — nobody browses
+ * twenty folders at once and can still tell them apart — so the choice is a
+ * handful rather than a free number, and anything else falls back to the default
+ * rather than being refused.
+ */
+const TAB_LIMIT_CHOICES = [5, 10, 15, 20];
+const DEFAULT_TAB_LIMIT = 10;
+
+const sanitizeTabs = (tabs = {}) => {
+  const source = tabs && typeof tabs === 'object' ? tabs : {};
+  const asked = Number(source.maxOpen);
+  return {
+    maxOpen: TAB_LIMIT_CHOICES.includes(asked) ? asked : DEFAULT_TAB_LIMIT,
+  };
+};
+
+/**
  * Get public settings (branding only, no auth required)
  */
 const getPublicSettings = async () => {
@@ -503,6 +524,7 @@ const getSystemSettings = async () => {
   const versions = {};
   const activity = {};
   const ffmpeg = {};
+  const tabs = {};
 
   for (const row of rows) {
     try {
@@ -524,6 +546,8 @@ const getSystemSettings = async () => {
         Object.assign(activity, JSON.parse(row.value));
       } else if (row.key === 'ffmpeg') {
         Object.assign(ffmpeg, JSON.parse(row.value));
+      } else if (row.key === 'tabs') {
+        Object.assign(tabs, JSON.parse(row.value));
       }
     } catch (_) {
       // Skip invalid JSON
@@ -538,6 +562,7 @@ const getSystemSettings = async () => {
     versions: sanitizeVersions(versions),
     activity: sanitizeActivity(activity),
     ffmpeg: sanitizeFfmpeg(ffmpeg),
+    tabs: sanitizeTabs(tabs),
     folderSize: {
       ...sanitizeFolderSize(folderSize),
       environmentExcludedPaths: folderSizeExclusions.snapshot().environmentExcludedPaths,
@@ -692,6 +717,10 @@ const USER_SETTINGS = {
   defaultView: asViewMode,
   locale: asLocale,
   downloadMode: asDownloadMode,
+  browseInTabs: asBoolean,
+  closeTabsOnDoubleClick: asBoolean,
+  reopenTabs: asBoolean,
+  preloadBackgroundTabs: asBoolean,
 };
 
 /**
@@ -850,6 +879,7 @@ const sanitizeSystemSetting = (key, value) => {
   if (key === 'searchIndex') return sanitizeSearchIndex(value);
   if (key === 'trash') return sanitizeTrash(value);
   if (key === 'activity') return sanitizeActivity(value);
+  if (key === 'tabs') return sanitizeTabs(value);
   if (key === 'versions') return sanitizeVersions(value);
   if (key === 'ffmpeg') return sanitizeFfmpeg(value);
   return value;
@@ -1069,6 +1099,9 @@ module.exports = {
   sanitizeVersions,
   sanitizeActivity,
   sanitizeFfmpeg,
+  sanitizeTabs,
+  TAB_LIMIT_CHOICES,
+  DEFAULT_TAB_LIMIT,
   getSettingsForUser,
   setUserSetting,
   WRITABLE_USER_SETTINGS,

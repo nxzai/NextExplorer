@@ -283,7 +283,19 @@ const runRsyncCopy = (
       cleanup();
       callback(value);
     };
+    /**
+     * Progress stops at the moment the operation does.
+     *
+     * A cancelled copy is killed with a signal, and what the child had already
+     * written to its pipe arrives afterwards — so a caller that has finished
+     * with the transfer, and taken down whatever it was keeping for it, was
+     * still being told how far the copy had got. Nothing in the application
+     * minded; a test that wrote to disk from its progress callback did, which is
+     * how it came to light, and it is the right answer either way: an operation
+     * that is over reports nothing.
+     */
     const emitOutput = (chunk) => {
+      if (settled || signal?.aborted) return;
       output += chunk.toString();
       const lines = output.split(/[\r\n]/);
       output = lines.pop() || '';

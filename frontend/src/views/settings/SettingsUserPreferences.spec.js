@@ -46,6 +46,10 @@ const STORED = {
   markdownOpensInEditor: true,
   documentsOpenInNewTab: true,
   downloadMode: 'separate',
+  // On in what is stored, so the payload below proves the stored value is
+  // carried through rather than a default being resent.
+  browseInTabs: true,
+  closeTabsOnDoubleClick: true,
 };
 
 /** As the store holds them for somebody who never chose anything. */
@@ -68,6 +72,10 @@ const SWITCHES = [
   'showThumbnails',
   'markdownOpensInEditor',
   'documentsOpenInNewTab',
+  'browseInTabs',
+  'closeTabsOnDoubleClick',
+  'reopenTabs',
+  'preloadBackgroundTabs',
   'showVersionMarks',
   'showSidebarFavorites',
   'showSidebarShares',
@@ -183,6 +191,15 @@ describe('the preferences', () => {
         showVersionMarks: true,
         locale: null,
         downloadMode: 'separate',
+        browseInTabs: true,
+        closeTabsOnDoubleClick: true,
+        // Off unless it is turned on, which is what makes keeping a tab mean
+        // something: with everything coming back, "kept" says nothing that "open"
+        // does not already say.
+        reopenTabs: false,
+        // On unless it is turned off: a tab opened in the background is opened in
+        // order not to wait for it.
+        preloadBackgroundTabs: true,
       },
     });
     expect(sentUser()).not.toHaveProperty('folderSorts');

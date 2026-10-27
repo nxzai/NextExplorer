@@ -6,13 +6,18 @@ const {
   preview,
   search,
   terminal,
+  compare,
   features,
   hiddenFiles,
   public: publicConfig,
   demoLogin,
 } = require('../config/index');
 const terminalService = require('../services/terminalService');
-const { MAX_UPLOAD_CHUNK_SIZE_BYTES } = require('../services/settingsService');
+const {
+  MAX_UPLOAD_CHUNK_SIZE_BYTES,
+  getSystemSettings,
+  DEFAULT_TAB_LIMIT,
+} = require('../services/settingsService');
 const { getSupportedArchiveExtensions } = require('../services/archiveService');
 const featureSwitches = require('../services/featureSwitches');
 const { getTrashSettings } = require('../services/trash/settings');
@@ -26,6 +31,13 @@ router.get('/features', async (_req, res) => {
   // Probed once at startup, then cached — this await is effectively free.
   const archiveExtensions = await getSupportedArchiveExtensions().catch(() => ['zip']);
   const switches = featureSwitches.snapshot();
+  // How many tabs a row may hold: an administrator's choice, read the same way
+  // the trash and the versions read theirs, and with the same fallback if the
+  // settings cannot be reached at all.
+  const tabs = await getSystemSettings().then(
+    (settings) => settings.tabs,
+    () => ({ maxOpen: DEFAULT_TAB_LIMIT })
+  );
   const payload = {
     public: {
       url: publicConfig?.url || null,
@@ -103,6 +115,17 @@ router.get('/features', async (_req, res) => {
     },
     navigation: {
       skipHome: Boolean(features?.skipHome),
+    },
+    // How many tabs a row may hold before it refuses another. The strip never
+    // scrolls, so the number is what keeps a tab wide enough to read.
+    tabs: {
+      maxOpen: tabs.maxOpen,
+    },
+    // What this installation adds to what is always comparable, which is whatever
+    // the text editor can open — the client already has that list, and a second copy
+    // of it here would be a second list to keep in step.
+    compare: {
+      extensions: Array.isArray(compare?.extensions) ? compare.extensions : [],
     },
     terminal: {
       enabled: Boolean(features?.terminal) && terminalService.isAvailable(),

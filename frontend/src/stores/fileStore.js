@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { browse, normalizePath, browseShare } from '@/api';
+import { computed, watch } from 'vue';
+import { normalizePath } from '@/api';
 import { useSettingsStore } from '@/stores/settings';
 import { useFavoritesStore } from '@/stores/favorites';
 import { useVolumeUsageStore } from '@/stores/volumeUsage';
@@ -8,16 +8,13 @@ import { useFolderSizeStore } from '@/stores/folderSize';
 import { useFeaturesStore } from '@/stores/features';
 import { useOperationTasksStore } from '@/stores/operationTasks';
 import { useNotificationsStore } from '@/stores/notifications';
-import { isAbortError, itemKey } from './files/items';
+import { useTabsStore } from '@/stores/tabs';
 import { sortItems } from './files/sorting';
-import { mergeListing, folderData } from './files/listing';
-import { createThumbnailQueue, createThumbnails } from './files/thumbnails';
+import { createFolderTab } from './files/folderTab';
 import {
   createOnlyofficeActivityPolling,
   createOnlyofficeWarning,
 } from './files/onlyofficeActivity';
-import { createSelection } from './files/selection';
-import { createRename } from './files/rename';
 import { createTransfers } from './files/transfers';
 import { createOperations } from './files/operations';
 
@@ -25,26 +22,25 @@ import { createOperations } from './files/operations';
  * The folder on screen: what it holds, what is selected in it, and what can be
  * done to it.
  *
- * The listing lives here; everything else is in `stores/files/`, each part
- * given only what it needs — the selection the entries on screen, the
- * clipboard the selection and a way to list again. What components see is the
- * same store it always was.
+ * One folder per tab, and the one in front is what components see. Everything a
+ * folder *is* — its listing, its selection, its rename, its thumbnails, its
+ * request in flight — lives in `files/folderTab.js`, one instance per tab. What
+ * a person *does* stays here and there is one of each: the clipboard, so copying
+ * in one tab and pasting in another works, and the operations, which act on
+ * whichever folder is in front.
+ *
+ * The surface below is the one components have always seen. `currentPath` and its
+ * neighbours became views of the tab in front rather than values of their own,
+ * which is the whole of what tabs cost the rest of the application: nothing.
  */
 export const useFileStore = defineStore('fileStore', () => {
-  // State
-  const currentPath = ref('');
-  const currentPathItems = ref([]);
-  const currentPathData = ref(null);
-
   const favoritesStore = useFavoritesStore();
   const volumeUsageStore = useVolumeUsageStore();
   const folderSizeStore = useFolderSizeStore();
   const featuresStore = useFeaturesStore();
   const operationTasksStore = useOperationTasksStore();
   const notificationsStore = useNotificationsStore();
-
-  let activeBrowseController = null;
-  let browseRequestGeneration = 0;
+  const tabsStore = useTabsStore();
 
   const refreshSizes = () => {
     volumeUsageStore.scheduleRefresh();
@@ -52,23 +48,155 @@ export const useFileStore = defineStore('fileStore', () => {
   };
 
   const warnAboutOnlyOfficeActivity = createOnlyofficeWarning(notificationsStore);
-  const selection = createSelection(currentPathItems);
-  const thumbnailQueue = createThumbnailQueue();
-  const thumbnails = createThumbnails({
-    findItemByKey: selection.findItemByKey,
-    queue: thumbnailQueue,
-  });
+
+  /**
+   * One folder per tab, made when the tab is and let go when it goes.
+   *
+   * A plain Map: what is reactive is inside each folder, and the one thing that
+   * decides which of them is read — the active tab's id — is reactive on its own.
+   * Entries are made before anything can ask for them, so nothing reads a folder
+   * that is not there.
+   */
+  const folders = new Map();
+  const ensureFolder = (id) => {
+    if (!folders.has(id)) {
+      folders.set(
+        id,
+        createFolderTab({
+          warn: warnAboutOnlyOfficeActivity,
+          // The polling belongs to the window and asks about what is on screen,
+          // so a tab that is not in front does not start it.
+          onListed: () => {
+            if (tabsStore.activeId === id) void onlyofficeActivity.start();
+          },
+        })
+      );
+    }
+    return folders.get(id);
+  };
+
+  for (const tab of tabsStore.tabs) ensureFolder(tab.id);
+
+  watch(
+    () => tabsStore.tabs.map((tab) => tab.id),
+    (ids) => {
+      for (const id of ids) ensureFolder(id);
+      for (const id of [...folders.keys()]) {
+        if (ids.includes(id)) continue;
+        folders.get(id).dispose();
+        folders.delete(id);
+      }
+    }
+  );
+
+  /** The folder in front. Never null: the tabs store always has a tab. */
+  const active = computed(() => ensureFolder(tabsStore.activeId));
+
+  /**
+   * One of the folder's own refs, as the store has always exposed it.
+   *
+   * Writable, because it always was: `fileStore.currentPathItems = […]` is what
+   * a confirmed delete and a test both do, and a read-only computed would have
+   * turned that into a silent no-op.
+   */
+  const activeRef = (pick) =>
+    computed({
+      get: () => pick(active.value).value,
+      set: (value) => {
+        pick(active.value).value = value;
+      },
+    });
+
+  const currentPath = activeRef((folder) => folder.path);
+  const currentPathItems = activeRef((folder) => folder.items);
+  const currentPathData = activeRef((folder) => folder.data);
+
+  const fetchPathItems = (path, options) => active.value.fetchItems(path, options);
+
+  /**
+   * A listing read into a named tab rather than into the one in front.
+   *
+   * Every folder already has its own listing, its own selection and its own
+   * request in flight — that is what makes a tab keep what it was holding. What
+   * was missing was a way to fill one the reader is not looking at, which is what
+   * preparing a tab opened in the background means: by the time they arrive, the
+   * folder is there instead of a spinner.
+   */
+  const fetchIn = (id, path, options) =>
+    ensureFolder(id).fetchItems(path, { ...options, background: true });
+
+  /**
+   * Whether a tab already holds a folder, listed.
+   *
+   * Asked before preparing one: a tab that has been there has its listing, its
+   * selection and possibly a rename half typed, and reading the folder again would
+   * be a head start on nothing at the cost of disturbing all of it. Does not make
+   * a folder for a tab it has never heard of — asking is not visiting.
+   */
+  const holdsFolder = (id, wanted) => {
+    const folder = folders.get(id);
+    if (!folder) return false;
+    return (
+      normalizePath(folder.path.value) === normalizePath(wanted) &&
+      (folder.items.value?.length ?? 0) > 0
+    );
+  };
+
+  /**
+   * The folder already on screen, read again.
+   *
+   * The other half of `fetchPathItems`, and the difference between them is not
+   * the path — it is what it means. Fetching a path is *going* somewhere, so it
+   * clears what was selected and leaves selection mode, because what was chosen
+   * was chosen in another folder. Refreshing is this folder changing underneath
+   * somebody: an upload landing, a shell writing a file, ONLYOFFICE saving. They
+   * have to see the new file; they must not lose what they were holding.
+   *
+   * Written down as its own word because every caller that got this wrong got it
+   * wrong the same way — by reaching for the one function there was.
+   */
+  const refresh = () =>
+    active.value.fetchItems(active.value.path.value, { preserveInteraction: true });
+
   const onlyofficeActivity = createOnlyofficeActivityPolling({
     featuresStore,
-    isBrowsing: () => Boolean(activeBrowseController),
-    refresh: () => fetchPathItems(currentPath.value, { preserveInteraction: true }),
+    isBrowsing: () => active.value.isBrowsing(),
+    refresh,
   });
-  const rename = createRename({
-    currentPath,
-    selection,
-    fetchPathItems,
-    warn: warnAboutOnlyOfficeActivity,
-  });
+
+  const selection = {
+    selectedItems: activeRef((folder) => folder.selection.selectedItems),
+    selectionMode: activeRef((folder) => folder.selection.selectionMode),
+    hasSelection: computed(() => active.value.selection.hasSelection.value),
+    selectedItemKeys: computed(() => active.value.selection.selectedItemKeys.value),
+    keyboardActionItem: computed(() => active.value.selection.keyboardActionItem.value),
+    clearSelection: () => active.value.selection.clearSelection(),
+    setSelectionMode: (...args) => active.value.selection.setSelectionMode(...args),
+    toggleSelectionMode: (...args) => active.value.selection.toggleSelectionMode(...args),
+    setKeyboardActionItem: (...args) => active.value.selection.setKeyboardActionItem(...args),
+    clearKeyboardActionItem: () => active.value.selection.clearKeyboardActionItem(),
+    findItemByKey: (...args) => active.value.selection.findItemByKey(...args),
+    selectItemsByName: (...args) => active.value.selection.selectItemsByName(...args),
+    selectCreated: (...args) => active.value.selection.selectCreated(...args),
+  };
+
+  /**
+   * Each of these hands on everything it was given.
+   *
+   * A wrapper that names its arguments silently drops the ones it did not name,
+   * and the first version of this one did: `beginRename(item, { isNew: true })`
+   * arrived as `beginRename(item)`, so a folder the store had just made opened its
+   * rename box without being flagged as new. Spread, and the suite went quiet.
+   */
+  const rename = {
+    renameState: activeRef((folder) => folder.rename.renameState),
+    beginRename: (...args) => active.value.rename.beginRename(...args),
+    setRenameDraft: (...args) => active.value.rename.setRenameDraft(...args),
+    cancelRename: () => active.value.rename.cancelRename(),
+    applyRename: (...args) => active.value.rename.applyRename(...args),
+    isItemBeingRenamed: (...args) => active.value.rename.isItemBeingRenamed(...args),
+  };
+
   const transfers = createTransfers({
     currentPath,
     selection,
@@ -78,21 +206,11 @@ export const useFileStore = defineStore('fileStore', () => {
     warn: warnAboutOnlyOfficeActivity,
   });
 
-  // Reflect a confirmed delete immediately. The authoritative browse refresh
-  // below remains the source of truth and restores the list if the request is
-  // rejected, but this avoids making a successful delete look inert while the
-  // server finishes its cleanup work.
-  const removeItemsFromCurrentView = (items) => {
-    const keys = new Set((Array.isArray(items) ? items : []).map((item) => itemKey(item)));
-    if (keys.size === 0) return;
-    currentPathItems.value = currentPathItems.value.filter((item) => !keys.has(itemKey(item)));
-  };
-
   const operations = createOperations({
     currentPath,
     selection,
     fetchPathItems,
-    removeItemsFromCurrentView,
+    removeItemsFromCurrentView: (...args) => active.value.removeItems(...args),
     beginRename: rename.beginRename,
     refreshSizes,
     favoritesStore,
@@ -108,71 +226,8 @@ export const useFileStore = defineStore('fileStore', () => {
     )
   );
 
-  // Actions
   function setCurrentPath(path) {
     currentPath.value = normalizePath(path);
-  }
-
-  async function fetchPathItems(path, options = {}) {
-    const previousItems = Array.isArray(currentPathItems.value) ? currentPathItems.value : [];
-
-    const normalizedPath = normalizePath(typeof path === 'string' ? path : currentPath.value);
-    thumbnailQueue.cancel();
-    const requestGeneration = ++browseRequestGeneration;
-    activeBrowseController?.abort();
-    const controller = new AbortController();
-    activeBrowseController = controller;
-    useSettingsStore().restoreFolderPreferences(normalizedPath);
-    currentPath.value = normalizedPath;
-    if (!options.preserveInteraction) {
-      selection.clearSelection();
-      // When changing folders, exit selection mode (mobile UX).
-      selection.setSelectionMode(false, { clearOnDisable: false });
-    }
-
-    let response;
-
-    // For share paths, use the dedicated share browse endpoint so that
-    // file shares can be treated as virtual one-item directories.
-    try {
-      if (normalizedPath && normalizedPath.startsWith('share/')) {
-        const segments = normalizedPath.split('/');
-        const shareToken = segments[1];
-        const innerPath = segments.slice(2).join('/');
-        response = await browseShare(shareToken, innerPath, { signal: controller.signal });
-      } else {
-        response = await browse(normalizedPath, { signal: controller.signal });
-      }
-    } catch (error) {
-      // A newer navigation supersedes this request. Let it finish quietly:
-      // otherwise a rapid folder traversal can surface a stale failure.
-      if (requestGeneration !== browseRequestGeneration && isAbortError(error)) {
-        return null;
-      }
-      throw error;
-    } finally {
-      if (activeBrowseController === controller) {
-        activeBrowseController = null;
-      }
-    }
-
-    // Browsing a deep tree can start several requests before the first one
-    // returns. Ignore an older response even when it raced with abort(), so it
-    // can never overwrite the listing for the route currently in the address
-    // bar and breadcrumb.
-    if (requestGeneration !== browseRequestGeneration) {
-      return null;
-    }
-
-    // The current answer carries the items with what the folder allows; an
-    // older one was the bare array of items.
-    const data = folderData(response, normalizedPath);
-    const incoming = data ? response.items : Array.isArray(response) ? response : [];
-    currentPathItems.value = mergeListing(previousItems, incoming);
-    currentPathData.value = data;
-
-    void onlyofficeActivity.start();
-    return currentPathItems.value;
   }
 
   return {
@@ -183,6 +238,9 @@ export const useFileStore = defineStore('fileStore', () => {
     currentPathData,
     getCurrentPathItems,
     fetchPathItems,
+    fetchIn,
+    holdsFolder,
+    refresh,
     selectedItems: selection.selectedItems,
     keyboardActionItem: selection.keyboardActionItem,
     setKeyboardActionItem: selection.setKeyboardActionItem,
@@ -215,7 +273,7 @@ export const useFileStore = defineStore('fileStore', () => {
     applyRename: rename.applyRename,
     isItemBeingRenamed: rename.isItemBeingRenamed,
     warnAboutOnlyOfficeActivity,
-    ensureItemThumbnail: thumbnails.ensureItemThumbnail,
-    prefetchItemThumbnail: thumbnails.prefetchItemThumbnail,
+    ensureItemThumbnail: (...args) => active.value.thumbnails.ensureItemThumbnail(...args),
+    prefetchItemThumbnail: (...args) => active.value.thumbnails.prefetchItemThumbnail(...args),
   };
 });

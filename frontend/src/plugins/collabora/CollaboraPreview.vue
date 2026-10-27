@@ -28,7 +28,6 @@
 import { ref, watch, computed } from 'vue';
 import { useEventListener } from '@vueuse/core';
 import { fetchCollaboraConfig, normalizePath, searchUsersForMention } from '@/api';
-import { usePreviewManager } from '@/plugins/preview/manager';
 import { useVersionsPanelStore } from '@/stores/versionsPanel';
 import logger from '@/utils/logger';
 
@@ -50,7 +49,6 @@ const error = ref(null);
 const iframeRef = ref(null);
 const collaboraOrigin = ref(null);
 const versionsPanel = useVersionsPanelStore();
-const previewManager = usePreviewManager();
 
 const title = computed(() => props?.item?.name || 'Collabora');
 
@@ -136,7 +134,7 @@ const handlePostMessage = async (event) => {
   // leaving this way ends exactly as leaving by the page's button does — the
   // panel closes, and a document in a tab of its own closes the tab.
   if (data.MessageId === 'UI_Close' && fromTheEditor(event)) {
-    void previewManager.close();
+    void props.api.close();
   }
 
   // File > Revision history. NextExplorer keeps the history, so the entry opens

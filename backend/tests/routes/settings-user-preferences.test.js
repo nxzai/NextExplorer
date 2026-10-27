@@ -65,6 +65,16 @@ const NON_DEFAULT = {
   locale: 'nl',
   // `zip` by default, which is what every version before this one did.
   downloadMode: 'separate',
+  // Off by default: tabs change the shape of every screen, so nobody gets them
+  // without asking.
+  browseInTabs: true,
+  // Off by default: a double click is also how somebody with a trackpad ends up
+  // clicking twice, and a tab closing under them is a surprise nobody asked for.
+  closeTabsOnDoubleClick: true,
+  reopenTabs: true,
+  // On by default: a tab opened in the background is opened in order not to wait
+  // for it. Turned off by whoever would rather nothing were prepared in advance.
+  preloadBackgroundTabs: false,
 };
 
 describe('PATCH /api/settings — user preferences', () => {

@@ -281,6 +281,10 @@ module.exports = {
   SKIP_HOME: normalizeBoolean(process.env.SKIP_HOME) || false,
   TERMINAL_ENABLED: normalizeBoolean(process.env.TERMINAL_ENABLED) ?? true,
   TERMINAL_FILE_EXTENSIONS: process.env.TERMINAL_FILE_EXTENSIONS || 'sh',
+  // Extensions this installation will also compare side by side, on top of the ones
+  // that are always comparable. A list rather than a switch because what counts as
+  // text is a local question: somebody's `.ino`, somebody else's `.tf`.
+  COMPARE_FILE_EXTENSIONS: process.env.COMPARE_FILE_EXTENSIONS || '',
 
   // Uploads (direct, non-chunked)
   MAX_DIRECT_UPLOAD_SIZE: process.env.MAX_DIRECT_UPLOAD_SIZE?.trim() || null,

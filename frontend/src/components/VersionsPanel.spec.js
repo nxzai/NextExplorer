@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { resolveAddress } from '@/utils/testing/routerAddress';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 
@@ -47,8 +48,21 @@ const previewManager = vi.hoisted(() => ({
 }));
 vi.mock('@/plugins/preview/manager', () => ({ usePreviewManager: () => previewManager }));
 
-const router = vi.hoisted(() => ({ push: vi.fn() }));
+const router = vi.hoisted(() => ({ push: vi.fn(), resolve: vi.fn() }));
 vi.mock('vue-router', () => ({ useRouter: () => router }));
+router.resolve = resolveAddress;
+/**
+ * Where a comparison goes. Asked for when the gesture happens rather than at setup,
+ * so this panel — which is on every page that can show a version — does not pull the
+ * router's own `useRoute` into its module graph.
+ */
+const tabs = vi.hoisted(() => ({ enabled: true, open: vi.fn(() => ({ id: 'tab-2' })) }));
+// Only the store is stood in for: the module also carries what a tab is and how many
+// a row may hold, and other stores read those at import time.
+vi.mock('@/stores/tabs', async (original) => ({
+  ...(await original()),
+  useTabsStore: () => tabs,
+}));
 
 const translate = (key, params) =>
   params && typeof params === 'object' ? `${key} ${JSON.stringify(params)}` : key;
@@ -137,6 +151,8 @@ beforeEach(() => {
   fileStore.fetchPathItems.mockClear();
   picker.pick.mockReset();
   router.push.mockClear();
+  tabs.open.mockClear();
+  tabs.enabled = true;
 });
 
 afterEach(() => {
@@ -236,6 +252,9 @@ describe('what it offers', () => {
 
     expect(await menuOf(0)).toEqual([
       'preview',
+      // Against the file as it is now, side by side — offered for anything that can
+      // be read as lines of text, which a text file is.
+      'compare',
       'download',
       'restore',
       'restoreCopy',
@@ -262,13 +281,44 @@ describe('what it offers', () => {
     expect(offered).toContain('restore');
   });
 
+  /**
+   * This version against the file as it is now.
+   *
+   * The version on the left and the file on the right, which is the order that reads
+   * as "what happened since". Only for something that can be read as lines of text: a
+   * comparison of two spreadsheets line by line would be pages of binary nonsense,
+   * whatever else this panel can do with them.
+   */
+  it('compares a version with the file as it is now, the older one first', async () => {
+    await openOn();
+
+    await act(0, 'compare');
+
+    expect(tabs.open).toHaveBeenCalledWith(
+      '/compare?paths=Docs/notes.md&paths=Docs/notes.md&versions=v2&versions=',
+      { own: true }
+    );
+  });
+
+  it('offers no comparison of a file it cannot read as text', async () => {
+    await openOn({ name: 'budget.xlsx', path: 'Docs', kind: 'xlsx' });
+
+    expect(await menuOf(0)).not.toContain('compare');
+  });
+
   it('offers only looking to someone who may only read', async () => {
     await openOn(
       NOTES,
       history({ rights: { see: true, download: true, restore: false, remove: false } })
     );
 
-    expect(await menuOf(0)).toEqual(['preview', 'download', 'restoreCopy', 'replaceOther']);
+    expect(await menuOf(0)).toEqual([
+      'preview',
+      'compare',
+      'download',
+      'restoreCopy',
+      'replaceOther',
+    ]);
     expect(q('[data-test="version-select"]')).toBeNull();
     expect(q('[data-test="versions-delete-all"]')).toBeNull();
   });

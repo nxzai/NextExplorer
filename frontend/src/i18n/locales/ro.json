@@ -586,6 +586,8 @@
       "useEnvSetting": "Folosește setarea serverului",
       "defaultView": "Vizualizare implicită",
       "defaultViewHelp": "Vizualizarea folosită pentru un folder fără vizualizare memorată.",
+      "foldersFirst": "Dosare primele",
+      "foldersFirstHelp": "La sortare, dosarele sunt listate înaintea fișierelor. Dezactivează pentru a sorta fișierele și dosarele împreună, într-o singură listă, după ordinea aleasă.",
       "viewGrid": "Grilă",
       "viewList": "Listă",
       "viewColumns": "Coloane",

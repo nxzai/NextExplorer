@@ -26,6 +26,9 @@ export const useAppSettings = defineStore('appSettings', () => {
     folderSorts: {},
     folderViews: {},
     defaultView: null,
+    // Folders first when sorting, as listing programs have always done. The
+    // default keeps every list looking the way it did (#495).
+    foldersFirst: true,
     // Markdown is the one kind of file with both a preview and an editor, so
     // it is the only one where opening it is a choice (#347).
     markdownOpensInEditor: false,

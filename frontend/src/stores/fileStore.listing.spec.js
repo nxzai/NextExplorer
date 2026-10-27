@@ -104,6 +104,7 @@ beforeEach(() => {
   browse.mockResolvedValue({ items: [], path: '' });
   sizeFor.mockReturnValue(null);
   settings.sortBy = { by: 'name', order: 'asc' };
+  settings.foldersFirst = true;
   appSettings.thumbnailsEnabledForSession = true;
 });
 
@@ -146,6 +147,29 @@ describe('the order a folder is shown in', () => {
     const store = await storeInDocs([file('a.txt'), dir('zzz'), file('b.txt'), dir('aaa')]);
 
     expect(namesInOrder(store)).toEqual(['zzz', 'aaa', 'b.txt', 'a.txt']);
+  });
+
+  /**
+   * The person's own choice, not the program's: some lists read better as one
+   * ordering where a folder sits wherever its key puts it (#495).
+   */
+  it('mixes folders and files into one list when asked to', async () => {
+    settings.foldersFirst = false;
+    const store = await storeInDocs([file('a.txt'), dir('zzz'), file('b.txt'), dir('aaa')]);
+
+    expect(namesInOrder(store)).toEqual(['a.txt', 'aaa', 'b.txt', 'zzz']);
+  });
+
+  it('mixes by the chosen key, not by the kind of entry', async () => {
+    settings.foldersFirst = false;
+    settings.sortBy = { by: 'size', order: 'desc' };
+    const store = await storeInDocs([
+      file('gros.txt', { size: 9000 }),
+      dir('boite', { size: 500 }),
+      file('petit.txt', { size: 10 }),
+    ]);
+
+    expect(namesInOrder(store)).toEqual(['gros.txt', 'boite', 'petit.txt']);
   });
 
   /**

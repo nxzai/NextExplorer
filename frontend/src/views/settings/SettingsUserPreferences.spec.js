@@ -43,6 +43,7 @@ const STORED = {
   folderSorts: { Docs: { by: 'name', order: 'asc', updatedAt: 1 } },
   folderViews: { Photos: { mode: 'photos', updatedAt: 1 } },
   defaultView: 'list',
+  foldersFirst: false,
   markdownOpensInEditor: true,
   documentsOpenInNewTab: true,
   downloadMode: 'separate',
@@ -60,6 +61,7 @@ const DEFAULTS = {
   folderSorts: {},
   folderViews: {},
   defaultView: null,
+  foldersFirst: true,
   markdownOpensInEditor: false,
 };
 
@@ -72,6 +74,7 @@ const SWITCHES = [
   'showSidebarFavorites',
   'showSidebarShares',
   'showSidebarTools',
+  'foldersFirst',
   'quickActions',
 ];
 
@@ -178,6 +181,7 @@ describe('the preferences', () => {
         defaultShareExpiration: { value: 2, unit: 'weeks' },
         skipHome: false,
         defaultView: 'list',
+        foldersFirst: false,
         markdownOpensInEditor: true,
         documentsOpenInNewTab: true,
         showVersionMarks: true,
@@ -188,6 +192,15 @@ describe('the preferences', () => {
     expect(sentUser()).not.toHaveProperty('folderSorts');
     expect(sentUser()).not.toHaveProperty('folderViews');
     expect(button('common.save')).toBeUndefined();
+  });
+
+  it('save the folders-first choice with the rest of the list', async () => {
+    await open(DEFAULTS);
+
+    await toggle('foldersFirst').trigger('click');
+    await save();
+
+    expect(sentUser().foldersFirst).toBe(false);
   });
 
   it('send a default share expiry as a number with its unit', async () => {

@@ -61,6 +61,8 @@ const NON_DEFAULT = {
   defaultShareExpiration: { value: 3, unit: 'days' },
   skipHome: true,
   defaultView: 'list',
+  // On by default, so off is what has to survive the round trip (#495).
+  foldersFirst: false,
   // Null by default, which means "follow the browser".
   locale: 'nl',
   // `zip` by default, which is what every version before this one did.

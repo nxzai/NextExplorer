@@ -586,6 +586,8 @@
       "useEnvSetting": "使用伺服器預設",
       "defaultView": "預設檢視",
       "defaultViewHelp": "沒有單獨記住檢視的資料夾所使用的檢視。",
+      "foldersFirst": "資料夾優先",
+      "foldersFirstHelp": "排序時資料夾排在檔案之前。關閉後，檔案與資料夾會依所選順序在同一個清單中混合排序。",
       "viewGrid": "格狀",
       "viewList": "清單",
       "viewColumns": "分欄",

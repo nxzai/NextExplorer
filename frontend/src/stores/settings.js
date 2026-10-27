@@ -36,6 +36,9 @@ export const useSettingsStore = defineStore('settings', () => {
 
   const view = ref('grid');
 
+  /** The list is one mixed ordering or folders first, per the person (#495). */
+  const foldersFirst = computed(() => appSettings.userSettings?.foldersFirst !== false);
+
   const setView = (mode) => {
     if (!VIEW_MODES.includes(mode)) return undefined;
     view.value = mode;
@@ -251,6 +254,7 @@ export const useSettingsStore = defineStore('settings', () => {
     restoreFolderPreferences,
     folderViews,
     defaultView,
+    foldersFirst,
     sortOptions,
     terminalHeight,
     listViewColumnWidths,

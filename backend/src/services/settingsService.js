@@ -690,6 +690,7 @@ const USER_SETTINGS = {
   defaultShareExpiration: asShareExpiration,
   skipHome: asNullableBoolean,
   defaultView: asViewMode,
+  foldersFirst: asBoolean,
   locale: asLocale,
   downloadMode: asDownloadMode,
 };

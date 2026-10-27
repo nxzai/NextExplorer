@@ -103,8 +103,12 @@ export const useFileStore = defineStore('fileStore', () => {
   const getCurrentPath = computed(() => currentPath.value);
 
   const getCurrentPathItems = computed(() =>
-    sortItems(currentPathItems.value, useSettingsStore().sortBy, (full) =>
-      folderSizeStore.sizeFor(full)
+    sortItems(
+      currentPathItems.value,
+      useSettingsStore().sortBy,
+      (full) => folderSizeStore.sizeFor(full),
+      // One list or folders first is the person's own preference (#495).
+      { foldersFirst: useSettingsStore().foldersFirst }
     )
   );
 

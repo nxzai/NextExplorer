@@ -13,6 +13,20 @@
 @layer base {
   /* Default (light) theme variables */
   :root {
+    /**
+     * How much room the strip of tabs is taking at the top, or none.
+     *
+     * Published by TabStrip.vue from its own measured height, and declared here so
+     * that everything which reads it has an answer before the strip has said
+     * anything — a preview that opened first would otherwise sit under nothing at
+     * all, or under `var()` with no fallback.
+     *
+     * Read by the two surfaces that cover the window: the preview host and the
+     * media viewer. A tab holding a document is the *tab's* content, so it stops
+     * where the strip starts; a modal dialog is not, and covers everything.
+     */
+    --tab-strip-height: 0px;
+
     --scrollbar-track: transparent; /* nextgray-200 */
     --scrollbar-thumb: #b7b4b4; /* nextgray-400 */
     --scrollbar-thumb-hover: #bdbdbd;

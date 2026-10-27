@@ -25,6 +25,7 @@ import { useVersionsPanelStore } from '@/stores/versionsPanel';
 import { useFileDragDrop } from '@/composables/useFileDragDrop';
 import InlineQuickActions from '@/components/InlineQuickActions.vue';
 import { useQuickActionsStore } from '@/stores/quickActions';
+import { useOpenItemInTab } from '@/composables/itemAddress';
 import { useI18n } from 'vue-i18n';
 import { useNotificationsStore } from '@/stores/notifications';
 
@@ -192,9 +193,36 @@ const handleClick = (event) => {
   openItem(props.item);
 };
 
-const handleDblClick = () => {
+// The middle button opens this entry in a tab behind, which is what it does on a
+// link and what somebody queueing up four things to look at will try. A folder, a
+// document, a spreadsheet, a file the editor opens — whatever the entry has an
+// address for, which is the same address a plain click would take it to.
+//
+// A link out of the volume is one the server refuses to follow, and a file with
+// neither a preview nor an editor has nowhere of its own, so both are left to the
+// ordinary click. With tabs off the store has one tab and would put this there,
+// which is a navigation nobody asked for — so it is not offered at all.
+// The store rather than the navigation composable: a tab opened *behind* is the
+// one case that does not navigate, so nothing here needs a router — and asking for
+// the composable put the settings store, the accounts store and the router itself
+// into the module graph of every row in the listing.
+const { openItemInTab } = useOpenItemInTab();
+const handleMiddleClick = () => {
+  if (isRenaming.value || isOutsideLink.value) return;
+  openItemInTab(props.item, props.item?.path || '');
+};
+
+const handleDblClick = (event) => {
   if (isRenaming.value) return;
   if (isTouchDevice.value && selectionMode.value) return;
+  // One rule everywhere: command, or control, turns *opening* into opening in a
+  // tab behind. On a row the gesture that opens is the double click — the single
+  // one selects, and with this modifier it adds to the selection, which is worth
+  // more than a tab. On a favourite or a volume there is no selection to make, so
+  // there it is the single click. The middle button says the same thing on both.
+  if ((event?.metaKey || event?.ctrlKey) && openItemInTab(props.item, props.item?.path || '')) {
+    return;
+  }
   openItem(props.item);
 };
 
@@ -247,7 +275,7 @@ const commitRename = async () => {
   } catch (error) {
     console.error('Rename operation failed', error);
     if (error && error.message) {
-      window.alert(error.message);
+      notificationsStore.addNotification({ type: 'error', heading: error.message });
     }
     focusRenameInput();
   }
@@ -307,6 +335,8 @@ if (isTouchDevice.value) {
       :title="item.name"
       ref="rootRef"
       @click="handleClick"
+      @auxclick.middle.prevent="handleMiddleClick"
+      :data-selected="selected ? 'true' : 'false'"
       @dblclick="handleDblClick"
       @contextmenu.prevent.stop="handleContextMenu"
       @dragstart="(e) => handleDragStart(e, item)"
@@ -362,6 +392,8 @@ if (isTouchDevice.value) {
       v-if="view === 'grid'"
       ref="rootRef"
       @click="handleClick"
+      @auxclick.middle.prevent="handleMiddleClick"
+      :data-selected="selected ? 'true' : 'false'"
       @dblclick="handleDblClick"
       @contextmenu.prevent.stop="handleContextMenu"
       @dragstart="(e) => handleDragStart(e, item)"
@@ -444,6 +476,8 @@ if (isTouchDevice.value) {
       v-if="view === 'tab'"
       ref="rootRef"
       @click="handleClick"
+      @auxclick.middle.prevent="handleMiddleClick"
+      :data-selected="selected ? 'true' : 'false'"
       @dblclick="handleDblClick"
       @contextmenu.prevent.stop="handleContextMenu"
       @dragstart="(e) => handleDragStart(e, item)"
@@ -530,6 +564,8 @@ if (isTouchDevice.value) {
       v-if="view === 'list'"
       ref="rootRef"
       @click="handleClick"
+      @auxclick.middle.prevent="handleMiddleClick"
+      :data-selected="selected ? 'true' : 'false'"
       @dblclick="handleDblClick"
       @contextmenu.prevent.stop="handleContextMenu"
       @dragstart="(e) => handleDragStart(e, item)"

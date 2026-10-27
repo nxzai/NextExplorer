@@ -77,7 +77,10 @@
     "dismissWarning": "Dispensar o aviso",
     "reset": "Redefinir",
     "moveUp": "Mover para cima",
-    "moveDown": "Mover para baixo"
+    "moveDown": "Mover para baixo",
+    "confirm": "Confirmar",
+    "closeAnyway": "Fechar mesmo assim",
+    "leaveAnyway": "Sair mesmo assim"
   },
   "editor": {
     "editing": "Editando",
@@ -90,7 +93,8 @@
     "versionReadOnly": "Versão anterior, somente leitura",
     "highlightingOffTooLarge": "O realce de sintaxe está desativado para este arquivo: uma parte é grande demais para ser realçada sem travar a página.",
     "raw": "Bruto",
-    "selectTheme": "Escolher o tema do editor"
+    "selectTheme": "Escolher o tema do editor",
+    "unsavedTitle": "Alterações não salvas"
   },
   "status": {
     "updated": "Atualizado com sucesso",
@@ -497,6 +501,7 @@
       "accountPassword": "Alterar Senha",
       "about": "Sobre",
       "userPreferences": "Preferências",
+      "tabs": "Abas",
       "branding": "Identidade visual",
       "filesThumbnails": "Arquivos e Miniaturas",
       "security": "Segurança",
@@ -592,6 +597,12 @@
       "viewPhotos": "Fotos",
       "documentsOpenInNewTab": "Abrir documentos em uma nova aba",
       "documentsOpenInNewTabHelp": "Abrir um arquivo lhe dá uma aba do navegador só dele, então vários continuam abertos enquanto você navega. Desligado, ele abre sobre a pasta como hoje.",
+      "browseInTabs": "Navegar em abas",
+      "browseInTabsHelp": "Manter vários lugares abertos ao mesmo tempo — pastas, documentos, a lixeira — cada um em uma aba, como faz um gerenciador de arquivos de mesa. Desligado: um lugar por vez, e nada é desenhado acima da barra de ferramentas.",
+      "closeTabsOnDoubleClick": "Fechar uma aba com clique duplo",
+      "closeTabsOnDoubleClickHelp": "Um clique duplo em qualquer parte da aba a fecha, além do xis.",
+      "preloadBackgroundTabs": "Preparar as abas abertas em segundo plano",
+      "preloadBackgroundTabsHelp": "Uma aba aberta atrás, ou reaberta com a janela, carrega de imediato em vez de esperar até você chegar nela. Um documento preparado assim é aberto no editor, portanto conta como em edição.",
       "downloadMode": "Baixar vários itens",
       "downloadModeHelp": "O que acontece ao baixar mais de um item de uma vez. As pastas selecionadas sempre chegam como um único arquivo compactado.",
       "downloadModeZip": "Um único arquivo ZIP",
@@ -609,7 +620,9 @@
       "quickActionsPositionHelp": "Alinhados a uma borda da coluna de nomes, ficam no mesmo lugar em todas as linhas; o espaço necessário fica reservado, com o ponteiro sobre a linha ou não.",
       "quickActionsPositionAfter": "Depois do nome",
       "quickActionsPositionStart": "No início da coluna de nomes",
-      "quickActionsPositionEnd": "No fim da coluna de nomes"
+      "quickActionsPositionEnd": "No fim da coluna de nomes",
+      "reopenTabs": "Reabrir as abas ao voltar",
+      "reopenTabsHelp": "Desligado, só voltam as abas que você fixou — é para isso que serve fixar. Ligado, todas voltam."
     },
     "thumbs": {
       "subtitle": "Personalize as pré-visualizações em miniatura de imagens e vídeos.",
@@ -702,7 +715,10 @@
       "accessMode": "Modo de Acesso",
       "noUsers": "Nenhum usuário disponível",
       "lockedBadge": "Bloqueado",
-      "lockedUntil": "Bloqueado até {time}"
+      "lockedUntil": "Bloqueado até {time}",
+      "removeTitle": "Remover o usuário",
+      "removeVolumeTitle": "Remover o volume",
+      "newPasswordTitle": "Nova senha"
     },
     "userDetails": {
       "profileTab": "Perfil",
@@ -924,7 +940,8 @@
       "loadFailed": "Não foi possível ler as chaves de acesso desta conta.",
       "addFailed": "Não foi possível adicionar esta chave de acesso.",
       "cancelled": "Nada foi adicionado: o navegador foi fechado ou demorou demais.",
-      "alreadyHere": "Este dispositivo já tem uma chave de acesso para esta conta."
+      "alreadyHere": "Este dispositivo já tem uma chave de acesso para esta conta.",
+      "renameTitle": "Renomear a chave de acesso"
     },
     "activity": {
       "title": "Registro de atividades",
@@ -1010,7 +1027,9 @@
       "loadFailed": "Não foi possível carregar os tokens.",
       "createFailed": "Não foi possível emitir o token.",
       "renameFailed": "Não foi possível renomear o token.",
-      "revokeFailed": "Não foi possível revogar o token."
+      "revokeFailed": "Não foi possível revogar o token.",
+      "renameTitle": "Renomear o token",
+      "revokeTitle": "Revogar o token"
     },
     "folderSize": {
       "title": "Tamanho das pastas",
@@ -1024,6 +1043,12 @@
       "additional": "Exclusões adicionais",
       "placeholder": "Stacks/docker/overlay2",
       "none": "Nenhum caminho configurado"
+    },
+    "tabs": {
+      "title": "Abas",
+      "description": "Como a navegação em abas se comporta para todos nesta instalação.",
+      "maxOpen": "Máximo de abas ao mesmo tempo",
+      "maxOpenHelp": "A barra nunca rola: a fila para aqui em vez de deixar as abas ilegíveis."
     },
     "searchIndex": {
       "title": "Índice de busca",
@@ -1042,6 +1067,21 @@
       "useSwitch": "Ative-a com o interruptor acima.",
       "locked": "Definido por {variable} no ambiente: isso é decidido lá, não aqui."
     }
+  },
+  "tabs": {
+    "strip": "Abas abertas",
+    "openInNewTab": "Abrir em uma nova aba",
+    "openInNewTabs": "Abrir {count} em novas abas",
+    "newTab": "Nova aba",
+    "moveLeft": "Mover para a esquerda",
+    "moveRight": "Mover para a direita",
+    "duplicate": "Duplicar a aba",
+    "pin": "Fixar a aba",
+    "unpin": "Desafixar a aba",
+    "closeTab": "Fechar a aba",
+    "closeOthers": "Fechar as outras abas",
+    "closeAll": "Fechar todas as abas",
+    "full": "Sem espaço para outra aba (limite: {count})"
   },
   "mediaPreview": {
     "audioTrack": "Faixa de áudio",

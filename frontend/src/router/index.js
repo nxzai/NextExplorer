@@ -11,6 +11,7 @@ import SettingsFilesThumbnails from '@/views/settings/SettingsFilesThumbnails.vu
 import SettingsFfmpeg from '@/views/settings/SettingsFfmpeg.vue';
 import SettingsUploads from '@/views/settings/SettingsUploads.vue';
 import SettingsSearchIndex from '@/views/settings/SettingsSearchIndex.vue';
+import SettingsTabs from '@/views/settings/SettingsTabs.vue';
 import SettingsFolderSize from '@/views/settings/SettingsFolderSize.vue';
 import SettingsAccessControl from '@/views/settings/SettingsAccessControl.vue';
 import SettingsComingSoon from '@/views/settings/SettingsComingSoon.vue';
@@ -35,6 +36,8 @@ import { useAuthStore } from '@/stores/auth';
 import { useFeaturesStore } from '@/stores/features';
 import { useAppSettings } from '@/stores/appSettings';
 import { useFolderScrollStore } from '@/stores/folderScroll';
+import { useTabsStore } from '@/stores/tabs';
+import { restorePermission } from './restorePermission';
 import { getVolumes } from '@/api';
 import { readGuestSession, resolveShareAccess } from '@/router/shareGuard';
 import { loadAccountSettings } from '@/router/settingsGuard';
@@ -81,6 +84,11 @@ const router = createRouter({
             {
               path: 'folder-size',
               component: SettingsFolderSize,
+              meta: { requiresAdmin: true },
+            },
+            {
+              path: 'tabs',
+              component: SettingsTabs,
               meta: { requiresAdmin: true },
             },
             {
@@ -240,6 +248,25 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      // One terminal, at an address of its own — see views/TerminalView.vue.
+      //
+      // No layout at all, and the page deliberately draws no terminal of its own:
+      // every open shell belongs to `TerminalHost.vue`, which is mounted once in the
+      // shell of the application and outlives every page *and* every layout. It used
+      // to be inside the browser layout, which is not one thing — `/browse` and this
+      // are two route records, so crossing between them destroys that layout and
+      // builds another, and it took every shell with it. A terminal that is unmounted
+      // is a shell that has been killed.
+      //
+      // Which also gives a shell the whole tab: the sidebar is for going somewhere,
+      // and beside a shell its only answer was to leave the shell — easy to confuse
+      // with a `cd` a keystroke away. The strip of tabs still leads out.
+      path: '/terminal/:path(.*)*',
+      name: 'TerminalView',
+      component: () => import('@/views/TerminalView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: '/auth/setup',
       name: 'auth-setup',
       component: AuthSetupView,
@@ -268,18 +295,22 @@ const folderPathFromRoute = (route) => {
   return String(raw).replace(/^\/+|\/+$/g, '');
 };
 
-const isAncestorFolder = (candidate, current) =>
-  Boolean(candidate && current && current.startsWith(`${candidate}/`));
-
 router.beforeEach(async (to, from) => {
   const folderScrollStore = useFolderScrollStore();
   const destinationPath = folderPathFromRoute(to);
   const sourcePath = folderPathFromRoute(from);
-  if (destinationPath) {
-    if (isAncestorFolder(destinationPath, sourcePath)) {
-      folderScrollStore.permitRestore(destinationPath);
+  const restore = restorePermission({
+    destination: destinationPath,
+    source: sourcePath,
+    // The tab making the journey, because the permission is one tab's and the
+    // folder's memory behind it is every tab's.
+    travelling: useTabsStore().activeId,
+  });
+  if (restore) {
+    if (restore.permitted) {
+      folderScrollStore.permitRestore(restore.path, restore.tabId);
     } else {
-      folderScrollStore.preventRestore(destinationPath);
+      folderScrollStore.preventRestore(restore.path, restore.tabId);
     }
   }
 

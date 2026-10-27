@@ -120,9 +120,69 @@ onBeforeUnmount(() => {
   view.value = null;
 });
 
+/**
+ * Where the reader is in this file, and putting them back there.
+ *
+ * Both here rather than in the page, because both are CodeMirror's business and
+ * neither is a scroll bar. A cursor is a position in a document; a place in a
+ * long file is a *line*, not a pixel — and the pixel is the one that goes wrong.
+ * The editor draws what is in view and estimates the rest, so its height is a
+ * guess that improves as it measures, and a scrollTop written into it before it
+ * has measured is silently clamped. That is what sent somebody back to the top of
+ * a file they had scrolled halfway down, with their selection intact beside them.
+ *
+ * So the line is what is kept, and `scrollIntoView` is what puts it back: it is
+ * asked of the editor rather than of the DOM, so it happens after the editor has
+ * measured, whenever that is. The pixel is kept too and applied first, because
+ * inside a line it is the more precise of the two and it costs nothing.
+ */
+const placeInDocument = () => {
+  const editor = view.value;
+  if (!editor) return { selection: null, scrollTop: 0, topLine: null };
+
+  const selection = editor.state.selection.main;
+  const box = editor.scrollDOM.getBoundingClientRect();
+  return {
+    selection: { anchor: selection.anchor, head: selection.head },
+    scrollTop: editor.scrollDOM.scrollTop,
+    // The document position at the top left of what is on screen. `false` asks
+    // for the nearest position rather than only an exact hit, so an empty margin
+    // still answers with the line beside it.
+    topLine: editor.posAtCoords({ x: box.left + 1, y: box.top + 1 }, false) ?? null,
+  };
+};
+
+const restorePlaceInDocument = (place) => {
+  const editor = view.value;
+  if (!editor || !place) return;
+
+  const end = editor.state.doc.length;
+  if (place.selection) {
+    editor.dispatch({
+      // Clamped: somebody else may have written to the file while this tab was
+      // away, and a cursor past the end of the document throws.
+      selection: {
+        anchor: Math.min(place.selection.anchor, end),
+        head: Math.min(place.selection.head, end),
+      },
+    });
+  }
+
+  if (place.scrollTop > 0) editor.scrollDOM.scrollTop = place.scrollTop;
+  if (place.topLine !== null && place.topLine !== undefined) {
+    editor.dispatch({
+      effects: EditorView.scrollIntoView(Math.min(place.topLine, end), { y: 'start' }),
+    });
+  }
+};
+
 defineExpose({
   /** The document as it is now, to be saved; `String(snapshot())` is its text. */
   snapshot: () => view.value?.state.doc ?? null,
+  /** Where the reader is: the cursor, and the line at the top of the screen. */
+  place: placeInDocument,
+  /** And putting them back there, once the document is in. */
+  restorePlace: restorePlaceInDocument,
   /** Call with what `snapshot()` answered once that document has been written. */
   markSaved: (doc) => {
     if (!view.value || !doc) return;

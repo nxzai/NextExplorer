@@ -186,6 +186,9 @@ beforeEach(() => {
     currentPath: 'Docs',
     currentPathData: null,
     fetchPathItems: vi.fn(async () => {}),
+    // The folder already on screen, read again without clearing what is chosen:
+    // an upload landing must not take away the file the reader just picked.
+    refresh: vi.fn(async () => {}),
   });
   Object.assign(stores.notifications, { addNotification: vi.fn() });
   Object.assign(stores.settings, {
@@ -756,7 +759,8 @@ describe('keeping the screen in step with the uploads', () => {
     uppy.emit('upload-success', { id: 'c' }, {});
     await settle(1000);
 
-    expect(stores.file.fetchPathItems).toHaveBeenCalledTimes(1);
+    expect(stores.file.refresh).toHaveBeenCalledTimes(1);
+    expect(stores.file.fetchPathItems).not.toHaveBeenCalled();
   });
 
   it('refreshes what the volume and the folder now weigh', async () => {

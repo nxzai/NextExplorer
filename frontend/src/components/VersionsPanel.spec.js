@@ -49,6 +49,18 @@ vi.mock('@/plugins/preview/manager', () => ({ usePreviewManager: () => previewMa
 
 const router = vi.hoisted(() => ({ push: vi.fn() }));
 vi.mock('vue-router', () => ({ useRouter: () => router }));
+/**
+ * Where a comparison goes. Asked for when the gesture happens rather than at setup,
+ * so this panel — which is on every page that can show a version — does not pull the
+ * router's own `useRoute` into its module graph.
+ */
+const tabs = vi.hoisted(() => ({ enabled: true, open: vi.fn(() => ({ id: 'tab-2' })) }));
+// Only the store is stood in for: the module also carries what a tab is and how many
+// a row may hold, and other stores read those at import time.
+vi.mock('@/stores/tabs', async (original) => ({
+  ...(await original()),
+  useTabsStore: () => tabs,
+}));
 
 const translate = (key, params) =>
   params && typeof params === 'object' ? `${key} ${JSON.stringify(params)}` : key;
@@ -137,6 +149,8 @@ beforeEach(() => {
   fileStore.fetchPathItems.mockClear();
   picker.pick.mockReset();
   router.push.mockClear();
+  tabs.open.mockClear();
+  tabs.enabled = true;
 });
 
 afterEach(() => {

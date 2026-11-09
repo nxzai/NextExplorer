@@ -15,6 +15,7 @@ const preferredLocaleOrder = [
   'en',
   'es',
   'fr',
+  'gl',
   'hi',
   'it',
   'ko',

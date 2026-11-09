@@ -47,6 +47,16 @@ describe('the language a visitor lands in', () => {
     expect(detectLocale(CODES)).toBe('nl');
   });
 
+  it('opens in Galician for a browser set to Galician, whatever the region', () => {
+    expect(CODES).toContain('gl');
+
+    browser(['gl-ES']);
+    expect(detectLocale(CODES)).toBe('gl');
+
+    browser(['gl', 'es']);
+    expect(detectLocale(CODES)).toBe('gl');
+  });
+
   it('takes the language when the region is one nobody has translated', () => {
     browser(['fr-CA']);
 

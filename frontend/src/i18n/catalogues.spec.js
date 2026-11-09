@@ -113,7 +113,7 @@ describe('the translation catalogues', () => {
    * one form, Polish and Russian three; Hindi is left out until its catalogue
    * is looked at, since it gives some plurals a single form.
    */
-  const TWO_FORM_LANGUAGES = ['de', 'es', 'fr', 'it', 'nl', 'pt-BR', 'ro', 'sv'];
+  const TWO_FORM_LANGUAGES = ['de', 'es', 'fr', 'gl', 'it', 'nl', 'pt-BR', 'ro', 'sv'];
 
   it.each(others.filter((locale) => TWO_FORM_LANGUAGES.includes(locale)))(
     '%s gives every plural as many forms as English',

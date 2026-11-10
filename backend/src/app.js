@@ -79,8 +79,9 @@ const createApp = async (options = {}) => {
 
   // A selection of a few thousand files is a normal request here, and its list
   // of paths outgrows the 100 kB Express allows by default.
-  app.use(express.json({ limit: uploads.maxJsonBodyBytes }));
-  app.use(express.urlencoded({ extended: true, limit: uploads.maxJsonBodyBytes }));
+  // inflate: false protects against GHSA-27r3-jxmh-p828 uncaught exception DoS
+  app.use(express.json({ limit: uploads.maxJsonBodyBytes, inflate: false }));
+  app.use(express.urlencoded({ extended: true, limit: uploads.maxJsonBodyBytes, inflate: false }));
 
   // Express 5 leaves `req.body` undefined when no parser above matched the
   // request's content type, where Express 4 left an empty object. Every route
